@@ -223,10 +223,10 @@ function warAction(logLine) {
 function warStatus(logLine) {
 
   if (logLine[3] == "Slashing Resistance Down") {
-    if (["gain","gains"].indexOf(logLine[2]) > -1) {
+    if (logLine[2] == "gains") {
       statustime.slashingresistancedown = Date.now() + parseInt(logLine[5]) * 1000;
     }
-    else if (["lose","loses"].indexOf(logLine[2]) > -1) {
+    else if (logLine[2] == "loses") {
       delete statustime.slashingresistancedown;
     }
   }
@@ -235,22 +235,22 @@ function warStatus(logLine) {
 
     if (logLine[3] == "Berserk"
     || logLine[3] == "Inner Release") {
-      if (["gain","gains"].indexOf(logLine[2]) > -1) {
+      if (logLine[2] == "gains") {
         statustime.berserk = Date.now() + parseInt(logLine[5]) * 1000;
       }
-      else if (["lose","loses"].indexOf(logLine[2]) > -1) {
+      else if (logLine[2] == "loses") {
         delete statustime.berserk;
       }
     }
 
     else if (logLine[3] == "Rampart") {
-      if (["gain","gains"].indexOf(logLine[2]) > -1) {
+      if (logLine[2] == "gains") {
         if (!statustime.mitigation
         || statustime.mitigation < Date.now() + parseInt(logLine[5]) * 1000) {
           statustime.mitigation = Date.now() + parseInt(logLine[5]) * 1000;
         }
       }
-      else if (["lose","loses"].indexOf(logLine[2]) > -1) {
+      else if (logLine[2] == "loses") {
         if (statustime.mitigation <= Date.now()) {
           delete statustime.mitigation;
           warMitigation();
@@ -259,7 +259,7 @@ function warStatus(logLine) {
     }
 
     else if (logLine[3] == "Defiance") {
-      if (["gain","gains"].indexOf(logLine[2]) > -1) {
+      if (logLine[2] == "gains") {
         toggle.stance = 1;
         if (!cooldowntime.unchained) {
           addIcon(id.unchained,icon.unchained);
@@ -269,20 +269,20 @@ function warStatus(logLine) {
           addIconWithTimeout("unchained",Date.now() - cooldowntime.unchained,id.unchained,icon.unchained);
         }
       }
-      else if (["lose","loses"].indexOf(logLine[2]) > -1) {
+      else if (logLine[2] == "loses") {
         clearTimeout(timeout.unchained);
         removeIcon(id.unchained);
       }
     }
 
     else if (logLine[3] == "Inner Beast") {
-      if (["gain","gains"].indexOf(logLine[2]) > -1) {
+      if (logLine[2] == "gains") {
         if (!statustime.mitigation
         || statustime.mitigation < Date.now() + parseInt(logLine[5]) * 1000) {
           statustime.mitigation = Date.now() + parseInt(logLine[5]) * 1000;
         }
       }
-      else if (["lose","loses"].indexOf(logLine[2]) > -1) {
+      else if (logLine[2] == "loses") {
         if (statustime.mitigation <= Date.now()) {
           delete statustime.mitigation;
           warMitigation();
@@ -291,22 +291,22 @@ function warStatus(logLine) {
     }
 
     else if (logLine[3] == "Unchained") {
-      if (["gain","gains"].indexOf(logLine[2]) > -1) {
+      if (logLine[2] == "gains") {
         statustime.unchained = Date.now() + parseInt(logLine[5]) * 1000;
       }
-      else if (["lose","loses"].indexOf(logLine[2]) > -1) {
+      else if (logLine[2] == "loses") {
         delete statustime.unchained;
       }
     }
 
     else if (logLine[3] == "Vengeance") {
-      if (["gain","gains"].indexOf(logLine[2]) > -1) {
+      if (logLine[2] == "gains") {
         if (!statustime.mitigation
         || statustime.mitigation < Date.now() + parseInt(logLine[5]) * 1000) {
           statustime.mitigation = Date.now() + parseInt(logLine[5]) * 1000;
         }
       }
-      else if (["lose","loses"].indexOf(logLine[2]) > -1) {
+      else if (logLine[2] == "loses") {
         if (statustime.mitigation <= Date.now()) {
           delete statustime.mitigation;
           warMitigation();
@@ -315,21 +315,21 @@ function warStatus(logLine) {
     }
 
     else if (logLine[3] == "Deliverance") {
-      if (["gain","gains"].indexOf(logLine[2]) > -1) {
+      if (logLine[2] == "gains") {
         toggle.stance = 2;
       }
-      else if (["lose","loses"].indexOf(logLine[2]) > -1) {
+      else if (logLine[2] == "loses") {
       }
     }
 
     else if (logLine[3] == "Raw Intuition") {
-      if (["gain","gains"].indexOf(logLine[2]) > -1) {
+      if (logLine[2] == "gains") {
         if (!statustime.mitigation
         || statustime.mitigation < Date.now() + parseInt(logLine[5]) * 1000) {
           statustime.mitigation = Date.now() + parseInt(logLine[5]) * 1000;
         }
       }
-      else if (["lose","loses"].indexOf(logLine[2]) > -1) {
+      else if (logLine[2] == "loses") {
         if (statustime.mitigation <= Date.now()) {
           delete statustime.mitigation;
           warMitigation();

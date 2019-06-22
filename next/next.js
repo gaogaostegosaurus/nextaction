@@ -2,14 +2,14 @@
 
 var recast = {};
 var statuslength = {};
-var cooldowntime = {};
-var statustime = {};
+var cooldowntime = {};        // Timestamp for cooldowns
+var statustime = {};          // Timestamp for statuses
 
 var buffertime = {};
-var timeout = {};
-var id = {};
-var icon = {};
-var toggle = {};
+var timeout = {};             // For timeout variables
+var id = {};                  // Store document id - location on page for icons, etc.
+var icon = {};                // Store icon name
+var toggle = {};              // Toggley things
 var previous = {};
 var next = {};
 

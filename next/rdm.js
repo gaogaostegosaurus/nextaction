@@ -11,11 +11,11 @@ statusList.rdm = ["Dualcast", "Verfire Ready", "Verstone Ready", "Impactful", "S
 buffertime.impactful = 10000;
 
 id.riposte = "nextAction1";
-id.moulinet = "nextAction1";
+id.moulinet = id.riposte;
 id.zwerchhau = "nextAction2";
 id.redoublement = "nextAction3";
 id.verflare = "nextAction4";
-id.verholy = "nextAction4";
+id.verholy = id.verflare;
 id.hardcast = "nextAction5";
 id.dualcast = "nextAction6";
 id.manafication = "nextAction11";
@@ -265,10 +265,10 @@ function rdmStatus(logLine) {
   // To anyone from anyone (non-stacking)
 
   if (logLine[3] == "test status") {
-    if (["gain","gains"].indexOf(logLine[2]) > -1) {
+    if (logLine[2] == "gains") {
       statustime.test = Date.now() + parseInt(logLine[5]) * 1000;
     }
-    else if (["lose","loses"].indexOf(logLine[2]) > -1) {
+    else if (logLine[2] == "loses") {
       delete statustime.test;
     }
   }
@@ -278,11 +278,11 @@ function rdmStatus(logLine) {
   else if (logLine[1] == player.name) {
 
     if (logLine[3] == "Dualcast") {
-      if (["gain","gains"].indexOf(logLine[2]) > -1) {
+      if (logLine[2] == "gains") {
         statustime.dualcast = Date.now() + parseInt(logLine[5]) * 1000;
         removeIcon(id.hardcast);
       }
-      else if (["lose","loses"].indexOf(logLine[2]) > -1) {
+      else if (logLine[2] == "loses") {
         delete statustime.dualcast;
         removeIcon(id.dualcast);
         rdmDualcast();
@@ -290,39 +290,39 @@ function rdmStatus(logLine) {
     }
 
     else if (logLine[3] == "Verfire Ready") {
-      if (["gain","gains"].indexOf(logLine[2]) > -1) {
+      if (logLine[2] == "gains") {
         statustime.verfireready = Date.now() + parseInt(logLine[5]) * 1000;
         rdmDualcast();
       }
-      else if (["lose","loses"].indexOf(logLine[2]) > -1) {
+      else if (logLine[2] == "loses") {
         delete statustime.verfireready;
       }
     }
 
     else if (logLine[3] == "Verstone Ready") {
-      if (["gain","gains"].indexOf(logLine[2]) > -1) {
+      if (logLine[2] == "gains") {
         statustime.verstoneready = Date.now() + parseInt(logLine[5]) * 1000;
         rdmDualcast();
       }
-      else if (["lose","loses"].indexOf(logLine[2]) > -1) {
+      else if (logLine[2] == "loses") {
         delete statustime.verstoneready;
       }
     }
 
     else if (logLine[3] == "Impactful") {
-      if (["gain","gains"].indexOf(logLine[2]) > -1) {
+      if (logLine[2] == "gains") {
         statustime.impactful = Date.now() + parseInt(logLine[5]) * 1000;
       }
-      else if (["lose","loses"].indexOf(logLine[2]) > -1) {
+      else if (logLine[2] == "loses") {
         delete statustime.impactful;
       }
     }
 
     else if (logLine[3] == "Swiftcast") {
-      if (["gain","gains"].indexOf(logLine[2]) > -1) {
+      if (logLine[2] == "gains") {
         statustime.swiftcast = Date.now() + parseInt(logLine[5]) * 1000;
       }
-      else if (["lose","loses"].indexOf(logLine[2]) > -1) {
+      else if (logLine[2] == "loses") {
         delete statustime.swiftcast;
         rdmDualcast();
       }
@@ -335,10 +335,10 @@ function rdmStatus(logLine) {
   && logLine[4] == player.name) {
 
     if (logLine[3] == "test") {
-      if (["gain","gains"].indexOf(logLine[2]) > -1) {
+      if (logLine[2] == "gains") {
         statustime.test = Date.now() + parseInt(logLine[5]) * 1000;
       }
-      else if (["lose","loses"].indexOf(logLine[2]) > -1) {
+      else if (logLine[2] == "loses") {
         delete statustime.test;
       }
     }

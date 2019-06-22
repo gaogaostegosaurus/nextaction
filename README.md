@@ -22,3 +22,7 @@ Some features that should work:
 - Shows next optimal combo, adjusts for manual/incorrect inputs
 - Shows spender notice when about to overcap
 - Shows mitigation notice when no mitigation up but one is available
+
+
+Stuff to be done:
+- More consistent bitmasks for miss/combo stuff

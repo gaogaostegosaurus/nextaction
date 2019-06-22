@@ -328,7 +328,7 @@ function brdStatus(logLine) {
   if (logLine[1] == player.name
   && logLine[4] == player.name) { // From self to self
 
-    if (["gain","gains"].indexOf(logLine[2]) > -1) {
+    if (logLine[2] == "gains") {
 
       addText("debug","Gains " + logLine[3] + " for " + logLine[5] + " seconds");
 
@@ -360,7 +360,7 @@ function brdStatus(logLine) {
       }
     }
 
-    else if (["lose","loses"].indexOf(logLine[2]) > -1) {
+    else if (logLine[2] == "loses") {
 
       addText("debug","Loses " + logLine[3]);
 
@@ -386,7 +386,7 @@ function brdStatus(logLine) {
 
   else if (logLine[4] == player.name) { // From self
 
-    if (["gain","gains"].indexOf(logLine[2]) > -1) {
+    if (logLine[2] == "gains") {
 
       addText("debug","Gains " + logLine[3] + " (" + logLine[1] + ")");
 
@@ -406,7 +406,7 @@ function brdStatus(logLine) {
       }
     }
 
-    else if (["lose","loses"].indexOf(logLine[2]) > -1) {
+    else if (logLine[2] == "loses") {
 
       addText("debug","Loses " + logLine[3] + " (" + logLine[1] + ")");
 

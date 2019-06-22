@@ -36,7 +36,7 @@ function mnkAction(logLine) {
     else if (logLine[3] == "Dragon Kick" && logLine[6].length >= 2) {
       removeIcon(id.dragonkick);
       if (toggle.stance == 3) {
-        status.bluntresistancedown == Date.now + 15000;
+        statustime.bluntresistancedown == Date.now + 15000;
       }
       toggle.stance = 1;
     }
@@ -80,10 +80,10 @@ function mnkStatus(logLine) {
   // To anyone from anyone (non-stacking)
 
   if (logLine[3] == "Blunt Resistance Down") {
-    if (["gain","gains"].indexOf(logLine[2]) > -1) {
+    if (logLine[2] == "gains") {
       statustime.bluntresistancedown = Date.now() + parseInt(logLine[5]) * 1000;
     }
-    else if (["lose","loses"].indexOf(logLine[2]) > -1) {
+    else if (logLine[2] == "loses") {
       delete statustime.bluntresistancedown;
     }
   }
@@ -93,10 +93,10 @@ function mnkStatus(logLine) {
   else if (logLine[1] == player.name) {
 
     if (logLine[3] == "Twin Snakes") {
-      if (["gain","gains"].indexOf(logLine[2]) > -1) {
+      if (logLine[2] == "gains") {
         statustime.twinsnakes = Date.now() + parseInt(logLine[5]) * 1000;
       }
-      else if (["lose","loses"].indexOf(logLine[2]) > -1) {
+      else if (logLine[2] == "loses") {
         delete statustime.twinsnakes;
       }
     }
@@ -108,10 +108,10 @@ function mnkStatus(logLine) {
   && logLine[4] == player.name) {
 
     if (logLine[3] == "Demolish") {
-      if (["gain","gains"].indexOf(logLine[2]) > -1) {
+      if (logLine[2] == "gains") {
         statustime.demolish = Date.now() + parseInt(logLine[5]) * 1000;
       }
-      else if (["lose","loses"].indexOf(logLine[2]) > -1) {
+      else if (logLine[2] == "loses") {
         delete statustime.demolish;
       }
     }

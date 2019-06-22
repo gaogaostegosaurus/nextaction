@@ -318,10 +318,10 @@ function samStatus(logLine) {
   // To anyone from anyone (non-stacking)
 
   if (logLine[3] == "Slashing Resistance Down") {
-    if (["gain","gains"].indexOf(logLine[2]) > -1) {
+    if (logLine[2] == "gains") {
       statustime.slashingresistancedown = Date.now() + parseInt(logLine[5]) * 1000;
     }
-    else if (["lose","loses"].indexOf(logLine[2]) > -1) {
+    else if (logLine[2] == "loses") {
       delete statustime.slashingresistancedown;
     }
   }
@@ -331,38 +331,38 @@ function samStatus(logLine) {
   else if (logLine[1] == player.name) {
 
     if (logLine[3] == "Jinpu") {
-      if (["gain","gains"].indexOf(logLine[2]) > -1) {
+      if (logLine[2] == "gains") {
         statustime.jinpu = Date.now() + parseInt(logLine[5]) * 1000;
       }
-      else if (["lose","loses"].indexOf(logLine[2]) > -1) {
+      else if (logLine[2] == "loses") {
         delete statustime.jinpu;
       }
     }
 
     else if (logLine[3] == "Shifu") {
-      if (["gain","gains"].indexOf(logLine[2]) > -1) {
+      if (logLine[2] == "gains") {
         statustime.shifu = Date.now() + parseInt(logLine[5]) * 1000;
       }
-      else if (["lose","loses"].indexOf(logLine[2]) > -1) {
+      else if (logLine[2] == "loses") {
         delete statustime.shifu;
       }
     }
 
     else if (logLine[3] == "Meikyo Shisui") {
-      if (["gain","gains"].indexOf(logLine[2]) > -1) {
+      if (logLine[2] == "gains") {
         statustime.meikyoshisui = Date.now() + parseInt(logLine[5]) * 1000;
       }
-      else if (["lose","loses"].indexOf(logLine[2]) > -1) {
+      else if (logLine[2] == "loses") {
         delete statustime.meikyoshisui;
         samCombo();
       }
     }
 
     else if (logLine[3] == "Hissatsu: Kaiten") {
-      if (["gain","gains"].indexOf(logLine[2]) > -1) {
+      if (logLine[2] == "gains") {
         statustime.kaiten = Date.now() + parseInt(logLine[5]) * 1000;
       }
-      else if (["lose","loses"].indexOf(logLine[2]) > -1) {
+      else if (logLine[2] == "loses") {
         delete statustime.kaiten;
       }
     }
@@ -374,10 +374,10 @@ function samStatus(logLine) {
   && logLine[4] == player.name) {
 
     if (logLine[3] == "Higanbana") {
-      if (["gain","gains"].indexOf(logLine[2]) > -1) {
+      if (logLine[2] == "gains") {
         statustime.higanbana = Date.now() + parseInt(logLine[5]) * 1000;
       }
-      else if (["lose","loses"].indexOf(logLine[2]) > -1) {
+      else if (logLine[2] == "loses") {
         delete statustime.higanbana;
       }
     }
