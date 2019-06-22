@@ -1,0 +1,301 @@
+<html>
+<head>
+  <title></title>
+  <meta charset="utf-8" />
+
+  <!-- OverlayPlugin widget resize handle -->
+  <link rel="stylesheet" href="../../resources/defaults.css">
+  <link rel="stylesheet" href="../../resources/resize_handle.css">
+  <script src="../../resources/resize_handle.js"></script>
+  <script src="test.js"></script>
+
+  <style>
+    body, html {
+      margin: 0;
+    }
+    html {
+      height: 100%;
+      overflow: hidden;
+      background-color: transparent;
+
+      /* FFXIV font look */
+      font-family: "Meiryo";
+      font-size: 12px;
+      text-shadow: -1px 0 3px #217AA2, 0 1px 3px #217AA2, 1px 0 3px #217AA2, 0 -1px 3px #217AA2;
+      font-weight: 300;
+      color: #E2EBF5;
+    }
+    div {
+      overflow: hidden;
+      padding-left: 2px;
+      padding-right: 2px;
+    }
+  </style>
+  <script>
+  
+    var playerName = "";
+    var queenCounter = 0;
+    var taximCounter = 0;
+    var ashCounter = 0;
+    var glavoidCounter = 0;
+    var anaposCounter = 0;
+    var hakuCounter = 0;
+    var iglooCounter = 0;
+    var asagCounter = 0;
+    var suraCounter = 0;
+    var arthroCounter = 0;
+    var brothersCounter = 0;
+    var cowCounter = 0;
+    var hadhaCounter = 0;
+    var horusCounter = 0;
+    var angraCounter = 0;
+    var cassieCounter = 0;
+    var louhiCounter = 0;
+    var nmNames;
+    
+    document.addEventListener("onPlayerChangedEvent", function (e) {
+    
+          playerName = e.detail.name;
+          
+          });
+
+    document.addEventListener("onLogEvent", function(e) 
+    {
+      
+      var placeholderNames = "Yukinko|Demon Of The Incunable|Blood Demon|Val Worm|Snowmelt Sprite|Blubber Eyes|Huwasi|Wandering Opken|Pagos Billygoat|Val Snipper|Lab Minotaur|Elder Buffalo|Lesser Void Dragon|Void Vouivre|Gawper|Ameretat|Val Corpse"
+      var nmNames = "Sabotender Corrido|Lord Of Anemos|Teles|Emperor Of Anemos|Callisto|Number|Jahannam|Amemet|Caym|Bombadeel|Serket|Judgmental Julika|The White Rider|Polyphemus|Simurgh's Strider|King Hazmat|Fafnir|Amarok|Lamashtu|Pazuzu"
+      // nmNames = ""
+      var placeholderExp = RegExp(' [\\dA-F]{2}:(' + placeholderNames + ') was defeated by (.*)\\.');
+      //[16:48:42.862] 19:Yukinko was defeated by Lyn Tah'row.
+      for (var i = 0; i < e.detail.logs.length; i++) 
+      {              
+      
+      var placeholderLine = e.detail.logs[i].match(placeholderExp); // find match for mob deletion
+      var nmLine = e.detail.logs[i].match('04:Removing combatant (' + nmNames + ')'); // find match for nm pop
+
+        if (placeholderLine) 
+        {
+          
+          if (placeholderLine[1] == "Yukinko")
+          {
+            queenCounter += 1;
+          } 
+
+          else if (placeholderLine[1] == "Demon Of The Incunable")
+          {
+            taximCounter += 1;
+          }
+
+          else if (placeholderLine[1] == "Blood Demon")
+          {
+            ashCounter += 1;
+          }
+
+          else if (placeholderLine[1] == "Val Worm")
+          {
+            glavoidCounter += 1;
+          }
+
+          else if (placeholderLine[1] == "Snowmelt Sprite")
+          {
+            anaposCounter += 1;
+          }
+
+          else if (placeholderLine[1] == "Blubber Eyes")
+          {
+            hakuCounter += 1;
+          }
+
+          else if (placeholderLine[1] == "Huwasi")
+          {
+            iglooCounter += 1;
+          }
+
+          else if (placeholderLine[1] == "Wandering Opken")
+          {
+            asagCounter += 1;
+          }
+          
+          else if (placeholderLine[1] == "Pagos Billygoat")
+          {
+            suraCounter += 1;
+          }
+          
+          else if (placeholderLine[1] == "Val Snipper")
+          {
+            arthroCounter += 1;
+          }
+          
+          else if (placeholderLine[1] == "Lab Minotaur")
+          {
+            brothersCounter += 1;
+          }
+          
+          else if (placeholderLine[1] == "Elder Buffalo")
+          {
+            cowCounter += 1;
+          }
+          
+          else if (placeholderLine[1] == "Lesser Void Dragon")
+          {
+            hadhaCounter += 1;
+          }
+          
+          else if (placeholderLine[1] == "Void Vouivre")
+          {
+            horusCounter += 1;
+          }
+          
+          else if (placeholderLine[1] == "Gawper")
+          {
+            angraCounter += 1;
+          }
+          
+          else if (placeholderLine[1] == "Ameretat")
+          {
+            cassieCounter += 1;
+          }
+
+          else if (placeholderLine[1] == "Val Corpse")
+          {
+            louhiCounter += 1;
+          }
+
+        }
+      
+        if (nmLine) 
+        {
+
+          if (nmLine[1] == "The Snow Queen")
+          {
+            queenCounter = 0;
+          }
+
+          else if (placeholderLine[1] == "Demon of the Incunable")
+          {
+            taximCounter += 1;
+          }
+
+          else if (placeholderLine[1] == "Blood Demon")
+          {
+            ashCounter += 1;
+          }
+
+          else if (placeholderLine[1] == "Val Worm")
+          {
+            glavoidCounter += 1;
+          }
+
+          else if (placeholderLine[1] == "Snowmelt Sprite")
+          {
+            anaposCounter += 1;
+          }
+
+          else if (placeholderLine[1] == "Blubber Eyes")
+          {
+            hakuCounter += 1;
+          }
+
+          else if (placeholderLine[1] == "Huwasi")
+          {
+            iglooCounter += 1;
+          }
+
+          else if (placeholderLine[1] == "Wandering Opken")
+          {
+            asagCounter += 1;
+          }
+          
+          else if (placeholderLine[1] == "Pagos Billygoat")
+          {
+            suraCounter += 1;
+          }
+          
+          else if (placeholderLine[1] == "Val Snippers")
+          {
+            arthroCounter += 1;
+          }
+          
+          else if (placeholderLine[1] == "Lab Minotaur")
+          {
+            brothersCounter += 1;
+          }
+          
+          else if (placeholderLine[1] == "Elder Buffalo")
+          {
+            cowCounter += 1;
+          }
+          
+          else if (placeholderLine[1] == "Lesser Void Dragon")
+          {
+            hadhaCounter += 1;
+          }
+          
+          else if (placeholderLine[1] == "Void Vouivre")
+          {
+            horusCounter += 1;
+          }
+          
+          else if (placeholderLine[1] == "Gawper")
+          {
+            angraCounter += 1;
+          }
+          
+          else if (placeholderLine[1] == "Ameretat")
+          {
+            cassieCounter += 1;
+          }
+          
+          else if (placeholderLine[1] == "Val Corpse")
+          {
+            louhiCounter += 1;
+          }
+
+        }
+
+
+
+
+      
+      }
+        
+        document.getElementById("nm1").innerText = "Yukinko: " + queenCounter;
+        document.getElementById("nm2").innerText = "Demon of the Incunable: " + taximCounter;
+        document.getElementById("nm3").innerText = "Blood Demon: " + ashCounter;
+        document.getElementById("nm4").innerText = "Val Worm: " + glavoidCounter;
+        document.getElementById("nm5").innerText = "Snowmelt Sprite: " + anaposCounter;
+        document.getElementById("nm6").innerText = "Blubber Eyes: " + hakuCounter;
+        document.getElementById("nm7").innerText = "Huwasi: " + iglooCounter;
+        document.getElementById("nm8").innerText = "Wandering Opken: " + asagCounter;
+        document.getElementById("nm9").innerText = "Pagos Billygoat: " + suraCounter;
+        document.getElementById("nm10").innerText = "Val Snippers: " + arthroCounter;
+        document.getElementById("nm11").innerText = "Lab Minotaur: " + brothersCounter;
+        document.getElementById("nm12").innerText = "Elder Buffalo: " + cowCounter;
+        document.getElementById("nm13").innerText = "Lesser Void Dragon: " + hadhaCounter;
+        document.getElementById("nm14").innerText = "Void Vouivre: " + horusCounter;
+        document.getElementById("nm15").innerText = "Gawper: " + angraCounter;
+        document.getElementById("nm16").innerText = "Ameretat: " + cassieCounter;
+        document.getElementById("nm17").innerText = "Val Corpse: " + louhiCounter;
+        });
+  </script>
+</head>
+<body>
+    <div><span id="nm1"></span></div>
+    <div><span id="nm2"></span></div>
+    <div><span id="nm3"></span></div>
+    <div><span id="nm4"></span></div>
+    <div><span id="nm5"></span></div>
+    <div><span id="nm6"></span></div>
+    <div><span id="nm7"></span></div>
+    <div><span id="nm8"></span></div>
+    <div><span id="nm9"></span></div>
+    <div><span id="nm10"></span></div>
+    <div><span id="nm11"></span></div>
+    <div><span id="nm12"></span></div>
+    <div><span id="nm13"></span></div>
+    <div><span id="nm14"></span></div>
+    <div><span id="nm15"></span></div>
+    <div><span id="nm16"></span></div>
+    <div><span id="nm17"></span></div>
+</body>
+</html>
