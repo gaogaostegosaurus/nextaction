@@ -186,7 +186,9 @@ function ninStatus(logLine) {
     }
   }
 
+  
   else if (logLine[1] == player.name) {
+
     if (logLine[3] == "Mudra") {
       if (logLine[2] == "gains") {
         statustime.mudra = Date.now() + parseInt(logLine[5]) * 1000;
@@ -584,7 +586,7 @@ function clearNinjutsu() {
   removeIcon(id.mudra2);
   removeIcon(id.mudra3);
   removeIcon(id.ninjutsu);
-  toggle.mudra = "";
+  delete toggle.mudra;
 }
 
 icon.spinningedge = "000601";

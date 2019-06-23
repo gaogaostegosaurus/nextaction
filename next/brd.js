@@ -16,10 +16,12 @@ id.windbite = "nextAction3";
 id.venomousbite = "nextAction4";
 id.openingstraightshot = "nextAction5";
 id.straightershot = "nextAction6";
-id.refulgentarrow = "nextAction6";
+id.refulgentarrow = id.straightershot;
 id.heavyshot = "nextAction7";
 
-id.song = "nextAction11";
+id.ballad = "nextAction11";
+id.paeon = id.ballad;
+id.minuet = id.ballad;
 id.pitchperfect = "nextAction12";
 id.empyrealarrow = "nextAction13";
 id.sidewinder = "nextAction14";
@@ -101,15 +103,15 @@ function brdInCombatChangedEvent(e) { // Fires when player enters combat
     && (!cooldowntime.ragingstrikes || cooldowntime.ragingstrikes - Date.now() < 0)
     && (!cooldowntime.barrage || cooldowntime.barrage - Date.now() < 0)
     && (!cooldowntime.minuet || cooldowntime.minuet - Date.now() < 0)) {
-      addIcon(id.song,icon.minuet);
+      addIcon(id.ballad,icon.minuet);
     }
     else if (player.level >= 30
     && (!cooldowntime.ballad || cooldowntime.ballad - Date.now() < 0)) {
-      addIcon(id.song,icon.ballad);
+      addIcon(id.ballad,icon.ballad);
     }
     else if (player.level >= 40
     && (!cooldowntime.paeon || cooldowntime.paeon - Date.now() < 0)) {
-      addIcon(id.song,icon.paeon);
+      addIcon(id.ballad,icon.paeon);
     }
   }
 
@@ -257,7 +259,7 @@ function brdAction(logLine) {
     else if (logLine[3] == "Mage's Ballad") {
       cooldowntime.ballad = Date.now() + recast.ballad;
       statustime.song = Date.now() + 30000;
-      removeIcon(id.song);
+      removeIcon(id.ballad);
       songRotation();
     }
 
@@ -271,14 +273,14 @@ function brdAction(logLine) {
         statustime.song = Date.now() + 30000;
       }
 
-      removeIcon(id.song);
+      removeIcon(id.ballad);
       songRotation();
     }
 
     else if (logLine[3] == "The Wanderer's Minuet") {
       cooldowntime.minuet = Date.now() + recast.minuet;
       statustime.song = Date.now() + 30000;
-      removeIcon(id.song);
+      removeIcon(id.ballad);
       songRotation();
     }
 
@@ -475,30 +477,30 @@ function songRotation() {
   // Shows next song
   if (player.level >= 52) {
     if (Math.max(cooldowntime.minuet,cooldowntime.barrage,cooldowntime.ragingstrikes) <= Math.min(cooldowntime.ballad, cooldowntime.paeon)) {
-      addIconWithTimeout("song",Math.max(statustime.song,cooldowntime.ragingstrikes,cooldowntime.barrage,cooldowntime.minuet) - Date.now(),id.song,icon.minuet);
+      addIconWithTimeout("song",Math.max(statustime.song,cooldowntime.ragingstrikes,cooldowntime.barrage,cooldowntime.minuet) - Date.now(),id.ballad,icon.minuet);
       addText("debug",Math.max(statustime.song,cooldowntime.ragingstrikes,cooldowntime.barrage,cooldowntime.minuet) - Date.now())
     }
     else if (cooldowntime.ballad <= cooldowntime.paeon) {
-      addIconWithTimeout("song",Math.max(statustime.song,cooldowntime.ballad) - Date.now(),id.song,icon.ballad);
+      addIconWithTimeout("song",Math.max(statustime.song,cooldowntime.ballad) - Date.now(),id.ballad,icon.ballad);
       addText("debug",Math.max(statustime.song,cooldowntime.ballad) - Date.now());
     }
     else {
-      addIconWithTimeout("song",Math.max(statustime.song,cooldowntime.paeon) - Date.now(),id.song,icon.paeon);
+      addIconWithTimeout("song",Math.max(statustime.song,cooldowntime.paeon) - Date.now(),id.ballad,icon.paeon);
       addText("debug",Math.max(statustime.song,cooldowntime.paeon) - Date.now());
     }
   }
 
   else if (player.level >= 40) {
     if (cooldowntime.ballad < cooldowntime.paeon) {
-      addIconWithTimeout("song",Math.max(statustime.song, cooldowntime.ballad) - Date.now(),id.song,icon.ballad);
+      addIconWithTimeout("song",Math.max(statustime.song, cooldowntime.ballad) - Date.now(),id.ballad,icon.ballad);
     }
     else {
-      addIconWithTimeout("song",Math.max(statustime.song, cooldowntime.paeon) - Date.now(),id.song,icon.paeon);
+      addIconWithTimeout("song",Math.max(statustime.song, cooldowntime.paeon) - Date.now(),id.ballad,icon.paeon);
     }
   }
 
   else if (player.level >= 30) {
-    addIconWithTimeout("song",Math.max(statustime.song, cooldowntime.ballad) - Date.now(),id.song,icon.ballad);
+    addIconWithTimeout("song",Math.max(statustime.song, cooldowntime.ballad) - Date.now(),id.ballad,icon.ballad);
   }
 }
 

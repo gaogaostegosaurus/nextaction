@@ -7,11 +7,11 @@ statusList.mnk = ["Twin Snakes",
   "Blunt Resistance Down"];
 
 id.bootshine = "nextAction1";
-id.dragonkick = "nextAction1";
+id.dragonkick = id.bootshine;
 id.truestrike = "nextAction2";
-id.twinsnakes = "nextAction2";
+id.twinsnakes = id.truestrike;
 id.snappunch = "nextAction3";
-id.demolish = "nextAction3";
+id.demolish = id.snappunch;
 
 icon.bootshine = "000208";
 icon.dragonkick = "002528";
