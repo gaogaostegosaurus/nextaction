@@ -294,7 +294,7 @@ function brdAction(logLine) {
         recast.empyrealarrow = Date.now() - previous.empyrealarrow;
       }
 
-      // addText("debug","EA recast: " + recast.empyrealarrow);
+      // addText("debug1","EA recast: " + recast.empyrealarrow);
 
       previous.empyrealarrow = Date.now();
       cooldowntime.empyrealarrow = Date.now() + recast.empyrealarrow;
@@ -332,7 +332,7 @@ function brdStatus(logLine) {
 
     if (logLine[2] == "gains") {
 
-      addText("debug","Gains " + logLine[3] + " for " + logLine[5] + " seconds");
+      addText("debug1","Gains " + logLine[3] + " for " + logLine[5] + " seconds");
 
       if (logLine[3] == "Straight Shot") {
         statustime.straightshot = Date.now() + parseInt(logLine[5]) * 1000;
@@ -364,7 +364,7 @@ function brdStatus(logLine) {
 
     else if (logLine[2] == "loses") {
 
-      addText("debug","Loses " + logLine[3]);
+      addText("debug1","Loses " + logLine[3]);
 
       if (logLine[3] == "Straight Shot") {
         delete statustime.straightshot;
@@ -390,7 +390,7 @@ function brdStatus(logLine) {
 
     if (logLine[2] == "gains") {
 
-      addText("debug","Gains " + logLine[3] + " (" + logLine[1] + ")");
+      addText("debug1","Gains " + logLine[3] + " (" + logLine[1] + ")");
 
       if (["Venomous Bite","Caustic Bite"].indexOf(logLine[3]) > -1) {
         statustime.venomousbite = Date.now() + parseInt(logLine[5]) * 1000;
@@ -410,7 +410,7 @@ function brdStatus(logLine) {
 
     else if (logLine[2] == "loses") {
 
-      addText("debug","Loses " + logLine[3] + " (" + logLine[1] + ")");
+      addText("debug1","Loses " + logLine[3] + " (" + logLine[1] + ")");
 
       if (["Venomous Bite","Caustic Bite"].indexOf(logLine[3]) > -1) {
         delete statustime.venomousbite;
@@ -478,15 +478,15 @@ function songRotation() {
   if (player.level >= 52) {
     if (Math.max(cooldowntime.minuet,cooldowntime.barrage,cooldowntime.ragingstrikes) <= Math.min(cooldowntime.ballad, cooldowntime.paeon)) {
       addIconWithTimeout("song",Math.max(statustime.song,cooldowntime.ragingstrikes,cooldowntime.barrage,cooldowntime.minuet) - Date.now(),id.ballad,icon.minuet);
-      addText("debug",Math.max(statustime.song,cooldowntime.ragingstrikes,cooldowntime.barrage,cooldowntime.minuet) - Date.now())
+      addText("debug1",Math.max(statustime.song,cooldowntime.ragingstrikes,cooldowntime.barrage,cooldowntime.minuet) - Date.now())
     }
     else if (cooldowntime.ballad <= cooldowntime.paeon) {
       addIconWithTimeout("song",Math.max(statustime.song,cooldowntime.ballad) - Date.now(),id.ballad,icon.ballad);
-      addText("debug",Math.max(statustime.song,cooldowntime.ballad) - Date.now());
+      addText("debug1",Math.max(statustime.song,cooldowntime.ballad) - Date.now());
     }
     else {
       addIconWithTimeout("song",Math.max(statustime.song,cooldowntime.paeon) - Date.now(),id.ballad,icon.paeon);
-      addText("debug",Math.max(statustime.song,cooldowntime.paeon) - Date.now());
+      addText("debug1",Math.max(statustime.song,cooldowntime.paeon) - Date.now());
     }
   }
 

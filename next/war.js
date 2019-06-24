@@ -96,8 +96,6 @@ function warPlayerChangedEvent(e) {
 
 function warAction(logLine) {
 
-  // addText("debug",logLine[3]);
-
   if (logLine[2] == player.name) {
 
     if (logLine[3] == "Berserk"
@@ -222,6 +220,8 @@ function warAction(logLine) {
 
 function warStatus(logLine) {
 
+  addText("debug1", logLine[1] + " " + logLine[2] + " " + logLine[3]);
+
   if (logLine[3] == "Slashing Resistance Down") {
     if (logLine[2] == "gains") {
       statustime.slashingresistancedown = Date.now() + parseInt(logLine[5]) * 1000;
@@ -344,7 +344,7 @@ function warMitigation() {
 
   // Vengeance > Rampart > Raw Intuition
 
-  // addText("debug","");
+  // addText("debug1","");
 
   if (player.level >= 46
   && (!cooldowntime.vengeance)) {
@@ -411,49 +411,33 @@ function warCombo() {
 
 function warSpender() {
 
-  if (player.jobDetail.beast >= 50) {
+  // Set gauge target/cap
 
-    if (toggle.stance == 2 && player.level >= 54) {
-      if (player.level >= 70 && cooldowntime.infuriate - Date.now() < 30000 && cooldowntime.berserk - Date.now() < 3000) {
-        addIcon(id.innerbeast,icon.fellcleave);
-      }
-      else if (player.jobDetail.beast >= 90) {
-        addIcon(id.innerbeast,icon.fellcleave);
-      }
-      else if (cooldowntime.infuriate - Date.now() < 6000) {
-        addIcon(id.innerbeast,icon.fellcleave);
-      }
-      else {
-        removeIcon(id.innerbeast);
-      }
-    }
-
-    else if (player.level >= 35) {
-      if (player.jobDetail.beast >= 90) {
-        addIcon(id.innerbeast,icon.innerbeast);
-      }
-      else if (player.level >= 66 && cooldowntime.infuriate - Date.now() < 6000) {
-        addIcon(id.innerbeast,icon.innerbeast);
-      }
-      else if (statustime.mitigation - Date.now() < 2000 && statustime.unchained - Date.now() < 0 ) { // Fewer spenders under Unchained
-        addIcon(id.innerbeast,icon.innerbeast);
-      }
-      else {
-        removeIcon(id.innerbeast);
-      }
-    }
+  if (player.level >= 50
+  && cooldowntime.infuriate - Date.now() < 5000) {
+    gauge.target = 50;
+  }
+  else if (player.level >= 70
+  && cooldowntime.berserk - Date.now() < 5000
+  && cooldowntime.infuriate - Date.now() < 30000) {
+    gauge.target = 50;
+  }
+  else if (player.level >= 70
+  && statustime.berserk - Date.now() > 0) {
+    gauge.target = 0;
+  }
+  else {
+    gauge.target = 90;
   }
 
-  else if (player.level >= 70 && statustime.berserk - Date.now() > 0) {
-
-    if (toggle.stance == 2) {
-      addIcon(id.innerbeast,icon.fellcleave);
+  if (player.jobDetail.beast >= gauge.target) {
+    if (toggle.stance == 2 && player.level >= 54) {
+      addIcon(id.fellcleave,icon.fellcleave);
     }
-    else {
+    else if (toggle.stance == 1 && player.level >= 35) {
       addIcon(id.innerbeast,icon.innerbeast);
     }
   }
-
   else {
     removeIcon(id.innerbeast);
   }

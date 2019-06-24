@@ -5,6 +5,7 @@ var statuslength = {};
 var cooldowntime = {};        // Timestamp for cooldowns
 var statustime = {};          // Timestamp for statuses
 
+var gauge = {};
 var buffertime = {};
 var timeout = {};             // For timeout variables
 var id = {};                  // Store document id - location on page for icons, etc.
@@ -134,6 +135,9 @@ document.addEventListener("onInCombatChangedEvent", function(e) {
     if (player.job == "BRD") {
       brdInCombatChangedEvent(e);
     }
+    else if (player.job == "RDM") {
+      rdmInCombatChangedEvent(e);
+    }
   }
 });
 
@@ -229,7 +233,10 @@ function clearElements() {
   document.getElementById("nextAction24").src = "";
   document.getElementById("nextAction25").src = "";
   document.getElementById("nextAction26").src = "";
-  document.getElementById("debug").innerText = "";
+  document.getElementById("debug1").innerText = "";
+  document.getElementById("debug2").innerText = "";
+  document.getElementById("debug3").innerText = "";
+
 }
 
 function timeoutCombo() {

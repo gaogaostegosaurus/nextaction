@@ -94,6 +94,9 @@ function rdmPlayerChangedEvent(e) {
   if (player.level >= 64) {
     icon.jolt = icon.jolt2;
   }
+  else {
+    icon.jolt = "003202";
+  }
 
   // Low MP notice
 
@@ -112,12 +115,12 @@ function rdmPlayerChangedEvent(e) {
   && (!cooldowntime.manafication || cooldowntime.manafication - Date.now() < 0)
   && !toggle.combo) {
 
-    // Don't use over 65/65
-    if (Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 65) {
+    // Don't use Manafication if more than 28 away from 50/50
+    if (player.jobDetail.blackMana - 50 + player.jobDetail.whiteMana - 50 > 28) {
       removeIcon(id.manafication);
     }
 
-    // AOE
+    // Use if able to get 3x Moulinet for AOE
     else if (toggle.aoe
     && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 45) {
       addIcon(id.manafication,icon.manafication);
@@ -149,6 +152,7 @@ function rdmPlayerChangedEvent(e) {
     }
 
     else {
+      // Hide otherwise?
       removeIcon(id.manafication);
     }
   }
@@ -164,7 +168,7 @@ function rdmAction(logLine) {
       toggle.aoe = Date.now();
     }
     else if (["Jolt", "Verfire", "Verstone", "Jolt II", "Impact", "Enchanted Riposte", "Enchanted Zwerchhau", "Enchanted Redoublement"].indexOf(logLine[3]) > -1) {
-      delete toggle.combo;
+      delete toggle.aoe;
     }
 
     // These actions don't interrupt combos
@@ -175,7 +179,7 @@ function rdmAction(logLine) {
       addIconWithTimeout("acceleration",recast.acceleration,id.acceleration,icon.acceleration);
     }
 
-    else if (logLine[3] == "Contresixte") {
+    else if (logLine[3] == "Contre Sixte") {
       cooldowntime.contresixte = Date.now() + recast.contresixte;
       removeIcon(id.contresixte);
       addIconWithTimeout("contresixte",recast.contresixte,id.contresixte,icon.contresixte);
@@ -235,6 +239,11 @@ function rdmAction(logLine) {
 
       delete toggle.combo;
 
+      removeIcon(id.riposte);
+      removeIcon(id.zwerchhau);
+      removeIcon(id.redoublement);
+      removeIcon(id.verflare);
+
       if (logLine[3] == "Jolt II"
       && player.level >= 66) {
         statustime.impactful = Date.now() + 30000;
@@ -271,6 +280,8 @@ function rdmAction(logLine) {
 
 
 function rdmStatus(logLine) {
+
+  addText("debug1", logLine[1] + " " + logLine[2] + " " + logLine[3]);
 
   // To anyone from anyone (non-stacking)
 
@@ -331,6 +342,7 @@ function rdmStatus(logLine) {
     else if (logLine[3] == "Swiftcast") {
       if (logLine[2] == "gains") {
         statustime.swiftcast = Date.now() + parseInt(logLine[5]) * 1000;
+        removeIcon(id.hardcast);
       }
       else if (logLine[2] == "loses") {
         delete statustime.swiftcast;
@@ -357,170 +369,172 @@ function rdmStatus(logLine) {
 
 function rdmDualcast() {
 
-  // Fixing mana before combos
+  // Set gauge target/cap
 
-  // Set up for Manafication - priority is Verholy
+  if (player.level < 35) {
+    gauge.target = 30;
+    gauge.cap = 100;
+  }
+  else if (player.level < 50) {
+    gauge.target = 55;
+    gauge.cap = 100;
+  }
+  else if (player.level >= 60
+  && player.jobDetail.blackMana + player.jobDetail.whiteMana - 100 <= 28
+  && (!cooldowntime.manafication || cooldowntime.manafication - Date.now() < 0)) {
+    addText("debug2", "Gauge target: 43 | Gauge cap: 50");
+    gauge.target = 43;
+    gauge.cap = 50;
+  }
+  else {
+    addText("debug2", "Gauge target: 80 | Gauge cap: 100");
+    gauge.target = 80;
+    gauge.cap = 100;
+  }
+
+  // Activate combo if already set up
 
   if (player.level >= 70
-  && player.jobDetail.whiteMana + 9 >= 43
-  && player.jobDetail.blackMana + 11 > player.jobDetail.whiteMana + 9
-  && statustime.verstoneready) {
-    addIcon(id.hardcast,icon.verstone);
-    addIcon(id.dualcast,icon.verthunder);
+  && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 80
+  && player.jobDetail.blackMana > player.jobDetail.whiteMana
+  && !statustime.verstoneready) {
+    addText("debug3", "Verholy (100% proc)");
+    rdmHolyCombo();
   }
 
   else if (player.level >= 68
-  && player.jobDetail.blackMana + 9 >= 43
-  && player.jobDetail.whiteMana + 11 > player.jobDetail.blackMana + 9
-  && statustime.verfireready) {
-    addIcon(id.hardcast,icon.verfire);
-    addIcon(id.dualcast,icon.veraero);
-  }
-
-  else if (player.level >= 70
-  && player.jobDetail.whiteMana + 4 >= 43
-  && player.jobDetail.blackMana + 15 > player.jobDetail.whiteMana + 4
-  && statustime.impactful) {
-    addIcon(id.hardcast,icon.impact);
-    addIcon(id.dualcast,icon.verthunder);
-  }
-
-  else if (player.level >= 68
-  && player.jobDetail.blackMana + 4 >= 43
-  && player.jobDetail.whiteMana + 15 > player.jobDetail.blackMana + 4
-  && statustime.impactful) {
-    addIcon(id.hardcast,icon.impact);
-    addIcon(id.dualcast,icon.veraero);
-  }
-
-  else if (player.level >= 70
-  && player.jobDetail.whiteMana >= 43
-  && player.jobDetail.blackMana + 11 > player.jobDetail.whiteMana
-  && !cooldowntime.swiftcast || cooldowntime.swiftcast - Date.now() < 0) {
-    addIcon(id.hardcast,icon.swiftcast);
-    addIcon(id.dualcast,icon.verthunder);
-  }
-
-  else if (player.level >= 68
-  && player.jobDetail.blackMana >= 43
-  && player.jobDetail.whiteMana + 11 > player.jobDetail.blackMana
-  && !cooldowntime.swiftcast || cooldowntime.swiftcast - Date.now() < 0) {
-    addIcon(id.hardcast,icon.swiftcast);
-    addIcon(id.dualcast,icon.veraero);
-  }
-
-  else if (player.level >= 70
-  && player.jobDetail.whiteMana + 3 >= 43
-  && player.jobDetail.blackMana + 14 > player.jobDetail.whiteMana + 3) {
-    addIcon(id.hardcast,icon.jolt);
-    addIcon(id.dualcast,icon.verthunder);
-  }
-
-  else if (player.level >= 68
-  && player.jobDetail.blackMana + 3 >= 43
-  && player.jobDetail.whiteMana + 14 > player.jobDetail.blackMana + 3) {
-    addIcon(id.hardcast,icon.jolt);
-    addIcon(id.dualcast,icon.veraero);
-  }
-
-  // Regular combo prep - priorty is Verholy
-
-  // Delay combo if both procs are up
-
-  else if (player.level >= 70
-  && player.jobDetail.whiteMana + 9 >= 89
-  && Math.min(player.jobDetail.blackMana + 11, 100) > player.jobDetail.whiteMana + 9
-  && statustime.verstoneready) {
-    addIcon(id.hardcast,icon.verstone);
-    addIcon(id.dualcast,icon.verthunder);
-  }
-
-  else if (player.level >= 68
-  && player.jobDetail.blackMana + 9 >= 89
-  && Math.min(player.jobDetail.whiteMana + 11, 100) > player.jobDetail.blackMana + 9
-  && statustime.verfireready) {
-    addIcon(id.hardcast,icon.verfire);
-    addIcon(id.dualcast,icon.veraero);
-  }
-
-  // Start combo ASAP if proc available
-
-  else if (player.level >= 70
-  && player.jobDetail.whiteMana + 9 >= 80
-  && Math.min(player.jobDetail.blackMana + 11, 100) > player.jobDetail.whiteMana + 9
-  && statustime.verstoneready
+  && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 80
+  && player.jobDetail.whiteMana > player.jobDetail.blackMana
   && !statustime.verfireready) {
+    addText("debug3", "Verflare (100% proc)");
+    rdmFlareCombo();
+  }
+
+  else if (player.level < 68
+  && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= gauge.target
+  && cooldowntime.manafication) {
+    addText("debug3", "Melee combo");
+    rdmCombo();
+  }
+
+  else if (player.level < 60
+  && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= gauge.target) {
+    addText("debug3", "Melee combo");
+    rdmCombo();
+  }
+
+  // Fix mana before combos
+
+  else if (player.level >= 70
+  && player.jobDetail.whiteMana + 9 >= gauge.target
+  && player.jobDetail.whiteMana + 9 <= gauge.cap - 1
+  && Math.min(player.jobDetail.blackMana + 11, gauge.cap) > player.jobDetail.whiteMana + 9
+  && statustime.verstoneready
+  && statustime.verfireready) {
+    addText("debug3", "Dump Verthunder proc, set up for Verholy");
     addIcon(id.hardcast,icon.verstone);
     addIcon(id.dualcast,icon.verthunder);
   }
 
-  else if (player.level >= 68
-  && player.jobDetail.blackMana + 9 >= 80
-  && Math.min(player.jobDetail.whiteMana + 11, 100) > player.jobDetail.blackMana + 9
+  else if (player.jobDetail.blackMana + 9 >= gauge.target
+  && player.jobDetail.blackMana + 9 <= gauge.cap - 1
+  && Math.min(player.jobDetail.whiteMana + 11, gauge.cap) > player.jobDetail.blackMana + 9
+  && statustime.verfireready
+  && statustime.verstoneready) {
+    addText("debug3", "Dump Veraero proc, set up for Verflare");
+    addIcon(id.hardcast,icon.verfire);
+    addIcon(id.dualcast,icon.veraero);
+  }
+
+  else if (player.level >= 70
+  && player.jobDetail.whiteMana >= gauge.target
+  && Math.min(player.jobDetail.blackMana + 20, gauge.cap) > player.jobDetail.whiteMana
   && statustime.verfireready
   && !statustime.verstoneready) {
+    addText("debug3", "Use Verfire, set up for Verholy");
+    addIcon(id.hardcast,icon.verfire);
+    addIcon(id.dualcast,icon.verthunder);
+  }
+
+  else if (player.jobDetail.blackMana >= gauge.target
+  && Math.min(player.jobDetail.whiteMana + 20, gauge.cap) > player.jobDetail.blackMana
+  && statustime.verstoneready
+  && !statustime.verfireready) {
+    addText("debug3", "Use Verstone, set up for Verflare");
+    addIcon(id.hardcast,icon.verstone);
+    addIcon(id.dualcast,icon.veraero);
+  }
+
+  else if (player.level >= 70
+  && player.jobDetail.whiteMana + 9 >= gauge.target
+  && Math.min(player.jobDetail.blackMana + 11, gauge.cap) > player.jobDetail.whiteMana + 9
+  && statustime.verstoneready
+  && !statustime.verfireready) {
+    addText("debug3", "Use Verstone, set up for Verholy");
+    addIcon(id.hardcast,icon.verstone);
+    addIcon(id.dualcast,icon.verthunder);
+  }
+
+  else if (player.jobDetail.blackMana + 9 >= gauge.target
+  && Math.min(player.jobDetail.whiteMana + 11, gauge.cap) > player.jobDetail.blackMana + 9
+  && statustime.verfireready
+  && !statustime.verstoneready) {
+    addText("debug3", "Use Verfire, set up for Verflare");
     addIcon(id.hardcast,icon.verfire);
     addIcon(id.dualcast,icon.veraero);
   }
 
   else if (player.level >= 70
-  && player.jobDetail.whiteMana + 4 >= 80
-  && Math.min(player.jobDetail.blackMana + 11, 100) > player.jobDetail.whiteMana + 4
-  && statustime.impactful - Date.now() < 20000) {
+  && player.jobDetail.whiteMana + 4 >= gauge.target
+  && Math.min(player.jobDetail.blackMana + 15, gauge.cap) > player.jobDetail.whiteMana + 4
+  && statustime.impactful
+  && !statustime.verstoneready) {
+    addText("debug3", "Use Impact, set up for Verholy");
     addIcon(id.hardcast,icon.impact);
     addIcon(id.dualcast,icon.verthunder);
   }
 
-  else if (player.level >= 68
-  && player.jobDetail.blackMana + 4 >= 80
-  && Math.min(player.jobDetail.whiteMana + 11, 100) > player.jobDetail.blackMana + 4
-  && statustime.impactful - Date.now() < 20000) {
+  else if (player.jobDetail.blackMana + 4 >= gauge.target
+  && Math.min(player.jobDetail.whiteMana + 15, gauge.cap) > player.jobDetail.blackMana + 4
+  && statustime.impactful
+  && !statustime.verfireready) {
+    addText("debug3", "Use Impact, set up for Verflare");
     addIcon(id.hardcast,icon.impact);
     addIcon(id.dualcast,icon.veraero);
   }
 
   else if (player.level >= 70
-  && player.jobDetail.whiteMana >= 80
-  && Math.min(player.jobDetail.blackMana + 11, 100) > player.jobDetail.whiteMana
-  && !cooldowntime.swiftcast || cooldowntime.swiftcast <= Date.now()) {
+  && player.jobDetail.whiteMana >= gauge.target
+  && Math.min(player.jobDetail.blackMana + 11, gauge.cap) > player.jobDetail.whiteMana
+  && (!cooldowntime.swiftcast || cooldowntime.swiftcast - Date.now() < 0)
+  && !statustime.verstoneready) {
+    addText("debug3", "Use Swiftcast, set up for Verholy");
     addIcon(id.hardcast,icon.swiftcast);
     addIcon(id.dualcast,icon.verthunder);
   }
 
-  else if (player.level >= 68
-  && player.jobDetail.blackMana >= 80
-  && Math.min(player.jobDetail.whiteMana + 11, 100) > player.jobDetail.blackMana
-  && !cooldowntime.swiftcast || cooldowntime.swiftcast <= Date.now()) {
+  else if (player.jobDetail.blackMana >= gauge.target
+  && Math.min(player.jobDetail.whiteMana + 11, gauge.cap) > player.jobDetail.blackMana
+  && (!cooldowntime.swiftcast || cooldowntime.swiftcast - Date.now() < 0)
+  && !statustime.verfireready) {
+    addText("debug3", "Use Swiftcast, set up for Verflare");
     addIcon(id.hardcast,icon.swiftcast);
     addIcon(id.dualcast,icon.veraero);
   }
 
   else if (player.level >= 70
-  && player.jobDetail.whiteMana + 4 >= 80
-  && Math.min(player.jobDetail.blackMana + 11, 100) > player.jobDetail.whiteMana + 4
-  && statustime.impactful) {
-    addIcon(id.hardcast,icon.impact);
-    addIcon(id.dualcast,icon.verthunder);
-  }
-
-  else if (player.level >= 68
-  && player.jobDetail.blackMana + 4 >= 80
-  && Math.min(player.jobDetail.whiteMana + 11, 100) > player.jobDetail.blackMana + 4
-  && statustime.impactful) {
-    addIcon(id.hardcast,icon.impact);
-    addIcon(id.dualcast,icon.veraero);
-  }
-
-  else if (player.level >= 70
-  && player.jobDetail.whiteMana + 3 >= 80
-  && Math.min(player.jobDetail.blackMana + 11, 100) > player.jobDetail.whiteMana + 3) {
+  && player.jobDetail.whiteMana + 3 >= gauge.target
+  && Math.min(player.jobDetail.blackMana + 14, gauge.cap)> player.jobDetail.whiteMana + 3
+  && !statustime.verstoneready) {
+    addText("debug3", "Use Jolt, set up for Verholy");
     addIcon(id.hardcast,icon.jolt);
     addIcon(id.dualcast,icon.verthunder);
   }
 
-  else if (player.level >= 68
-  && player.jobDetail.blackMana + 3 >= 80
-  && Math.min(player.jobDetail.whiteMana + 11, 100) > player.jobDetail.blackMana + 3) {
+  else if (player.jobDetail.blackMana + 3 >= gauge.target
+  && Math.min(player.jobDetail.whiteMana + 14, gauge.cap)> player.jobDetail.blackMana + 3
+  && !statustime.verfireready) {
+    addText("debug3", "Use Jolt, set up for Verflare");
     addIcon(id.hardcast,icon.jolt);
     addIcon(id.dualcast,icon.veraero);
   }
@@ -531,29 +545,33 @@ function rdmDualcast() {
 
     addIcon(id.hardcast,icon.impact);
 
-    if (statustime.verfire
+    if (statustime.verfireready
     && Math.min(player.jobDetail.whiteMana + 15, 100) - Math.min(player.jobDetail.blackMana + 4, 100) <= 30)
     {
+      addText("debug3", "Avoid Verfire Ready proc");
       addIcon(id.dualcast,icon.veraero);
     }
 
-    else if (statustime.verstone
+    else if (statustime.verstoneready
     && Math.min(player.jobDetail.blackMana + 15, 100) - Math.min(player.jobDetail.whiteMana + 4, 100) <= 30)
     {
+      addText("debug3", "Avoid Verstone Ready proc");
       addIcon(id.dualcast,icon.verthunder);
     }
 
     else if (player.jobDetail.blackMana >= player.jobDetail.whiteMana) {
+      addText("debug3", "Keep mana balanced");
       addIcon(id.dualcast,icon.veraero);
     }
 
     else {
+      addText("debug3", "Keep mana balanced");
       addIcon(id.dualcast,icon.verthunder);
     }
   }
 
   else if (statustime.verfireready && statustime.verstoneready) {
-
+    addText("debug3", "Verfire and Verstone Ready, increase lower mana");
     if (player.jobDetail.blackMana >= player.jobDetail.whiteMana) {
       addIcon(id.hardcast,icon.verstone);
       addIcon(id.dualcast,icon.veraero);
@@ -567,6 +585,7 @@ function rdmDualcast() {
   else if (statustime.verfireready) {
 
     if (Math.min(player.jobDetail.blackMana + 9, 100) - player.jobDetail.whiteMana > 30) {
+      addText("debug3", "Avoid unbalanced mana");
       if (statustime.impactful) {
         addIcon(id.hardcast,icon.impact);
       }
@@ -577,6 +596,7 @@ function rdmDualcast() {
     }
 
     else if (player.jobDetail.blackMana + 9 == player.jobDetail.whiteMana + 11) {
+      addText("debug3", "Avoid equal mana");
       if (statustime.impactful) {
         addIcon(id.hardcast,icon.impact);
       }
@@ -587,11 +607,13 @@ function rdmDualcast() {
     }
 
     else if (player.jobDetail.blackMana + 9 < player.jobDetail.whiteMana) {
+      addText("debug3", "Keep mana balanced");
       addIcon(id.hardcast,icon.verfire);
       addIcon(id.dualcast,icon.verthunder);
     }
 
     else {
+      addText("debug3", "Keep mana balanced");
       addIcon(id.hardcast,icon.verfire);
       addIcon(id.dualcast,icon.veraero);
     }
@@ -600,7 +622,7 @@ function rdmDualcast() {
   else if (statustime.verstoneready) {
 
     if (Math.min(player.jobDetail.whiteMana + 9, 100) - player.jobDetail.blackMana > 30) {
-
+      addText("debug3", "Avoid unbalanced mana");
       if (statustime.impactful) {
         addIcon(id.hardcast,icon.impact);
       }
@@ -611,7 +633,7 @@ function rdmDualcast() {
     }
 
     else if (player.jobDetail.whiteMana + 9 == player.jobDetail.blackMana + 11) {
-
+      addText("debug3", "Avoid equal mana");
       if (statustime.impactful) {
         addIcon(id.hardcast,icon.impact);
       }
@@ -622,36 +644,42 @@ function rdmDualcast() {
     }
 
     else if (player.jobDetail.whiteMana + 9 < player.jobDetail.blackMana) {
+      addText("debug3", "Keep mana balanced");
       addIcon(id.hardcast,icon.verstone);
       addIcon(id.dualcast,icon.veraero);
     }
 
     else {
+      addText("debug3", "Keep mana balanced");
       addIcon(id.hardcast,icon.verstone);
       addIcon(id.dualcast,icon.verthunder);
     }
   }
 
-  else if (!cooldowntime.swiftcast || cooldowntime.swiftcast <= Date.now()) {
+  else if (!cooldowntime.swiftcast || cooldowntime.swiftcast - Date.now() < 0) {
 
     addIcon(id.hardcast,icon.swiftcast);
 
     if (player.jobDetail.blackMana + 11 == player.jobDetail.whiteMana) {
+      addText("debug3", "Avoid equal mana");
       addIcon(id.dualcast,icon.veraero);
     }
 
     else if (player.jobDetail.blackMana == player.jobDetail.whiteMana + 11) {
+      addText("debug3", "Avoid equal mana");
       addIcon(id.dualcast,icon.verthunder);
     }
 
     else if (player.jobDetail.blackMana >= player.jobDetail.whiteMana) {
+      addText("debug3", "Keep mana balanced");
       addIcon(id.dualcast,icon.veraero);
     }
 
     else {
+      addText("debug3", "Keep mana balanced");
       addIcon(id.dualcast,icon.verthunder);
     }
-  }
+}
 
   else {
     if (statustime.impactful) {
@@ -660,46 +688,41 @@ function rdmDualcast() {
     else {
       addIcon(id.hardcast,icon.jolt);
     }
+
     if (player.jobDetail.blackMana >= player.jobDetail.whiteMana) {
+      addText("debug3", "Keep mana balanced");
       addIcon(id.dualcast,icon.veraero);
     }
     else {
+      addText("debug3", "Keep mana balanced");
       addIcon(id.dualcast,icon.verthunder);
     }
   }
 }
 
 function rdmCombo() {
-
   toggle.combo = Date.now();
-
   addIcon(id.riposte,icon.riposte);
-
   if (player.level >= 35) {
     addIcon(id.zwerchhau,icon.zwerchhau);
   }
-
   if (player.level >= 50) {
     addIcon(id.redoublement,icon.redoublement);
   }
+}
 
-  if (player.level >= 70
-  && player.jobDetail.whiteMana < player.jobDetail.blackMana
-  && !statustime.verstoneready) {
-    addIcon(id.verholy,icon.verholy);
-  }
+function rdmFlareCombo() {
+  toggle.combo = Date.now();
+  addIcon(id.riposte,icon.riposte);
+  addIcon(id.zwerchhau,icon.zwerchhau);
+  addIcon(id.redoublement,icon.redoublement);
+  addIcon(id.verflare,icon.verflare);
+}
 
-  else if (player.level >= 68
-  && player.jobDetail.blackMana < player.jobDetail.whiteMana
-  && !statustime.verfireready) {
-    addIcon(id.verflare,icon.verflare);
-  }
-
-  else if (player.level >= 70) {
-    addIcon(id.verholy,icon.verholy);
-  }
-
-  else if (player.level >= 68) {
-    addIcon(id.verflare,icon.verflare);
-  }
+function rdmHolyCombo() {
+  toggle.combo = Date.now();
+  addIcon(id.riposte,icon.riposte);
+  addIcon(id.zwerchhau,icon.zwerchhau);
+  addIcon(id.redoublement,icon.redoublement);
+  addIcon(id.verholy,icon.verholy);
 }

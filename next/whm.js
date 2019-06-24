@@ -45,7 +45,7 @@ targetStatusList.whm = "Aero|Aero II|Aero III|Regen";
 selfStatusList.whm = "Freecure|Medica II";
 
 function whmPlayerChangedEvent(e) {
-  
+
   // Use cooldowns to reset lily count
   if (player.jobDetail.lilies == 1) {
     whmLilyCount = 1;
@@ -56,7 +56,7 @@ function whmPlayerChangedEvent(e) {
   else if (player.jobDetail.lilies == 3) {
     whmLilyCount = 3;
   }
-  
+
   if (whmLilyCount == 1) {
     whmLilyRecast = 0.94;
   }
@@ -69,7 +69,7 @@ function whmPlayerChangedEvent(e) {
   else {
     whmLilyRecast = 1;
   }
-  
+
   if (player.level >= 56 && player.currentMP / player.maxMP < 0.8 && (!cooldowntime.assize || cooldowntime.assize < Date.now())) {
     addIcon(id.assize,icon.assize);
   }
@@ -82,13 +82,13 @@ function whmPlayerChangedEvent(e) {
 }
 
 function whmLogEvent(e,i) {
-  
+
   cooldownLine.whm = e.detail.logs[i].match(RegExp(' [\\dA-F]{2}:[\\dA-F]{8}:' + player.name + ':[\\dA-F]{2,8}:(' + cooldownList.whm + '):'));
   selfGainsStatusLine.whm = e.detail.logs[i].match(RegExp(' [\\dA-F]{2}:(' + player.name + ') gains the effect of (' + selfStatusList.whm + ') from (' + player.name + ') for (.*) Seconds\\.'));
   selfLosesStatusLine.whm = e.detail.logs[i].match(RegExp(' [\\dA-F]{2}:(' + player.name + ') loses the effect of (' + selfStatusList.whm + ') from (' + player.name + ')\\.'));
   targetGainsStatusLine.whm = e.detail.logs[i].match(RegExp(' [\\dA-F]{2}:(.*) gains the effect of (' + targetStatusList.whm + ') from (' + player.name + ') for (.*) Seconds\\.'));
   targetLosesStatusLine.whm = e.detail.logs[i].match(RegExp(' [\\dA-F]{2}:(.*) loses the effect of (' + targetStatusList.whm + ') from (' + player.name + ')\\.'));
-  
+
   if (cooldownLine.whm) {
     if (cooldownLine.whm[1] == "Presence Of Mind") {
       cooldowntime.presenceofmind = Date.now() + recast.presenceofmind;
@@ -140,7 +140,7 @@ function whmLogEvent(e,i) {
       cooldowntime.thinair = Date.now() + recast.thinair;
     }
   }
-  
+
   if (selfGainsStatusLine.whm) {
     if (selfGainsStatusLine.whm[2] == "Freecure") {
       statustime.freecure = Date.now() + parseInt(selfGainsStatusLine.whm[4]) * 1000;
@@ -152,7 +152,7 @@ function whmLogEvent(e,i) {
       addIconWithTimeout("medica2",statustime.medica2 - Date.now(),id.medica2,icon.medica2);
     }
   }
-  
+
   if (selfLosesStatusLine.whm) {
     if (selfLosesStatusLine.whm[2] == "Freecure") {
       removeIcon(id.freecure);
@@ -163,7 +163,7 @@ function whmLogEvent(e,i) {
       }
     }
   }
-  
+
   if (targetGainsStatusLine.whm) {
     if (targetGainsStatusLine.whm[2] == "Aero") {
       statustime.aero = Date.now() + parseInt(targetGainsStatusLine.whm[4]) * 1000;
@@ -186,7 +186,7 @@ function whmLogEvent(e,i) {
       addIconWithTimeout("regen",statustime.regen - Date.now(),id.regen,icon.regen);
     }
   }
-  
+
   if (targetLosesStatusLine.whm) {
     if (targetLosesStatusLine.whm[2] == "Aero") {
       delete statustime.aero;
@@ -212,6 +212,5 @@ function whmLogEvent(e,i) {
         addIcon(id.regen,icon.regen);
       }
     }
-  } 
+  }
 }
-

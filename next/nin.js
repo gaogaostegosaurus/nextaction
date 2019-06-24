@@ -2,7 +2,7 @@
 
 var shadowfangBuffer = 9000; // Refresh Shadow Fang under this many seconds
 var mudraCount = 0;
-var toggle.mudra = "";
+toggle.mudra = "";
 
 id.mudra1 = "nextAction1";
 id.mudra2 = "nextAction2";
@@ -186,7 +186,7 @@ function ninStatus(logLine) {
     }
   }
 
-  
+
   else if (logLine[1] == player.name) {
 
     if (logLine[3] == "Mudra") {
