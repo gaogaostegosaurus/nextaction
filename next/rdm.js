@@ -165,6 +165,8 @@ function rdmAction(logLine) {
   // From Player
   if (logLine[2] == player.name) {
 
+    addText("debug1", logLine[3]);
+
     // AoE toggle
     if (["Scatter", "Enchanted Moulinet"].indexOf(logLine[3]) > -1) {
       toggle.aoe = Date.now();
@@ -214,6 +216,7 @@ function rdmAction(logLine) {
     else if (logLine[3] == "Enchanted Zwerchhau") {
       removeIcon(id.zwerchhau);
       if (player.level < 50) {
+        delete toggle.combo;
         rdmDualcast();
       }
     }
@@ -221,17 +224,20 @@ function rdmAction(logLine) {
     else if (logLine[3] == "Enchanted Redoublement") {
       removeIcon(id.redoublement);
       if (player.level < 68) {
+        delete toggle.combo;
         rdmDualcast();
       }
     }
 
     else if (logLine[3] == "Verflare") {
       removeIcon(id.verflare);
+      delete toggle.combo;
       rdmDualcast();
     }
 
     else if (logLine[3] == "Verholy") {
       removeIcon(id.verholy);
+      delete toggle.combo;
       rdmDualcast();
     }
 
@@ -269,6 +275,7 @@ function rdmAction(logLine) {
         clearTimeout(timeout.displacement);
         addIcon(id.corpsacorps,icon.corpsacorps);
         addIcon(id.displacement,icon.displacement);
+        removeIcon(id.manafication);
         rdmDualcast();
       }
 
@@ -282,7 +289,7 @@ function rdmAction(logLine) {
 
 function rdmStatus(logLine) {
 
-  // addText("debug1", logLine[1] + " " + logLine[2] + " " + logLine[3]);
+
 
   // To anyone from anyone (non-stacking)
 
@@ -306,7 +313,6 @@ function rdmStatus(logLine) {
       }
       else if (logLine[2] == "loses") {
         delete statustime.dualcast;
-        removeIcon(id.dualcast);
         rdmDualcast();
       }
     }
@@ -369,6 +375,14 @@ function rdmStatus(logLine) {
 }
 
 function rdmDualcast() {
+
+  removeIcon(id.hardcast);
+  removeIcon(id.dualcast);
+  
+  removeIcon(id.riposte);
+  removeIcon(id.zwerchhau);
+  removeIcon(id.redoublement);
+  removeIcon(id.verflare);
 
   // Set gauge target/cap
 
@@ -679,12 +693,12 @@ function rdmDualcast() {
     addIcon(id.hardcast,icon.swiftcast);
 
     if (player.jobDetail.blackMana + 11 == player.jobDetail.whiteMana) {
-      addText("debug3", "Avoidinging equal mana");
+      addText("debug3", "Avoiding equal mana");
       addIcon(id.dualcast,icon.veraero);
     }
 
     else if (player.jobDetail.blackMana == player.jobDetail.whiteMana + 11) {
-      addText("debug3", "Avoidinging equal mana");
+      addText("debug3", "Avoiding equal mana");
       addIcon(id.dualcast,icon.verthunder);
     }
 
@@ -697,7 +711,7 @@ function rdmDualcast() {
       addText("debug3", "Balancing mana");
       addIcon(id.dualcast,icon.verthunder);
     }
-}
+  }
 
   else {
     if (statustime.impactful) {
@@ -744,3 +758,7 @@ function rdmHolyCombo() {
   addIcon(id.redoublement,icon.redoublement);
   addIcon(id.verholy,icon.verholy);
 }
+
+// Notes to self
+// Dualcast function resets all icons because double calls that result in cancelled combos are common
+// delete toggle.combo is everywhere because Manafication relies on it to check

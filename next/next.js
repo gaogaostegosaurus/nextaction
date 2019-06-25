@@ -29,14 +29,6 @@ var statusLog;
 // var selfStatusRegExp2;
 // var statusLog2;
 
-var logLine = {};
-var actionLine = {};
-var cooldownLine = {};
-var selfGainsStatusLine = {};
-var selfLosesStatusLine = {};
-var targetGainsStatusLine = {};
-var targetLosesStatusLine = {};
-
 var player = {};
 
 // onPlayerChangedEvent: fires whenever player change detected (including HP, positions, etc.)
@@ -52,23 +44,23 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
     clearElements();
 
     if (player.job == "BRD") {
-      actionRegExp = new RegExp(' 1[56]:([\\dA-F]{8}):(' + player.name + '):[\\dA-F]{2,8}:(' + actionList.brd.join("|") + '):([\\dA-F]{2,8}):([^:]*):([\\dA-F]{2,8}):');
+      actionRegExp = new RegExp(' 1[56]:([\\dA-F]{8}):(' + player.name + '):[\\dA-F]{2,8}:(' + actionList.brd.join("|") + '):([\\dA-F]{2,8}):([^:]*):([\\dA-F]{1,8}):');
       statusRegExp = new RegExp(' 1[AE]:(.*) (gains|loses) the effect of (' + statusList.brd.join("|") + ') from (' + player.name + ')(?: for )?(\\d*\\.\\d*)?(?: Seconds)?\\.');
     }
     else if (player.job == "MNK") {
-      actionRegExp = new RegExp(' 1[56]:([\\dA-F]{8}):(' + player.name + '):[\\dA-F]{2,8}:(' + actionList.mnk.join("|") + '):([\\dA-F]{2,8}):([^:]*):([\\dA-F]{2,8}):');
+      actionRegExp = new RegExp(' 1[56]:([\\dA-F]{8}):(' + player.name + '):[\\dA-F]{2,8}:(' + actionList.mnk.join("|") + '):([\\dA-F]{2,8}):([^:]*):([\\dA-F]{1,8}):');
       statusRegExp = new RegExp(' 1[AE]:(.*) (gains|loses) the effect of (' + statusList.mnk.join("|") + ') from (.*?)(?: for )?(\\d*\\.\\d*)?(?: Seconds)?\\.');
     }
     else if (player.job == "RDM") {
-      actionRegExp = new RegExp(' 1[56]:([\\dA-F]{8}):(' + player.name + '):[\\dA-F]{2,8}:(' + actionList.rdm.join("|") + '):([\\dA-F]{2,8}):([^:]*):([\\dA-F]{2,8}):');
+      actionRegExp = new RegExp(' 1[56]:([\\dA-F]{8}):(' + player.name + '):[\\dA-F]{2,8}:(' + actionList.rdm.join("|") + '):([\\dA-F]{2,8}):([^:]*):([\\dA-F]{1,8}):');
       statusRegExp = new RegExp(' 1[AE]:(.*) (gains|loses) the effect of (' + statusList.rdm.join("|") + ') from (.*?)(?: for )?(\\d*\\.\\d*)?(?: Seconds)?\\.');
     }
     else if (player.job == "SAM") {
-      actionRegExp = new RegExp(' 1[56]:([\\dA-F]{8}):(' + player.name + '):[\\dA-F]{2,8}:(' + actionList.sam.join("|") + '):([\\dA-F]{2,8}):([^:]*):([\\dA-F]{2,8}):');
+      actionRegExp = new RegExp(' 1[56]:([\\dA-F]{8}):(' + player.name + '):[\\dA-F]{2,8}:(' + actionList.sam.join("|") + '):([\\dA-F]{2,8}):([^:]*):([\\dA-F]{1,8}):');
       statusRegExp = new RegExp(' 1[AE]:(.*) (gains|loses) the effect of (' + statusList.sam.join("|") + ') from (.*?)(?: for )?(\\d*\\.\\d*)?(?: Seconds)?\\.');
     }
     else if (player.job == "WAR") {
-      actionRegExp = new RegExp(' 1[56]:([\\dA-F]{8}):(' + player.name + '):[\\dA-F]{2,8}:(' + actionList.war.join("|") + '):([\\dA-F]{2,8}):([^:]*):([\\dA-F]{2,8}):');
+      actionRegExp = new RegExp(' 1[56]:([\\dA-F]{8}):(' + player.name + '):[\\dA-F]{2,8}:(' + actionList.war.join("|") + '):([\\dA-F]{2,8}):([^:]*):([\\dA-F]{1,8}):');
       statusRegExp = new RegExp(' 1[AE]:(.*) (gains|loses) the effect of (' + statusList.war.join("|") + ') from (' + player.name + ')(?: for )?([^ ]*)(?: Seconds)?\\.');
     }
 
