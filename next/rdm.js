@@ -165,8 +165,6 @@ function rdmAction(logLine) {
   // From Player
   if (logLine[2] == player.name) {
 
-    addText("debug1", logLine[3]);
-
     // AoE toggle
     if (["Scatter", "Enchanted Moulinet"].indexOf(logLine[3]) > -1) {
       toggle.aoe = Date.now();
@@ -289,7 +287,7 @@ function rdmAction(logLine) {
 
 function rdmStatus(logLine) {
 
-
+  addText("debug1", logLine[1] + " " + logLine[2] + " " + logLine[3]);
 
   // To anyone from anyone (non-stacking)
 
@@ -378,7 +376,7 @@ function rdmDualcast() {
 
   removeIcon(id.hardcast);
   removeIcon(id.dualcast);
-  
+
   removeIcon(id.riposte);
   removeIcon(id.zwerchhau);
   removeIcon(id.redoublement);
