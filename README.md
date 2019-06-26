@@ -1,7 +1,6 @@
 # next
 
-https://gaogaostegosaurus.com/next.html
-(but I am bad at networking and keep breaking my own website so who knows if it's up)
+Your site is published at https://gaogaostegosaurus.github.io/next/next.html
 
 Some features that should work:
 
