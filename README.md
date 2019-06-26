@@ -1,6 +1,8 @@
 # next
 
-Your site is published at https://gaogaostegosaurus.github.io/next/next.html
+Load this using
+OverlayPlugin - cactbot (requires cactbot, obviously)
+URL: https://gaogaostegosaurus.github.io/next/next.html
 
 Some features that should work:
 
