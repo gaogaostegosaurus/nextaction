@@ -54,20 +54,23 @@ recast.hagakure = 40000;
 recast.guren = 120000;
 
 function samPlayerChangedEvent(e) {
-
+  // Add guren then haga vs haga then guren situations
   // Set Kenki target based on if Hagakure is coming up
   if (player.level >= 70
-  && checkCooldown("guren", player.name) < 10000
-  && checkCooldown("hagakure", player.name) < 4000) {
-    gauge.target = 60;
+  && checkCooldown("hagakure", player.name) > checkCooldown("guren", player.name)) {
+    gauge.target = 70;
   }
   else if (player.level >= 70
-  && checkCooldown("guren", player.name) < 10000) {
-    gauge.target = 80;
+  && checkCooldown("guren", player.name) > checkCooldown("hagakure", player.name)) {
+    gauge.target = 0;
   }
   else if (player.level >= 68
   && checkCooldown("hagakure", player.name) < 4000) {
     gauge.target = 0;
+  }
+  else if (player.level >= 70
+  && checkCooldown("guren", player.name) < 10000) {
+    gauge.target = 70;
   }
   else {
     gauge.target = 20;
@@ -209,7 +212,8 @@ function samPlayerChangedEvent(e) {
 
 function samAction(logLine) {
 
-  if (logLine[2] == player.name) { // Check if from player
+  if (logLine[2] == player.name
+  && logLine[3] != "Attack") { // Check if from player
 
     // AoE toggle
     if (["Fuga","Mangetsu","Oka"].indexOf(logLine[3]) > -1) {
@@ -219,9 +223,28 @@ function samAction(logLine) {
       delete toggle.aoe;
     }
 
-    if (checkStatus("meikyoshisui", player.name) > 0
-    && (logLine[3] == "Higanbana" || logLine[3] == "Tenka Goken" || logLine[3] == "Midare Setsugekka")) {
-      samCombo(); // Consuming Sen under Meikyo will trigger a new combo
+    // These actions don't interrupt combos
+
+    if (logLine[3] == "Higanbana"
+    || logLine[3] == "Tenka Goken"
+    || logLine[3] == "Midare Setsugekka") {
+      if (checkStatus("meikyoshisui", player.name) > 0) {
+        samCombo(); // Consuming Sen under Meikyo will trigger a new combo
+      }
+    }
+
+    else if (logLine[3] == "Third Eye"
+    || logLine[3] == "Ageha"
+    || logLine[3] == "Hissatsu: Gyoten"
+    || logLine[3] == "Hissatsu: Yaten"
+    || logLine[3] == "Merciful Eyes"
+    || logLine[3] == "Meditate"
+    || logLine[3] == "Hissatsu: Shinten"
+    || logLine[3] == "Hissatsu: Kyuten"
+    || logLine[3] == "Hissatsu: Seigan") {
+      if (checkStatus("meikyoshisui", player.name) > 0) {
+        samCombo(); // Consuming Sen under Meikyo will trigger a new combo
+      }
     }
 
     else if (logLine[3] == "Meikyo Shisui") {
@@ -247,6 +270,8 @@ function samAction(logLine) {
         samCombo();
       }
     }
+
+    // Trigger combos
 
     else if (["Mangetsu","Oka"].indexOf(logLine[3]) > -1 && !toggle.combat) { } // Catches random hopping
 
@@ -302,7 +327,6 @@ function samAction(logLine) {
       meikyoCheck();
     }
 
-    previous.action = logLine[3];
     timeoutCombo();
   }
 }
