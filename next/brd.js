@@ -8,7 +8,13 @@ statusList.brd = ["Straight Shot", "Straighter Shot", "Raging Strikes", "Foe Req
 
 var heavyshotchecktimeout = {};
 var empyrealarrowCount = 0;
-var brdBuffer = 5000; // buffer in ms to do the right thing
+
+// Buffer time in ms to do the darn right thing
+var brdBuffer = 5000;
+
+// These status arrays need to be pre-declared for Ironjaws
+statustime.venomousbite = [];
+statustime.windbite = [];
 
 id.ironjaws = "nextAction1";
 id.straightshot = "nextAction2";
@@ -55,33 +61,55 @@ recast.minuet = 80000;
 recast.empyrealarrow = 15000;
 recast.sidewinder = 60000;
 
+function brdPlayerChangedEvent(e) {
+
+  if (player.level >= 64) {
+    icon.venomousbite = icon.causticbite;
+    icon.windbite = icon.stormbite;
+  }
+  else {
+    icon.venomousbite = "000363";
+    icon.windbite = "000367";
+  }
+
+  // Pitch Perfect
+  if (player.jobDetail.songName == "Minuet"
+  && player.jobDetail.songProcs == 3) {
+    addIcon(id.pitchperfect,icon.pitchperfect);
+  }
+  else if (player.jobDetail.songName == "Minuet"
+  && player.jobDetail.songProcs > 0
+  && player.jobDetail.songMilliseconds < brdBuffer) {
+    addIcon(id.pitchperfect,icon.pitchperfect);
+  }
+  else {
+    removeIcon(id.pitchperfect);
+  }
+
+  // Don't use EA without song after 68
+  if (player.level >= 68 && player.jobDetail.songMilliseconds == 0) {
+    removeIcon(id.empyrealarrow);
+  }
+}
+
 function brdInCombatChangedEvent(e) { // Fires when player enters combat
 
   // Populate icons
 
   if (player.level >= 54
-  && (Math.min(statustime.venomousbite,statustime.windbite) - Date.now() - brdBuffer > 0)) {
+  && statustime.venomousbite[statustime.venomousbite.indexOf(target.name) + 1] - Date.now() - brdBuffer * 2 < 0
+  && statustime.windbite[statustime.windbite.indexOf(target.name) + 1] - Date.now() < 0 - brdBuffer * 2 ) {
     brdAddIcon(id.ironjaws,icon.ironjaws);
   }
 
   if (player.level >= 18
-  && !statustime.windbite) {
-    if (player.level >= 64) {
-      brdAddIcon(id.windbite,icon.stormbite);
-    }
-    else {
-      brdAddIcon(id.windbite,icon.windbite);
-    }
+  && statustime.windbite.indexOf(target.id) > -1) {
+    brdAddIcon(id.windbite,icon.windbite);
   }
 
   if (player.level >= 6
-  && !statustime.venomousbite) {
-    if (player.level >= 64) {
-      brdAddIcon(id.venomousbite,icon.causticbite);
-    }
-    else {
-      brdAddIcon(id.venomousbite,icon.venomousbite);
-    }
+  && statustime.windbite.indexOf(target.id) > -1) {
+    brdAddIcon(id.venomousbite,icon.venomousbite);
   }
 
   if (player.level >= 2
@@ -89,7 +117,7 @@ function brdInCombatChangedEvent(e) { // Fires when player enters combat
     brdAddIcon(id.openingstraightshot,icon.straightshot);
   }
 
-  if (statustime.straightershot) {
+  if (statustime.straightershot) { // This feels like it needs to be fixed/cleaned up
     if (player.level >= 70) {
       brdAddIcon(id.straightershot,icon.refulgentarrow);
     }
@@ -154,28 +182,6 @@ function brdInCombatChangedEvent(e) { // Fires when player enters combat
   }
 }
 
-function brdPlayerChangedEvent(e) {
-
-  // Pitch Perfect
-  if (player.jobDetail.songName == "Minuet"
-  && player.jobDetail.songProcs == 3) {
-    addIcon(id.pitchperfect,icon.pitchperfect);
-  }
-  else if (player.jobDetail.songName == "Minuet"
-  && player.jobDetail.songProcs > 0
-  && player.jobDetail.songMilliseconds < brdBuffer) {
-    addIcon(id.pitchperfect,icon.pitchperfect);
-  }
-  else {
-    removeIcon(id.pitchperfect);
-  }
-
-  // Don't use EA without song after 68
-  if (player.level >= 68 && player.jobDetail.songMilliseconds == 0) {
-    removeIcon(id.empyrealarrow);
-  }
-}
-
 function brdAction(logLine) {
 
   // statustime added to actions because just going by buff gain/loss lines is super slow
@@ -191,45 +197,47 @@ function brdAction(logLine) {
 
     else if (logLine[3] == "Iron Jaws") {
 
-      if (player.level >= 64 && statustime.venomousbite) {
-        statustime.venomousbite = Date.now() + 30000;
+      if (player.level >= 64
+      && statustime.venomousbite.indexOf(logLine[5]) > -1) {
+        addStatus("venomousbite", logLine[5], 30000);
       }
-      else if (statustime.venomousbite) {
-        statustime.venomousbite = Date.now() + 18000;
+      else if (statustime.venomousbite.indexOf(logLine[5]) > -1) {
+        addStatus("venomousbite", logLine[5], 18000);
       }
 
-      if (player.level >= 64 && statustime.windbite) {
-        statustime.windbite = Date.now() + 30000;
+      if (player.level >= 64
+      && statustime.windbite.indexOf(logLine[5]) > -1) {
+        addStatus("windbite", logLine[5], 30000);
       }
-      else if (statustime.windbite) {
-        statustime.windbite = Date.now() + 18000;
+      else if (statustime.windbite.indexOf(logLine[5]) > -1) {
+        addStatus("windbite", logLine[5], 18000);
       }
       brdRemoveIcon(id.ironjaws);
     }
 
     else if (logLine[3] == "Windbite") {
-      statustime.windbite = Date.now() + 18000;
+      addStatus("windbite", logLine[5], 18000);
       brdRemoveIcon(id.windbite);
     }
 
     else if (logLine[3] == "Stormbite") {
-      statustime.windbite = Date.now() + 30000;
+      addStatus("windbite", logLine[5], 30000);
       brdRemoveIcon(id.windbite);
     }
 
     else if (logLine[3] == "Venomous Bite") {
-      statustime.venomousbite = Date.now() + 18000;
+      addStatus("venomousbite", logLine[5], 18000);
       brdRemoveIcon(id.venomousbite);
     }
 
     else if (logLine[3] == "Caustic Bite") {
-      statustime.venomousbite = Date.now() + 30000;
+      addStatus("venomousbite", logLine[5], 30000);
       brdRemoveIcon(id.venomousbite);
     }
 
     else if (logLine[3] == "Refulgent Arrow") {
       brdRemoveIcon(id.straightershot);
-      if (Math.min(statustime.venomousbite,statustime.windbite) - Date.now() - brdBuffer - brdBuffer < 0) {
+      if (Math.min(statustime.venomousbite[statustime.venomousbite.indexOf(target.name) + 1], statustime.windbite[statustime.windbite.indexOf(target.name) + 1]) - Date.now() - brdBuffer - brdBuffer < 0) {
         brdAddIcon(id.straightshot,icon.straightshot);
       }
     }
@@ -327,109 +335,92 @@ function brdAction(logLine) {
 
 function brdStatus(logLine) {
 
-  if (logLine[1] == player.name
-  && logLine[4] == player.name) { // From self to self
+  addText("debug1", logLine[1] + " " + logLine[2] + " " + logLine[3]);
 
+  // To anyone from anyone (non-stacking)
+
+  if (logLine[3] == "Foe Requiem") {
     if (logLine[2] == "gains") {
+      statustime.foerequiem.push(logLine[1], Date.now() + parseInt(logLine[5]) * 1000);
+    }
+    else if (logLine[2] == "loses") {
+      statustime.foerequiem.splice(indexOf(logLine[1]),2);
+    }
+  }
 
-      addText("debug1","Gains " + logLine[3] + " for " + logLine[5] + " seconds");
+  // To player from anyone
 
-      if (logLine[3] == "Straight Shot") {
+  else if (logLine[1] == player.name) {
+
+    if (logLine[3] == "Straight Shot") {
+      if (logLine[2] == "gains") {
         statustime.straightshot = Date.now() + parseInt(logLine[5]) * 1000;
         brdRemoveIcon(id.straightshot);
         brdAddIconWithTimeout("straightshot",parseInt(logLine[5]) * 1000 - brdBuffer,id.straightshot,icon.straightshot);
       }
+      else if (logLine[2] == "loses") {
+        delete statustime.straightshot;
+        brdAddIcon(id.straightshot,icon.straightshot);
+      }
+    }
 
-      else if (logLine[3] == "Straighter Shot") {
-
+    else if (logLine[3] == "Straighter Shot") {
+      if (logLine[2] == "gains") {
         statustime.straightershot = Date.now() + parseInt(logLine[5]) * 1000;
-
         if (player.level >= 70
-        && Math.min(statustime.venomousbite,statustime.windbite) - Date.now() - brdBuffer - brdBuffer > 0) {
+        && Math.min(statustime.venomousbite[statustime.venomousbite.indexOf(target.name) + 1], statustime.windbite[statustime.windbite.indexOf(target.name) + 1]) - brdBuffer * 2 - Date.now() > 0) {
           brdAddIcon(id.straightershot,icon.refulgentarrow);
         }
         else {
           brdAddIcon(id.straightshot,icon.straightshot);
         }
       }
-
-      else if (logLine[3] == "Raging Strikes") {
-        statustime.ragingstrikes = Date.now() + parseInt(logLine[5]) * 1000;
-      }
-
-      else if (logLine[3] == "Foe Requiem") {
-        // Fix later
-      }
-    }
-
-    else if (logLine[2] == "loses") {
-
-      addText("debug1","Loses " + logLine[3]);
-
-      if (logLine[3] == "Straight Shot") {
-        delete statustime.straightshot;
-        brdAddIcon(id.straightshot,icon.straightshot);
-      }
-
-      else if (logLine[3] == "Straighter Shot") {
+      else if (logLine[2] == "loses") {
         delete statustime.straightershot;
         brdRemoveIcon(id.straightershot);
       }
+    }
 
-      else if (logLine[3] == "Raging Strikes") {
-        delete statustime.ragingstrikes;
+    else if (logLine[3] == "Raging Strikes") {
+      if (logLine[2] == "gains") {
+        statustime.ragingstrikes = Date.now() + parseInt(logLine[5]) * 1000;
       }
-
-      else if (logLine[3] == "Foe Requiem") {
-        // Fix later
+      else if (logLine[2] == "loses") {
+        delete statustime.ragingstrikes;
       }
     }
   }
 
-  else if (logLine[4] == player.name) { // From self
+  // To NOT player from player
 
-    if (logLine[2] == "gains") {
+  else if (logLine[1] != player.name
+  && logLine[4] == player.name) {
 
-      addText("debug1","Gains " + logLine[3] + " (" + logLine[1] + ")");
-
-      if (["Venomous Bite","Caustic Bite"].indexOf(logLine[3]) > -1) {
-        statustime.venomousbite = Date.now() + parseInt(logLine[5]) * 1000;
+    if (logLine[3] == "Venomous Bite"
+    || logLine[3] == "Caustic Bite") {
+      if (logLine[2] == "gains") {
+        addStatus("venomousbite", logLine[1], parseInt(logLine[5]) * 1000);
         if (player.level >= 54
-        && Math.min(statustime.venomousbite,statustime.windbite) - Date.now() > 0) { // Check if both dots are up
+        && statustime.windbite.indexOf(logLine[1]) > -1) { // Check if other dot is on target
           ironjawsTimeout();
         }
       }
-      else if (["Windbite","Stormbite"].indexOf(logLine[3]) > -1) {
-        statustime.windbite = Date.now() + parseInt(logLine[5]) * 1000;
-        if (player.level >= 54
-        && Math.min(statustime.venomousbite,statustime.windbite) - Date.now() > 0) { // Check if both dots are up
-          ironjawsTimeout();
-        }
+      else if (logLine[2] == "loses") {
+        statustime.venomousbite.splice(statustime.venomousbite.indexOf(logLine[1]),2);
       }
     }
 
-    else if (logLine[2] == "loses") {
-
-      addText("debug1","Loses " + logLine[3] + " (" + logLine[1] + ")");
-
-      if (["Venomous Bite","Caustic Bite"].indexOf(logLine[3]) > -1) {
-        delete statustime.venomousbite;
-        if (player.level >= 64) {
-          brdAddIcon(id.venomousbite,icon.causticbite);
-        }
-        else {
-          brdAddIcon(id.venomousbite,icon.venomousbite);
+    else if (logLine[3] == "Windbite"
+    || logLine[3] == "Stormbite") {
+      if (logLine[2] == "gains") {
+        addStatus("windbite", logLine[1], parseInt(logLine[5]) * 1000);
+        if (player.level >= 54
+        && statustime.venomousbite.indexOf(logLine[1]) > -1) { // Check if other dot is on target
+          ironjawsTimeout();
         }
       }
-
-      else if (["Windbite","Stormbite"].indexOf(logLine[3]) > -1) {
-        delete statustime.windbite;
-        if (player.level >= 64) {
-          brdAddIcon(id.windbite,icon.stormbite);
-        }
-        else {
-          brdAddIcon(id.windbite,icon.windbite);
-        }
+      else if (logLine[2] == "loses") {
+        statustime.windbite.splice(statustime.windbite.indexOf(logLine[1]),2);
       }
     }
   }
@@ -437,11 +428,11 @@ function brdStatus(logLine) {
 
 function ironjawsTimeout() {
 
-  brdAddIconWithTimeout("ironjaws",Math.min(statustime.venomousbite,statustime.windbite) - Date.now() - brdBuffer,id.ironjaws,icon.ironjaws); // Determine next Iron Jaws depending on how many seconds left of shortest dot
+  brdAddIconWithTimeout("ironjaws",Math.min(statustime.venomousbite[statustime.venomousbite.indexOf(target.name) + 1], statustime.windbite[statustime.windbite.indexOf(target.name) + 1]) - Date.now() - brdBuffer,id.ironjaws,icon.ironjaws); // Determine next Iron Jaws depending on how many seconds left of shortest dot
 
-  if (Math.min(statustime.venomousbite,statustime.windbite) - statustime.straightshot < brdBuffer
-  && Math.min(statustime.venomousbite,statustime.windbite) - statustime.straightshot >= 0) {
-    brdAddIconWithTimeout("straightshot",Math.min(statustime.venomousbite,statustime.windbite) - brdBuffer - Date.now() - brdBuffer,id.straightshot,icon.straightshot); // Adjust Straight Shot countdown depending on if Straight Shot will expire at an awkward time
+  if (Math.min(statustime.venomousbite[statustime.venomousbite.indexOf(target.name) + 1], statustime.windbite[statustime.windbite.indexOf(target.name) + 1]) - statustime.straightshot < brdBuffer
+  && Math.min(statustime.venomousbite[statustime.venomousbite.indexOf(target.name) + 1], statustime.windbite[statustime.windbite.indexOf(target.name) + 1]) - statustime.straightshot >= 0) {
+    brdAddIconWithTimeout("straightshot",Math.min(statustime.venomousbite[statustime.venomousbite.indexOf(target.name) + 1], statustime.windbite[statustime.windbite.indexOf(target.name) + 1]) - brdBuffer - Date.now() - brdBuffer,id.straightshot,icon.straightshot); // Adjust Straight Shot countdown depending on if Straight Shot will expire at an awkward time
   }
 }
 

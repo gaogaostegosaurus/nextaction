@@ -1,28 +1,26 @@
 "use strict";
 
 var recast = {};
-var statuslength = {};
-var cooldowntime = {};        // Timestamp for cooldowns
-var statustime = {};          // Timestamp for statuses
-
+var statuslength = {};        // Holds durations... probably should rename it to durations...
+var cooldowntime = {};        // Holds timestamps for cooldowns
+var statustime = {};          // Holds timestamps for statuses
 var gauge = {};
 var buffertime = {};
+
 var timeout = {};             // For timeout variables
 var id = {};                  // Store document id - location on page for icons, etc.
 var icon = {};                // Store icon name
 var toggle = {};              // Toggley things
+var count = {};               // County things
+
 var previous = {};
 var next = {};
 
 var actionList = {};
-var statusList = {};
-var spenderList = {};
-var cooldownList = {};
-var selfStatusList = {};
-var targetStatusList = {};
-
 var actionRegExp;
 var actionLog;
+
+var statusList = {};
 var statusRegExp;
 var statusLog;
 
@@ -30,6 +28,7 @@ var statusLog;
 // var statusLog2;
 
 var player = {};
+var target = {};
 
 // onPlayerChangedEvent: fires whenever player change detected (including HP, positions, etc.)
 
@@ -64,13 +63,15 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
       statusRegExp = new RegExp(' 1[AE]:(.*) (gains|loses) the effect of (' + statusList.war.join("|") + ') from (' + player.name + ')(?: for )?([^ ]*)(?: Seconds)?\\.');
     }
 
+    //// NOTES FOR REGEX CAPTURES ////
+
     // Action
     // 1:SourceID 2:SourceName 3:SkillName 4:TargetID 5:TargetName 6:Result
 
     // Status
     // 1:TargetName 2:GainsLoses 3:Status 4:SourceName 5:Seconds
 
-    // Backup method for weird zones - create toggle for this later?
+    // Backup method for weird zones like Eureka - create toggle for this later?
     // statusRegExp2 = new RegExp(' 00:08[\\da-f]{2}:.*(You) (gain|lose) the effect of (' + selfStatusList.rdm.join("|") + ')\\.');
 
   }
@@ -96,17 +97,16 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
   }
 });
 
-// In case target becomes relevant later
-
-/* document.addEventListener('onTargetChangedEvent', function(e) {
+document.addEventListener('onTargetChangedEvent', function(e) {
   if (!e.detail.name) {
-    targetName = "";
-    targetID = "";
-  } else {
-    targetName = e.detail.name;
-    targetID = e.detail.id.toString(16);
+    target.name = "";
+    target.id = "";
   }
-}); */
+  else {
+    target.name = e.detail.name;
+    target.id = e.detail.id.toString(16);
+  }
+});
 
 document.addEventListener("onInCombatChangedEvent", function(e) {
 // Fires when character exits or enters combat
@@ -184,6 +184,48 @@ document.addEventListener("onLogEvent", function(e) {
 
 // Utility functions
 
+function addStatus(status, target, time) {
+
+  //// NOTES FOR SELF ////
+  // Unless I change it up again
+  // logLine[5] - target name in action
+  // logLine[1] - target name in status
+  // target.name - from change target function - probably works all the time? Maybe?
+
+  if (!statustime[status]) {
+    statustime[status] = []; // push() and indexOf() will complain otherwise? I don't get it actually
+  }
+  if (statustime[status].indexOf(target) > -1) {
+    statustime[status][statustime[status].indexOf(target) + 1] = Date.now() + time;
+  }
+  else {
+    statustime[status].push(target, Date.now() + time);
+  }
+}
+
+function checkStatus(status, target) {
+  if (!statustime[status]) {
+    statustime[status] = [];
+  }
+  if (statustime[status].indexOf(target) > -1) {
+    return statustime[status][statustime[status].indexOf(target) + 1] - Date.now();
+  }
+  else {
+    return 0;
+  }
+}
+
+function removeStatus(status, target) {
+
+  if (!statustime[status]) {
+    statustime[status] = [];
+  }
+
+  if (statustime[status].indexOf(target) > -1) {
+    statustime[status].splice(statustime[status].indexOf(target), 2);
+  }
+}
+
 function addIcon(actionid,actionicon) {
 // actionid is element ID, actionicon is png name without extention
   if (toggle.combat) {
@@ -203,6 +245,7 @@ function removeIcon(actionid) {
 function addText(actionid,message) {
   document.getElementById(actionid).innerText = message;
 }
+
 function removeText(actionid) {
   document.getElementById(actionid).innerText = "";
 }

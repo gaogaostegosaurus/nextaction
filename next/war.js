@@ -140,8 +140,6 @@ function warInCombatChangedEvent(e) {
   && (!cooldowntime.upheaval || cooldowntime.upheaval - Date.now() < 0)) {
     addIcon(id.upheaval,icon.upheaval);
   }
-
-  warCombo();
 }
 
 function warAction(logLine) {
@@ -258,7 +256,7 @@ function warAction(logLine) {
 
       else if (logLine[3] == "Maim"
       && logLine[6].length >= 8) {
-        statustime.slashingresistancedown = Date.now() + 24000;
+        addStatus("slashingresistancedown", logLine[5], 24000);
         removeIcon(id.heavyswing);
         removeIcon(id.maim);
         if (player.level >= 50
@@ -298,10 +296,10 @@ function warStatus(logLine) {
 
   if (logLine[3] == "Slashing Resistance Down") {
     if (logLine[2] == "gains") {
-      statustime.slashingresistancedown = Date.now() + parseInt(logLine[5]) * 1000;
+      addStatus("slashingresistancedown", logLine[1], parseInt(logLine[5]) * 1000);
     }
     else if (logLine[2] == "loses") {
-      delete statustime.slashingresistancedown;
+      removeStatus("slashingresistancedown", logLine[1]);
     }
   }
 
@@ -387,6 +385,15 @@ function warStatus(logLine) {
           delete statustime.mitigation;
           warMitigation();
         }
+      }
+    }
+
+    else if (logLine[3] == "Storm's Eye") {
+      if (logLine[2] == "gains") {
+        statustime.stormseye = Date.now() + parseInt(logLine[5]) * 1000;
+      }
+      else if (logLine[2] == "loses") {
+        delete statustime.stormseye;
       }
     }
 
@@ -494,7 +501,7 @@ function warCombo() {
   }
 
   // Maintain slashing resistance down
-  else if (player.level >= 18 && !statustime.slashingresistancedown) {
+  else if (player.level >= 18 && checkStatus("slashingresistancedown", target.name) > 0) {
     stormspathCombo();
   }
 

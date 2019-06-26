@@ -8,24 +8,24 @@ statusList.sam = ["Jinpu", "Shifu", "Meikyo Shisui", "Hissatsu: Kaiten",
   "Higanbana",
   "Slashing Resistance Down"];
 
-var kenkiFloor = 0;
+var gauge.target = 0;
 
 id.iaijutsu1 = "nextAction1";
 id.hakaze = "nextAction2";
-id.fuga = "nextAction2";
+id.fuga = id.hakaze;
 id.jinpu = "nextAction3";
-id.shifu = "nextAction3";
+id.shifu = id.jinpu;
 id.iaijutsu2 = "nextAction4";
 id.gekko = "nextAction5";
-id.kasha = "nextAction5";
-id.yukikaze = "nextAction5";
-id.mangetsu = "nextAction5";
-id.oka = "nextAction5";
+id.kasha = id.gekko;
+id.yukikaze = id.gekko;
+id.mangetsu = id.gekko;
+id.oka = id.gekko;
 id.iaijutsu3 = "nextAction6";
 id.shinten = "nextAction11";
-id.kyuten = "nextAction11";
-id.guren = "nextAction11";
-id.kenkispender = "nextAction11";
+id.kyuten = id.shinten;
+id.guren = id.shinten;
+id.kenkispender = id.shinten;
 id.hagakure = "nextAction12";
 id.meikyoshisui = "nextAction13";
 
@@ -55,15 +55,18 @@ recast.guren = 120000;
 
 function samPlayerChangedEvent(e) {
 
-  // Sen management
 
-  // Set Kenki floor based on if Hagakure is coming up
-  if (player.level >= 68
+  // Set Kenki target based on if Hagakure is coming up
+  if (player.level >= 70
+  && (!cooldowntime.guren || cooldowntime.guren - Date.now() < 10000)) {
+    gauge.target = 80;
+  }
+  else if (player.level >= 68
   && (!cooldowntime.hagakure || cooldowntime.hagakure - Date.now() < 4000)) {
-    kenkiFloor = 0;
+    gauge.target = 0;
   }
   else {
-    kenkiFloor = 20;
+    gauge.target = 20;
   }
 
   // Check for Hagakure, spend Sen if Hagakure is far enough away, use Kenki otherwise
@@ -89,8 +92,8 @@ function samPlayerChangedEvent(e) {
 
     // Higanbana
     if (player.jobDetail.gekko + player.jobDetail.ka + player.jobDetail.setsu == 1
-    && (!statustime.higanbana || statustime.higanbana - Date.now() < 15000)) {
-        if ((!statustime.jinpu || statustime.jinpu - Date.now() < 4000)
+    && checkStatus("higanbana", target.name) < 15000) {
+        if (checkStatus("jinpu", player.name) < 4000
         && toggle.combo == 1) {
         // Delay Higanbana for Jinpu buff
           removeIcon(id.iaijutsu1);
@@ -123,7 +126,7 @@ function samPlayerChangedEvent(e) {
 
     // Midare Setsugekka
     else if (player.jobDetail.gekko + player.jobDetail.ka + player.jobDetail.setsu == 3) {
-      if ((!statustime.jinpu || statustime.jinpu - Date.now() < 4000)
+      if (checkStatus("jinpu", player.name) < 4000
       && toggle.combo == 1) {
       // Delay Midare for Jinpu
         removeIcon(id.iaijutsu1);
@@ -161,14 +164,14 @@ function samPlayerChangedEvent(e) {
   && cooldowntime.hagakure - Date.now() > 12000) {
   // Guren coming up
 
-    if (player.jobDetail.kenki >= kenkiFloor + 50
+    if (player.jobDetail.kenki >= gauge.target + 50
     && (!cooldowntime.guren || cooldowntime.guren - Date.now() < 0)) {
     // Spend Kenki on Guren
       addIcon(id.kenkispender,icon.guren);
     }
 
     else if (player.level >= 70
-    && player.jobDetail.kenki >= kenkiFloor + 50 + 25) {
+    && player.jobDetail.kenki >= gauge.target + 50 + 25) {
     // Spend to avoid overcap
       if (toggle.aoe) {
         addIcon(id.kenkispender,icon.kyuten);
@@ -179,14 +182,14 @@ function samPlayerChangedEvent(e) {
     }
 
     else if (player.level >= 70
-    && player.jobDetail.kenki < kenkiFloor + 50
+    && player.jobDetail.kenki < gauge.target + 50
     && (!cooldowntime.guren || cooldowntime.guren - Date.now() < 12000)) { // Save for Guren
       removeIcon(id.kenkispender);
     }
   }
 
   else if (player.level >= 62
-  && player.jobDetail.kenki >= kenkiFloor + 25) {
+  && player.jobDetail.kenki >= gauge.target + 25) {
     if (player.level >= 64
     && toggle.aoe) {
       addIcon(id.kenkispender,icon.kyuten);
@@ -272,7 +275,7 @@ function samAction(logLine) {
     }
 
     else if (logLine[3] == "Jinpu" && logLine[6].length == 8) {
-      statustime.jinpu = Date.now() + 30000;
+      addStatus("jinpu", player.name, 30000);
       if (player.level < 30) {
         samCombo();
       }
@@ -285,7 +288,7 @@ function samAction(logLine) {
     }
 
     else if (logLine[3] == "Shifu" && logLine[6].length == 8) {
-      statustime.shifu = Date.now() + 30000;
+      addStatus("shifu", player.name, 30000);
       if (player.level < 40) {
         samCombo();
       }
@@ -298,7 +301,7 @@ function samAction(logLine) {
     }
 
     else if (logLine[3] == "Yukikaze" && logLine[6].length == 8) {
-      statustime.slashingresistancedown = Date.now() + 30000;
+      addStatus("slashingresistancedown", logLine[5], 30000);
       samCombo();
       meikyoCheck();
     }
@@ -319,10 +322,10 @@ function samStatus(logLine) {
 
   if (logLine[3] == "Slashing Resistance Down") {
     if (logLine[2] == "gains") {
-      statustime.slashingresistancedown = Date.now() + parseInt(logLine[5]) * 1000;
+      addStatus("slashingresistancedown", logLine[1], parseInt(logLine[5]) * 1000);
     }
     else if (logLine[2] == "loses") {
-      delete statustime.slashingresistancedown;
+      removeStatus("slashingresistancedown", logLine[1]);
     }
   }
 
@@ -332,19 +335,19 @@ function samStatus(logLine) {
 
     if (logLine[3] == "Jinpu") {
       if (logLine[2] == "gains") {
-        statustime.jinpu = Date.now() + parseInt(logLine[5]) * 1000;
+        addStatus("jinpu", player.name, parseInt(logLine[5]) * 1000);
       }
       else if (logLine[2] == "loses") {
-        delete statustime.jinpu;
+        removeStatus("jinpu", player.name);
       }
     }
 
     else if (logLine[3] == "Shifu") {
       if (logLine[2] == "gains") {
-        statustime.shifu = Date.now() + parseInt(logLine[5]) * 1000;
+        addStatus("shifu", player.name, parseInt(logLine[5]) * 1000);
       }
       else if (logLine[2] == "loses") {
-        delete statustime.shifu;
+        removeStatus("shifu", player.name);
       }
     }
 
@@ -375,10 +378,10 @@ function samStatus(logLine) {
 
     if (logLine[3] == "Higanbana") {
       if (logLine[2] == "gains") {
-        statustime.higanbana = Date.now() + parseInt(logLine[5]) * 1000;
+        addStatus("higanbana", logLine[1], parseInt(logLine[5]) * 1000);
       }
       else if (logLine[2] == "loses") {
-        delete statustime.higanbana;
+        removeStatus("higanbana", logLine[1]);
       }
     }
   }
@@ -391,8 +394,8 @@ function meikyoCheck() {
       addIcon(id.meikyoshisui,icon.meikyoshisui);
     }
     else if (!toggle.aoe
-    && statustime.jinpu - Date.now() > 13000
-    && statustime.shifu - Date.now() > 13000) {
+    && checkStatus("jinpu", player.name) > 13000
+    && checkStatus("shifu", player.name) > 13000) {
       addIcon(id.meikyoshisui,icon.meikyoshisui);
     }
     else {
@@ -459,17 +462,17 @@ function samCombo() {
     else {
       if (player.level >= 18
       && player.jobDetail.ka == false
-      && (!statustime.shifu || statustime.shifu < Math.min(statustime.jinpu, statustime.slashingresistancedown))) {
+      && checkStatus("shifu", player.name) < Math.min(checkStatus("jinpu", player.name), checkStatus("slashingresistancedown", target.name))) {
         kashaCombo();
       }
       else if (player.level >= 4
       && player.jobDetail.gekko == false
-      && (!statustime.jinpu || statustime.jinpu < Math.min(statustime.shifu, statustime.slashingresistancedown))) {
+      && checkStatus("jinpu", player.name) < Math.min(checkStatus("shifu", player.name), checkStatus("slashingresistancedown", target.name))) {
         gekkoCombo();
       }
       else if (player.level >= 50
       && player.jobDetail.setsu == false
-      && (!statustime.slashingresistancedown || statustime.slashingresistancedown < Math.min(statustime.jinpu, statustime.shifu))) {
+      && checkStatus("slashingresistancedown", target.name) < Math.min(checkStatus("jinpu", player.name), checkStatus("shifu", player.name))) {
         yukikazeCombo();
       }
       else if (player.level >= 40
