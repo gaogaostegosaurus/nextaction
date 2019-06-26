@@ -1,9 +1,12 @@
 "use strict";
 
 var recast = {};
-var statuslength = {};        // Holds durations... probably should rename it to durations...
+var duration = {};
+var cooldowntracker = {};     // Holds timestamps for cooldowns
+var statustracker = {};       // Holds timestamps for statuses
 var cooldowntime = {};        // Holds timestamps for cooldowns
 var statustime = {};          // Holds timestamps for statuses
+var statuslength = {};        // Holds durations... probably should rename it to durations...
 var gauge = {};
 var buffertime = {};
 
@@ -51,8 +54,8 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
       statusRegExp = new RegExp(' 1[AE]:(.*) (gains|loses) the effect of (' + statusList.mnk.join("|") + ') from (.*?)(?: for )?(\\d*\\.\\d*)?(?: Seconds)?\\.');
     }
     else if (player.job == "RDM") {
-      actionRegExp = new RegExp(' 1[56]:([\\dA-F]{8}):(' + player.name + '):[\\dA-F]{2,8}:(' + actionList.rdm.join("|") + '):([\\dA-F]{2,8}):([^:]*):([\\dA-F]{1,8}):');
-      statusRegExp = new RegExp(' 1[AE]:(.*) (gains|loses) the effect of (' + statusList.rdm.join("|") + ') from (.*?)(?: for )?(\\d*\\.\\d*)?(?: Seconds)?\\.');
+      actionRegExp = new RegExp(' 1[56]:([\\dA-F]{8}):(.*?):[\\dA-F]{1,4}:(.*?):([\\dA-F]{8}):(.*?):([\\dA-F]{1,8}):');
+      statusRegExp = new RegExp(' 1[AE]:(.*?) (gains|loses) the effect of (.*?) from (.*?)(?: for )?(\\d*\\.\\d*)?(?: Seconds)?\\.');
     }
     else if (player.job == "SAM") {
       actionRegExp = new RegExp(' 1[56]:([\\dA-F]{8}):(' + player.name + '):[\\dA-F]{2,8}:(' + actionList.sam.join("|") + '):([\\dA-F]{2,8}):([^:]*):([\\dA-F]{1,8}):');
@@ -69,7 +72,7 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
     // 1:SourceID 2:SourceName 3:SkillName 4:TargetID 5:TargetName 6:Result
 
     // Status
-    // 1:TargetName 2:GainsLoses 3:Status 4:SourceName 5:Seconds
+    // 1:TargetName 2:GainsLoses 3:Status 4:SourceName 5:Seconds (doesn't exist for "Loses")
 
     // Backup method for weird zones like Eureka - create toggle for this later?
     // statusRegExp2 = new RegExp(' 00:08[\\da-f]{2}:.*(You) (gain|lose) the effect of (' + selfStatusList.rdm.join("|") + ')\\.');
@@ -182,49 +185,73 @@ document.addEventListener("onLogEvent", function(e) {
   }
 });
 
-// Utility functions
 
-function addStatus(status, target, time) {
+function addCooldown(cooldownname, source, recast) {
 
   //// NOTES FOR SELF ////
-  // Unless I change it up again
-  // logLine[5] - target name in action
-  // logLine[1] - target name in status
+  //// (Unless I change it up again) ////
+  // logLine[1] = source ID in action logLine
+  // logLine[2] = source name in action logLine
+
+  if (!cooldowntracker[cooldownname]) { // Create array if it doesn't exist yet
+    cooldowntracker[cooldownname] = [source, Date.now() + recast];
+  }
+  else if (cooldowntracker[cooldownname].indexOf(source) > -1) { // Update array if source match found
+    cooldowntracker[cooldownname][cooldowntracker[cooldownname].indexOf(source) + 1] = Date.now() + recast;
+  }
+  else { // Push new entry into array if no matching entry
+    cooldowntracker[cooldownname].push(source, Date.now() + recast);
+  }
+}
+
+function checkCooldown(cooldownname, source) {
+  if (!cooldowntracker[cooldownname]) {
+    return -1;
+  }
+  else if (cooldowntracker[cooldownname].indexOf(source) > -1) {
+    return cooldowntracker[cooldownname][cooldowntracker[cooldownname].indexOf(source) + 1] - Date.now();
+  }
+}
+
+function addStatus(statusname, target, duration) {
+
+  //// NOTES FOR SELF ////
+  //// (Unless I change it up again) ////
+  // logLine[4] - target ID in action logLine - it might be good to eventually include this, but status logLines don't include ID
+  // logLine[5] - target name in action logLine
+  // logLine[1] - target name in status logLine
   // target.name - from change target function - probably works all the time? Maybe?
 
-  if (!statustime[status]) {
-    statustime[status] = []; // push() and indexOf() will complain otherwise? I don't get it actually
+  if (!statustracker[statusname]) { // Create array if it doesn't exist yet
+    statustracker[statusname] = [target, Date.now() + duration];
   }
-  if (statustime[status].indexOf(target) > -1) {
-    statustime[status][statustime[status].indexOf(target) + 1] = Date.now() + time;
+  else if (statustracker[statusname].indexOf(target) > -1) { // Update array if target match found
+    statustracker[statusname][statustracker[statusname].indexOf(target) + 1] = Date.now() + duration;
   }
-  else {
-    statustime[status].push(target, Date.now() + time);
-  }
-}
-
-function checkStatus(status, target) {
-  if (!statustime[status]) {
-    statustime[status] = [];
-  }
-  if (statustime[status].indexOf(target) > -1) {
-    return statustime[status][statustime[status].indexOf(target) + 1] - Date.now();
-  }
-  else {
-    return 0;
+  else { // Push new entry into array if no matching entry
+    statustracker[statusname].push(target, Date.now() + duration);
   }
 }
 
-function removeStatus(status, target) {
-
-  if (!statustime[status]) {
-    statustime[status] = [];
+function checkStatus(statusname, target) {
+  if (!statustracker[statusname]) {
+    return -1;
   }
-
-  if (statustime[status].indexOf(target) > -1) {
-    statustime[status].splice(statustime[status].indexOf(target), 2);
+  else if (statustracker[statusname].indexOf(target) > -1) {
+    return statustracker[statusname][statustracker[statusname].indexOf(target) + 1] - Date.now();
   }
 }
+
+function removeStatus(statusname, target) {
+  if (!statustracker[statusname]) {
+    statustracker[statusname] = [];
+  }
+  else if (statustracker[statusname].indexOf(target) > -1) {
+    statustracker[statusname].splice(statustracker[statusname].indexOf(target), 2);
+  }
+}
+
+// Icon functions
 
 function addIcon(actionid,actionicon) {
 // actionid is element ID, actionicon is png name without extention

@@ -8,8 +8,6 @@ statusList.sam = ["Jinpu", "Shifu", "Meikyo Shisui", "Hissatsu: Kaiten",
   "Higanbana",
   "Slashing Resistance Down"];
 
-var gauge.target = 0;
-
 id.iaijutsu1 = "nextAction1";
 id.hakaze = "nextAction2";
 id.fuga = id.hakaze;
@@ -54,7 +52,6 @@ recast.hagakure = 40000;
 recast.guren = 120000;
 
 function samPlayerChangedEvent(e) {
-
 
   // Set Kenki target based on if Hagakure is coming up
   if (player.level >= 70
