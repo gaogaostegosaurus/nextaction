@@ -47,6 +47,8 @@ icon.kyuten = "003174";
 icon.hagakure = "003176";
 icon.guren = "003177";
 
+duration.kaiten = 10000;
+
 recast.meikyoshisui = 80000;
 recast.hagakure = 40000;
 recast.guren = 120000;
@@ -55,11 +57,16 @@ function samPlayerChangedEvent(e) {
 
   // Set Kenki target based on if Hagakure is coming up
   if (player.level >= 70
-  && (!cooldowntime.guren || cooldowntime.guren - Date.now() < 10000)) {
+  && checkCooldown("guren", player.name) < 10000
+  && checkCooldown("hagakure", player.name) < 4000) {
+    gauge.target = 60;
+  }
+  else if (player.level >= 70
+  && checkCooldown("guren", player.name) < 10000) {
     gauge.target = 80;
   }
   else if (player.level >= 68
-  && (!cooldowntime.hagakure || cooldowntime.hagakure - Date.now() < 4000)) {
+  && checkCooldown("hagakure", player.name) < 4000) {
     gauge.target = 0;
   }
   else {
@@ -68,7 +75,7 @@ function samPlayerChangedEvent(e) {
 
   // Check for Hagakure, spend Sen if Hagakure is far enough away, use Kenki otherwise
   if (player.level >= 68
-  && (!cooldowntime.hagakure || cooldowntime.hagakure - Date.now() < 4000)
+  && checkCooldown("hagakure", player.name) < 4000
   && player.jobDetail.kenki <= 35) {
     removeIcon(id.iaijutsu1);
     removeIcon(id.iaijutsu2);
@@ -98,7 +105,7 @@ function samPlayerChangedEvent(e) {
           removeIcon(id.iaijutsu3);
         }
         else if (player.level >= 62
-        && !statustime.kaiten
+        && checkStatus("kaiten", player.name) < 0
         && player.jobDetail.kenki < 20
         && player.jobDetail.kenki >= 10) {
         // Delay Higanbana for Kenki
@@ -131,7 +138,7 @@ function samPlayerChangedEvent(e) {
         removeIcon(id.iaijutsu3);
       }
       else if (player.level >= 62
-      && !statustime.kaiten
+      && checkStatus("kaiten", player.name) < 0
       && player.jobDetail.kenki < 20
       && player.jobDetail.kenki >= 10) {
       // Delay Midare for Kenki
@@ -157,12 +164,12 @@ function samPlayerChangedEvent(e) {
   // Kenki management
 
   if (player.level >= 70
-  && (!cooldowntime.guren || cooldowntime.guren - Date.now() < 12000)
-  && cooldowntime.hagakure - Date.now() > 12000) {
+  && checkCooldown("guren", player.name) < 12000
+  && checkCooldown("hagakure", player.name) > 12000) {
   // Guren coming up
 
     if (player.jobDetail.kenki >= gauge.target + 50
-    && (!cooldowntime.guren || cooldowntime.guren - Date.now() < 0)) {
+    && checkCooldown("guren", player.name) < 0) {
     // Spend Kenki on Guren
       addIcon(id.kenkispender,icon.guren);
     }
@@ -180,7 +187,7 @@ function samPlayerChangedEvent(e) {
 
     else if (player.level >= 70
     && player.jobDetail.kenki < gauge.target + 50
-    && (!cooldowntime.guren || cooldowntime.guren - Date.now() < 12000)) { // Save for Guren
+    && checkCooldown("guren", player.name) < 12000) { // Save for Guren
       removeIcon(id.kenkispender);
     }
   }
@@ -212,44 +219,31 @@ function samAction(logLine) {
       delete toggle.aoe;
     }
 
-    if (logLine[3] == "Higanbana"){
-      if (statustime.meikyoshisui) {
-        samCombo(); // Consuming Sen under Meikyo will trigger a new combo
-      }
-    }
-
-    else if (logLine[3] == "Tenka Goken") {
-      if (statustime.meikyoshisui) {
-        samCombo();
-      }
-    }
-
-    else if (logLine[3] == "Midare Setsugekka") {
-      if (statustime.meikyoshisui) {
-        samCombo();
-      }
+    if (checkStatus("meikyoshisui", player.name) > 0
+    && (logLine[3] == "Higanbana" || logLine[3] == "Tenka Goken" || logLine[3] == "Midare Setsugekka")) {
+      samCombo(); // Consuming Sen under Meikyo will trigger a new combo
     }
 
     else if (logLine[3] == "Meikyo Shisui") {
-      cooldowntime.meikyoshisui = Date.now() + recast.meikyoshisui;
+      addCooldown("meikyoshisui", player.name, recast.meikyoshisui);
       removeIcon(id.hakaze);
       removeIcon(id.jinpu);
       removeIcon(id.meikyoshisui);
     }
 
     else if (logLine[3] == "Hissatsu: Kaiten") {
-      statustime.kaiten = Date.now() + 10000;
+      addStatus("kaiten", player.name, duration.kaiten);
     }
 
     else if (logLine[3] == "Hissatsu: Guren") {
-      cooldowntime.guren = Date.now() + recast.guren;
+      addCooldown("guren", player.name, recast.guren);
       removeIcon(id.kenkispender);
     }
 
     else if (logLine[3] == "Hagakure") {
-      cooldowntime.hagakure = Date.now() + recast.hagakure;
+      addCooldown("hagakure", player.name, recast.guren);
       removeIcon(id.hagakure);
-      if (statustime.meikyoshisui) {
+      if (checkStatus("meikyoshisui", player.name) > 0) {
         samCombo();
       }
     }
@@ -332,38 +326,38 @@ function samStatus(logLine) {
 
     if (logLine[3] == "Jinpu") {
       if (logLine[2] == "gains") {
-        addStatus("jinpu", player.name, parseInt(logLine[5]) * 1000);
+        addStatus("jinpu", logLine[1], parseInt(logLine[5]) * 1000);
       }
       else if (logLine[2] == "loses") {
-        removeStatus("jinpu", player.name);
+        removeStatus("jinpu", logLine[1]);
       }
     }
 
     else if (logLine[3] == "Shifu") {
       if (logLine[2] == "gains") {
-        addStatus("shifu", player.name, parseInt(logLine[5]) * 1000);
+        addStatus("shifu", logLine[1], parseInt(logLine[5]) * 1000);
       }
       else if (logLine[2] == "loses") {
-        removeStatus("shifu", player.name);
+        removeStatus("shifu", logLine[1]);
       }
     }
 
     else if (logLine[3] == "Meikyo Shisui") {
       if (logLine[2] == "gains") {
-        statustime.meikyoshisui = Date.now() + parseInt(logLine[5]) * 1000;
+        addStatus("meikyoshisui", logLine[1], parseInt(logLine[5]) * 1000);
       }
       else if (logLine[2] == "loses") {
-        delete statustime.meikyoshisui;
+        removeStatus("meikyoshisui", logLine[1]);
         samCombo();
       }
     }
 
     else if (logLine[3] == "Hissatsu: Kaiten") {
       if (logLine[2] == "gains") {
-        statustime.kaiten = Date.now() + parseInt(logLine[5]) * 1000;
+        addStatus("kaiten", logLine[1], parseInt(logLine[5]) * 1000);
       }
       else if (logLine[2] == "loses") {
-        delete statustime.kaiten;
+        removeStatus("kaiten", logLine[1]);
       }
     }
   }
@@ -385,8 +379,7 @@ function samStatus(logLine) {
 }
 
 function meikyoCheck() {
-  if (!cooldowntime.meikyoshisui
-  || cooldowntime.meikyoshisui - Date.now() < 1000) {
+  if (checkCooldown("meikyoshisui", player.name) < 0) {
     if (toggle.aoe == 1) {
       addIcon(id.meikyoshisui,icon.meikyoshisui);
     }
@@ -412,7 +405,7 @@ function samCombo() {
 
   if (toggle.aoe) { // AoE
 
-    if (statustime.meikyoshisui) {
+    if (checkStatus("meikyoshisui", player.name) > 0) {
       if (player.jobDetail.gekko == false) {
         addIcon(id.mangetsu,icon.mangetsu);
       }
@@ -441,7 +434,7 @@ function samCombo() {
 
   else {
 
-    if (statustime.meikyoshisui) {
+    if (checkStatus("meikyoshisui", player.name) > 0) {
       if (player.jobDetail.gekko == false) {
         addIcon(id.gekko,icon.gekko);
       }

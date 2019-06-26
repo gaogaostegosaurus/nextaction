@@ -533,7 +533,7 @@ function rdmDualcast() {
   // Unfixable mana situations
 
   else if (player.level >= 70
-  && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= gauge.target) {
+  && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 80) {
     if (player.jobDetail.whiteMana + 20 - player.jobDetail.blackMana <= 30
     && checkStatus("verstoneready", player.name) < 0) {
       addText("debug3", "Cannot fix mana - 20% proc");
@@ -555,7 +555,7 @@ function rdmDualcast() {
   }
 
   else if (player.level >= 68
-  && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= gauge.target) {
+  && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 80) {
     addText("debug3", "Cannot fix mana - starting combo");
     rdmFlareCombo();
   }
