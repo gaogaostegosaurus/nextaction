@@ -1,12 +1,11 @@
 "use strict";
 
-actionList.rdm = ["Jolt", "Verfire", "Verstone", "Jolt II", "Impact", "Scatter", "Verthunder", "Veraero",
-"Vercure", "Verraise",
-"Riposte", "Zwerchhau", "Redoublement", "Moulinet",
-"Enchanted Riposte","Enchanted Zwerchhau", "Enchanted Redoublement", "Verflare", "Verholy", "Enchanted Moulinet",
-"Swiftcast", "Corps-A-Corps", "Displacement", "Fleche", "Contre Sixte", "Acceleration", "Manafication",
-"Lucid Dreaming"];
-statusList.rdm = ["Dualcast", "Verfire Ready", "Verstone Ready", "Impactful", "Swiftcast"];
+actionList.rdm = [
+  "Corps-A-Corps", "Displacement", "Fleche", "Contre Sixte", "Acceleration", "Manafication",
+  "Riposte", "Zwerchhau", "Redoublement", "Moulinet", "Enchanted Riposte","Enchanted Zwerchhau", "Enchanted Redoublement",  "Enchanted Moulinet", "Verflare", "Verholy",
+  "Jolt", "Verfire", "Verstone", "Jolt II", "Impact", "Scatter", "Verthunder", "Veraero",
+  "Swiftcast", "Lucid Dreaming"
+];
 
 buffertime.impactful = 10000;
 
@@ -34,6 +33,7 @@ recast.contresixte = 45000;
 recast.embolden = 120000;
 recast.manafication = 120000;
 recast.swiftcast = 60000;
+recast.luciddreaming = 120000;
 
 duration.impactful = 30000;
 
@@ -158,7 +158,8 @@ function rdmInCombatChangedEvent(e) {
 function rdmAction(logLine) {
 
   // From Player
-  if (logLine[2] == player.name) {
+  if (logLine[2] == player.name
+  && actionList.rdm.indexOf(logLine[3]) > -1) {
 
     // AoE toggle
     if (["Scatter", "Enchanted Moulinet"].indexOf(logLine[3]) > -1) {
@@ -198,6 +199,17 @@ function rdmAction(logLine) {
       addCooldown("fleche", player.name, recast.fleche);
       removeIcon(id.fleche);
       addIconWithTimeout("fleche",recast.fleche,id.fleche,icon.fleche);
+    }
+
+    else if (logLine[3] == "Embolden") {
+    }
+
+    else if (logLine[3] == "Swiftcast") {
+      addCooldown("swiftcast", player.name, recast.swiftcast);
+    }
+
+    else if (logLine[3] == "Lucid Dreaming") {
+      addCooldown("luciddreaming", player.name, recast.luciddreaming);
     }
 
     // Combo actions
@@ -271,10 +283,6 @@ function rdmAction(logLine) {
         removeIcon(id.manafication);
         rdmDualcast();
       }
-
-      else if (logLine[3] == "Swiftcast") {
-        addCooldown("swiftcast", player.name, recast.swiftcast);
-      }
     }
   }
 }
@@ -282,15 +290,13 @@ function rdmAction(logLine) {
 
 function rdmStatus(logLine) {
 
-  addText("debug1", logLine[1] + " " + logLine[2] + " " + logLine[3]);
+  // addText("debug1", logLine[1] + " " + logLine[2] + " " + logLine[3]);
 
   // To anyone from anyone (non-stacking)
 
-  if (logLine[3] == "test status") {
-    if (logLine[2] == "gains") {
-    }
-    else if (logLine[2] == "loses") {
-    }
+  if (logLine[3] == "non-stacking status") {
+    // if (logLine[2] == "gains") { }
+    // else if (logLine[2] == "loses") { }
   }
 
   // To player from anyone

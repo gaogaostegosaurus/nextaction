@@ -207,6 +207,9 @@ function checkCooldown(cooldownname, source) {
   else if (cooldowntracker[cooldownname].indexOf(source) > -1) {
     return cooldowntracker[cooldownname][cooldowntracker[cooldownname].indexOf(source) + 1] - Date.now();
   }
+  else {
+    return -1;
+  }
 }
 
 function addStatus(statusname, target, duration) {
@@ -235,6 +238,9 @@ function checkStatus(statusname, target) {
   }
   else if (statustracker[statusname].indexOf(target) > -1) {
     return statustracker[statusname][statustracker[statusname].indexOf(target) + 1] - Date.now();
+  }
+  else {
+    return -1;
   }
 }
 

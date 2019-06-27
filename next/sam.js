@@ -1,12 +1,10 @@
 "use strict";
 
-actionList.sam = ["Hakaze", "Jinpu", "Enpi", "Shifu", "Gekko", "Kasha", "Yukikaze", "Fuga", "Mangetsu", "Oka",
-  "Higanbana", "Midare Setsugekka", "Tenka Goken",
-  "Meikyo Shisui", "Meditate", "Hagakure", "Hissatsu: Guren"];
+actionList.sam = ["Higanbana", "Midare Setsugekka", "Tenka Goken",
+  "Meikyo Shisui", "Meditate", "Hagakure", "Hissatsu: Guren",
+  "Hakaze", "Jinpu", "Enpi", "Shifu", "Gekko", "Kasha", "Yukikaze", "Fuga", "Mangetsu", "Oka"];
 
-statusList.sam = ["Jinpu", "Shifu", "Meikyo Shisui", "Hissatsu: Kaiten",
-  "Higanbana",
-  "Slashing Resistance Down"];
+// statusList.sam = ["Jinpu", "Shifu", "Meikyo Shisui", "Hissatsu: Kaiten", "Higanbana", "Slashing Resistance Down"];
 
 id.iaijutsu1 = "nextAction1";
 id.hakaze = "nextAction2";
@@ -47,6 +45,9 @@ icon.kyuten = "003174";
 icon.hagakure = "003176";
 icon.guren = "003177";
 
+duration.jinpu = 30000;
+duration.shifu = 30000;
+duration.slashingresistancedown = 30000;
 duration.kaiten = 10000;
 
 recast.meikyoshisui = 80000;
@@ -213,7 +214,7 @@ function samPlayerChangedEvent(e) {
 function samAction(logLine) {
 
   if (logLine[2] == player.name
-  && logLine[3] != "Attack") { // Check if from player
+  && actionlist.sam.indexOf(logLine[3]) > -1) { // Check if from player
 
     // AoE toggle
     if (["Fuga","Mangetsu","Oka"].indexOf(logLine[3]) > -1) {
@@ -225,23 +226,14 @@ function samAction(logLine) {
 
     // These actions don't interrupt combos
 
-    if (logLine[3] == "Higanbana"
-    || logLine[3] == "Tenka Goken"
-    || logLine[3] == "Midare Setsugekka") {
+    if (logLine[3] == "Tenka Goken" || logLine[3] == "Midare Setsugekka") {
       if (checkStatus("meikyoshisui", player.name) > 0) {
         samCombo(); // Consuming Sen under Meikyo will trigger a new combo
       }
     }
 
-    else if (logLine[3] == "Third Eye"
-    || logLine[3] == "Ageha"
-    || logLine[3] == "Hissatsu: Gyoten"
-    || logLine[3] == "Hissatsu: Yaten"
-    || logLine[3] == "Merciful Eyes"
-    || logLine[3] == "Meditate"
-    || logLine[3] == "Hissatsu: Shinten"
-    || logLine[3] == "Hissatsu: Kyuten"
-    || logLine[3] == "Hissatsu: Seigan") {
+    else if (logLine[3] == "Higanbana") {
+      addStatus("higanbana", logLine[5], duration.higanbana);
       if (checkStatus("meikyoshisui", player.name) > 0) {
         samCombo(); // Consuming Sen under Meikyo will trigger a new combo
       }
@@ -291,7 +283,7 @@ function samAction(logLine) {
     }
 
     else if (logLine[3] == "Jinpu" && logLine[6].length == 8) {
-      addStatus("jinpu", player.name, 30000);
+      addStatus("jinpu", player.name, duration.jinpu);
       if (player.level < 30) {
         samCombo();
       }
@@ -304,7 +296,7 @@ function samAction(logLine) {
     }
 
     else if (logLine[3] == "Shifu" && logLine[6].length == 8) {
-      addStatus("shifu", player.name, 30000);
+      addStatus("shifu", player.name, duration.shifu);
       if (player.level < 40) {
         samCombo();
       }
@@ -317,7 +309,7 @@ function samAction(logLine) {
     }
 
     else if (logLine[3] == "Yukikaze" && logLine[6].length == 8) {
-      addStatus("slashingresistancedown", logLine[5], 30000);
+      addStatus("slashingresistancedown", logLine[5], duration.slashingresistancedown);
       samCombo();
       meikyoCheck();
     }
