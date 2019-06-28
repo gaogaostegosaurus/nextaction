@@ -1,8 +1,8 @@
 "use strict";
 
-id.luciddreaming = "nextAction21";
-id.swiftcast = "nextAction22";
-id.surecast = "nextAction23";
+id.luciddreaming = "next11";
+id.swiftcast = "next12";
+id.surecast = "next13";
 
 
 icon.surecast = "000869";

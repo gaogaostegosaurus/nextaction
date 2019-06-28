@@ -9,21 +9,21 @@ actionList.rdm = [
 
 buffertime.impactful = 10000;
 
-id.riposte = "nextAction1";
+id.riposte = "next0";
 id.moulinet = id.riposte;
-id.zwerchhau = "nextAction2";
-id.redoublement = "nextAction3";
-id.verflare = "nextAction4";
+id.zwerchhau = "next1";
+id.redoublement = "next2";
+id.verflare = "next3";
 id.verholy = id.verflare;
-id.hardcast = "nextAction5";
-id.dualcast = "nextAction6";
-id.manafication = "nextAction11";
-id.fleche = "nextAction12";
-id.contresixte = "nextAction13";
-id.acceleration = "nextAction14";
-id.corpsacorps = "nextAction15";
-id.displacement = "nextAction16";
-id.luciddreaming = "nextAction17";
+id.hardcast = "next4";
+id.dualcast = "next5";
+id.manafication = "next10";
+id.fleche = "next11";
+id.contresixte = "next12";
+id.acceleration = "next13";
+id.corpsacorps = "next14";
+id.displacement = "next15";
+id.luciddreaming = "next16";
 
 recast.corpsacorps = 40000;
 recast.displacement = 35000;

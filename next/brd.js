@@ -16,23 +16,23 @@ var brdBuffer = 5000;
 statustime.venomousbite = [];
 statustime.windbite = [];
 
-id.ironjaws = "nextAction1";
-id.straightshot = "nextAction2";
-id.windbite = "nextAction3";
-id.venomousbite = "nextAction4";
-id.openingstraightshot = "nextAction5";
-id.straightershot = "nextAction6";
+id.ironjaws = "next0";
+id.straightshot = "next1";
+id.windbite = "next2";
+id.venomousbite = "next3";
+id.openingstraightshot = "next4";
+id.straightershot = "next5";
 id.refulgentarrow = id.straightershot;
-id.heavyshot = "nextAction7";
+id.heavyshot = "next6";
 
-id.ballad = "nextAction11";
+id.ballad = "next10";
 id.paeon = id.ballad;
 id.minuet = id.ballad;
-id.pitchperfect = "nextAction12";
-id.empyrealarrow = "nextAction13";
-id.sidewinder = "nextAction14";
-id.ragingstrikes = "nextAction15";
-id.barrage = "nextAction16";
+id.pitchperfect = "next11";
+id.empyrealarrow = "next12";
+id.sidewinder = "next13";
+id.ragingstrikes = "next14";
+id.barrage = "next15";
 
 icon.ragingstrikes = "000352";
 icon.barrage = "000353";

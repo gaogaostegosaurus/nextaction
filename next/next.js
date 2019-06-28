@@ -53,10 +53,6 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
       actionRegExp = new RegExp(' 1[56]:([\\dA-F]{8}):(' + player.name + '):[\\dA-F]{2,8}:(' + actionList.mnk.join("|") + '):([\\dA-F]{2,8}):([^:]*):([\\dA-F]{1,8}):');
       statusRegExp = new RegExp(' 1[AE]:(.*) (gains|loses) the effect of (' + statusList.mnk.join("|") + ') from (.*?)(?: for )?(\\d*\\.\\d*)?(?: Seconds)?\\.');
     }
-    else if (player.job == "WAR") {
-      actionRegExp = new RegExp(' 1[56]:([\\dA-F]{8}):(' + player.name + '):[\\dA-F]{2,8}:(' + actionList.war.join("|") + '):([\\dA-F]{2,8}):([^:]*):([\\dA-F]{1,8}):');
-      statusRegExp = new RegExp(' 1[AE]:(.*) (gains|loses) the effect of (' + statusList.war.join("|") + ') from (' + player.name + ')(?: for )?([^ ]*)(?: Seconds)?\\.');
-    }
     else {
       actionRegExp = new RegExp(' 1[56]:([\\dA-F]{8}):(.*?):[\\dA-F]{1,4}:(.*?):([\\dA-F]{8}):(.*?):([\\dA-F]{1,8}):');
       statusRegExp = new RegExp(' 1[AE]:(.*?) (gains|loses) the effect of (.*?) from (.*?)(?: for )?(\\d*\\.\\d*)?(?: Seconds)?\\.');
@@ -268,7 +264,7 @@ function addIconWithTimeout(action,delay,actionid,actionicon) {
 }
 
 function removeIcon(actionid) {
-  document.getElementById(actionid).src = "";
+  document.getElementById(actionid).style.display = "none";
 }
 
 function addText(actionid,message) {
@@ -280,31 +276,9 @@ function removeText(actionid) {
 }
 
 function clearElements() {
-  document.getElementById("nextAction1").src = "";
-  document.getElementById("nextAction2").src = "";
-  document.getElementById("nextAction3").src = "";
-  document.getElementById("nextAction4").src = "";
-  document.getElementById("nextAction5").src = "";
-  document.getElementById("nextAction6").src = "";
-  document.getElementById("nextAction7").src = "";
-  document.getElementById("nextAction11").src = "";
-  document.getElementById("nextAction12").src = "";
-  document.getElementById("nextAction13").src = "";
-  document.getElementById("nextAction14").src = "";
-  document.getElementById("nextAction15").src = "";
-  document.getElementById("nextAction16").src = "";
-  document.getElementById("nextAction17").src = "";
-  document.getElementById("nextAction21").src = "";
-  document.getElementById("nextAction22").src = "";
-  document.getElementById("nextAction23").src = "";
-  document.getElementById("nextAction24").src = "";
-  document.getElementById("nextAction25").src = "";
-  document.getElementById("nextAction26").src = "";
-  document.getElementById("debug1").innerText = "";
-  document.getElementById("debug2").innerText = "";
-  document.getElementById("debug3").innerText = "";
-
-}
+  for (var x = 0; x < 30; x++) {
+    document.getElementById("next" + x).style.display = "none";
+  }
 
 function timeoutCombo() {
 // Call this function at the end of event log checker to prevent combos from lingering more than they should

@@ -55,6 +55,7 @@ recast.hagakure = 40000;
 recast.guren = 120000;
 
 function samPlayerChangedEvent(e) {
+  
   // Add guren then haga vs haga then guren situations
   // Set Kenki target based on if Hagakure is coming up
   if (player.level >= 70

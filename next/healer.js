@@ -1,9 +1,9 @@
 "use strict";
 
-id.luciddreaming = "nextAction21";
-id.eyeforaneye = "nextAction22";
-id.largesse = "nextAction23";
-id.clericstance = "nextAction24";
+id.luciddreaming = "next11";
+id.eyeforaneye = "next12";
+id.largesse = "next13";
+id.clericstance = "next14";
 
 icon.clericstance = "000881";
 icon.protect = "000883";

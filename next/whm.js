@@ -1,18 +1,18 @@
 "use strict";
 
-id.freecure = "nextAction1";
-id.aero = "nextAction2";
-id.aero2 = "nextAction2";
-id.aero3 = "nextAction3";
-id.regen = "nextAction4";
-id.medica2 = "nextAction5";
-id.assize = "nextAction11";
-id.thinair = "nextAction11";
-id.benediction = "nextAction12";
-id.tetragrammaton = "nextAction12";
-id.asylum = "nextAction13";
-id.divinebenison = "nextAction14";
-id.plenaryindulgence = "nextAction15";
+id.freecure = "next0";
+id.aero = "next1";
+id.aero2 = "next1";
+id.aero3 = "next2";
+id.regen = "next3";
+id.medica2 = "next4";
+id.assize = "next10";
+id.thinair = "next10";
+id.benediction = "next11";
+id.tetragrammaton = "next11";
+id.asylum = "next12";
+id.divinebenison = "next13";
+id.plenaryindulgence = "next14";
 
 icon.aero = "000401";
 icon.aero2 = "000402";

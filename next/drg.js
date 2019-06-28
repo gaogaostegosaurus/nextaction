@@ -37,55 +37,55 @@ var drgTargetStatusList = "Chaos Thrust";
 function drgPlayerChangedEvent(e) {
   
   if (player.jobDetail.bloodMilliseconds == 0 && player.jobDetail.lifeMilliseconds == 0 && player.level >= 54 && dragonCooldown - Date.now() < 0) {
-    removeIcon("nextAction5"); 
-    removeIcon("nextAction6");
-    addIcon("nextAction11","002581");
+    removeIcon("next4"); 
+    removeIcon("next5");
+    addIcon("next10","002581");
   }
   
   else if ((player.jobDetail.bloodMilliseconds > 0 || player.jobDetail.lifeMilliseconds > 0) && player.level >= 54) {
 
-    removeIcon("nextAction11","002581");
+    removeIcon("next10","002581");
     
     clearTimeout(jumpTimeout);
     clearTimeout(spineshatterTimeout);
     
     if ((player.level >= 68 && jumpCooldown - Date.now() < 0 && diveStatus - Date.now() < 0) || (player.level < 68 && jumpCooldown - Date.now() < 0)) {
-      addIcon("nextAction12","002576"); 
+      addIcon("next11","002576"); 
     }
     else {
-      removeIcon("nextAction12");
+      removeIcon("next11");
     }
     
     if ((player.level >= 68 && spineshatterCooldown - Date.now() < 0 && diveStatus - Date.now() < 0)  || (player.level < 68 && spineshatterCooldown - Date.now() < 0)) {
-      addIcon("nextAction13","002580"); 
+      addIcon("next12","002580"); 
     }
     else {
-      removeIcon("nextAction13");
+      removeIcon("next12");
     }
     
     if (diveStatus - Date.now() > 0 && player.jobDetail.eyesAmount < 3) {
-      addIcon("nextAction14","002588");
+      addIcon("next13","002588");
     }
     else {
-      removeIcon("nextAction14");
+      removeIcon("next13");
     }
     
     if (geirskogulCooldown - Date.now() < 0 && player.jobDetail.bloodMilliseconds > 0 && player.jobDetail.eyesAmount < 3) {
-      addIcon("nextAction15","002583");
+      addIcon("next14","002583");
     }
     else if (geirskogulCooldown - Date.now() < 0 && player.jobDetail.bloodMilliseconds > 24000 && player.jobDetail.eyesAmount == 3) {
-      addIcon("nextAction15","002583");
+      addIcon("next14","002583");
     }
     else if (nastrondCooldown - Date.now() < 0 && player.jobDetail.lifeMilliseconds > 0) {
-      addIcon("nextAction15","002589");
+      addIcon("next14","002589");
     }
     else {
-      removeIcon("nextAction15");
+      removeIcon("next14");
     }
     
   }
   else {
-    removeIcon("nextAction11","002581");
+    removeIcon("next10","002581");
   }
   
 }
@@ -104,39 +104,39 @@ function drgLogEvent(e,i) {
     
     if (actionLine.drg[1] == "True Thrust") {
       fullCombo();
-      removeIcon("nextAction1");
-      removeIcon("nextAction2");
+      removeIcon("next0");
+      removeIcon("next1");
     }
     
     else if (actionLine.drg[1] == "Impulse Drive") {
       chaosCombo();
-      removeIcon("nextAction1");
-      removeIcon("nextAction2");
+      removeIcon("next0");
+      removeIcon("next1");
     }
     
     else if (actionLine.drg[1] == "Vorpal Thrust" && previous.action == "True Thrust" && player.level >= 26) { // Check to see if mid-combo first
-      removeIcon("nextAction3");
+      removeIcon("next2");
     }
     
     else if (actionLine.drg[1] == "Disembowel" && previous.action == "Impulse Drive" && player.level >= 50) {
-      removeIcon("nextAction3");
+      removeIcon("next2");
     }
     
     else if (actionLine.drg[1] == "Full Thrust" && previous.action == "Vorpal Thrust" && player.level >= 56 && (player.jobDetail.bloodMilliseconds > 0 || player.jobDetail.lifeMilliseconds > 0)) {
-      removeIcon("nextAction4");
-      removeIcon("nextAction21"); // Life Surge
+      removeIcon("next3");
+      removeIcon("next11"); // Life Surge
     }
     
     else if (actionLine.drg[1] == "Chaos Thrust" && previous.action == "Disembowel" && player.level >= 58 && (player.jobDetail.bloodMilliseconds > 0 || player.jobDetail.lifeMilliseconds > 0)) {
-      removeIcon("nextAction4");
+      removeIcon("next3");
     }
     
     else if (actionLine.drg[1] == "Fang And Claw" && previous.action == "Full Thrust" && player.level >= 64 && (player.jobDetail.bloodMilliseconds > 0 || player.jobDetail.lifeMilliseconds > 0)) {
-      removeIcon("nextAction5");
+      removeIcon("next4");
     }
     
     else if (actionLine.drg[1] == "Wheeling Thrust" && previous.action == "Chaos Thrust" && player.level >= 64 && (player.jobDetail.bloodMilliseconds > 0 || player.jobDetail.lifeMilliseconds > 0)) {
-      removeIcon("nextAction5");
+      removeIcon("next4");
     }
     
     else { // Combo breakerrrrr
@@ -159,27 +159,27 @@ function drgLogEvent(e,i) {
     else if (cooldownLine.drg[1] == "Jump") {
       jumpCooldown = Date.now() + 30 * 1000;
       if (player.jobDetail.bloodMilliseconds == 0) {
-        removeIcon("nextAction12");
+        removeIcon("next11");
         //clearTimeout(jumpTimeout);
-        //jumpTimeout = setTimeout(addIcon, 30 * 1000 - 1000, "nextAction12", "002576"); 
+        //jumpTimeout = setTimeout(addIcon, 30 * 1000 - 1000, "next11", "002576"); 
       }
     }
     
     else if (cooldownLine.drg[1] == "Spineshatter Dive") {
       spineshatterCooldown = Date.now() + 60 * 1000;
       if (player.jobDetail.bloodMilliseconds == 0) {
-        removeIcon("nextAction13");
+        removeIcon("next12");
         //addicon
         //clearTimeout(spineshatterTimeout);
-        //spineshatterTimeout = setTimeout(addIcon, 60 * 1000 - 1000, "nextAction13", "002580"); 
+        //spineshatterTimeout = setTimeout(addIcon, 60 * 1000 - 1000, "next12", "002580"); 
       }
     }
     
     else if (cooldownLine.drg[1] == "Dragonfire Dive") {
       dragonfireCooldown = Date.now() + 120 * 1000;
-      removeIcon("nextAction16");
+      removeIcon("next15");
       //clearTimeout(dragonfireTimeout);
-      //dragonfireTimeout = setTimeout(addIcon, 120 * 1000 - 1000, "nextAction14", "002578"); 
+      //dragonfireTimeout = setTimeout(addIcon, 120 * 1000 - 1000, "next13", "002578"); 
     }
     
     else if (cooldownLine.drg[1] == "Battle Litany") {
@@ -189,15 +189,15 @@ function drgLogEvent(e,i) {
     else if (cooldownLine.drg[1] == "Blood Of The Dragon") {
       dragonCooldown = Date.now() + 30 * 1000;
       if (toggle.combo == 1 && previous.action != "Full Thrust" && player.level >= 56) {
-        addIcon("nextAction5","002582");
+        addIcon("next4","002582");
         if (player.level >= 64) {
-          addIcon("nextAction6","002584");
+          addIcon("next5","002584");
         }
       }
       else if (toggle.combo == 2 && previous.action != "Chaos Thrust" && player.level >= 58) {
-        addIcon("nextAction5","002584");
+        addIcon("next4","002584");
         if (player.level >= 64) {
-          addIcon("nextAction6","002582");
+          addIcon("next5","002582");
         }
       }
     }
@@ -234,7 +234,7 @@ function drgLogEvent(e,i) {
     }
     
     else if (selfLosesStatusLine[2] == "Dive Ready") {
-      removeIcon("nextAction15");
+      removeIcon("next14");
       diveStatus = 0;
     }
   }
@@ -256,10 +256,10 @@ function drgLogEvent(e,i) {
 
 function drgCombo() {  // Leaves out step 1 because Spenders can't and don't need to see previous action 
   if (heavyStatus - Date.now() < 12500 && player.level >= 10 && actionLine.drg[1] != "Heavy Thrust") {
-    addIcon("nextAction1","000311");
+    addIcon("next0","000311");
   }
   else {
-    removeIcon("nextAction1");
+    removeIcon("next0");
   }
   
   if (piercingStatus - Date.now() < 15000 && player.level >= 38 && actionLine.drg[1] != "Disembowel" && previous.action != "Impulse Drive") {
@@ -278,58 +278,58 @@ function drgCombo() {  // Leaves out step 1 because Spenders can't and don't nee
 function fullCombo() {
   toggle.combo = 1;
   if (player.level >= 18 && surgeCooldown - Date.now() < 0) {
-    addIcon("nextAction21","000304");
+    addIcon("next11","000304");
   }
-  addIcon("nextAction2","000310");
+  addIcon("next1","000310");
   if (player.level >= 4) {
-    addIcon("nextAction3","000312");
+    addIcon("next2","000312");
     if (player.level >= 26) {
-      addIcon("nextAction4","000314");
+      addIcon("next3","000314");
       if (player.level >= 56 && (player.jobDetail.bloodMilliseconds > 0 || player.jobDetail.lifeMilliseconds > 0)) {
-        addIcon("nextAction5","002582");
+        addIcon("next4","002582");
         if (player.level >= 64) {
-          addIcon("nextAction6","002584");
+          addIcon("next5","002584");
         }
       }
       else {
-        removeIcon("nextAction5");
-        removeIcon("nextAction6");
+        removeIcon("next4");
+        removeIcon("next5");
       }
     }
     else {
-      removeIcon("nextAction4");
+      removeIcon("next3");
     }
   }
   else {
-    removeIcon("nextAction3");
+    removeIcon("next2");
   }
 }
 
 
 function chaosCombo() {
   toggle.combo = 2;
-  addIcon("nextAction2","000313");
+  addIcon("next1","000313");
   if (player.level >= 38) {
-    addIcon("nextAction3","000317");
+    addIcon("next2","000317");
     if (player.level >= 50) {
-      addIcon("nextAction4","000308");
+      addIcon("next3","000308");
       if (player.level >= 58 && (player.jobDetail.bloodMilliseconds > 0 || player.jobDetail.lifeMilliseconds > 0)) {
-        addIcon("nextAction5","002584");
+        addIcon("next4","002584");
         if (player.level >= 64) {
-          addIcon("nextAction6","002582");
+          addIcon("next5","002582");
         }
       }
       else {
-        removeIcon("nextAction5");
-        removeIcon("nextAction6");
+        removeIcon("next4");
+        removeIcon("next5");
       }
     }
     else {
-      removeIcon("nextAction4");
+      removeIcon("next3");
     }
   }
   else {
-    removeIcon("nextAction3");
+    removeIcon("next2");
   }
 }
 
