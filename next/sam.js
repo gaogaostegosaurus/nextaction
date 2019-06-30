@@ -6,24 +6,24 @@ actionList.sam = ["Higanbana", "Midare Setsugekka", "Tenka Goken",
 
 // statusList.sam = ["Jinpu", "Shifu", "Meikyo Shisui", "Hissatsu: Kaiten", "Higanbana", "Slashing Resistance Down"];
 
-id.iaijutsu1 = "nextAction1";
-id.hakaze = "nextAction2";
+id.iaijutsu1 = "next0";
+id.hakaze = "next1";
 id.fuga = id.hakaze;
-id.jinpu = "nextAction3";
+id.jinpu = "next2";
 id.shifu = id.jinpu;
-id.iaijutsu2 = "nextAction4";
-id.gekko = "nextAction5";
+id.iaijutsu2 = "next3";
+id.gekko = "next4";
 id.kasha = id.gekko;
 id.yukikaze = id.gekko;
 id.mangetsu = id.gekko;
 id.oka = id.gekko;
-id.iaijutsu3 = "nextAction6";
-id.shinten = "nextAction11";
+id.iaijutsu3 = "next5";
+id.shinten = "next10";
 id.kyuten = id.shinten;
 id.guren = id.shinten;
 id.kenkispender = id.shinten;
-id.hagakure = "nextAction12";
-id.meikyoshisui = "nextAction13";
+id.hagakure = "next11";
+id.meikyoshisui = "next12";
 
 icon.hakaze = "003151";
 icon.jinpu = "003152";
@@ -55,7 +55,7 @@ recast.hagakure = 40000;
 recast.guren = 120000;
 
 function samPlayerChangedEvent(e) {
-  
+
   // Add guren then haga vs haga then guren situations
   // Set Kenki target based on if Hagakure is coming up
   if (player.level >= 70

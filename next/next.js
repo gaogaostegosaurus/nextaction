@@ -33,6 +33,7 @@ var statusLog;
 var player = {};
 var target = {};
 
+
 // onPlayerChangedEvent: fires whenever player change detected (including HP, positions, etc.)
 
 document.addEventListener("onPlayerChangedEvent", function(e) {
@@ -251,20 +252,21 @@ function removeStatus(statusname, target) {
 
 // Icon functions
 
-function addIcon(actionid,actionicon) {
-// actionid is element ID, actionicon is png name without extention
+function addIcon(nextid,actionicon) {
   if (toggle.combat) {
-    document.getElementById(actionid).src = "icons/" + actionicon + ".png";
+    document.getElementById("icon" + nextid).src = "icons/" + actionicon + ".png";
+    document.getElementById("next" + nextid).className = "icondiv addfadein";
+    document.getElementById("next" + nextid).style.display = "table-cell";
   }
 }
 
-function addIconWithTimeout(action,delay,actionid,actionicon) {
+function addIconWithTimeout(action,delay,nextid,actionicon) {
   clearTimeout(timeout[action]);
-  timeout[action] = setTimeout(addIcon, delay, actionid, actionicon);
+  timeout[action] = setTimeout(addIcon, delay, nextid, actionicon);
 }
 
-function removeIcon(actionid) {
-  document.getElementById(actionid).style.display = "none";
+function removeIcon(nextid) {
+  document.getElementById("next" + nextid).className = "icondivtest fadeoutremove";
 }
 
 function addText(actionid,message) {
@@ -279,6 +281,7 @@ function clearElements() {
   for (var x = 0; x < 30; x++) {
     document.getElementById("next" + x).style.display = "none";
   }
+}
 
 function timeoutCombo() {
 // Call this function at the end of event log checker to prevent combos from lingering more than they should
