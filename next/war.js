@@ -29,20 +29,20 @@ id.fellcleave = id.innerbeast;
 id.decimate = id.innerbeast;
 id.chaoticcyclone = id.innerbeast;
 id.innerchaos = id.innerbeast;
-
 id.heavyswing = "1";
 id.maim = "2";
 id.stormspath = "3";
 id.stormseye = id.stormspath;
 
-id.rampart = "10";
-id.vengeance = id.rampart;
-id.rawintuition = id.rampart;
-id.mitigation = "10";
 id.infuriate = "11";
 id.berserk = "12";
 id.innerrelease = id.berserk;
 id.upheaval = id.berserk;
+
+id.rampart = "9";
+id.vengeance = id.rampart;
+id.rawintuition = id.rampart;
+id.mitigation = id.rampart;
 
 recast.berserk = 90000;
 recast.infuriate = 60000;
@@ -84,7 +84,7 @@ icon.nascentflash = "9vWCpDYwb7DjJ35QXTusOuPTaA";
 icon.innerchaos = "eytwlJikgqXuLL8u6rxAB0t0w4";
 
 function warPlayerChangedEvent(e) {
-
+  // Nothing necessary here, I think
 }
 
 // Checks and activates things when entering combat
@@ -103,19 +103,39 @@ function warInCombatChangedEvent(e) {
     addIcon(id.rampart,icon.rampart);
   }
 
-  if (player.level >= 6
-  && checkCooldown("berserk", player.name) < 0) {
-    addIcon(id.berserk,icon.berserk);
+  if (checkCooldown("berserk", player.name) < 0) {
+
+    if (player.level >= 70) {
+      icon.berserk = icon.innerrelease;
+    }
+    else {
+      icon.berserk = "000259";
+    }
+
+    if (player.level >= 50
+    && checkStatus("stormseye", player.name) >= 12500) {
+
+      if (player.level >= 74
+      && checkCooldown("infuriate1", player.name) >= 0) {
+        addIcon(id.berserk,icon.berserk);
+      }
+      else {
+        addIcon(id.berserk,icon.berserk);
+      }
+    }
+
+    else if (player.level >= 6) {
+      addIcon(id.berserk,icon.berserk);
+    }
+  }
+  else if (player.level >= 64
+  && checkCooldown("upheaval", player.name) < 0) {
+    addIcon(id.upheaval,icon.upheaval);
   }
 
   if (player.level >= 50
   && checkCooldown("infuriate1", player.name) < 0) {
     addIcon(id.infuriate,icon.infuriate);
-  }
-
-  if (player.level >= 64
-  && checkCooldown("upheaval", player.name) < 0) {
-    addIcon(id.upheaval,icon.upheaval);
   }
 }
 
@@ -128,14 +148,29 @@ function warAction(logLine) {
 
     if (logLine[3] == "Berserk"
     || logLine[3] == "Inner Release") {
-      addCooldown("berserk", player.name, recast.berserk);
       removeIcon(id.berserk);
+      addCooldown("berserk", player.name, recast.berserk);
+
       if (player.level >= 70) {
-        addIconWithTimeout("berserk",recast.berserk,id.berserk,icon.innerrelease);
+        icon.berserk = icon.innerrelease;
       }
       else {
-        addIconWithTimeout("berserk",recast.berserk,id.berserk,icon.berserk);
+        icon.berserk = "000259";
       }
+
+      addIconWithTimeout("berserk",recast.berserk,id.berserk,icon.berserk);
+      if (player.level >= 70) {
+        warGauge();
+      }
+    }
+
+    else if (logLine[3] == "Upheaval") {
+      removeIcon(id.upheaval);
+      addCooldown("upheaval", player.name, recast.upheaval);
+      if (checkCooldown("berserk", player.name) > 50000) { // Don't prompt for Upheaval if it misses next IR window
+        addIconWithTimeout("upheaval",recast.upheaval,id.upheaval,icon.upheaval);
+      }
+      warGauge();
     }
 
     else if (logLine[3] == "Rampart") {
@@ -171,18 +206,7 @@ function warAction(logLine) {
       removeIcon(id.rawintuition);
     }
 
-    else if (logLine[3] == "Upheaval") {
-      removeIcon(id.upheaval);
-      if (checkCooldown("berserk", player.name) < 50000
-      && checkCooldown("berserk",player.name) > 30000) { // Delay Upheaval up to 20 seconds to catch next Berserk window
-        addCooldown("upheaval", player.name, checkCooldown("berserk", player.name));
-      }
-      else {
-        addCooldown("upheaval", player.name, recast.upheaval);
-        addIconWithTimeout("upheaval",recast.upheaval,id.upheaval,icon.upheaval);
-      }
-      warGauge();
-    }
+
 
     else if (logLine[3] == "Inner Beast" || logLine[3] == "Steel Cyclone"
     || logLine[3] == "Fell Cleave" || logLine[3] == "Decimate"
@@ -263,7 +287,7 @@ function warStatus(logLine) {
       if (logLine[2] == "gains") {
         addStatus("berserk", logLine[1], parseInt(logLine[5]) * 1000);
         if (checkCooldown("upheaval", player.name) < 0) {
-          addIcon(id.upheaval, icon.upheaval);
+          addIcon(id.upheaval, icon.upheaval); // Show Upheaval if up during Berserk
         }
       }
       else if (logLine[2] == "loses") {
@@ -410,9 +434,13 @@ function warGauge() {
 
   // addText("debug1", "Nascent Chaos: " + checkStatus("nascentchaos", player.name));
 
-  if (checkStatus("nascentchaos", player.name) > 0
-  && player.level >= 80) {
-    icon.innerbeast = icon.innerchaos;
+  if (checkStatus("nascentchaos", player.name) > 0) {
+    if (player.level >= 80) {
+      icon.innerbeast = icon.innerchaos;
+    }
+    else if (player.level >= 74) {
+      icon.innerbeast = icon.chaoticcyclone; // Use Cyclone on Single Target before 80?
+    }
   }
   else if (player.level >= 54) {
     icon.innerbeast = icon.fellcleave;
@@ -421,22 +449,16 @@ function warGauge() {
     icon.innerbeast = "002553";
   }
 
-  if (checkStatus("nascentchaos", player.name) > 0) {
-    icon.steelcyclone = icon.chaoticcyclone;
-  }
-  else if (player.level >= 60) {
-    icon.steelcyclone = icon.decimate;
-  }
-  else {
-    icon.steelcyclone = "002552";
-  }
+  // if (checkStatus("nascentchaos", player.name) > 0) {
+  //   icon.steelcyclone = icon.chaoticcyclone;
+  // }
+  // else if (player.level >= 60) {
+  //   icon.steelcyclone = icon.decimate;
+  // }
+  // else {
+  //   icon.steelcyclone = "002552";
+  // }
 
-  if (player.level >= 70) {
-    icon.berserk = icon.innerrelease;
-  }
-  else {
-    icon.berserk = "000259";
-  }
 
   // Gauge
 
