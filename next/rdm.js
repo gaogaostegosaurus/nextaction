@@ -9,21 +9,22 @@ actionList.rdm = [
 
 buffertime.impactful = 10000;
 
-id.riposte = "next0";
+id.riposte = "0";
 id.moulinet = id.riposte;
-id.zwerchhau = "next1";
-id.redoublement = "next2";
-id.verflare = "next3";
+id.zwerchhau = "1";
+id.redoublement = "2";
+id.verflare = "3";
 id.verholy = id.verflare;
-id.hardcast = "next4";
-id.dualcast = "next5";
-id.manafication = "next10";
-id.fleche = "next11";
-id.contresixte = "next12";
-id.acceleration = "next13";
-id.corpsacorps = "next14";
-id.displacement = "next15";
-id.luciddreaming = "next16";
+id.hardcast = "4";
+id.dualcast = "5";
+
+id.luciddreaming = "10";
+id.manafication = "11";
+id.fleche = "12";
+id.contresixte = "13";
+id.acceleration = "14";
+id.corpsacorps = "15";
+id.displacement = "16";
 
 recast.corpsacorps = 40000;
 recast.displacement = 35000;
@@ -257,16 +258,8 @@ function rdmAction(logLine) {
       removeIcon(id.redoublement);
       removeIcon(id.verflare);
 
-      if (logLine[3] == "Jolt II"
-      && player.level >= 66) {
-        addStatus("impactful", player.name, duration.impactful);
-      }
 
-      else if (logLine[3] == "Impact") {
-        removeStatus("impactful", player.name)
-      }
-
-      else if (logLine[3] == "Verfire") {
+      if (logLine[3] == "Verfire") {
         removeStatus("verfireready", player.name)
       }
 
@@ -331,15 +324,6 @@ function rdmStatus(logLine) {
       }
       else if (logLine[2] == "loses") {
         removeStatus("verstoneready", player.name)
-      }
-    }
-
-    else if (logLine[3] == "Impactful") {
-      if (logLine[2] == "gains") {
-        addStatus("impactful", player.name, parseInt(logLine[5]) * 1000);
-      }
-      else if (logLine[2] == "loses") {
-        removeStatus("impactful", player.name)
       }
     }
 
