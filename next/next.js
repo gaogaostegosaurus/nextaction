@@ -90,6 +90,9 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
     else if (player.job == "WAR") {
       warPlayerChangedEvent(e);
     }
+    else if (player.job == "WHM") {
+      whmPlayerChangedEvent(e);
+    }
   }
 });
 
@@ -129,6 +132,9 @@ document.addEventListener("onInCombatChangedEvent", function(e) {
     else if (player.job == "WAR") {
       warInCombatChangedEvent(e);
     }
+    else if (player.job == "WHM") {
+      whmInCombatChangedEvent(e);
+    }
   }
 });
 
@@ -156,6 +162,9 @@ document.addEventListener("onLogEvent", function(e) {
       else if (player.job == "WAR") {
         warAction(actionLog);
       }
+      else if (player.job == "WHM") {
+        whmAction(actionLog);
+      }
     }
 
     else if (statusLog) {
@@ -174,6 +183,9 @@ document.addEventListener("onLogEvent", function(e) {
       else if (player.job == "WAR") {
         warStatus(statusLog);
       }
+      // else if (player.job == "WHM") {
+      //   whmStatus(statusLog);
+      // }
     }
   }
 });
@@ -256,6 +268,14 @@ function addIcon(nextid,actionicon) {
   if (toggle.combat) {
     document.getElementById("icon" + nextid).src = "icons/" + actionicon + ".png";
     document.getElementById("next" + nextid).className = "icondiv addfadein";
+    document.getElementById("next" + nextid).style.display = "table-cell";
+  }
+}
+
+function addIconBlink(nextid,actionicon) {
+  if (toggle.combat) {
+    document.getElementById("icon" + nextid).src = "icons/" + actionicon + ".png";
+    document.getElementById("next" + nextid).className = "icondiv addfadeinblink";
     document.getElementById("next" + nextid).style.display = "table-cell";
   }
 }

@@ -67,9 +67,9 @@
     .fadeout {
       animation: fadeout 1s forwards;
     }
-    .fadeinblink {
-      animation: fadein 0.1s forwards, blink 0.1s infinite;
-      animation-delay: 0s, 0.1s;
+    .addfadeinblink {
+      animation: add 0.1s forwards, fadein 0.1s forwards, blink 0.5s infinite;
+      animation-delay: 0s, 0.1s, 0.1s;
     }
     .fadeoutremove {
       animation: fadeout 0.25s forwards, remove 0.25s forwards;

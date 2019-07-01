@@ -6,24 +6,24 @@ actionList.sam = ["Higanbana", "Midare Setsugekka", "Tenka Goken",
 
 // statusList.sam = ["Jinpu", "Shifu", "Meikyo Shisui", "Hissatsu: Kaiten", "Higanbana", "Slashing Resistance Down"];
 
-id.iaijutsu1 = "next0";
-id.hakaze = "next1";
+id.iaijutsu1 = "0";
+id.hakaze = "1";
 id.fuga = id.hakaze;
-id.jinpu = "next2";
+id.jinpu = "2";
 id.shifu = id.jinpu;
-id.iaijutsu2 = "next3";
-id.gekko = "next4";
+id.iaijutsu2 = "3";
+id.gekko = "4";
 id.kasha = id.gekko;
 id.yukikaze = id.gekko;
 id.mangetsu = id.gekko;
 id.oka = id.gekko;
-id.iaijutsu3 = "next5";
-id.shinten = "next10";
+id.iaijutsu3 = "5";
+id.shinten = "10";
 id.kyuten = id.shinten;
 id.guren = id.shinten;
 id.kenkispender = id.shinten;
-id.hagakure = "next11";
-id.meikyoshisui = "next12";
+id.hagakure = "11";
+id.meikyoshisui = "12";
 
 icon.hakaze = "003151";
 icon.jinpu = "003152";
@@ -59,18 +59,6 @@ function samPlayerChangedEvent(e) {
   // Add guren then haga vs haga then guren situations
   // Set Kenki target based on if Hagakure is coming up
   if (player.level >= 70
-  && checkCooldown("hagakure", player.name) > checkCooldown("guren", player.name)) {
-    gauge.target = 70;
-  }
-  else if (player.level >= 70
-  && checkCooldown("guren", player.name) > checkCooldown("hagakure", player.name)) {
-    gauge.target = 0;
-  }
-  else if (player.level >= 68
-  && checkCooldown("hagakure", player.name) < 4000) {
-    gauge.target = 0;
-  }
-  else if (player.level >= 70
   && checkCooldown("guren", player.name) < 10000) {
     gauge.target = 70;
   }
@@ -79,25 +67,6 @@ function samPlayerChangedEvent(e) {
   }
 
   // Check for Hagakure, spend Sen if Hagakure is far enough away, use Kenki otherwise
-  if (player.level >= 68
-  && checkCooldown("hagakure", player.name) < 4000
-  && player.jobDetail.kenki <= 35) {
-    removeIcon(id.iaijutsu1);
-    removeIcon(id.iaijutsu2);
-    removeIcon(id.iaijutsu3);
-    if (toggle.aoe
-    && player.jobDetail.gekko + player.jobDetail.ka + player.jobDetail.setsu >= 2) {
-      addIcon(id.hagakure,icon.hagakure);
-    }
-    else if (player.jobDetail.gekko + player.jobDetail.ka + player.jobDetail.setsu >= 3) {
-      addIcon(id.hagakure,icon.hagakure);
-    }
-    else {
-      removeIcon(id.hagakure);
-    }
-  }
-
-  else { // Iaijutsu with available Sen
 
     // Higanbana
     if (player.jobDetail.gekko + player.jobDetail.ka + player.jobDetail.setsu == 1
@@ -156,22 +125,17 @@ function samPlayerChangedEvent(e) {
         removeIcon(id.iaijutsu2);
         removeIcon(id.iaijutsu3);
       }
-    }
 
+}
     // No Sen
     else {
       removeIcon(id.iaijutsu1);
       removeIcon(id.iaijutsu2);
       removeIcon(id.iaijutsu3);
     }
-  }
+
 
   // Kenki management
-
-  if (player.level >= 70
-  && checkCooldown("guren", player.name) < 12000
-  && checkCooldown("hagakure", player.name) > 12000) {
-  // Guren coming up
 
     if (player.jobDetail.kenki >= gauge.target + 50
     && checkCooldown("guren", player.name) < 0) {
@@ -195,7 +159,7 @@ function samPlayerChangedEvent(e) {
     && checkCooldown("guren", player.name) < 12000) { // Save for Guren
       removeIcon(id.kenkispender);
     }
-  }
+
 
   else if (player.level >= 62
   && player.jobDetail.kenki >= gauge.target + 25) {
@@ -212,10 +176,11 @@ function samPlayerChangedEvent(e) {
   }
 }
 
+
 function samAction(logLine) {
 
   if (logLine[2] == player.name
-  && actionlist.sam.indexOf(logLine[3]) > -1) { // Check if from player
+  && actionList.sam.indexOf(logLine[3]) > -1) { // Check if from player
 
     // AoE toggle
     if (["Fuga","Mangetsu","Oka"].indexOf(logLine[3]) > -1) {
