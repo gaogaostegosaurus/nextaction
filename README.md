@@ -25,7 +25,7 @@ Some features that should work:
 - Adjusts displayed icons on manual/incorrect inputs
 
 #### Todo list... eventually?
-- The other jobs ¯\\_(ツ)_/¯
+- The other jobs ¯\\\_(ツ)_/¯
 - More consistent bitmasks for miss/combo stuff? Kind of winging it right now
 - Adjust weights for RDM to be better on edge cases
 - Raid buff windows
