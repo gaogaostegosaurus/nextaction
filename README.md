@@ -7,23 +7,24 @@ URL: https://gaogaostegosaurus.github.io/next/next.html
 Some features that should work:
 
 #### BRD
-- Shows optimal next action
+- nothing, because Shadowbringers was released
 
 #### RDM
-- Shows suggested next hardcast/dualcast actions
-- Shows Manafication at correct breakpoints
-- Shows combo actions during combo, including suggested finisher
+- Checks all possible spell combinations and uses a weight system to pick the best cast
+- Shows/hides Manafication at correct breakpoints
 
 #### SAM
+- Works to 70ish
 - Shows next optimal combo, adjusts for manual/incorrect inputs
 - Shows Iaijutsu in efficient place within combo sequence
 - Shows when to spend or save Kenki
 
 #### WAR
-- Shows next optimal combo, adjusts for manual/incorrect inputs
-- Shows spender notice when about to overcap
-- Shows mitigation notice when no mitigation up but one is available
+- Shows next optimal combo to maintain Storm's Eye depending on upcoming cooldowns
+- Makes decisions about when to use Inner Beast/etc
+- Adjusts displayed icons on manual/incorrect inputs
 
 
 Stuff to be done:
-- More consistent bitmasks for miss/combo stuff
+- More consistent bitmasks for miss/combo stuff?
+- Better weights for RDM
