@@ -24,7 +24,8 @@ Some features that should work:
 - Makes decisions about when to use Inner Beast/etc
 - Adjusts displayed icons on manual/incorrect inputs
 
-
-Stuff to be done:
-- More consistent bitmasks for miss/combo stuff?
-- Better weights for RDM
+#### Todo list... eventually?
+- The other jobs ¯\_(ツ)_/¯
+- More consistent bitmasks for miss/combo stuff? Kind of winging it right now
+- Adjust weights for RDM to be better on edge cases
+- Raid buff windows
