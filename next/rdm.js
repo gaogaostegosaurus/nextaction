@@ -14,7 +14,6 @@ actionList.rdm = [
   "Swiftcast", "Lucid Dreaming"
 ];
 
-id.luciddreaming = "0";
 id.riposte = "1";
 id.moulinet = id.riposte;
 id.zwerchhau = "2";
@@ -38,11 +37,7 @@ recast.acceleration = 35000;
 recast.contresixte = 45000;
 recast.embolden = 120000;
 recast.manafication = 120000;
-recast.swiftcast = 60000;
-recast.luciddreaming = 60000;
 
-icon.luciddreaming = "000865";
-icon.swiftcast = "000866";
 
 icon.jolt = "003202";
 icon.jolt2 = "003220"

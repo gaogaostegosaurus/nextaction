@@ -4,11 +4,7 @@ actionList.whm = [
   "Lucid Dreaming"
 ];
 
-id.luciddreaming = "0";
 
-icon.luciddreaming = "luciddreaming";
-
-recast.luciddreaming = 60000;
 
 // id.freecure = "next0";
 // id.aero = "next1";

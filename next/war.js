@@ -207,11 +207,10 @@ function warAction(logLine) {
 
       // Had only 1 charge - was charging 2
       if (checkCooldown("infuriate2", player.name) >= 0) {
-        addCooldown("infuriate1", player.name, checkCooldown("infuriate2", logLine[2]));
-        addCooldown("infuriate2", player.name, checkCooldown("infuriate2", logLine[2]) + recast.infuriate);
+        addCooldown("infuriate1", player.name, checkCooldown("infuriate2", player.name));
+        addCooldown("infuriate2", player.name, checkCooldown("infuriate2", player.name) + recast.infuriate);
         removeIcon(id.infuriate);
-        clearTimeout(timeout.infuriate);
-        addIconWithTimeout("infuriate",checkCooldown("infuriate1", player.name),id.infuriate,icon.infuriate);
+        addIconWithTimeout("infuriate", checkCooldown("infuriate1", player.name), id.infuriate, icon.infuriate);
       }
 
       // Had 2 charges (can't use with 0 charges...)
@@ -231,7 +230,7 @@ function warAction(logLine) {
     else if (logLine[3] == "Inner Beast" || logLine[3] == "Steel Cyclone"
     || logLine[3] == "Fell Cleave" || logLine[3] == "Decimate"
     || logLine[3] == "Chaotic Cyclone" || logLine[3] == "Inner Chaos") {
-      if (player.level >= 66) {
+      if (player.level >= 66) { // Enhanced Infuriate
         addCooldown("infuriate1", player.name, checkCooldown("infuriate1", player.name) - 5000);
         addCooldown("infuriate2", player.name, checkCooldown("infuriate2", player.name) - 5000);
         removeIcon(id.infuriate);
@@ -452,10 +451,9 @@ function warComboTimeout() {
 
 function warGauge() {
 
-  // addText("debug1", "Nascent Chaos: " + checkStatus("nascentchaos", player.name));
-
   addText("debug1", "");
-
+  // addText("debug1", "Nascent Chaos: " + checkStatus("nascentchaos", player.name));
+  addText("debug2", "Infuriate x1: " + checkStatus("infuriate1", player.name) + "  Infuriate x2: " + checkStatus("infuriate2", player.name) );
 
   if (checkStatus("nascentchaos", player.name) > 0) {
     if (player.level >= 80) {

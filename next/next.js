@@ -33,6 +33,15 @@ var statusLog;
 var player = {};
 var target = {};
 
+// Role stuff - used by multiple jobs
+
+id.luciddreaming = "0"; // redeclare in jobchanged if necessary
+
+icon.luciddreaming = "000865";
+icon.swiftcast = "000866";
+
+recast.swiftcast = 60000;
+recast.luciddreaming = 60000;
 
 // onPlayerChangedEvent: fires whenever player change detected (including HP, positions, etc.)
 
@@ -199,13 +208,13 @@ function addCooldown(cooldownname, source, recast) {
   // logLine[2] = source name in action logLine
 
   if (!cooldowntracker[cooldownname]) { // Create array if it doesn't exist yet
-    cooldowntracker[cooldownname] = [source, Date.now() + recast];
+    cooldowntracker[cooldownname] = [source, recast + Date.now()];
   }
   else if (cooldowntracker[cooldownname].indexOf(source) > -1) { // Update array if source match found
-    cooldowntracker[cooldownname][cooldowntracker[cooldownname].indexOf(source) + 1] = Date.now() + recast;
+    cooldowntracker[cooldownname][cooldowntracker[cooldownname].indexOf(source) + 1] = recast + Date.now();
   }
   else { // Push new entry into array if no matching entry
-    cooldowntracker[cooldownname].push(source, Date.now() + recast);
+    cooldowntracker[cooldownname].push(source, recast + Date.now());
   }
 }
 
