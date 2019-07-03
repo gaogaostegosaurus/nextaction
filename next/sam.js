@@ -10,78 +10,44 @@ actionList.sam = [
   "Hakaze", "Jinpu", "Enpi", "Shifu", "Gekko", "Kasha", "Yukikaze", "Fuga", "Mangetsu", "Oka"
 ];
 
-id.iaijutsu1 = "0";
-id.hakaze = "1";
-id.fuga = id.hakaze;
-id.jinpu = "2";
-id.shifu = id.jinpu;
-id.iaijutsu2 = "3";
-id.gekko = "4";
-id.kasha = id.gekko;
-id.yukikaze = id.gekko;
-id.mangetsu = id.gekko;
-id.oka = id.gekko;
-id.ikishoten = "10";
-id.meikyoshisui = "11";
-id.guren = "12";
-id.senei = id.guren;
-id.shinten = "13";
-id.kyuten = id.shinten;
-id.seigan = id.shinten;
-id.shoha = "14";
+function samJobChange() {
+  id.iaijutsu1 = "0";
+  id.hakaze = "1";
+  id.fuga = id.hakaze;
+  id.jinpu = "2";
+  id.shifu = id.jinpu;
+  id.iaijutsu2 = "3";
+  id.gekko = "4";
+  id.kasha = id.gekko;
+  id.yukikaze = id.gekko;
+  id.mangetsu = id.gekko;
+  id.oka = id.gekko;
+  id.ikishoten = "10";
+  id.meikyoshisui = "11";
+  id.guren = "12";
+  id.senei = id.guren;
+  id.shinten = "13";
+  id.kyuten = id.shinten;
+  id.seigan = id.shinten;
+  id.shoha = "14";
+}
 
-icon.hakaze = "003151";
-icon.jinpu = "003152";
-icon.shifu = "003156";
-icon.fuga = "003157";
-icon.gekko = "003158";
-icon.iaijutsu = "003159";
-icon.higanbana = "003160";
-icon.tenkagoken = "003161";
-icon.midaresetsugekka = "003162";
-icon.mangetsu = "003163";
-icon.kasha = "003164";
-icon.oka = "003165";
-icon.yukikaze = "003166";
-icon.meikyoshisui = "003167";
-icon.kaiten = "003168";
-icon.shinten = "003173";
-icon.kyuten = "003174";
-icon.hagakure = "003176";
-icon.guren = "003177";
-
-duration.jinpu = 40000;
-duration.shifu = 40000;
-duration.kaiten = 10000;
-
-recast.meikyoshisui = 60000;
-recast.ikishoten = 60000;
-recast.guren = 120000;
-recast.senei = recast.guren;
-
-function samPlayerChangedEvent(e) {}
 
 function samAction(logLine) {
 
   if (logLine[2] == player.name
   && actionList.sam.indexOf(logLine[3]) > -1) { // Check if from player
 
-    addText("debug1","")
+    addText("debug1","");
 
     // Toggle AoE
 
     if (logLine[3] == "Fuga"
     || logLine[3] == "Mangetsu"
     || logLine[3] == "Oka"
-    || logLine[3] == "Hissatsu: Kyuten") {
-      toggle.aoe = Date.now();
-    }
-    else if (logLine[3] == "Tenka Goken"
-    && player.level >= 50) {
-      toggle.aoe = Date.now();
-    }
-    else if (logLine[3] == "Hissatsu: Guren"
-    && player.level >= 72) {
+    || logLine[3] == "Hissatsu: Kyuten"
+    || (logLine[3] == "Tenka Goken" && player.level >= 50)
+    || (logLine[3] == "Hissatsu: Guren" && player.level >= 72)) {
       toggle.aoe = Date.now();
     }
     else {
@@ -526,6 +492,9 @@ function samCombo() {
       }
     }
   }
+
+  clearTimeout(timeout.combo);
+  timeout.combo = setTimeout(samCombo, 12500);
 }
 
 function gekkoCombo() {

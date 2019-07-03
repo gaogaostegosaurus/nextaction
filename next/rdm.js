@@ -14,53 +14,26 @@ actionList.rdm = [
   "Swiftcast", "Lucid Dreaming"
 ];
 
-id.riposte = "1";
-id.moulinet = id.riposte;
-id.zwerchhau = "2";
-id.redoublement = "3";
-id.verflare = "4";
-id.verholy = id.verflare;
-id.hardcast = "5";
-id.dualcast = "6";
+function rdmJobChange() {
 
-id.manafication = "11";
-id.fleche = "12";
-id.contresixte = "13";
-id.acceleration = "14";
-id.corpsacorps = "15";
-id.displacement = "16";
+  id.luciddreaming = "0"; // redeclare in jobchanged if necessary
 
-recast.corpsacorps = 40000;
-recast.displacement = 35000;
-recast.fleche = 25000;
-recast.acceleration = 35000;
-recast.contresixte = 45000;
-recast.embolden = 120000;
-recast.manafication = 120000;
+  id.riposte = "1";
+  id.moulinet = id.riposte;
+  id.zwerchhau = "2";
+  id.redoublement = "3";
+  id.verflare = "4";
+  id.verholy = id.verflare;
+  id.scorch = "5";
+  id.hardcast = "6";
+  id.dualcast = "7";
 
-
-icon.jolt = "003202";
-icon.jolt2 = "003220"
-icon.verthunder = "003203";
-icon.corpsacorps = "003204";
-icon.veraero = "003205";
-icon.scatter = "003207";
-icon.verfire = "003208";
-icon.verstone = "003209";
-icon.displacement = "003211";
-icon.fleche = "003212";
-icon.acceleration = "003214"
-icon.contresixte = "003217";
-icon.manafication = "003219";
-icon.impact = "003222";
-icon.verflare = "003223";
-icon.verholy = "003224";
-icon.riposte = "003225";
-icon.zwerchhau = "003226";
-icon.redoublement = "003227";
-icon.moulinet = "003228";
-
-function rdmPlayerChangedEvent(e) {
+  id.manafication = "11";
+  id.fleche = "12";
+  id.contresixte = "13";
+  id.acceleration = "14";
+  id.corpsacorps = "15";
+  id.displacement = "16";
 
   if (player.level >= 62) {
     icon.jolt = icon.jolt2;
@@ -76,18 +49,20 @@ function rdmPlayerChangedEvent(e) {
     icon.scatter = "003207";
   }
 
-  // Lucid Dreaming Low MP
+  if (player.level >= 74) {
+    recast.manafication = 110000;
+  }
+}
 
+function rdmPlayerChangedEvent(e) {
+
+  // Lucid Dreaming Low MP
   if (player.currentMP / player.maxMP < 0.85
   && checkCooldown("luciddreaming", player.name) < 0) {
     addIconBlink(id.luciddreaming,icon.luciddreaming);
   }
   else {
     removeIcon(id.luciddreaming);
-  }
-
-  if (player.level >= 74) {
-    recast.manafication = 110000;
   }
 }
 
@@ -125,10 +100,10 @@ function rdmAction(logLine) {
   && actionList.rdm.indexOf(logLine[3]) > -1) {
 
     // AoE toggle
-    if (["Scatter", "Enchanted Moulinet"].indexOf(logLine[3]) > -1) {
+    if (["Verthunder II", "Veraero II"].indexOf(logLine[3]) > -1) {
       toggle.aoe = Date.now();
     }
-    else if (["Jolt", "Verfire", "Verstone", "Jolt II", "Impact", "Enchanted Riposte", "Enchanted Zwerchhau", "Enchanted Redoublement"].indexOf(logLine[3]) > -1) {
+    else if (["Jolt", "Verfire", "Verstone", "Jolt II", "Verthunder", "Veraero"].indexOf(logLine[3]) > -1) {
       delete toggle.aoe;
     }
 
@@ -200,12 +175,22 @@ function rdmAction(logLine) {
 
     else if (logLine[3] == "Verflare") {
       removeIcon(id.verflare);
-      delete toggle.combo;
-      rdmDualcast();
+      if (player.level < 80) {
+        delete toggle.combo;
+        rdmDualcast();
+      }
     }
 
     else if (logLine[3] == "Verholy") {
       removeIcon(id.verholy);
+      if (player.level < 80) {
+        delete toggle.combo;
+        rdmDualcast();
+      }
+    }
+
+    else if (logLine[3] == "Scorch") {
+      removeIcon(id.scorch);
       delete toggle.combo;
       rdmDualcast();
     }
@@ -321,6 +306,7 @@ function rdmDualcast() {
   removeIcon(id.zwerchhau);
   removeIcon(id.redoublement);
   removeIcon(id.verflare);
+  removeIcon(id.scorch);
 
   rdmManafication();
 
@@ -449,13 +435,11 @@ function rdmDualcast() {
       addIcon(id.dualcast, icon.veraero);
     }
 
-    // addText("debug1", "Index: " + maxIndex + "  Value: " + max);
-    addText("debug1",  "J+VT:"  + next.dualcast[0] + " J+VA:"  + next.dualcast[1]
-                    + " VF+VT:" + next.dualcast[2] + " VF+VA:" + next.dualcast[3]
-                    + " VS+VT:" + next.dualcast[4] + " VS+VA:" + next.dualcast[5]
-                    + " SC+VT:" + next.dualcast[6] + " SC+VA:" + next.dualcast[7]);
-    // If all options suck, reset?
-
+    // Debug to check values
+    addText("debug0", "J+VT:"  + next.dualcast[0] + " J+VA:"  + next.dualcast[1]);
+    addText("debug1", "VF+VT:" + next.dualcast[2] + " VF+VA:" + next.dualcast[3]);
+    addText("debug2", "VS+VT:" + next.dualcast[4] + " VS+VA:" + next.dualcast[5]);
+    addText("debug3", "SC+VT:" + next.dualcast[6] + " SC+VA:" + next.dualcast[7]);
   }
 }
 
@@ -613,15 +597,21 @@ function rdmCombo() {
 function rdmFlareCombo() {
   rdmCombo();
   addIcon(id.verflare,icon.verflare);
+  if (player.level >= 80) {
+    addIcon(id.scorch, icon.scorch);
+  }
 }
 
 function rdmHolyCombo() {
   rdmCombo();
   addIcon(id.verholy,icon.verholy);
+  if (player.level >= 80) {
+    addIcon(id.scorch, icon.scorch);
+  }
 }
 
-// Notes to self
-// delete toggle.combo is everywhere because Manafication relies on it to check
+// Note to self
+// delete toggle.combo; is everywhere because Manafication relies on it to check
 
 function rdmManafication() {
 
@@ -644,6 +634,7 @@ function rdmManafication() {
 
     // Early Manafication if able to proc from Verholy
     else if (player.level >= 70
+    && toggle.aoe
     && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 43
     && player.jobDetail.whiteMana < 50
     && player.jobDetail.blackMana > player.jobDetail.whiteMana
@@ -676,7 +667,6 @@ function rdmManafication() {
     }
   }
   else {
-    // Hide otherwise?
     removeIcon(id.manafication);
     delete toggle.manafication;
   }

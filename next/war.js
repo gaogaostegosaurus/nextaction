@@ -4,7 +4,7 @@
 
 actionList.war = [
 
-  "Rampart",
+  "Rampart", "Arm\'s Length",
 
   "Berserk", "Thrill Of Battle", "Vengeance", "Holmgang", "Infuriate",
   "Raw Intuition", "Upheaval", "Inner Release",
@@ -14,80 +14,38 @@ actionList.war = [
   "Fell Cleave", "Decimate",
   "Chaotic Cyclone", "Inner Chaos",
 
-  "Heavy Swing", "Maim", "Overpower", "Tomahawk", "Storm\'s Path", "Mythril Tempest", "Storm\'s Eye"
+  "Heavy Swing", "Maim", "Storm\'s Path", "Storm\'s Eye",
+  "Overpower",
+  "Mythril Tempest",
+  "Tomahawk"
 
 ];
 
-// Don't need to check these actions yet
+// Don't need to check these actions yet?
 // "Onslaught", "Equilibrium", "Shake It Off",
 // "Low Blow", "Provoke", "Interject", "Reprisal", "Arm's Length", "Shirk",
 
-// Decide placement of stuff
+function warJobChange() {
 
-id.innerbeast = "0";
-id.steelcyclone = id.innerbeast;
-id.fellcleave = id.innerbeast;
-id.decimate = id.innerbeast;
-id.chaoticcyclone = id.innerbeast;
-id.innerchaos = id.innerbeast;
-id.heavyswing = "1";
-id.maim = "2";
-id.stormspath = "3";
-id.stormseye = id.stormspath;
+  id.innerbeast = "0";
+  id.steelcyclone = id.innerbeast;
+  id.fellcleave = id.innerbeast;
+  id.decimate = id.innerbeast;
+  id.chaoticcyclone = id.innerbeast;
+  id.innerchaos = id.innerbeast;
+  id.heavyswing = "1";
+  id.maim = "2";
+  id.stormspath = "3";
+  id.stormseye = id.stormspath;
+  id.rampart = "9";
+  id.vengeance = id.rampart;
+  id.rawintuition = id.rampart;
+  id.mitigation = id.rampart;
 
-id.infuriate = "11";
-id.berserk = "12";
-id.innerrelease = id.berserk;
-id.upheaval = id.berserk;
-
-id.rampart = "9";
-id.vengeance = id.rampart;
-id.rawintuition = id.rampart;
-id.mitigation = id.rampart;
-
-recast.berserk = 90000;
-recast.infuriate = 60000;
-recast.rampart = 90000;
-recast.rawintuition = 25000;
-recast.upheaval = 30000;
-recast.vengeance = 120000;
-recast.innerrelease = recast.berserk;
-
-icon.overpower = "000254";
-icon.maim = "000255";
-icon.stormspath = "000258";
-icon.berserk = "000259";
-icon.heavyswing = "000260";
-icon.tomahawk = "000261";
-icon.butchersblock = "000262";
-icon.thrillofbattle = "000263";
-icon.stormseye = "000264";
-icon.holmgang = "000266";
-icon.vengeance = "000267";
-
-icon.defiance = "002551";
-icon.steelcyclone = "002552";
-icon.innerbeast = "002553";
-icon.unchained = "002554";
-icon.infuriate = "002555";
-icon.deliverance = "002556";
-icon.fellcleave = "002557";
-icon.decimate = "002558";
-icon.rawintuition = "002559";
-icon.equilibrium = "002560";
-icon.onslaught = "002561";
-icon.upheaval = "002562";
-icon.shakeitoff = "002563";
-icon.innerrelease = "002564";
-
-
-icon.chaoticcyclone = "W29MrhEmsNo9M_ptkmTejtHOgk";
-icon.nascentflash = "9vWCpDYwb7DjJ35QXTusOuPTaA";
-icon.innerchaos = "eytwlJikgqXuLL8u6rxAB0t0w4";
-
-function warPlayerChangedEvent(e) {
-
-  // These icons change by level
+  id.infuriate = "11";
+  id.berserk = "12";
+  id.innerrelease = id.berserk;
+  id.upheaval = id.berserk;
 
   if (player.level >= 54) {
     icon.innerbeast = icon.fellcleave;
@@ -169,6 +127,16 @@ function warAction(logLine) {
   if (logLine[2] == player.name
   && actionList.war.indexOf(logLine[3]) > -1) {
 
+    if (logLine[3] == "Overpower"
+    || logLine[3] == "Steel Cyclone"
+    || logLine[3] == "Decimate"
+    || (logLine[3] == "Chaotic Cyclone" && player.level >= 80)) {
+      toggle.aoe = Date.now();
+    }
+    else {
+      delete toggle.aoe;
+    }
+
     // These actions don't break combo
 
     if (logLine[3] == "Berserk"
@@ -192,9 +160,6 @@ function warAction(logLine) {
     else if (logLine[3] == "Upheaval") {
       removeIcon(id.upheaval);
       addCooldown("upheaval", player.name, recast.upheaval);
-      if (checkCooldown("berserk", player.name) > 50000) { // Don't prompt for Upheaval if it misses next IR window
-        addIconBlinkTimeout("upheaval",recast.upheaval,id.upheaval,icon.upheaval);
-      }
       warGauge();
     }
 
@@ -210,28 +175,19 @@ function warAction(logLine) {
 
     else if (logLine[3] == "Infuriate") {
 
-      // addText("debug1", "Infuriate x1: " + checkCooldown("infuriate1", player.name) + "   Infuriate x2: " + checkCooldown("infuriate2", player.name));
-
-      // Had only 1 charge - was charging 2
+      // Code treats Infuriate like two different skills to juggle the charges.
 
       if (checkCooldown("infuriate2", player.name) < 0) {
         addCooldown("infuriate2", player.name, recast.infuriate);
         addCooldown("infuriate1", player.name, 0);
       }
-
       else {
         removeIcon(id.infuriate);
         addCooldown("infuriate2", player.name, checkCooldown("infuriate2", player.name) + recast.infuriate);
         addCooldown("infuriate1", player.name, checkCooldown("infuriate2", player.name) - recast.infuriate);
         addIconBlinkTimeout("infuriate", checkCooldown("infuriate1", player.name), id.infuriate, icon.infuriate);
       }
-
-      // Had 2 charges (can't use with 0 charges...)
-
-
-      addText("debug3", "Infuriate x1: " + checkCooldown("infuriate1", player.name) + "  Infuriate x2: " + checkCooldown("infuriate2", player.name) );
-
-      warGauge()
+      warGauge();
     }
 
     else if (logLine[3] == "Raw Intuition") {
@@ -251,9 +207,12 @@ function warAction(logLine) {
     }
 
     else if (logLine[3] == "Steel Cyclone" || logLine[3] == "Decimate" || logLine[3] == "Chaotic Cyclone") {
+
       if (player.level >= 66) { // Enhanced Infuriate
 
-        // Since 1 line is created for every AoE hit, this is needed to prevent every line from triggering
+        // Me: "WHY ARE MY COOLDOWNS SCREWED UP!!??!?!1/1/1/1"
+        // Since 1 line is created for every AoE hit, this is needed to prevent every line from triggering Enhanced Infuriate
+
         if (!previous.steelcyclone || Date.now() - previous.steelcyclone > 1000) {
           previous.steelcyclone = Date.now();
           addCooldown("infuriate1", player.name, checkCooldown("infuriate1", player.name) - 5000);
@@ -262,12 +221,8 @@ function warAction(logLine) {
           addIconBlinkTimeout("infuriate",checkCooldown("infuriate1", player.name),id.infuriate,icon.infuriate);
         }
       }
-
-      addText("debug3", "Infuriate x1: " + checkCooldown("infuriate1", player.name) + "  Infuriate x2: " + checkCooldown("infuriate2", player.name) );
-
       removeIcon(id.innerbeast);
       warGauge();
-
     }
 
     // These actions affect combo
@@ -302,6 +257,14 @@ function warAction(logLine) {
         delete toggle.combo;
         warCombo();
         warGauge();
+      }
+
+      else if (logLine[3] == "Overpower"
+      && logLine[6].length >= 2) {
+        if (!toggle.combo) {
+          warCombo();
+        }
+        removeIcon(id.heavyswing);
       }
 
       else {
@@ -460,47 +423,18 @@ function warMitigation() {
   }
 }
 
-function warCombo() {
-
-  addText("debug1", "");
-
-  if (player.level >= 50
-  && checkCooldown("berserk", player.name) < 15000
-  && checkStatus("stormseye", player.name) - checkCooldown("berserk", player.name) < 20000) {
-    addText("debug1", "Set up for Berserk");
-    stormseyeCombo();
-  }
-
-  else if (player.level >= 50
-  && checkStatus("stormseye", player.name) < 20000) {
-    addText("debug1", "Keep Storm's Eye up");
-    stormseyeCombo();
-  }
-
-  else {
-    addText("debug1", "");
-    stormspathCombo();
-  }
-}
-
-function warComboTimeout() {
-
-  clearTimeout(timeout.combo);
-  timeout.combo = setTimeout(warCombo, 12000);
-}
-
 function warGauge() {
 
+  // Clear debug
   addText("debug2", "");
 
-  // addText("debug2", "Nascent Chaos: " + checkStatus("nascentchaos", player.name));
-
-  if (checkStatus("nascentchaos", player.name) > 0) {
+  // Set Inner Beast icon
+  if (checkStatus("nascentchaos", player.name) > 2500) {
     if (player.level >= 80) {
       icon.innerbeast = icon.innerchaos;
     }
     else if (player.level >= 74) {
-      icon.innerbeast = icon.chaoticcyclone; // Use Cyclone on Single Target before 80?
+      icon.innerbeast = icon.chaoticcyclone; // Use Cyclone on Single Target before 80? Not sure...
     }
   }
   else if (player.level >= 54) {
@@ -510,7 +444,8 @@ function warGauge() {
     icon.innerbeast = "002553";
   }
 
-  if (checkStatus("nascentchaos", player.name) > 0) {
+  // Set Steel Cyclone icon
+  if (checkStatus("nascentchaos", player.name) > 2500) {
     icon.steelcyclone = icon.chaoticcyclone;
   }
   else if (player.level >= 60) {
@@ -520,10 +455,8 @@ function warGauge() {
     icon.steelcyclone = "002552";
   }
 
-  // Gauge
-
   if (player.level >= 70
-  && checkStatus("berserk", player.name) > 0) {
+  && checkStatus("berserk", player.name) > 0) { // Set to 0 just to be safe - function called when IR status lost anyway.
     addText("debug2", "Inner Release");
     gauge.max = 0; // Spam during Inner Release
   }
@@ -536,30 +469,48 @@ function warGauge() {
   else if (player.level >= 66
   && checkCooldown("infuriate1", player.name) < 10000) {
     addText("debug2", "Upcoming Enhanced Infuriate");
-    gauge.max = 50; // Avoid capping from Enhanced Infuriate
+    gauge.max = 50; // Avoid overcapping from Enhanced Infuriate
   }
   else if (player.level < 66
   && checkCooldown("infuriate1", player.name) < 5000) {
     addText("debug2", "Upcoming Infuriate");
-    gauge.max = 50; // Avoid capping from Enhanced Infuriate
+    gauge.max = 50; // Avoid overcapping from Infuriate
   }
-  else if (checkStatus("nascentchaos", player.name) > 0
-  && checkStatus("nascentchaos", player.name) < 5000) {
-    addText("debug2", "Nascent Chaos dropping");
+  else if (player.level >= 74
+  && checkStatus("nascentchaos", player.name) > 2500
+  && checkStatus("nascentchaos", player.name) < 12500) {
+    addText("debug2", "Use Nascent Chaos");
     gauge.max = 50; // Avoid wasting Nascent Chaos
   }
-  else if (checkStatus("stormseye", player.name) < 5000) {
+  else if (player.level >= 50
+  && checkStatus("stormseye", player.name) < 5000) {
     addText("debug2", "Waiting for Storm's Eye");
-    gauge.max = 90; // Avoid using out of Storm's Eye
+    gauge.max = 90; // Avoid using spenders out of Storm's Eye
   }
   else if (player.level >= 64
-  && checkCooldown("upheaval", player.name) < 15000) {
-    addText("debug2", "Keeping buffer for Upheaval");
+  && checkCooldown("upheaval", player.name) < 20000) { // Revisit if too conservative
+    addText("debug2", "Build buffer for Upheaval");
     gauge.max = 70; // Stay above 20 for Upheavals
   }
   else {
     addText("debug2", "");
     gauge.max = 50; // All other cases
+  }
+
+
+  if (player.level >= 70
+  && checkCooldown("upheaval", player.name) < 2500
+  && checkStatus("berserk", player.name) > 0) {
+    addIconBlink(id.upheaval,icon.upheaval);
+  }
+  else if (player.level >= 64
+  && player.jobDetail.beast >= 20
+  && checkCooldown("upheaval", player.name) < 2500
+  && checkCooldown("berserk", player.name) > 25000) {
+    addIconBlink(id.upheaval,icon.upheaval);
+  }
+  else {
+    removeIcon(id.upheaval);
   }
 
   if (player.jobDetail.beast >= gauge.max) {
@@ -570,8 +521,42 @@ function warGauge() {
   }
 }
 
+function warCombo() {
+
+  // Clear debug
+  addText("debug1", "");
+
+  if (toggle.aoe) {
+    addText("debug1", "Mythril Tempest Combo");
+    mythriltempestCombo();
+  }
+
+  // Revisit this later if it double refreshing too often (or at all?)
+  else if (player.level >= 50
+  && checkCooldown("berserk", player.name) < 17500
+  && checkStatus("stormseye", player.name) - Math.max(checkCooldown("berserk", player.name), 0) < 20000) {
+    addText("debug1", "Refresh Storm's Eye for Berserk");
+    stormseyeCombo();
+  }
+
+  // Revisit this later if it is too conservative
+  else if (player.level >= 50
+  && checkStatus("stormseye", player.name) < 10000) {
+    addText("debug1", "Refresh Storm's Eye");
+    stormseyeCombo();
+  }
+
+  else {
+    addText("debug1", "Storm's Path Combo");
+    stormspathCombo();
+  }
+
+  clearTimeout(timeout.combo);
+  timeout.combo = setTimeout(warCombo, 12500);
+}
+
 function stormspathCombo() {
-  toggle.combo = 2;
+  toggle.combo = 1;
   addIcon(id.heavyswing,icon.heavyswing);
   if (player.level >= 18) {
     addIcon(id.maim,icon.maim);
@@ -582,8 +567,16 @@ function stormspathCombo() {
 }
 
 function stormseyeCombo() {
-  toggle.combo = 3;
+  toggle.combo = 2;
   addIcon(id.heavyswing,icon.heavyswing);
   addIcon(id.maim,icon.maim);
   addIcon(id.stormseye,icon.stormseye);
+}
+
+function mythriltempestCombo() {
+  toggle.combo = 3;
+  addIcon(id.overpower,icon.overpower);
+  if (player.level >= 40) {
+    addIcon(id.mythriltempest,icon.mythriltempest);
+  }
 }

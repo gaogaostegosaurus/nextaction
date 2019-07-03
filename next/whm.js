@@ -21,30 +21,12 @@ actionList.whm = [
 // id.plenaryindulgence ="next14";
 
 
-// icon.aero = "000401";
-// icon.aero2 = "000402";
-// icon.freecure = "000406";
-// icon.medica2 = "000409";
-// icon.benediction = "002627";
-// icon.regen = "002628";
-// icon.asylum = "002632";
-// icon.assize = "002634";
-// icon.aero3 = "002635";
-// icon.tetragrammaton = "002633";
-// icon.divinebenison = "002635";
-// icon.thinair = "002636";
-// icon.plenaryindulgence = "002639";
 //
-// recast.presenceofmind = 150000;
-// recast.benediction = 180000;
-// recast.asylum = 90000;
-// recast.assize = 45000;
-// recast.tetragrammaton = 60000;
-// recast.thinair = 120000;
-// recast.divinebenison = 30000;
-// recast.plenaryindulgence = 120000;
+//
 
-
+function whmJobChange() {
+  id.luciddreaming = "0";
+}
 
 function whmPlayerChangedEvent(e) {
 
@@ -74,12 +56,8 @@ function whmAction(logLine) {
       removeIcon(id.luciddreaming);
       addCooldown("luciddreaming", player.name, recast.luciddreaming);
     }
-
   }
 }
-
-
-
 
 function whmStatus(logLine) {
 

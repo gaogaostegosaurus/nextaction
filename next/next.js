@@ -27,31 +27,18 @@ var statusList = {};
 var statusRegExp;
 var statusLog;
 
-// var selfStatusRegExp2;
-// var statusLog2;
-
 var player = {};
 var target = {};
 
-// Role stuff - used by multiple jobs
+actionRegExp = new RegExp(' 1[56]:([\\dA-F]{8}):(.*?):[\\dA-F]{1,4}:(.*?):([\\dA-F]{8}):(.*?):([\\dA-F]{1,8}):');
+statusRegExp = new RegExp(' 1[AE]:(.*?) (gains|loses) the effect of (.*?) from (.*?)(?: for )?(\\d*\\.\\d*)?(?: Seconds)?\\.');
 
-id.luciddreaming = "0"; // redeclare in jobchanged if necessary
-
-icon.luciddreaming = "000865";
-icon.swiftcast = "000866";
-icon.rampart = "000801";
-
-recast.swiftcast = 60000;
-recast.luciddreaming = 60000;
-
-// onPlayerChangedEvent: fires whenever player change detected (including HP, positions, etc.)
-
+// onPlayerChangedEvent: fires whenever player change detected (including HP, MP, other resources, positions, etc.)
 document.addEventListener("onPlayerChangedEvent", function(e) {
 
   player = e.detail;
 
   // Detects name/job/level change and clears elements
-
   if (previous.name != player.name || previous.job != player.job || previous.level != player.level) {
     delete toggle.combo;
     clearElements();
@@ -60,13 +47,18 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
       actionRegExp = new RegExp(' 1[56]:([\\dA-F]{8}):(' + player.name + '):[\\dA-F]{2,8}:(' + actionList.brd.join("|") + '):([\\dA-F]{2,8}):([^:]*):([\\dA-F]{1,8}):');
       statusRegExp = new RegExp(' 1[AE]:(.*) (gains|loses) the effect of (' + statusList.brd.join("|") + ') from (' + player.name + ')(?: for )?(\\d*\\.\\d*)?(?: Seconds)?\\.');
     }
-    else if (player.job == "MNK") {
-      actionRegExp = new RegExp(' 1[56]:([\\dA-F]{8}):(' + player.name + '):[\\dA-F]{2,8}:(' + actionList.mnk.join("|") + '):([\\dA-F]{2,8}):([^:]*):([\\dA-F]{1,8}):');
-      statusRegExp = new RegExp(' 1[AE]:(.*) (gains|loses) the effect of (' + statusList.mnk.join("|") + ') from (.*?)(?: for )?(\\d*\\.\\d*)?(?: Seconds)?\\.');
+
+    else if (player.job == "RDM") {
+      rdmJobChange();
     }
-    else {
-      actionRegExp = new RegExp(' 1[56]:([\\dA-F]{8}):(.*?):[\\dA-F]{1,4}:(.*?):([\\dA-F]{8}):(.*?):([\\dA-F]{1,8}):');
-      statusRegExp = new RegExp(' 1[AE]:(.*?) (gains|loses) the effect of (.*?) from (.*?)(?: for )?(\\d*\\.\\d*)?(?: Seconds)?\\.');
+    else if (player.job == "SAM") {
+      samJobChange();
+    }
+    else if (player.job == "WAR") {
+      warJobChange();
+    }
+    else if (player.job == "WHM") {
+      whmJobChange();
     }
 
     //// NOTES FOR REGEX CAPTURES ////
@@ -86,6 +78,7 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
   previous.job = player.job;
   previous.level = player.level;
 
+  // This is probably only useful for jobs that need to watch things that "tick" up or down
   if (toggle.combat) { // Prevents functions from activating outside of combat (to prevent annoying stuff popping up)
 
     if (player.job == "BRD") {
@@ -93,12 +86,6 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
     }
     else if (player.job == "RDM") {
       rdmPlayerChangedEvent(e);
-    }
-    else if (player.job == "SAM") {
-      samPlayerChangedEvent(e);
-    }
-    else if (player.job == "WAR") {
-      warPlayerChangedEvent(e);
     }
     else if (player.job == "WHM") {
       whmPlayerChangedEvent(e);
@@ -318,26 +305,28 @@ function clearElements() {
   }
 }
 
-function timeoutCombo() {
-// Call this function at the end of event log checker to prevent combos from lingering more than they should
-  clearTimeout(timeout.combo);
-  timeout.combo = setTimeout(resetCombo, 12000);
-}
+// Should call timeouts inside the function - self-referring stuff
 
-function resetCombo() {
-  delete toggle.combo;
-  if (toggle.combat) {
-    if (player.job == "DRG") {
-      drgCombo();
-    }
-    else if (player.job == "NIN") {
-      ninCombo();
-    }
-    else if (player.job == "SAM") {
-      samCombo();
-    }
-    else if (player.job == "WAR") {
-      warCombo();
-    }
-  }
-}
+// function timeoutCombo() {
+// // Call this function at the end of event log checker to prevent combos from lingering more than they should
+//   clearTimeout(timeout.combo);
+//   timeout.combo = setTimeout(resetCombo, 12000);
+// }
+//
+// function resetCombo() {
+//   delete toggle.combo;
+//   if (toggle.combat) {
+//     if (player.job == "DRG") {
+//       drgCombo();
+//     }
+//     else if (player.job == "NIN") {
+//       ninCombo();
+//     }
+//     else if (player.job == "SAM") {
+//       samCombo();
+//     }
+//     else if (player.job == "WAR") {
+//       warCombo();
+//     }
+//   }
+// }
