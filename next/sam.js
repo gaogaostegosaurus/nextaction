@@ -21,13 +21,14 @@ id.kasha = id.gekko;
 id.yukikaze = id.gekko;
 id.mangetsu = id.gekko;
 id.oka = id.gekko;
-id.iaijutsu3 = "5";
-id.shinten = "10";
+id.ikishoten = "10";
+id.meikyoshisui = "11";
+id.guren = "12";
+id.senei = id.guren;
+id.shinten = "13";
 id.kyuten = id.shinten;
 id.seigan = id.shinten;
-id.guren = id.shinten;
-id.hagakure = "11";
-id.meikyoshisui = "12";
+id.shoha = "14";
 
 icon.hakaze = "003151";
 icon.jinpu = "003152";
@@ -58,14 +59,14 @@ recast.ikishoten = 60000;
 recast.guren = 120000;
 recast.senei = recast.guren;
 
-function samPlayerChangedEvent(e) {
-}
-
+function samPlayerChangedEvent(e) {}
 
 function samAction(logLine) {
 
   if (logLine[2] == player.name
   && actionList.sam.indexOf(logLine[3]) > -1) { // Check if from player
+
+    addText("debug1","")
 
     // Toggle AoE
 
@@ -94,12 +95,18 @@ function samAction(logLine) {
       if (checkStatus("meikyoshisui", player.name) > 0) {
         samCombo(); // Consuming Sen under Meikyo will trigger a new combo
       }
+      removeIcon(id.iaijutsu1);
+      removeIcon(id.iaijutsu2);
+      samSen();
     }
 
     else if (logLine[3] == "Tenka Goken" || logLine[3] == "Midare Setsugekka") {
       if (checkStatus("meikyoshisui", player.name) > 0) {
         samCombo(); // Consuming Sen under Meikyo will trigger a new combo
       }
+      removeIcon(id.iaijutsu1);
+      removeIcon(id.iaijutsu2);
+      samSen();
     }
 
     else if (logLine[3] == "Meikyo Shisui") {
@@ -111,27 +118,55 @@ function samAction(logLine) {
 
     else if (logLine[3] == "Hissatsu: Kaiten") {
       addStatus("kaiten", player.name, duration.kaiten);
+      samKenki();
+    }
+
+    else if (logLine[3] == "Hissatsu: Shinten") {
+      removeIcon(id.shinten);
+      samKenki();
+    }
+
+    else if (logLine[3] == "Hissatsu: Kyuten") {
+      removeIcon(id.kyuten);
+      samKenki();
+    }
+
+    else if (logLine[3] == "Hissatsu: Seigan") {
+      removeIcon(id.seigan);
+      samKenki();
     }
 
     else if (logLine[3] == "Ikishoten") {
-      addCooldown("Ikishoten", player.name, recast.ikishoten);
+      addCooldown("ikishoten", player.name, recast.ikishoten);
       removeIcon(id.ikishoten);
+      samKenki();
     }
 
     else if (logLine[3] == "Hissatsu: Guren") {
       addCooldown("guren", player.name, recast.guren);
       removeIcon(id.guren);
+      samKenki();
+    }
+
+    else if (logLine[3] == "Hissatsu: Senei") {
+      addCooldown("guren", player.name, recast.senei); // On same cooldown as Guren
+      removeIcon(id.senei);
+      samKenki();
     }
 
     // Trigger combos
 
-    else if (["Mangetsu","Oka"].indexOf(logLine[3]) > -1 && !toggle.combat) { } // Catches random hopping
+    else if (["Fuga", "Mangetsu", "Oka"].indexOf(logLine[3]) > -1 && logLine[5] == "") {
+      // No targets hit
+      samCombo();
+    }
 
     else if (logLine[3] == "Hakaze" && logLine[6].length >= 2) {
       if (![1,2,3].indexOf(toggle.combo) > -1) {
         samCombo();
       }
       removeIcon(id.hakaze);
+      samKenki();
     }
 
     else if (logLine[3] == "Fuga" && logLine[6].length >= 2) {
@@ -139,10 +174,11 @@ function samAction(logLine) {
         samCombo();
       }
       removeIcon(id.fuga);
+      samKenki();
       meikyoCheck();
     }
 
-    else if (logLine[3] == "Jinpu" && logLine[6].length == 8) {
+    else if (logLine[3] == "Jinpu" && logLine[6].length >= 8) {
       addStatus("jinpu", player.name, duration.jinpu);
       if (player.level < 30) {
         samCombo();
@@ -152,10 +188,11 @@ function samAction(logLine) {
         removeIcon(id.jinpu);
         addIcon(id.gekko,icon.gekko);
       }
+      samKenki();
       meikyoCheck();
     }
 
-    else if (logLine[3] == "Shifu" && logLine[6].length == 8) {
+    else if (logLine[3] == "Shifu" && logLine[6].length >= 8) {
       addStatus("shifu", player.name, duration.shifu);
       if (player.level < 40) {
         samCombo();
@@ -165,17 +202,20 @@ function samAction(logLine) {
         removeIcon(id.shifu);
         addIcon(id.kasha,icon.kasha);
       }
+      samKenki();
       meikyoCheck();
     }
 
-    else if (logLine[3] == "Yukikaze" && logLine[6].length == 8) {
+    else if (["Gekko", "Kasha", "Yukikaze", "Mangetsu", "Oka"].indexOf(logLine[3]) > -1
+    && logLine[6].length >= 8) {
+      samKenki();
+      samSen();
       samCombo();
-      meikyoCheck();
     }
 
     else { // Everything else finishes or breaks combo
+      samKenki();
       samCombo();
-      meikyoCheck();
     }
 
     timeoutCombo();
@@ -240,7 +280,7 @@ function samStatus(logLine) {
       }
       else if (logLine[2] == "loses") {
         removeStatus("meditate", logLine[1]);
-        samGauge();
+        samKenki();
       }
     }
   }
@@ -263,12 +303,12 @@ function samStatus(logLine) {
 function meikyoCheck() {
   if (checkCooldown("meikyoshisui", player.name) < 0) {
     if (toggle.aoe) {
-      addIcon(id.meikyoshisui,icon.meikyoshisui);
+      addIconBlink(id.meikyoshisui,icon.meikyoshisui);
     }
     else if (!toggle.aoe
     && checkStatus("jinpu", player.name) > 15000
     && checkStatus("shifu", player.name) > 15000) {
-      addIcon(id.meikyoshisui,icon.meikyoshisui);
+      addIconBlink(id.meikyoshisui,icon.meikyoshisui);
     }
     else {
       removeIcon(id.meikyoshisui);
@@ -278,7 +318,7 @@ function meikyoCheck() {
 
 function samSen() {
 
-  // Higanbana
+  // Choose Iaijutsu
   if (player.jobDetail.gekko + player.jobDetail.ka + player.jobDetail.setsu == 1
   && checkStatus("higanbana", target.name) < 15000) {
     icon.iaijutsu = icon.higanbana;
@@ -293,6 +333,7 @@ function samSen() {
     icon.iaijutsu = "003159";
     removeIcon(id.iaijutsu1);
     removeIcon(id.iaijutsu2);
+    return;
   }
 
   if (checkStatus("jinpu", player.name) < 5000
@@ -348,8 +389,12 @@ function samKenki() {
 
   // Show Guren/Senei
   if (player.level >= 70
-  && checkCooldown("ikishoten", player.name) > checkCooldown("guren", player.name)) {
+  && checkCooldown("ikishoten", player.name) > checkCooldown("guren", player.name)
+  && player.jobDetail.kenki >= 70) {
     addIconBlink(id.guren, icon.guren);
+  }
+  else {
+    removeIcon(id.guren);
   }
 
   // Show Shinten/Kyuten/Seigan

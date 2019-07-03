@@ -39,6 +39,7 @@ id.luciddreaming = "0"; // redeclare in jobchanged if necessary
 
 icon.luciddreaming = "000865";
 icon.swiftcast = "000866";
+icon.rampart = "000801";
 
 recast.swiftcast = 60000;
 recast.luciddreaming = 60000;
@@ -273,7 +274,7 @@ function removeStatus(statusname, target) {
 
 // Icon functions
 
-function addIcon(nextid,actionicon) {
+function addIcon(nextid, actionicon) {
   if (toggle.combat) {
     document.getElementById("icon" + nextid).src = "icons/" + actionicon + ".png";
     document.getElementById("next" + nextid).className = "icondiv addfadein";
@@ -281,7 +282,7 @@ function addIcon(nextid,actionicon) {
   }
 }
 
-function addIconBlink(nextid,actionicon) {
+function addIconBlink(nextid, actionicon) {
   if (toggle.combat) {
     document.getElementById("icon" + nextid).src = "icons/" + actionicon + ".png";
     document.getElementById("next" + nextid).className = "icondiv addfadeinblink";
@@ -292,6 +293,11 @@ function addIconBlink(nextid,actionicon) {
 function addIconWithTimeout(action,delay,nextid,actionicon) {
   clearTimeout(timeout[action]);
   timeout[action] = setTimeout(addIcon, delay, nextid, actionicon);
+}
+
+function addIconBlinkTimeout(action, delay, nextid, actionicon) {
+  clearTimeout(timeout[action]);
+  timeout[action] = setTimeout(addIconBlink, delay, nextid, actionicon);
 }
 
 function removeIcon(nextid) {

@@ -80,7 +80,6 @@ icon.upheaval = "002562";
 icon.shakeitoff = "002563";
 icon.innerrelease = "002564";
 
-icon.rampart = "000801";
 
 icon.chaoticcyclone = "W29MrhEmsNo9M_ptkmTejtHOgk";
 icon.nascentflash = "9vWCpDYwb7DjJ35QXTusOuPTaA";
@@ -108,52 +107,58 @@ function warPlayerChangedEvent(e) {
 // Checks and activates things when entering combat
 function warInCombatChangedEvent(e) {
 
+  warCombo();
+  removeIcon(id.heavyswing);
+
+  warGauge();
+
   if (player.level >= 46
   && checkCooldown("vengeance", player.name) < 0) {
-    addIcon(id.vengeance,icon.vengeance);
+    addIconBlink(id.vengeance,icon.vengeance);
   }
   else if (player.level >= 56
   && checkCooldown("rawintuition", player.name) < 0) {
-    addIcon(id.rawintuition,icon.rawintuition);
+    addIconBlink(id.rawintuition,icon.rawintuition);
   }
   else if (player.level >= 8
   && checkCooldown("rampart", player.name) < 0) {
-    addIcon(id.rampart,icon.rampart);
+    addIconBlink(id.rampart,icon.rampart);
   }
 
-  if (checkCooldown("berserk", player.name) < 0) {
-
-    if (player.level >= 70) {
-      icon.berserk = icon.innerrelease;
-    }
-    else {
-      icon.berserk = "000259";
-    }
+  // Berserk is complicated
+  if (player.level >= 6
+  && checkCooldown("berserk", player.name) < 0) {
 
     if (player.level >= 50
-    && checkStatus("stormseye", player.name) >= 12500) {
-
+    && checkStatus("stormseye", player.name) > 15000) {
       if (player.level >= 74
-      && checkCooldown("infuriate1", player.name) >= 0) {
-        addIcon(id.berserk,icon.berserk);
+      && checkCooldown("infuriate1", player.name) < 0) {
+        removeIcon(id.berserk);
       }
       else {
-        addIcon(id.berserk,icon.berserk);
+        addIconBlink(id.berserk,icon.berserk);
       }
     }
-
-    else if (player.level >= 6) {
-      addIcon(id.berserk,icon.berserk);
+    else if (player.level < 50) {
+      addIconBlink(id.berserk,icon.berserk);
+    }
+    else {
+      removeIcon(id.berserk);
     }
   }
-  else if (player.level >= 64
-  && checkCooldown("upheaval", player.name) < 0) {
-    addIcon(id.upheaval,icon.upheaval);
+  else {
+    removeIcon(id.berserk);
+
+    if (player.level >= 64
+    && checkCooldown("upheaval", player.name) < 0
+    && checkCooldown("upheaval", player.name) < checkCooldown("berserk", player.name) + 30 ) {
+      addIconBlink(id.upheaval,icon.upheaval);
+    }
   }
 
   if (player.level >= 50
   && checkCooldown("infuriate1", player.name) < 0) {
-    addIcon(id.infuriate,icon.infuriate);
+    addIconBlink(id.infuriate,icon.infuriate);
   }
 }
 
@@ -176,7 +181,7 @@ function warAction(logLine) {
         icon.berserk = "000259";
       }
 
-      addIconWithTimeout("berserk",recast.berserk,id.berserk,icon.berserk);
+      addIconBlinkTimeout("berserk",recast.berserk,id.berserk,icon.berserk);
       if (player.level >= 70) {
         warGauge();
       }
@@ -186,7 +191,7 @@ function warAction(logLine) {
       removeIcon(id.upheaval);
       addCooldown("upheaval", player.name, recast.upheaval);
       if (checkCooldown("berserk", player.name) > 50000) { // Don't prompt for Upheaval if it misses next IR window
-        addIconWithTimeout("upheaval",recast.upheaval,id.upheaval,icon.upheaval);
+        addIconBlinkTimeout("upheaval",recast.upheaval,id.upheaval,icon.upheaval);
       }
       warGauge();
     }
@@ -210,13 +215,16 @@ function warAction(logLine) {
         addCooldown("infuriate1", player.name, checkCooldown("infuriate2", player.name));
         addCooldown("infuriate2", player.name, checkCooldown("infuriate2", player.name) + recast.infuriate);
         removeIcon(id.infuriate);
-        addIconWithTimeout("infuriate", checkCooldown("infuriate1", player.name), id.infuriate, icon.infuriate);
+        addIconBlinkTimeout("infuriate", checkCooldown("infuriate1", player.name), id.infuriate, icon.infuriate);
       }
 
       // Had 2 charges (can't use with 0 charges...)
       else {
         addCooldown("infuriate2", player.name, recast.infuriate);
       }
+
+      addText("debug3", "Infuriate x1: " + checkCooldown("infuriate1", player.name) + "  Infuriate x2: " + checkCooldown("infuriate2", player.name) );
+
       warGauge()
     }
 
@@ -234,13 +242,17 @@ function warAction(logLine) {
         addCooldown("infuriate1", player.name, checkCooldown("infuriate1", player.name) - 5000);
         addCooldown("infuriate2", player.name, checkCooldown("infuriate2", player.name) - 5000);
         removeIcon(id.infuriate);
-        addIconWithTimeout("infuriate",checkCooldown("infuriate1", player.name),id.infuriate,icon.infuriate);
+        addIconBlinkTimeout("infuriate",checkCooldown("infuriate1", player.name),id.infuriate,icon.infuriate);
       }
+
+      addText("debug3", "Infuriate x1: " + checkCooldown("infuriate1", player.name) + "  Infuriate x2: " + checkCooldown("infuriate2", player.name) );
+
       removeIcon(id.innerbeast);
       warGauge();
+
     }
 
-    // These actions can break combo
+    // These actions affect combo
 
     else {
 
@@ -256,6 +268,13 @@ function warAction(logLine) {
       && logLine[6].length >= 8) {
         removeIcon(id.heavyswing);
         removeIcon(id.maim);
+        warGauge();
+      }
+
+      else if (logLine[3] == "Storm's Path"
+      && logLine[6].length >= 8) {
+        delete toggle.combo;
+        warCombo();
         warGauge();
       }
 
@@ -300,11 +319,15 @@ function warStatus(logLine) {
       if (logLine[2] == "gains") {
         addStatus("berserk", logLine[1], parseInt(logLine[5]) * 1000);
         if (checkCooldown("upheaval", player.name) < 0) {
-          addIcon(id.upheaval, icon.upheaval); // Show Upheaval if up during Berserk
+          addIconBlink(id.upheaval, icon.upheaval); // Show Upheaval if up during Berserk
         }
       }
       else if (logLine[2] == "loses") {
         removeStatus("berserk", logLine[1]);
+      }
+
+      if (logLine[3] == "Inner Release") {
+        warGauge();
       }
     }
 
@@ -366,7 +389,7 @@ function warStatus(logLine) {
       }
       else if (logLine[2] == "loses") {
         removeStatus("nascentchaos", logLine[1]);
-        addIconWithTimeout("berserk",checkCooldown("berserk", player.name),id.berserk,icon.innerrelease);
+        addIconBlinkTimeout("berserk",checkCooldown("berserk", player.name),id.berserk,icon.innerrelease);
       }
       warGauge()
     }
@@ -394,51 +417,50 @@ function warMitigation() {
 
   if (player.level >= 46
   && checkCooldown("vengeance", player.name) < 0 ) {
-    addIcon(id.mitigation,icon.vengeance);
+    addIconBlink(id.mitigation,icon.vengeance);
   }
   else if (player.level >= 56
   && checkCooldown("rawintuition", player.name) < 0) {
-    addIcon(id.mitigation,icon.rawintuition);
+    addIconBlink(id.mitigation,icon.rawintuition);
   }
   else if (player.level >= 8
   && checkCooldown("rampart", player.name) < 0 ) {
-    addIcon(id.mitigation,icon.rampart);
+    addIconBlink(id.mitigation,icon.rampart);
   }
 
   else if (player.level >= 46
   && checkCooldown("vengeance", player.name) < Math.min(checkCooldown("rampart", player.name), checkCooldown("rawintuition", player.name))) {
-    addIconWithTimeout("mitigation",checkCooldown("vengeance", player.name),id.mitigation,icon.vengeance);
+    addIconBlinkTimeout("mitigation",checkCooldown("vengeance", player.name),id.mitigation,icon.vengeance);
   }
   else if (player.level >= 56
   && checkCooldown("rawintuition", player.name) < Math.min(checkCooldown("rampart", player.name), checkCooldown("vengeance", player.name))) {
-    addIconWithTimeout("mitigation",checkCooldown("rawintuition", player.name),id.mitigation,icon.rawintuition);
+    addIconBlinkTimeout("mitigation",checkCooldown("rawintuition", player.name),id.mitigation,icon.rawintuition);
   }
   else if (player.level >= 8
   && checkCooldown("rampart", player.name) < Math.min(checkCooldown("rawintuition", player.name), checkCooldown("vengeance", player.name))) {
-    addIconWithTimeout("mitigation",checkCooldown("rampart", player.name),id.mitigation,icon.rampart);
+    addIconBlinkTimeout("mitigation",checkCooldown("rampart", player.name),id.mitigation,icon.rampart);
   }
 }
 
 function warCombo() {
 
-  // Refresh Storm's Eye
-  if (player.level >= 50) {
+  addText("debug1", "");
 
-    if (checkCooldown("berserk", player.name) < 10000
-    && checkStatus("stormseye", player.name) - checkCooldown("berserk", player.name) < 17500) {
-      stormseyeCombo();
-    }
+  if (player.level >= 50
+  && checkCooldown("berserk", player.name) < 15000
+  && checkStatus("stormseye", player.name) - checkCooldown("berserk", player.name) < 20000) {
+    addText("debug1", "Set up for Berserk");
+    stormseyeCombo();
+  }
 
-    else if (checkStatus("stormseye", player.name) < 17500) {
-      stormseyeCombo();
-    }
-
-    else {
-      stormspathCombo();
-    }
+  else if (player.level >= 50
+  && checkStatus("stormseye", player.name) < 20000) {
+    addText("debug1", "Keep Storm's Eye up");
+    stormseyeCombo();
   }
 
   else {
+    addText("debug1", "");
     stormspathCombo();
   }
 }
@@ -451,9 +473,9 @@ function warComboTimeout() {
 
 function warGauge() {
 
-  addText("debug1", "");
-  // addText("debug1", "Nascent Chaos: " + checkStatus("nascentchaos", player.name));
-  addText("debug2", "Infuriate x1: " + checkStatus("infuriate1", player.name) + "  Infuriate x2: " + checkStatus("infuriate2", player.name) );
+  addText("debug2", "");
+
+  // addText("debug2", "Nascent Chaos: " + checkStatus("nascentchaos", player.name));
 
   if (checkStatus("nascentchaos", player.name) > 0) {
     if (player.level >= 80) {
@@ -463,93 +485,69 @@ function warGauge() {
       icon.innerbeast = icon.chaoticcyclone; // Use Cyclone on Single Target before 80?
     }
   }
+  else if (player.level >= 54) {
+    icon.innerbeast = icon.fellcleave;
+  }
+  else {
+    icon.innerbeast = "002553";
+  }
 
   if (checkStatus("nascentchaos", player.name) > 0) {
     icon.steelcyclone = icon.chaoticcyclone;
   }
+  else if (player.level >= 60) {
+    icon.steelcyclone = icon.decimate;
+  }
+  else {
+    icon.steelcyclone = "002552";
+  }
 
   // Gauge
 
-  // Use if about to overcap
-  if (player.jobDetail.beast >= 90) {
-    addText("debug1", "Use spender - avoid overcapping");
-    addIcon(id.innerbeast, icon.innerbeast);
-  }
-
-  // Use if about to overcap from Enhanced Infuriate
-  else if (player.level >= 66
-  && checkCooldown("infuriate1", player.name) < 7500
-  && player.jobDetail.beast >= 50) {
-    addText("debug1", "Use spender - upcoming Enhanced Infuriate");
-    addIcon(id.innerbeast, icon.innerbeast);
-  }
-
-  else if (player.level >= 50
-  && checkCooldown("infuriate1", player.name) < 2500
-  && player.jobDetail.beast >= 50) {
-    addText("debug1", "Use spender - upcoming Infuriate");
-    addIcon(id.innerbeast, icon.innerbeast);
-  }
-
-  // Avoid overwriting Nascent Chaos
-  else if (checkStatus("nascentchaos", player.name) > 2500) {
-    if (checkCooldown("infuriate1", player.name) < 2500) {
-      addText("debug1", "Use spender - second Nascent Chaos ready");
-      addIcon(id.innerbeast, icon.innerbeast);
-    }
-    else if (checkStatus("nascentchaos", player.name) < 5000) {
-      addText("debug1", "Use spender - Nascent Chaos about to expire");
-      addIcon(id.innerbeast, icon.innerbeast);
-    }
-    else if (checkStatus("stormseye", player.name) > 5000
-    && player.jobDetail.beast >= 70) {
-      addText("debug1", "Use spender - Nascent Chaos up");
-      addIcon(id.innerbeast, icon.innerbeast);
-    }
-    else {
-      addText("debug1", "Hold spender - no Storm's Eye");
-      removeIcon(id.innerbeast);
-    }
-  }
-
-  // Use if Inner Release is active
-  else if (player.level >= 70
+  if (player.level >= 70
   && checkStatus("berserk", player.name) > 0) {
-    addText("debug1", "Use spender - Inner Release");
-    addIcon(id.innerbeast, icon.innerbeast);
+    addText("debug2", "Inner Release");
+    gauge.max = 0; // Spam during Inner Release
   }
-
-  // Use before Inner Release if potential to overcap
   else if (player.level >= 70
   && checkCooldown("berserk", player.name) < 5000
-  && checkCooldown("infuriate1", player.name) < 40000
-  && player.jobDetail.beast >= 50) {
-    addText("debug1", "Use spender - Inner Release coming up");
-    addIcon(id.innerbeast, icon.innerbeast);
+  && checkCooldown("infuriate1", player.name) < 40000) {
+    addText("debug2", "Upcoming Inner Release");
+    gauge.max = 50; // Avoid capping during Inner Release
   }
-
-  // Use if Storm's Eye is up
-  else if (checkStatus("stormseye", player.name) > 10000) {
-    if (player.level >= 64
-    && player.jobDetail.beast >= 70) { // Save for 20-cost moves
-      addText("debug1", "Use spender");
-      addIcon(id.innerbeast, icon.innerbeast);
-    }
-
-    else if (player.level < 64
-    && player.jobDetail.beast >= 50) { // No moves here
-      addText("debug1", "Use spender");
-      addIcon(id.innerbeast, icon.innerbeast);
-    }
-
-    else {
-      addText("debug1", "Hold spender - no Storm's Eye");
-      removeIcon(id.innerbeast);
-    }
+  else if (player.level >= 66
+  && checkCooldown("infuriate1", player.name) < 10000) {
+    addText("debug2", "Upcoming Enhanced Infuriate");
+    gauge.max = 50; // Avoid capping from Enhanced Infuriate
   }
-
+  else if (player.level < 66
+  && checkCooldown("infuriate1", player.name) < 5000) {
+    addText("debug2", "Upcoming Infuriate");
+    gauge.max = 50; // Avoid capping from Enhanced Infuriate
+  }
+  else if (checkStatus("nascentchaos", player.name) > 0
+  && checkStatus("nascentchaos", player.name) < 5000) {
+    addText("debug2", "Nascent Chaos dropping");
+    gauge.max = 50; // Avoid wasting Nascent Chaos
+  }
+  else if (checkStatus("stormseye", player.name) < 5000) {
+    addText("debug2", "Waiting for Storm's Eye");
+    gauge.max = 90; // Avoid using out of Storm's Eye
+  }
+  else if (player.level >= 64
+  && checkCooldown("upheaval", player.name) < 15000) {
+    addText("debug2", "Keeping buffer for Upheaval");
+    gauge.max = 70; // Stay above 20 for Upheavals
+  }
   else {
-    addText("debug1", "Hold spender");
+    addText("debug2", "");
+    gauge.max = 50; // All other cases
+  }
+
+  if (player.jobDetail.beast >= gauge.max) {
+    addIconBlink(id.innerbeast, icon.innerbeast);
+  }
+  else {
     removeIcon(id.innerbeast);
   }
 }
