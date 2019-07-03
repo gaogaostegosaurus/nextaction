@@ -450,10 +450,10 @@ function rdmDualcast() {
     }
 
     // addText("debug1", "Index: " + maxIndex + "  Value: " + max);
-    addText("debug1", "Dualcast J+VT:" + next.dualcast[0] + " J+VA:" + next.dualcast[1]
-                            + " VF+VT:" + next.dualcast[2] + " VF+VA:" + next.dualcast[3]
-                            + " VS+VT:" + next.dualcast[4] + " VS+VA:" + next.dualcast[5]
-                            + " SC+VT:" + next.dualcast[6] + " SC+VA:" + next.dualcast[7]);
+    addText("debug1",  "J+VT:"  + next.dualcast[0] + " J+VA:"  + next.dualcast[1]
+                    + " VF+VT:" + next.dualcast[2] + " VF+VA:" + next.dualcast[3]
+                    + " VS+VT:" + next.dualcast[4] + " VS+VA:" + next.dualcast[5]
+                    + " SC+VT:" + next.dualcast[6] + " SC+VA:" + next.dualcast[7]);
     // If all options suck, reset?
 
   }

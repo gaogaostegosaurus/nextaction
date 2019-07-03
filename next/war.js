@@ -164,6 +164,8 @@ function warInCombatChangedEvent(e) {
 
 function warAction(logLine) {
 
+  addText("debug3", "Infuriate x1: " + checkCooldown("infuriate1", player.name) + "  Infuriate x2: " + checkCooldown("infuriate2", player.name) );
+
   if (logLine[2] == player.name
   && actionList.war.indexOf(logLine[3]) > -1) {
 
@@ -211,17 +213,21 @@ function warAction(logLine) {
       // addText("debug1", "Infuriate x1: " + checkCooldown("infuriate1", player.name) + "   Infuriate x2: " + checkCooldown("infuriate2", player.name));
 
       // Had only 1 charge - was charging 2
-      if (checkCooldown("infuriate2", player.name) >= 0) {
-        addCooldown("infuriate1", player.name, checkCooldown("infuriate2", player.name));
-        addCooldown("infuriate2", player.name, checkCooldown("infuriate2", player.name) + recast.infuriate);
+
+      if (checkCooldown("infuriate2", player.name) < 0) {
+        addCooldown("infuriate2", player.name, recast.infuriate);
+        addCooldown("infuriate1", player.name, 0);
+      }
+
+      else {
         removeIcon(id.infuriate);
+        addCooldown("infuriate2", player.name, checkCooldown("infuriate2", player.name) + recast.infuriate);
+        addCooldown("infuriate1", player.name, checkCooldown("infuriate2", player.name) - recast.infuriate);
         addIconBlinkTimeout("infuriate", checkCooldown("infuriate1", player.name), id.infuriate, icon.infuriate);
       }
 
       // Had 2 charges (can't use with 0 charges...)
-      else {
-        addCooldown("infuriate2", player.name, recast.infuriate);
-      }
+
 
       addText("debug3", "Infuriate x1: " + checkCooldown("infuriate1", player.name) + "  Infuriate x2: " + checkCooldown("infuriate2", player.name) );
 
@@ -233,16 +239,28 @@ function warAction(logLine) {
       removeIcon(id.rawintuition);
     }
 
-
-
-    else if (logLine[3] == "Inner Beast" || logLine[3] == "Steel Cyclone"
-    || logLine[3] == "Fell Cleave" || logLine[3] == "Decimate"
-    || logLine[3] == "Chaotic Cyclone" || logLine[3] == "Inner Chaos") {
+    else if (logLine[3] == "Inner Beast" || logLine[3] == "Fell Cleave" || logLine[3] == "Inner Chaos") {
       if (player.level >= 66) { // Enhanced Infuriate
         addCooldown("infuriate1", player.name, checkCooldown("infuriate1", player.name) - 5000);
         addCooldown("infuriate2", player.name, checkCooldown("infuriate2", player.name) - 5000);
         removeIcon(id.infuriate);
         addIconBlinkTimeout("infuriate",checkCooldown("infuriate1", player.name),id.infuriate,icon.infuriate);
+      }
+      removeIcon(id.innerbeast);
+      warGauge();
+    }
+
+    else if (logLine[3] == "Steel Cyclone" || logLine[3] == "Decimate" || logLine[3] == "Chaotic Cyclone") {
+      if (player.level >= 66) { // Enhanced Infuriate
+
+        // Since 1 line is created for every AoE hit, this is needed to prevent every line from triggering
+        if (!previous.steelcyclone || Date.now() - previous.steelcyclone > 1000) {
+          previous.steelcyclone = Date.now();
+          addCooldown("infuriate1", player.name, checkCooldown("infuriate1", player.name) - 5000);
+          addCooldown("infuriate2", player.name, checkCooldown("infuriate2", player.name) - 5000);
+          removeIcon(id.infuriate);
+          addIconBlinkTimeout("infuriate",checkCooldown("infuriate1", player.name),id.infuriate,icon.infuriate);
+        }
       }
 
       addText("debug3", "Infuriate x1: " + checkCooldown("infuriate1", player.name) + "  Infuriate x2: " + checkCooldown("infuriate2", player.name) );
