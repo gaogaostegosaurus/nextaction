@@ -43,6 +43,8 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
     delete toggle.combo;
     clearElements();
 
+    addText("loadmessage", "Plugin loaded for " + player.level + player.job);
+
     if (player.job == "BRD") {
       actionRegExp = new RegExp(' 1[56]:([\\dA-F]{8}):(' + player.name + '):[\\dA-F]{2,8}:(' + actionList.brd.join("|") + '):([\\dA-F]{2,8}):([^:]*):([\\dA-F]{1,8}):');
       statusRegExp = new RegExp(' 1[AE]:(.*) (gains|loses) the effect of (' + statusList.brd.join("|") + ') from (' + player.name + ')(?: for )?(\\d*\\.\\d*)?(?: Seconds)?\\.');
@@ -292,11 +294,12 @@ function removeIcon(nextid) {
 }
 
 function addText(actionid,message) {
+  document.getElementById(actionid).style.display = "table-row";
   document.getElementById(actionid).innerText = message;
 }
 
 function removeText(actionid) {
-  document.getElementById(actionid).innerText = "";
+  document.getElementById(actionid).style.display = "none";
 }
 
 function clearElements() {

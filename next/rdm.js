@@ -108,6 +108,8 @@ function rdmAction(logLine) {
   if (logLine[2] == player.name
   && actionList.rdm.indexOf(logLine[3]) > -1) {
 
+    removeText("loadmessage");
+
     // AoE toggle
     if (["Verthunder II", "Veraero II", "Enchanted Moulinet"].indexOf(logLine[3]) > -1) {
       toggle.aoe = Date.now();

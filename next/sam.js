@@ -15,6 +15,7 @@ actionList.sam = [
 ];
 
 function samJobChange() {
+
   id.iaijutsu1 = "0";
   id.hakaze = "1";
   id.fuga = id.hakaze;
@@ -42,7 +43,8 @@ function samAction(logLine) {
   if (logLine[2] == player.name
   && actionList.sam.indexOf(logLine[3]) > -1) { // Check if from player
 
-    addText("debug1","");
+    removeText("loadmessage");
+    removeText("debug1");
 
     // Toggle AoE
 

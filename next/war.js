@@ -117,6 +117,8 @@ function warAction(logLine) {
   if (logLine[2] == player.name
   && actionList.war.indexOf(logLine[3]) > -1) {
 
+    removeText("loadmessage");
+
     // Toggle AoE
 
     if (["Overpower", "Mythril Tempest", "Steel Cyclone", "Decimate"].indexOf(logLine[3]) > -1) {
