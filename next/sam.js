@@ -368,7 +368,8 @@ function samKenki() {
 
   // Show Guren/Senei
   if (player.level >= 70
-  && checkCooldown("ikishoten", player.name) > checkCooldown("guren", player.name)
+  && checkCooldown("ikishoten", player.name) > checkCooldown("guren", player.name) + 5000
+  && checkCooldown("guren", player.name) < 0
   && player.jobDetail.kenki >= 70) {
     addIconBlink(id.guren, icon.guren);
   }
