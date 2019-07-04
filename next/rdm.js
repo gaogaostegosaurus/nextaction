@@ -16,8 +16,7 @@ actionList.rdm = [
 
 function rdmJobChange() {
 
-  id.luciddreaming = "0"; // redeclare in jobchanged if necessary
-
+  id.luciddreaming = "0";
   id.riposte = "1";
   id.moulinet = id.riposte;
   id.zwerchhau = "2";
@@ -51,6 +50,16 @@ function rdmJobChange() {
 
   if (player.level >= 74) {
     recast.manafication = 110000;
+  }
+  else {
+    recast.manafication = 120000;
+  }
+
+  if (player.level >= 78) {
+    recast.contresixte = 35000;
+  }
+  else {
+    recast.contresixte = 45000;
   }
 }
 
@@ -100,10 +109,11 @@ function rdmAction(logLine) {
   && actionList.rdm.indexOf(logLine[3]) > -1) {
 
     // AoE toggle
-    if (["Verthunder II", "Veraero II"].indexOf(logLine[3]) > -1) {
+    if (["Verthunder II", "Veraero II", "Enchanted Moulinet"].indexOf(logLine[3]) > -1) {
       toggle.aoe = Date.now();
     }
-    else if (["Jolt", "Verfire", "Verstone", "Jolt II", "Verthunder", "Veraero"].indexOf(logLine[3]) > -1) {
+    else if (["Jolt", "Verfire", "Verstone", "Jolt II", "Verthunder", "Veraero", "Enchanted Riposte", "Enchanted Zwerchhau", "Enchanted Redoublement", "Verflare", "Verholy", "Scorch"].indexOf(logLine[3]) > -1) {
+      // Does "Enchanted Reprise" go here too?
       delete toggle.aoe;
     }
 
@@ -139,8 +149,11 @@ function rdmAction(logLine) {
       addIconBlinkTimeout("fleche",recast.fleche,id.fleche,icon.fleche);
     }
 
-    else if (logLine[3] == "Embolden") {
-    }
+    // else if (logLine[3] == "Embolden") {
+    //   addCooldown("embolden", player.name, recast.embolden);
+    //   removeIcon(id.embolden);
+    //   addIconBlinkTimeout("fleche",recast.embolden,id.embolden,icon.embolden);
+    // }
 
     else if (logLine[3] == "Swiftcast") {
       addCooldown("swiftcast", player.name, recast.swiftcast);
@@ -440,6 +453,16 @@ function rdmDualcast() {
     addText("debug1", "VF+VT:" + next.dualcast[2] + " VF+VA:" + next.dualcast[3]);
     addText("debug2", "VS+VT:" + next.dualcast[4] + " VS+VA:" + next.dualcast[5]);
     addText("debug3", "SC+VT:" + next.dualcast[6] + " SC+VA:" + next.dualcast[7]);
+  }
+
+  clearTimeout(timeout.dualcast);
+  timeout.dualcast = setTimeout(rdmDualcastTimeout, 12500);
+
+}
+
+function rdmDualcastTimeout() {
+  if (toggle.combat) {
+    rdmDualcast();
   }
 }
 

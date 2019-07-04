@@ -4,20 +4,21 @@
 
 actionList.war = [
 
+  // Role actions
   "Rampart", "Arm\'s Length",
 
-  "Berserk", "Thrill Of Battle", "Vengeance", "Holmgang", "Infuriate",
-  "Raw Intuition", "Upheaval", "Inner Release",
-  "Nascent Flash",
+  // AoE actions
+  "Overpower", "Mythril Tempest", "Steel Cyclone", "Decimate",
 
-  "Inner Beast", "Steel Cyclone",
-  "Fell Cleave", "Decimate",
-  "Chaotic Cyclone", "Inner Chaos",
+  // Single target actions
+  "Storm\'s Path", "Fell Cleave", "Inner Chaos",
 
-  "Heavy Swing", "Maim", "Storm\'s Path", "Storm\'s Eye",
-  "Overpower",
-  "Mythril Tempest",
-  "Tomahawk"
+  // AoE or single target depending on level
+  "Inner Beast", "Chaotic Cyclone",
+
+  // Everything else
+  "Heavy Swing", "Maim", "Storm\'s Eye", "Tomahawk",
+  "Berserk", "Thrill Of Battle", "Vengeance", "Holmgang", "Infuriate", "Raw Intuition", "Upheaval", "Inner Release", "Nascent Flash"
 
 ];
 
@@ -34,9 +35,11 @@ function warJobChange() {
   id.chaoticcyclone = id.innerbeast;
   id.innerchaos = id.innerbeast;
   id.heavyswing = "1";
+  id.overpower = id.heavyswing;
   id.maim = "2";
   id.stormspath = "3";
   id.stormseye = id.stormspath;
+  id.mythriltempest = id.stormspath;
   id.rampart = "9";
   id.vengeance = id.rampart;
   id.rawintuition = id.rampart;
@@ -65,11 +68,6 @@ function warJobChange() {
 // Checks and activates things when entering combat
 function warInCombatChangedEvent(e) {
 
-  warCombo();
-  removeIcon(id.heavyswing);
-
-  warGauge();
-
   if (player.level >= 46
   && checkCooldown("vengeance", player.name) < 0) {
     addIconBlink(id.vengeance,icon.vengeance);
@@ -83,41 +81,33 @@ function warInCombatChangedEvent(e) {
     addIconBlink(id.rampart,icon.rampart);
   }
 
-  // Berserk is complicated
-  if (player.level >= 6
-  && checkCooldown("berserk", player.name) < 0) {
-
-    if (player.level >= 50
-    && checkStatus("stormseye", player.name) > 15000) {
-      if (player.level >= 74
-      && checkCooldown("infuriate1", player.name) < 0) {
-        removeIcon(id.berserk);
-      }
-      else {
-        addIconBlink(id.berserk,icon.berserk);
-      }
-    }
-    else if (player.level < 50) {
-      addIconBlink(id.berserk,icon.berserk);
-    }
-    else {
-      removeIcon(id.berserk);
-    }
-  }
-  else {
-    removeIcon(id.berserk);
-
-    if (player.level >= 64
-    && checkCooldown("upheaval", player.name) < 0
-    && checkCooldown("upheaval", player.name) < checkCooldown("berserk", player.name) + 30 ) {
-      addIconBlink(id.upheaval,icon.upheaval);
-    }
-  }
-
   if (player.level >= 50
   && checkCooldown("infuriate1", player.name) < 0) {
     addIconBlink(id.infuriate,icon.infuriate);
   }
+
+  // Berserk is complicated
+  if (player.level >= 64
+  && checkCooldown("upheaval", player.name) < 0
+  && checkCooldown("berserk", player.name) > 25000 ) {
+    addIconBlink(id.upheaval,icon.upheaval);
+  }
+  else if (player.level >= 74
+  && checkCooldown("infuriate1", player.name) < 0) {
+    removeIcon(id.berserk);
+  }
+  else if (player.level >= 50
+  && checkStatus("stormseye", player.name) < 20000) {
+    removeIcon(id.berserk);
+  }
+  else if (player.level >= 6
+  && checkCooldown("berserk", player.name) < 0) {
+    addIconBlink(id.berserk,icon.berserk);
+  }
+
+  warCombo();
+  warGauge();
+
 }
 
 function warAction(logLine) {
@@ -127,13 +117,20 @@ function warAction(logLine) {
   if (logLine[2] == player.name
   && actionList.war.indexOf(logLine[3]) > -1) {
 
-    if (logLine[3] == "Overpower"
-    || logLine[3] == "Steel Cyclone"
-    || logLine[3] == "Decimate"
-    || (logLine[3] == "Chaotic Cyclone" && player.level >= 80)) {
+    // Toggle AoE
+
+    if (["Overpower", "Mythril Tempest", "Steel Cyclone", "Decimate"].indexOf(logLine[3]) > -1) {
       toggle.aoe = Date.now();
     }
-    else {
+    else if (["Storm\'s Path", "Fell Cleave", "Inner Chaos"].indexOf(logLine[3]) > -1) {
+      delete toggle.aoe;
+    }
+    else if (logLine[3] == "Chaotic Cyclone"
+    && player.level >= 80) {
+      toggle.aoe = Date.now();
+    }
+    else if (logLine[3] == "Inner Beast"
+    && player.level >= 45) {
       delete toggle.aoe;
     }
 
@@ -233,8 +230,8 @@ function warAction(logLine) {
       && logLine[6].length >= 2) {
         if (!toggle.combo) {
           warCombo();
+          removeIcon(id.heavyswing);
         }
-        removeIcon(id.heavyswing);
       }
 
       else if (logLine[3] == "Maim"
@@ -253,7 +250,7 @@ function warAction(logLine) {
 
       else if (logLine[3] == "Storm's Eye"
       && logLine[6].length >= 8) {
-        addStatus("stormseye", logLine[2], 30000);
+        addStatus("stormseye", player.name, 30000);
         delete toggle.combo;
         warCombo();
         warGauge();
@@ -261,10 +258,15 @@ function warAction(logLine) {
 
       else if (logLine[3] == "Overpower"
       && logLine[6].length >= 2) {
-        if (!toggle.combo) {
-          warCombo();
+        if (player.level >= 40) {
+          mythriltempestCombo();
+          removeIcon(id.overpower);
         }
-        removeIcon(id.heavyswing);
+      }
+
+      else if (logLine[3] == "Mythril Tempest"
+      && logLine[6].length >= 8) {
+        addStatus("stormseye", player.name, Math.min(checkStatus("stormseye", player.name) + 10000, 30000));
       }
 
       else {
@@ -483,6 +485,12 @@ function warGauge() {
     gauge.max = 50; // Avoid wasting Nascent Chaos
   }
   else if (player.level >= 50
+  && toggle.aoe
+  && checkStatus("stormseye", player.name) < 15000) {
+    addText("debug2", "Waiting for Storm's Eye");
+    gauge.max = 90; // Avoid letting Storm's Eye fall off during AoE
+  }
+  else if (player.level >= 50
   && checkStatus("stormseye", player.name) < 5000) {
     addText("debug2", "Waiting for Storm's Eye");
     gauge.max = 90; // Avoid using spenders out of Storm's Eye
@@ -552,7 +560,13 @@ function warCombo() {
   }
 
   clearTimeout(timeout.combo);
-  timeout.combo = setTimeout(warCombo, 12500);
+  timeout.combo = setTimeout(warComboTimeout, 12500);
+}
+
+function warComboTimeout() {
+  if (toggle.combat) {
+    warCombo();
+  }
 }
 
 function stormspathCombo() {
@@ -576,6 +590,7 @@ function stormseyeCombo() {
 function mythriltempestCombo() {
   toggle.combo = 3;
   addIcon(id.overpower,icon.overpower);
+  removeIcon(id.maim);
   if (player.level >= 40) {
     addIcon(id.mythriltempest,icon.mythriltempest);
   }

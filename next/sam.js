@@ -1,13 +1,17 @@
 "use strict";
 
 actionList.sam = [
-  "Higanbana", "Midare Setsugekka", "Tenka Goken",
+  "Higanbana", "Midare Setsugekka",
 
   "Meikyo Shisui",
+  "Hissatsu: Kaiten", "Hissatsu: Gyoten", "Hissatsu: Yaten", "Meditate", "Ikishoten",
 
-  "Hissatsu: Kaiten", "Hissatsu: Gyoten", "Hissatsu: Yaten", "Meditate", "Hissatsu: Shinten", "Hissatsu: Kyuten", "Ikishoten", "Hissatsu: Guren",
+  "Tenka Goken", "Hissatsu: Guren",
 
-  "Hakaze", "Jinpu", "Enpi", "Shifu", "Gekko", "Kasha", "Yukikaze", "Fuga", "Mangetsu", "Oka"
+  "Hakaze", "Jinpu", "Shifu", "Gekko", "Kasha", "Yukikaze", "Hissatsu: Shinten", "Hissatsu: Senei",
+  "Fuga", "Mangetsu", "Oka", "Hissatsu: Kyuten",
+
+  "Enpi"
 ];
 
 function samJobChange() {
@@ -42,15 +46,12 @@ function samAction(logLine) {
 
     // Toggle AoE
 
-    if (logLine[3] == "Fuga"
-    || logLine[3] == "Mangetsu"
-    || logLine[3] == "Oka"
-    || logLine[3] == "Hissatsu: Kyuten"
+    if (["Fuga", "Mangetsu", "Oka", "Hissatsu: Kyuten"].indexOf(logLine[3]) > -1
     || (logLine[3] == "Tenka Goken" && player.level >= 50)
     || (logLine[3] == "Hissatsu: Guren" && player.level >= 72)) {
       toggle.aoe = Date.now();
     }
-    else {
+    else if (["Hakaze", "Jinpu", "Shifu", "Gekko", "Kasha", "Yukikaze", "Hissatsu: Shinten", "Hissatsu: Senei"].indexOf(logLine[3]) > -1)  {
       delete toggle.aoe;
     }
 
@@ -77,9 +78,9 @@ function samAction(logLine) {
 
     else if (logLine[3] == "Meikyo Shisui") {
       addCooldown("meikyoshisui", player.name, recast.meikyoshisui);
-      removeIcon(id.hakaze);
-      removeIcon(id.jinpu);
+      addStatus("meikyoshisui", player.name, duration.meikyoshisui);
       removeIcon(id.meikyoshisui);
+      samCombo();
     }
 
     else if (logLine[3] == "Hissatsu: Kaiten") {
@@ -108,43 +109,38 @@ function samAction(logLine) {
       samKenki();
     }
 
-    else if (logLine[3] == "Hissatsu: Guren") {
+    else if (logLine[3] == "Hissatsu: Guren" || logLine[3] == "Hissatsu: Senei") {
+      // Senei is on same cooldown as Guren
       addCooldown("guren", player.name, recast.guren);
       removeIcon(id.guren);
       samKenki();
     }
 
-    else if (logLine[3] == "Hissatsu: Senei") {
-      addCooldown("guren", player.name, recast.senei); // On same cooldown as Guren
-      removeIcon(id.senei);
-      samKenki();
-    }
-
     // Trigger combos
 
-    else if (["Fuga", "Mangetsu", "Oka"].indexOf(logLine[3]) > -1 && logLine[5] == "") {
+    else if (["Fuga", "Mangetsu", "Oka"].indexOf(logLine[3]) > -1
+    && logLine[5] == "") {
+      // Spinnin' around in town
       // No targets hit
       samCombo();
     }
 
-    else if (logLine[3] == "Hakaze" && logLine[6].length >= 2) {
-      if (![1,2,3].indexOf(toggle.combo) > -1) {
-        samCombo();
-      }
+    else if (logLine[3] == "Hakaze"
+    && logLine[6].length >= 2
+    && [1,2,3].indexOf(toggle.combo) > -1) {
       removeIcon(id.hakaze);
       samKenki();
     }
 
-    else if (logLine[3] == "Fuga" && logLine[6].length >= 2) {
-      if (![4,5].indexOf(toggle.combo) > -1) {
-        samCombo();
-      }
+    else if (logLine[3] == "Fuga"
+    && logLine[6].length >= 2
+    && [4,5].indexOf(toggle.combo) > -1) {
       removeIcon(id.fuga);
       samKenki();
-      meikyoCheck();
     }
 
-    else if (logLine[3] == "Jinpu" && logLine[6].length >= 8) {
+    else if (logLine[3] == "Jinpu"
+    && logLine[6].length >= 8) {
       addStatus("jinpu", player.name, duration.jinpu);
       if (player.level < 30) {
         samCombo();
@@ -155,10 +151,10 @@ function samAction(logLine) {
         addIcon(id.gekko,icon.gekko);
       }
       samKenki();
-      meikyoCheck();
     }
 
-    else if (logLine[3] == "Shifu" && logLine[6].length >= 8) {
+    else if (logLine[3] == "Shifu"
+    && logLine[6].length >= 8) {
       addStatus("shifu", player.name, duration.shifu);
       if (player.level < 40) {
         samCombo();
@@ -169,7 +165,6 @@ function samAction(logLine) {
         addIcon(id.kasha,icon.kasha);
       }
       samKenki();
-      meikyoCheck();
     }
 
     else if (["Gekko", "Kasha", "Yukikaze", "Mangetsu", "Oka"].indexOf(logLine[3]) > -1
@@ -183,8 +178,7 @@ function samAction(logLine) {
       samKenki();
       samCombo();
     }
-
-    timeoutCombo();
+    meikyoCheck();
   }
 }
 
@@ -268,17 +262,10 @@ function samStatus(logLine) {
 
 function meikyoCheck() {
   if (checkCooldown("meikyoshisui", player.name) < 0) {
-    if (toggle.aoe) {
-      addIconBlink(id.meikyoshisui,icon.meikyoshisui);
-    }
-    else if (!toggle.aoe
-    && checkStatus("jinpu", player.name) > 15000
-    && checkStatus("shifu", player.name) > 15000) {
-      addIconBlink(id.meikyoshisui,icon.meikyoshisui);
-    }
-    else {
-      removeIcon(id.meikyoshisui);
-    }
+    addIconBlink(id.meikyoshisui,icon.meikyoshisui);
+  }
+  else {
+    removeIcon(id.meikyoshisui);
   }
 }
 
@@ -494,8 +481,15 @@ function samCombo() {
   }
 
   clearTimeout(timeout.combo);
-  timeout.combo = setTimeout(samCombo, 12500);
+  timeout.combo = setTimeout(samComboTimeout, 12500);
 }
+
+function samComboTimeout() {
+  if (toggle.combat) {
+    samCombo();
+  }
+}
+
 
 function gekkoCombo() {
   toggle.combo = 1;
