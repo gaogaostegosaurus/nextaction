@@ -128,6 +128,9 @@ document.addEventListener("onInCombatChangedEvent", function(e) {
     else if (player.job == "RDM") {
       rdmInCombatChangedEvent(e);
     }
+    else if (player.job == "SAM") {
+      samInCombatChangedEvent(e);
+    }
     else if (player.job == "WAR") {
       warInCombatChangedEvent(e);
     }

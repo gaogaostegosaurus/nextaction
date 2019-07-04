@@ -169,7 +169,31 @@ function samAction(logLine) {
       samKenki();
     }
 
-    else if (["Gekko", "Kasha", "Yukikaze", "Mangetsu", "Oka"].indexOf(logLine[3]) > -1
+    else if (logLine[3] == "Mangetsu"
+    && logLine[6].length >= 8) {
+      if (!previous.mangetsu || Date.now() - previous.mangetsu > 1000
+      && checkStatus("jinpu", player.name > 0)) {
+        previous.mangetsu = Date.now();
+        addStatus("jinpu", player.name, Math.min(checkStatus("jinpu", player.name) + 15000, duration.jinpu));
+      }
+      samKenki();
+      samSen();
+      samCombo();
+    }
+
+    else if (logLine[3] == "Oka"
+    && logLine[6].length >= 8) {
+      if (!previous.oka || Date.now() - previous.oka > 1000
+      && checkStatus("shifu", player.name > 0)) {
+        previous.oka = Date.now();
+        addStatus("shifu", player.name, Math.min(checkStatus("shifu", player.name) + 15000, duration.shifu));
+      }
+      samKenki();
+      samSen();
+      samCombo();
+    }
+
+    else if (["Gekko", "Kasha", "Yukikaze"].indexOf(logLine[3]) > -1
     && logLine[6].length >= 8) {
       samKenki();
       samSen();

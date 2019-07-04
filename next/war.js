@@ -252,7 +252,7 @@ function warAction(logLine) {
 
       else if (logLine[3] == "Storm's Eye"
       && logLine[6].length >= 8) {
-        addStatus("stormseye", player.name, 30000);
+        addStatus("stormseye", player.name, duration.stormseye);
         delete toggle.combo;
         warCombo();
         warGauge();
@@ -268,7 +268,12 @@ function warAction(logLine) {
 
       else if (logLine[3] == "Mythril Tempest"
       && logLine[6].length >= 8) {
-        addStatus("stormseye", player.name, Math.min(checkStatus("stormseye", player.name) + 10000, 30000));
+
+        if (!previous.mythriltempest || Date.now() - previous.mythriltempest > 1000
+        && checkStatus("stormseye", player.name > 0)) {
+          previous.mythriltempest = Date.now();
+          addStatus("stormseye", player.name, Math.min(checkStatus("stormseye", player.name) + 10000, duration.stormseye));
+        }
       }
 
       else {

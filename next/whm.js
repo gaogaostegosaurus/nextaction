@@ -20,12 +20,29 @@ actionList.whm = [
 // id.divinebenison = "next13";
 // id.plenaryindulgence ="next14";
 
+// Cooldown tracker
+// Single target OGCDs
+
+
+// Count holy Hits
 
 //
 //
 
 function whmJobChange() {
   id.luciddreaming = "0";
+  id.freecure = "1";
+  id.assize;
+  id.asylum;
+  id.tetragrammaton;
+  id.thinair;
+  id.divinebenison;
+  id.afflatussolace ;
+  id.benediction = 1;
+  id.afflatusmisery;
+  id.afflatusrapture;
+
+
 }
 
 function whmPlayerChangedEvent(e) {
