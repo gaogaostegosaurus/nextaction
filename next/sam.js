@@ -236,6 +236,15 @@ function samStatus(logLine) {
       }
     }
 
+    else if (logLine[4] == "Open Eyes") {
+      if (logLine[3] == "gains") {
+        addStatus("openeyes", logLine[1], parseInt(logLine[6]) * 1000);
+      }
+      else if (logLine[3] == "loses") {
+        removeStatus("openeyes", logLine[1]);
+      }
+    }
+
     else if (logLine[4] == "Shifu") {
       if (logLine[3] == "gains") {
         addStatus("shifu", logLine[1], parseInt(logLine[6]) * 1000);
