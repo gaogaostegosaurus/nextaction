@@ -248,7 +248,7 @@ function samStatus(logLine) {
     else if (logLine[4] == "Meikyo Shisui") {
       if (logLine[3] == "gains") {
         addStatus("meikyoshisui", logLine[1], parseInt(logLine[6]) * 1000);
-      }7
+      }
       else if (logLine[3] == "loses") {
         removeStatus("meikyoshisui", logLine[1]);
         samCombo();
@@ -414,18 +414,18 @@ function samCombo() {
 
       if (player.jobDetail.ka == false
       && checkStatus("shifu", player.ID) < checkStatus("jinpu", player.ID)) {
-        addIcon(id.oka,icon.oka);
+        addIconBlink(id.oka,icon.oka);
       }
       else if (player.jobDetail.gekko == false
       && checkStatus("jinpu", player.ID) < checkStatus("shifu", player.ID)) {
-        addIcon(id.mangetsu,icon.mangetsu);
+        addIconBlink(id.mangetsu,icon.mangetsu);
       }
 
       else if (player.jobDetail.gekko == false) {
-        addIcon(id.mangetsu,icon.mangetsu);
+        addIconBlink(id.mangetsu,icon.mangetsu);
       }
       else if (player.jobDetail.ka == false) {
-        addIcon(id.oka,icon.oka);
+        addIconBlink(id.oka,icon.oka);
       }
 
       else {
@@ -454,10 +454,6 @@ function samCombo() {
       && player.jobDetail.ka == false) {
         okaCombo();
       }
-
-      else {
-        mangetsuCombo();
-      }
     }
   }
 
@@ -466,17 +462,13 @@ function samCombo() {
     if (checkStatus("meikyoshisui", player.ID) > 0) {
 
       if (player.jobDetail.gekko == false) {
-        addIcon(id.gekko,icon.gekko);
+        addIconBlink(id.gekko,icon.gekko);
       }
       else if (player.jobDetail.ka == false) {
-        addIcon(id.kasha,icon.kasha);
+        addIconBlink(id.kasha,icon.kasha);
       }
       else if (player.jobDetail.setsu == false) {
-        addIcon(id.yukikaze,icon.yukikaze);
-      }
-
-      else {
-        addIcon(id.gekko,icon.gekko); // Do something
+        addIconBlink(id.yukikaze,icon.yukikaze);
       }
     }
 

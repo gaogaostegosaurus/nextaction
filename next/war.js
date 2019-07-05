@@ -1,4 +1,4 @@
-logLine[6]logLine[6]"use strict";
+"use strict";
 
 // Define actions to watch for
 
