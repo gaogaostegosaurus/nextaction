@@ -291,7 +291,8 @@ function samStatus(logLine) {
 }
 
 function meikyoCheck() {
-  if (checkCooldown("meikyoshisui", player.ID) < 0) {
+  if (checkCooldown("meikyoshisui", player.ID) < 0
+  && player.level >= 50) {
     addIconBlink(id.meikyoshisui,icon.meikyoshisui);
   }
   else {
