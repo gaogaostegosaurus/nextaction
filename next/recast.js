@@ -19,6 +19,7 @@ recast.guren = 120000;
 recast.ikishoten = 60000;
 recast.meikyoshisui = 60000;
 recast.senei = recast.guren;
+recast.tsubamegaeshi = 60000;
 
 // WAR
 recast.berserk = 90000;

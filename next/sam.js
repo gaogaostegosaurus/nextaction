@@ -142,6 +142,7 @@ function samAction(logLine) {
     else if (logLine[3] == "Ikishoten") {
       addCooldown("ikishoten", player.ID, recast.ikishoten);
       removeIcon(id.ikishoten);
+      addIconBlinkTimeout("ikishoten", recast.ikishoten, id.ikishoten, icon.ikishoten);
       samKenki();
     }
 
@@ -331,8 +332,9 @@ function samStatus(logLine) {
 
 function samMeikyoShisui() {
   if (player.level >= 76
-  && checkCooldown("meikyoshisui", player.ID) < 0) {
-    addIconBlink(id.meikyoshisui,icon.meikyoshisui);
+  && checkCooldown("tsubamegaeshi", player.ID) > 2500) {
+    // Attempt to save Meikyo to quickly activate Tsubame-gaeshi
+    removeIcon(id.meikyoshisui);
   }
   else if (player.level >= 50
   && checkCooldown("meikyoshisui", player.ID) < 0) {
