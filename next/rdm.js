@@ -243,7 +243,6 @@ function rdmAction(logLine) {
   }
 }
 
-
 function rdmStatus(logLine) {
 
   // addText("debug1", logLine[1] + " " + logLine[3] + " " + logLine[4]);

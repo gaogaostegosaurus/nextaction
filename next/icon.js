@@ -59,7 +59,7 @@ icon.ikishoten = "003179";
 icon.tsubamegaeshi = "003180";
 icon.kaeshihiganbana = "003181";
 icon.kaeshigoken = "003182";
-icon.kaeshisesugekka = "003183";
+icon.kaeshisetsugekka = "003183";
 icon.shoha = "003184";
 
 

@@ -1,12 +1,12 @@
 "use strict";
 
 actionList.sam = [
-  "Higanbana", "Midare Setsugekka",
+  "Higanbana", "Midare Setsugekka", "Kaeshi: Higanbana", "Kaeshi: Setsugekka",
 
   "Meikyo Shisui",
   "Hissatsu: Kaiten", "Hissatsu: Gyoten", "Hissatsu: Yaten", "Meditate", "Ikishoten",
 
-  "Tenka Goken", "Hissatsu: Guren",
+  "Tenka Goken", "Hissatsu: Guren", "Kaeshi: Goken",
 
   "Hakaze", "Jinpu", "Shifu", "Gekko", "Kasha", "Yukikaze", "Hissatsu: Shinten", "Hissatsu: Senei",
   "Fuga", "Mangetsu", "Oka", "Hissatsu: Kyuten",
@@ -14,17 +14,40 @@ actionList.sam = [
   "Enpi"
 ];
 
-function samInCombatChangedEvent() {}
+function samInCombatChangedEvent(e) {
+
+  samMeikyoShisui();
+
+  if (player.level >= 40
+  && checkCooldown("displacement", player.ID) < 0) {
+    addIconBlink(id.displacement,icon.displacement);
+  }
+  if (player.level >= 45
+  && checkCooldown("fleche", player.ID) < 0) {
+    addIconBlink(id.fleche,icon.fleche);
+  }
+  if (player.level >= 50
+  && checkCooldown("acceleration", player.ID) < 0) {
+    addIconBlink(id.acceleration,icon.acceleration);
+  }
+  if (player.level >= 56
+  && checkCooldown("contresixte", player.ID) < 0) {
+    addIconBlink(id.contresixte,icon.contresixte);
+  }
+
+}
 
 function samJobChange() {
 
   id.iaijutsu1 = "0";
-  id.hakaze = "1";
+  id.tsubamegaeshi1 = "1";
+  id.hakaze = "2";
   id.fuga = id.hakaze;
-  id.jinpu = "2";
+  id.jinpu = "3";
   id.shifu = id.jinpu;
-  id.iaijutsu2 = "3";
-  id.gekko = "4";
+  id.iaijutsu2 = "4";
+  id.tsubamegaeshi1 = "5";
+  id.gekko = "6";
   id.kasha = id.gekko;
   id.yukikaze = id.gekko;
   id.mangetsu = id.gekko;
@@ -48,16 +71,19 @@ function samAction(logLine) {
   && actionList.sam.indexOf(logLine[3]) > -1) { // Check if from player
 
     removeText("loadmessage");
-    removeText("debug1");
+    // removeText("debug1");
 
     // Toggle AoE
 
-    if (["Fuga", "Mangetsu", "Oka", "Hissatsu: Kyuten"].indexOf(logLine[3]) > -1
+    if (["Fuga", "Mangetsu", "Oka", "Hissatsu: Kyuten", "Kaeshi: Goken"].indexOf(logLine[3]) > -1
     || (logLine[3] == "Tenka Goken" && player.level >= 50)
     || (logLine[3] == "Hissatsu: Guren" && player.level >= 72)) {
       toggle.aoe = Date.now();
     }
-    else if (["Hakaze", "Jinpu", "Shifu", "Gekko", "Kasha", "Yukikaze", "Hissatsu: Shinten", "Hissatsu: Senei"].indexOf(logLine[3]) > -1)  {
+    else if (["Hakaze", "Jinpu", "Shifu", "Gekko", "Kasha", "Yukikaze",
+              "Hissatsu: Shinten", "Hissatsu: Senei",
+              "Higanbana", "Midare Setsugekka", "Kaeshi: Higanbana", "Kaeshi: Setsugekka"].indexOf(logLine[3]) > -1)
+    {
       delete toggle.aoe;
     }
 
@@ -70,16 +96,20 @@ function samAction(logLine) {
       }
       removeIcon(id.iaijutsu1);
       removeIcon(id.iaijutsu2);
-      samSen();
     }
 
-    else if (logLine[3] == "Tenka Goken" || logLine[3] == "Midare Setsugekka") {
+    else if (["Tenka Goken", "Midare Setsugekka"].indexOf(logLine[3]) > -1) {
       if (checkStatus("meikyoshisui", player.ID) > 0) {
         samCombo(); // Consuming Sen under Meikyo will trigger a new combo
       }
       removeIcon(id.iaijutsu1);
       removeIcon(id.iaijutsu2);
-      samSen();
+    }
+
+    else if (["Kaeshi: Higanbana", "Kaeshi: Goken", "Kaeshi: Setsugekka"].indexOf(logLine[3]) > -1) {
+      addCooldown("tsubamegaeshi", player.ID);
+      removeIcon(id.tsubamegaeshi1);
+      removeIcon(id.tsubamegaeshi2);
     }
 
     else if (logLine[3] == "Meikyo Shisui") {
@@ -208,7 +238,7 @@ function samAction(logLine) {
       samKenki();
       samCombo();
     }
-    meikyoCheck();
+    samMeikyoShisui();
   }
 }
 
@@ -299,9 +329,13 @@ function samStatus(logLine) {
   }
 }
 
-function meikyoCheck() {
-  if (checkCooldown("meikyoshisui", player.ID) < 0
-  && player.level >= 50) {
+function samMeikyoShisui() {
+  if (player.level >= 76
+  && checkCooldown("meikyoshisui", player.ID) < 0) {
+    addIconBlink(id.meikyoshisui,icon.meikyoshisui);
+  }
+  else if (player.level >= 50
+  && checkCooldown("meikyoshisui", player.ID) < 0) {
     addIconBlink(id.meikyoshisui,icon.meikyoshisui);
   }
   else {
@@ -311,15 +345,43 @@ function meikyoCheck() {
 
 function samSen() {
 
+  player.sen = player.jobDetail.gekko + player.jobDetail.ka + player.jobDetail.setsu;
+
+  // Place Iaijutsu in combo
+  if (checkStatus("jinpu", player.ID) < 5000
+  && toggle.combo == 1) {
+    // Delay Iaijutsu for upcoming Jinpu buff
+    removeIcon(id.iaijutsu1);
+    removeIcon(id.tsubamegaeshi1);
+    addIconBlink(id.iaijutsu2,icon.iaijutsu);
+    addIconBlink(id.tsubamegaeshi2,icon.tsubamegaeshi);
+  }
+  else if (player.level >= 62
+  && checkStatus("kaiten", player.ID) < 0
+  && player.jobDetail.kenki < 20) {
+    // Delay Iaijutsu to try for more Kenki
+    removeIcon(id.iaijutsu1);
+    removeIcon(id.tsubamegaeshi1);
+    addIconBlink(id.iaijutsu2,icon.iaijutsu);
+    addIconBlink(id.tsubamegaeshi2,icon.tsubamegaeshi);
+  }
+  else {
+    addIconBlink(id.iaijutsu1,icon.iaijutsu);
+    addIconBlink(id.tsubamegaeshi1,icon.tsubamegaeshi);
+    removeIcon(id.iaijutsu2);
+    removeIcon(id.tsubamegaeshi2);
+  }
+
   // Choose Iaijutsu
-  if (player.jobDetail.gekko + player.jobDetail.ka + player.jobDetail.setsu == 1
+  if (player.sen == 1
   && checkStatus("higanbana", target.ID) < 15000) {
     icon.iaijutsu = icon.higanbana;
   }
-  else if (player.jobDetail.gekko + player.jobDetail.ka + player.jobDetail.setsu == 2) {
+  else if (player.sen == 2
+  && toggle.aoe) {
     icon.iaijutsu = icon.tenkagoken;
   }
-  else if (player.jobDetail.gekko + player.jobDetail.ka + player.jobDetail.setsu == 3) {
+  else if (player.sen == 3) {
     icon.iaijutsu = icon.midaresetsugekka;
   }
   else {
@@ -329,24 +391,26 @@ function samSen() {
     return;
   }
 
-  if (checkStatus("jinpu", player.ID) < 5000
-  && toggle.combo == 1) {
-    // Delay Iaijutsu for upcoming Jinpu buff
-    removeIcon(id.iaijutsu1);
-    addIconBlink(id.iaijutsu2,icon.iaijutsu);
+  // Choose Tsubame-gaeshi
+  if (player.level >= 76
+  && checkCooldown("tsubamegaeshi", player.ID) < 2500) {
+    if (player.sen == 2
+    && toggle.aoe) {
+      icon.tsubamegaeshi = icon.kaeshigoken;
+    }
+    else if (player.sen == 3) {
+      icon.tsubamegaeshi = icon.kaeshisetsugekka;
+    }
+    else {
+      icon.tsubamegaeshi = "003180";
+      removeIcon(id.tsubamegaeshi1);
+      removeIcon(id.tsubamegaeshi2);
+    }
   }
-
-  else if (player.level >= 62
-  && checkStatus("kaiten", player.ID) < 0
-  && player.jobDetail.kenki < 20) {
-    // Delay Iaijutsu to try for more Kenki
-    removeIcon(id.iaijutsu1);
-    addIconBlink(id.iaijutsu2,icon.iaijutsu);
-  }
-
   else {
-    addIconBlink(id.iaijutsu1,icon.iaijutsu);
-    removeIcon(id.iaijutsu2);
+    icon.tsubamegaeshi = "003180";
+    removeIcon(id.tsubamegaeshi1);
+    removeIcon(id.tsubamegaeshi2);
   }
 }
 
