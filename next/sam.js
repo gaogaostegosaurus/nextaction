@@ -374,7 +374,7 @@ function samKenki() {
   // Set Kenki target
   if (player.level >= 70
   && checkCooldown("ikishoten", player.ID) > checkCooldown("guren", player.ID)
-  && checkCooldown("guren", player.ID) < 30000)) {
+  && checkCooldown("guren", player.ID) < 30000) {
     gauge.target = 70;
   }
   else {
