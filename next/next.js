@@ -37,6 +37,7 @@ statusRegExp = new RegExp(' 1[AE]:([\\dA-F]{8}):(.*?) (gains|loses) the effect o
 document.addEventListener("onPlayerChangedEvent", function(e) {
 
   player = e.detail;
+  player.ID = e.detail.id.toString(16).toUpperCase(); // player.id.toString(16) is lowercase
 
   // Detects name/job/level change and clears elements
   if (previous.name != player.name || previous.job != player.job || previous.level != player.level) {
@@ -70,6 +71,7 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
 
     // Status
     // 1: TargetID 2:TargetName 3:GainsLoses 4:Status 5:SourceName 6:Seconds (doesn't exist for "Loses")
+    // Avoid using player.ID or target.ID here
     // Old line (2.0.2.2) 1:TargetName 2:GainsLoses 3:Status 4:SourceName 5:Seconds (doesn't exist for "Loses")
 
     // Backup method for weird zones like Eureka - create toggle for this later?
@@ -97,14 +99,8 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
 });
 
 document.addEventListener('onTargetChangedEvent', function(e) {
-  if (!e.detail.name) {
-    target.name = "";
-    target.id = "";
-  }
-  else {
-    target.name = e.detail.name;
-    target.id = e.detail.id.toString(16);
-  }
+  target = e.detail;
+  target.ID = e.detail.id.toString(16).toUpperCase(); //
 });
 
 document.addEventListener("onInCombatChangedEvent", function(e) {
@@ -194,7 +190,7 @@ document.addEventListener("onLogEvent", function(e) {
 });
 
 
-function addCooldown(cooldownname, source, recast) {
+function addCooldown(cooldownname, sourceid, recast) {
 
   //// NOTES FOR SELF ////
   //// (Unless I change it up again) ////
@@ -202,66 +198,66 @@ function addCooldown(cooldownname, source, recast) {
   // logLine[2] = source name in action logLine
 
   if (!cooldowntracker[cooldownname]) { // Create array if it doesn't exist yet
-    cooldowntracker[cooldownname] = [source, recast + Date.now()];
+    cooldowntracker[cooldownname] = [sourceid, recast + Date.now()];
   }
-  else if (cooldowntracker[cooldownname].indexOf(source) > -1) { // Update array if source match found
-    cooldowntracker[cooldownname][cooldowntracker[cooldownname].indexOf(source) + 1] = recast + Date.now();
+  else if (cooldowntracker[cooldownname].indexOf(sourceid) > -1) { // Update array if source match found
+    cooldowntracker[cooldownname][cooldowntracker[cooldownname].indexOf(sourceid) + 1] = recast + Date.now();
   }
   else { // Push new entry into array if no matching entry
-    cooldowntracker[cooldownname].push(source, recast + Date.now());
+    cooldowntracker[cooldownname].push(sourceid, recast + Date.now());
   }
 }
 
-function checkCooldown(cooldownname, source) {
+function checkCooldown(cooldownname, sourceid) {
   if (!cooldowntracker[cooldownname]) {
     return -1;
   }
-  else if (cooldowntracker[cooldownname].indexOf(source) > -1) {
-    return cooldowntracker[cooldownname][cooldowntracker[cooldownname].indexOf(source) + 1] - Date.now();
+  else if (cooldowntracker[cooldownname].indexOf(sourceid) > -1) {
+    return cooldowntracker[cooldownname][cooldowntracker[cooldownname].indexOf(sourceid) + 1] - Date.now();
   }
   else {
     return -1;
   }
 }
 
-function addStatus(statusname, target, duration) {
+function addStatus(statusname, targetid, duration) {
 
   //// NOTES FOR SELF ////
   //// (Unless I change it up again) ////
   // logLine[4] - target ID in action logLine - it might be good to eventually include this, but status logLines don't include ID
   // logLine[5] - target name in action logLine
-  // logLine[1] - target name in status logLine
+  // logLine[1] - target ID in status logLine
   // target.name - from change target function - probably works all the time? Maybe?
 
   if (!statustracker[statusname]) { // Create array if it doesn't exist yet
-    statustracker[statusname] = [target, Date.now() + duration];
+    statustracker[statusname] = [targetid, Date.now() + duration];
   }
-  else if (statustracker[statusname].indexOf(target) > -1) { // Update array if target match found
-    statustracker[statusname][statustracker[statusname].indexOf(target) + 1] = Date.now() + duration;
+  else if (statustracker[statusname].indexOf(targetid) > -1) { // Update array if target match found
+    statustracker[statusname][statustracker[statusname].indexOf(targetid) + 1] = Date.now() + duration;
   }
   else { // Push new entry into array if no matching entry
-    statustracker[statusname].push(target, Date.now() + duration);
+    statustracker[statusname].push(targetid, Date.now() + duration);
   }
 }
 
-function checkStatus(statusname, target) {
+function checkStatus(statusname, targetid) {
   if (!statustracker[statusname]) {
     return -1;
   }
-  else if (statustracker[statusname].indexOf(target) > -1) {
-    return statustracker[statusname][statustracker[statusname].indexOf(target) + 1] - Date.now();
+  else if (statustracker[statusname].indexOf(targetid) > -1) {
+    return statustracker[statusname][statustracker[statusname].indexOf(targetid) + 1] - Date.now();
   }
   else {
     return -1;
   }
 }
 
-function removeStatus(statusname, target) {
+function removeStatus(statusname, targetid) {
   if (!statustracker[statusname]) {
     statustracker[statusname] = [];
   }
-  else if (statustracker[statusname].indexOf(target) > -1) {
-    statustracker[statusname].splice(statustracker[statusname].indexOf(target), 2);
+  else if (statustracker[statusname].indexOf(targetid) > -1) {
+    statustracker[statusname].splice(statustracker[statusname].indexOf(targetid), 2);
   }
 }
 

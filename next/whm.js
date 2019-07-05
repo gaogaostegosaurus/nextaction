@@ -48,7 +48,7 @@ function whmJobChange() {
 function whmPlayerChangedEvent(e) {
 
   if (player.currentMP / player.maxMP < 0.85
-  && checkCooldown("luciddreaming", player.name) < 0) {
+  && checkCooldown("luciddreaming", player.ID) < 0) {
     addIconBlink(id.luciddreaming,icon.luciddreaming);
   }
   else {
@@ -59,19 +59,19 @@ function whmPlayerChangedEvent(e) {
 function whmInCombatChangedEvent(e) {
 
   if (player.currentMP / player.maxMP < 0.85
-  && checkCooldown("luciddreaming", player.name) < 0) {
+  && checkCooldown("luciddreaming", player.ID) < 0) {
     addIconBlink(id.luciddreaming,icon.luciddreaming);
   }
 }
 
 function whmAction(logLine) {
 
-  if (logLine[2] == player.name
+  if (logLine[1] == player.ID
   && actionList.whm.indexOf(logLine[3]) > -1) {
 
     if (logLine[3] == "Lucid Dreaming") {
       removeIcon(id.luciddreaming);
-      addCooldown("luciddreaming", player.name, recast.luciddreaming);
+      addCooldown("luciddreaming", player.ID, recast.luciddreaming);
     }
   }
 }

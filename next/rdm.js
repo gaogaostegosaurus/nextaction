@@ -67,7 +67,7 @@ function rdmPlayerChangedEvent(e) {
 
   // Lucid Dreaming Low MP
   if (player.currentMP / player.maxMP < 0.85
-  && checkCooldown("luciddreaming", player.name) < 0) {
+  && checkCooldown("luciddreaming", player.ID) < 0) {
     addIconBlink(id.luciddreaming,icon.luciddreaming);
   }
   else {
@@ -79,23 +79,23 @@ function rdmPlayerChangedEvent(e) {
 function rdmInCombatChangedEvent(e) {
 
   if (player.level >= 6
-  && checkCooldown("corpsacorps", player.name) < 0) {
+  && checkCooldown("corpsacorps", player.ID) < 0) {
     addIconBlink(id.corpsacorps,icon.corpsacorps);
   }
   if (player.level >= 40
-  && checkCooldown("displacement", player.name) < 0) {
+  && checkCooldown("displacement", player.ID) < 0) {
     addIconBlink(id.displacement,icon.displacement);
   }
   if (player.level >= 45
-  && checkCooldown("fleche", player.name) < 0) {
+  && checkCooldown("fleche", player.ID) < 0) {
     addIconBlink(id.fleche,icon.fleche);
   }
   if (player.level >= 50
-  && checkCooldown("acceleration", player.name) < 0) {
+  && checkCooldown("acceleration", player.ID) < 0) {
     addIconBlink(id.acceleration,icon.acceleration);
   }
   if (player.level >= 56
-  && checkCooldown("contresixte", player.name) < 0) {
+  && checkCooldown("contresixte", player.ID) < 0) {
     addIconBlink(id.contresixte,icon.contresixte);
   }
 
@@ -105,7 +105,7 @@ function rdmInCombatChangedEvent(e) {
 function rdmAction(logLine) {
 
   // From Player
-  if (logLine[2] == player.name
+  if (logLine[1] == player.ID
   && actionList.rdm.indexOf(logLine[3]) > -1) {
 
     removeText("loadmessage");
@@ -122,48 +122,48 @@ function rdmAction(logLine) {
     // These actions don't interrupt combos
 
     if (logLine[3] == "Acceleration") {
-      addCooldown("acceleration", player.name, recast.acceleration);
+      addCooldown("acceleration", player.ID, recast.acceleration);
       removeIcon(id.acceleration);
       addIconBlinkTimeout("acceleration",recast.acceleration,id.acceleration,icon.acceleration);
     }
 
     else if (logLine[3] == "Contre Sixte") {
-      addCooldown("contresixte", player.name, recast.contresixte);
+      addCooldown("contresixte", player.ID, recast.contresixte);
       removeIcon(id.contresixte);
       addIconBlinkTimeout("contresixte",recast.contresixte,id.contresixte,icon.contresixte);
     }
 
     else if (logLine[3] == "Corps-A-Corps") {
-      addCooldown("corpsacorps", player.name, recast.corpsacorps);
+      addCooldown("corpsacorps", player.ID, recast.corpsacorps);
       removeIcon(id.corpsacorps);
       addIconBlinkTimeout("corpsacorps",recast.corpsacorps,id.corpsacorps,icon.corpsacorps);
     }
 
     else if (logLine[3] == "Displacement") {
-      addCooldown("displacement", player.name, recast.displacement);
+      addCooldown("displacement", player.ID, recast.displacement);
       removeIcon(id.displacement);
       addIconBlinkTimeout("displacement",recast.displacement,id.displacement,icon.displacement);
     }
 
     else if (logLine[3] == "Fleche") {
-      addCooldown("fleche", player.name, recast.fleche);
+      addCooldown("fleche", player.ID, recast.fleche);
       removeIcon(id.fleche);
       addIconBlinkTimeout("fleche",recast.fleche,id.fleche,icon.fleche);
     }
 
     // else if (logLine[3] == "Embolden") {
-    //   addCooldown("embolden", player.name, recast.embolden);
+    //   addCooldown("embolden", player.ID, recast.embolden);
     //   removeIcon(id.embolden);
     //   addIconBlinkTimeout("fleche",recast.embolden,id.embolden,icon.embolden);
     // }
 
     else if (logLine[3] == "Swiftcast") {
-      addCooldown("swiftcast", player.name, recast.swiftcast);
+      addCooldown("swiftcast", player.ID, recast.swiftcast);
     }
 
     else if (logLine[3] == "Lucid Dreaming") {
       removeIcon(id.luciddreaming);
-      addCooldown("luciddreaming", player.name, recast.luciddreaming);
+      addCooldown("luciddreaming", player.ID, recast.luciddreaming);
     }
 
     // Combo actions
@@ -223,15 +223,15 @@ function rdmAction(logLine) {
 
 
       if (logLine[3] == "Verfire") {
-        removeStatus("verfireready", player.name)
+        removeStatus("verfireready", player.ID)
       }
 
       else if (logLine[3] == "Verstone") {
-        removeStatus("verstoneready", player.name)
+        removeStatus("verstoneready", player.ID)
       }
 
       else if (logLine[3] == "Manafication") {
-        addCooldown("manafication", player.name, recast.manafication);
+        addCooldown("manafication", player.ID, recast.manafication);
         clearTimeout(timeout.corpsacorps);
         clearTimeout(timeout.displacement);
         addIconBlink(id.corpsacorps,icon.corpsacorps);
@@ -246,54 +246,54 @@ function rdmAction(logLine) {
 
 function rdmStatus(logLine) {
 
-  // addText("debug1", logLine[1] + " " + logLine[2] + " " + logLine[3]);
+  // addText("debug1", logLine[1] + " " + logLine[3] + " " + logLine[4]);
 
   // To anyone from anyone (non-stacking)
 
-  if (logLine[3] == "non-stacking status") { }
+  if (logLine[4] == "non-stacking status") { }
 
   // To player from anyone
 
-  else if (logLine[1] == player.name) {
+  else if (logLine[1] == player.ID) {
 
-    if (logLine[3] == "Dualcast") {
-      if (logLine[2] == "gains") {
-        addStatus("dualcast", player.name, parseInt(logLine[5]) * 1000);
+    if (logLine[4] == "Dualcast") {
+      if (logLine[3] == "gains") {
+        addStatus("dualcast", player.ID, parseInt(logLine[6]) * 1000);
         removeIcon(id.hardcast);
       }
-      else if (logLine[2] == "loses") {
-        removeStatus("dualcast", player.name);
+      else if (logLine[3] == "loses") {
+        removeStatus("dualcast", player.ID);
         rdmDualcast();
       }
     }
 
-    else if (logLine[3] == "Verfire Ready") {
-      if (logLine[2] == "gains") {
-        addStatus("verfireready", player.name, parseInt(logLine[5]) * 1000);
+    else if (logLine[4] == "Verfire Ready") {
+      if (logLine[3] == "gains") {
+        addStatus("verfireready", player.ID, parseInt(logLine[6]) * 1000);
         rdmDualcast();
       }
-      else if (logLine[2] == "loses") {
-        removeStatus("verfireready", player.name)
+      else if (logLine[3] == "loses") {
+        removeStatus("verfireready", player.ID)
       }
     }
 
-    else if (logLine[3] == "Verstone Ready") {
-      if (logLine[2] == "gains") {
-        addStatus("verstoneready", player.name, parseInt(logLine[5]) * 1000);
+    else if (logLine[4] == "Verstone Ready") {
+      if (logLine[3] == "gains") {
+        addStatus("verstoneready", player.ID, parseInt(logLine[6]) * 1000);
         rdmDualcast();
       }
-      else if (logLine[2] == "loses") {
-        removeStatus("verstoneready", player.name)
+      else if (logLine[3] == "loses") {
+        removeStatus("verstoneready", player.ID)
       }
     }
 
-    else if (logLine[3] == "Swiftcast") {
-      if (logLine[2] == "gains") {
-        addStatus("swiftcast", player.name, parseInt(logLine[5]) * 1000);
+    else if (logLine[4] == "Swiftcast") {
+      if (logLine[3] == "gains") {
+        addStatus("swiftcast", player.ID, parseInt(logLine[6]) * 1000);
         removeIcon(id.hardcast);
       }
-      else if (logLine[2] == "loses") {
-        removeStatus("swiftcast", player.name);
+      else if (logLine[3] == "loses") {
+        removeStatus("swiftcast", player.ID);
         rdmDualcast();
       }
     }
@@ -301,13 +301,13 @@ function rdmStatus(logLine) {
 
   // To NOT player from player
 
-  // else if (logLine[1] != player.name
-  // && logLine[4] == player.name) {
+  // else if (logLine[1] != player.ID
+  // && logLine[5] == player.name) {
   //
-  //   if (logLine[3] == "test") {
-  //     if (logLine[2] == "gains") {
+  //   if (logLine[4] == "test") {
+  //     if (logLine[3] == "gains") {
   //     }
-  //     else if (logLine[2] == "loses") {
+  //     else if (logLine[3] == "loses") {
   //     }
   //   }
   // }
@@ -351,7 +351,7 @@ function rdmDualcast() {
     else if (player.level >= 70
     && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 80
     && player.jobDetail.blackMana > player.jobDetail.whiteMana
-    && checkStatus("verstoneready", player.name) < 0) {
+    && checkStatus("verstoneready", player.ID) < 0) {
       addText("debug1", "Start combo - Verholy (100% proc)");
       rdmHolyCombo();
     }
@@ -359,7 +359,7 @@ function rdmDualcast() {
     else if (player.level >= 68
     && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 80
     && player.jobDetail.whiteMana > player.jobDetail.blackMana
-    && checkStatus("verfireready", player.name) < 0) {
+    && checkStatus("verfireready", player.ID) < 0) {
       addText("debug1", "Start combo - Verflare (100% proc)");
       rdmFlareCombo();
     }
@@ -381,7 +381,7 @@ function rdmDualcast() {
       next.dualcast[0] = rdmDualcastValue("Jolt", "Verthunder", 14, 3, toggle.manafication);
       next.dualcast[1] = rdmDualcastValue("Jolt", "Veraero", 3, 14, toggle.manafication);
 
-      if (checkStatus("verfireready", player.name) > 5000) {
+      if (checkStatus("verfireready", player.ID) > 5000) {
         next.dualcast[2] = rdmDualcastValue("Verfire", "Verthunder", 20, 0, toggle.manafication);
         next.dualcast[3] = rdmDualcastValue("Verfire", "Veraero", 9, 11, toggle.manafication);
       }
@@ -390,7 +390,7 @@ function rdmDualcast() {
         next.dualcast[3] = -1000;
       }
 
-      if (checkStatus("verstoneready", player.name) > 5000) {
+      if (checkStatus("verstoneready", player.ID) > 5000) {
         next.dualcast[4] = rdmDualcastValue("Verstone", "Verthunder", 11, 9, toggle.manafication);
         next.dualcast[5] = rdmDualcastValue("Verstone", "Veraero", 0, 20, toggle.manafication);
       }
@@ -400,7 +400,7 @@ function rdmDualcast() {
       }
 
       if (player.level >= 18
-      && checkCooldown("swiftcast", player.name) < 0) {
+      && checkCooldown("swiftcast", player.ID) < 0) {
         next.dualcast[6] = rdmDualcastValue("Swiftcast", "Verthunder", 11, 0, toggle.manafication);
         next.dualcast[7] = rdmDualcastValue("Swiftcast", "Veraero", 0, 11, toggle.manafication);
       }
@@ -516,12 +516,12 @@ function rdmDualcastValue(hardcastaction, dualcastaction, black, white, manafica
 
   if (dualcastaction == "Verthunder"
   && hardcastaction != "Verfire"
-  && checkStatus("verfireready", player.name) >= 5000) {
+  && checkStatus("verfireready", player.ID) >= 5000) {
     value = value - 100;
   }
   else if (dualcastaction == "Veraero"
   && hardcastaction != "Verstone"
-  && checkStatus("verstoneready", player.name) >= 5000) {
+  && checkStatus("verstoneready", player.ID) >= 5000) {
     value = value - 100;
   }
 
@@ -529,8 +529,8 @@ function rdmDualcastValue(hardcastaction, dualcastaction, black, white, manafica
   if (hardcastaction == "Verfire" || hardcastaction == "Verstone") {
     value = value + 10;
   }
-  else if (checkStatus("verfireready", player.name) < 5000
-  && checkStatus("verstoneready", player.name) < 5000
+  else if (checkStatus("verfireready", player.ID) < 5000
+  && checkStatus("verstoneready", player.ID) < 5000
   && hardcastaction == "Swiftcast") {
     value = value + 20;
   }
@@ -540,28 +540,28 @@ function rdmDualcastValue(hardcastaction, dualcastaction, black, white, manafica
 
     if (player.level >= 70
     && next.blackMana > next.whiteMana
-    && (checkStatus("verstoneready", player.name) < 5000 || hardcastaction == "Verstone")
+    && (checkStatus("verstoneready", player.ID) < 5000 || hardcastaction == "Verstone")
     && dualcastaction != "Veraero") {
       value = value + 1000; // Sets up for 100% proc Verholy
     }
 
     else if (player.level >= 68
     && next.blackMana < next.whiteMana
-    && (checkStatus("verfireready", player.name) < 5000 || hardcastaction == "Verfire")
+    && (checkStatus("verfireready", player.ID) < 5000 || hardcastaction == "Verfire")
     && dualcastaction != "Verthunder") {
       value = value + 1000; // Sets up for 100% proc Verflare
     }
 
     else if (player.level >= 70
     && next.blackMana <= next.whiteMana
-    && (checkStatus("verstoneready", player.name) < 5000 || hardcastaction == "Verstone")
+    && (checkStatus("verstoneready", player.ID) < 5000 || hardcastaction == "Verstone")
     && dualcastaction != "Veraero") {
       value = value + 100; // Sets up for 20% proc Verholy
     }
 
     else if (player.level >= 68
     && next.blackMana >= next.whiteMana
-    && (checkStatus("verfireready", player.name) < 5000 || hardcastaction == "Verfire")
+    && (checkStatus("verfireready", player.ID) < 5000 || hardcastaction == "Verfire")
     && dualcastaction != "Verthunder") {
       value = value + 100; // Sets up for 20% proc Verflare
     }
@@ -576,28 +576,28 @@ function rdmDualcastValue(hardcastaction, dualcastaction, black, white, manafica
 
     if (player.level >= 70
     && next.blackMana > next.whiteMana
-    && (checkStatus("verstoneready", player.name) < 5000 || hardcastaction == "Verstone")
+    && (checkStatus("verstoneready", player.ID) < 5000 || hardcastaction == "Verstone")
     && dualcastaction != "Veraero") {
       value = value + 1000; // Sets up for 100% proc Verholy
     }
 
     else if (player.level >= 68
     && next.blackMana < next.whiteMana
-    && (checkStatus("verfireready", player.name) < 5000 || hardcastaction == "Verfire")
+    && (checkStatus("verfireready", player.ID) < 5000 || hardcastaction == "Verfire")
     && dualcastaction != "Verthunder") {
       value = value + 1000; // Sets up for 100% proc Verflare
     }
 
     // else if (player.level >= 70
     // && next.whiteMana + 21 - next.blackMana <= 30
-    // && (checkStatus("verstoneready", player.name) < 5000 || hardcastaction == "Verstone")
+    // && (checkStatus("verstoneready", player.ID) < 5000 || hardcastaction == "Verstone")
     // && dualcastaction != "Veraero") {
     //   value = value + 100; // Sets up for 20% proc Verholy
     // }
     //
     // else if (player.level >= 68
     // && next.blackMana + 21 - next.whiteMana <= 30
-    // && (checkStatus("verfireready", player.name) < 5000 || hardcastaction == "Verfire")
+    // && (checkStatus("verfireready", player.ID) < 5000 || hardcastaction == "Verfire")
     // && dualcastaction != "Verthunder") {
     //   value = value + 100; // Sets up for 20% proc Verflare
     // }
@@ -643,7 +643,7 @@ function rdmHolyCombo() {
 function rdmManafication() {
 
   if (player.level >= 60
-  && checkCooldown("manafication", player.name) < 0
+  && checkCooldown("manafication", player.ID) < 0
   && !toggle.combo) {
 
     // Don't use Manafication if more than 28 away from 50/50
@@ -665,7 +665,7 @@ function rdmManafication() {
     && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 43
     && player.jobDetail.whiteMana < 50
     && player.jobDetail.blackMana > player.jobDetail.whiteMana
-    && checkStatus("verstoneready", player.name) < 2500) {
+    && checkStatus("verstoneready", player.ID) < 2500) {
       addIconBlink(id.manafication,icon.manafication);
       toggle.manafication = Date.now();
     }
@@ -675,7 +675,7 @@ function rdmManafication() {
     && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 43
     && player.jobDetail.blackMana < 50
     && player.jobDetail.whiteMana > player.jobDetail.blackMana
-    && checkStatus("verfireready", player.name) < 2500) {
+    && checkStatus("verfireready", player.ID) < 2500) {
       addIconBlink(id.manafication,icon.manafication);
       toggle.manafication = Date.now();
     }
