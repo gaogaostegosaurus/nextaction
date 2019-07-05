@@ -364,7 +364,8 @@ function samKenki() {
 
   // Set Kenki target
   if (player.level >= 70
-  && checkCooldown("ikishoten", player.ID) > checkCooldown("guren", player.ID)) {
+  && checkCooldown("ikishoten", player.ID) > checkCooldown("guren", player.ID
+  && checkCooldown("guren", player.ID) < 30000)) {
     gauge.target = 70;
   }
   else {
@@ -374,7 +375,7 @@ function samKenki() {
   // Show Guren/Senei
   if (player.level >= 70
   && checkCooldown("ikishoten", player.ID) > checkCooldown("guren", player.ID) + 5000
-  && checkCooldown("guren", player.ID) < 0
+  && checkCooldown("guren", player.ID) < 1000
   && player.jobDetail.kenki >= 70) {
     addIconBlink(id.guren, icon.guren);
   }
