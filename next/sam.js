@@ -23,6 +23,7 @@ function samInCombatChangedEvent(e) {
     addIconBlink(id.ikishoten,icon.ikishoten);
   }
 
+  samCombo();
 }
 
 function samJobChange() {
@@ -77,9 +78,10 @@ function samAction(logLine) {
 
     // Clear Tsubame-gaeshi
 
-    if (["Hakaze", "Jinpu", "Shifu", "Gekko", "Kasha", "Yukikaze",
-         "Fuga", "Mangetsu", "Oka",
-         "Enpi"].indexOf(logLine[3]) > -1) {
+    if (icon.iaijutsu == "003159" // Set to this after Iaijutsu is inactive
+    && ["Hakaze", "Jinpu", "Shifu", "Gekko", "Kasha", "Yukikaze",
+        "Fuga", "Mangetsu", "Oka",
+        "Enpi"].indexOf(logLine[3]) > -1) {
       icon.tsubamegaeshi = "003180";
       removeIcon(id.tsubamegaeshi1);
       removeIcon(id.tsubamegaeshi2);
