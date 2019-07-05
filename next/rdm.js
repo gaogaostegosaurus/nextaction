@@ -315,151 +315,153 @@ function rdmStatus(logLine) {
 
 function rdmDualcast() {
 
-  removeIcon(id.hardcast);
-  removeIcon(id.dualcast);
-  removeIcon(id.riposte);
-  removeIcon(id.zwerchhau);
-  removeIcon(id.redoublement);
-  removeIcon(id.verflare);
-  removeIcon(id.scorch);
+  if (!toggle.combo) {
 
-  rdmManafication();
+    removeIcon(id.hardcast);
+    removeIcon(id.dualcast);
+    removeIcon(id.riposte);
+    removeIcon(id.zwerchhau);
+    removeIcon(id.redoublement);
+    removeIcon(id.verflare);
+    removeIcon(id.scorch);
 
-  // AoE toggle
+    rdmManafication();
 
-  if (player.level >= 22
-  && toggle.aoe) {
+    // AoE toggle
 
-    if (player.jobDetail.blackMana < player.jobDetail.whiteMana) {
-      addIcon(id.hardcast, icon.verthunder2);
-      addIcon(id.dualcast, icon.scatter);
-    }
-    else {
-      addIcon(id.hardcast, icon.veraero2);
-      addIcon(id.dualcast, icon.scatter);
-    }
-    if (Math.min(player.jobDetail.blackMana < player.jobDetail.whiteMana) >= 20
-    && !toggle.manafication) {
-      addIcon(id.riposte, icon.moulinet);
-    }
-  }
+    if (player.level >= 22
+    && toggle.aoe) {
 
-  // Check for ideal combo situations
-
-  else if (player.level >= 70
-  && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 80
-  && player.jobDetail.blackMana > player.jobDetail.whiteMana
-  && checkStatus("verstoneready", player.name) < 0) {
-    addText("debug1", "Start combo - Verholy (100% proc)");
-    rdmHolyCombo();
-  }
-
-  else if (player.level >= 68
-  && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 80
-  && player.jobDetail.whiteMana > player.jobDetail.blackMana
-  && checkStatus("verfireready", player.name) < 0) {
-    addText("debug1", "Start combo - Verflare (100% proc)");
-    rdmFlareCombo();
-  }
-
-  // No fancy stuff before 68
-
-  else if (player.level < 68
-  && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 80) {
-    addText("debug1", "Start combo");
-    rdmCombo();
-  }
-
-  else {
-
-    // Weigh value for possible cast options
-
-    next.dualcast = [0, 0, 0, 0, 0, 0, 0, 0];
-    // [0] J+VT, [1] J+VA, [2] VF+VT, [3] VF+VA, [4] VS+VT, [5] VS+VA, [6] SC+VT, [7] SC+VA
-    next.dualcast[0] = rdmDualcastValue("Jolt", "Verthunder", 14, 3, toggle.manafication);
-    next.dualcast[1] = rdmDualcastValue("Jolt", "Veraero", 3, 14, toggle.manafication);
-
-    if (checkStatus("verfireready", player.name) > 5000) {
-      next.dualcast[2] = rdmDualcastValue("Verfire", "Verthunder", 20, 0, toggle.manafication);
-      next.dualcast[3] = rdmDualcastValue("Verfire", "Veraero", 9, 11, toggle.manafication);
-    }
-    else {
-      next.dualcast[2] = -1000;
-      next.dualcast[3] = -1000;
-    }
-
-    if (checkStatus("verstoneready", player.name) > 5000) {
-      next.dualcast[4] = rdmDualcastValue("Verstone", "Verthunder", 11, 9, toggle.manafication);
-      next.dualcast[5] = rdmDualcastValue("Verstone", "Veraero", 0, 20, toggle.manafication);
-    }
-    else {
-      next.dualcast[4] = -1000;
-      next.dualcast[5] = -1000;
-    }
-
-    if (player.level >= 18
-    && checkCooldown("swiftcast", player.name) < 0) {
-      next.dualcast[6] = rdmDualcastValue("Swiftcast", "Verthunder", 11, 0, toggle.manafication);
-      next.dualcast[7] = rdmDualcastValue("Swiftcast", "Veraero", 0, 11, toggle.manafication);
-    }
-    else {
-      next.dualcast[6] = -1000;
-      next.dualcast[7] = -1000;
-    }
-
-    var max = next.dualcast[0];
-    var maxIndex = 0;
-
-    for (var i = 1; i < next.dualcast.length; i++) {
-      if (next.dualcast[i] > max) {
-          maxIndex = i;
-          max = next.dualcast[i];
+      if (player.jobDetail.blackMana < player.jobDetail.whiteMana) {
+        addIcon(id.hardcast, icon.verthunder2);
+        addIcon(id.dualcast, icon.scatter);
+      }
+      else {
+        addIcon(id.hardcast, icon.veraero2);
+        addIcon(id.dualcast, icon.scatter);
+      }
+      if (Math.min(player.jobDetail.blackMana < player.jobDetail.whiteMana) >= 20
+      && !toggle.manafication) {
+        addIcon(id.riposte, icon.moulinet);
       }
     }
 
-    if (maxIndex == 0) {
-      addIcon(id.hardcast, icon.jolt);
-      addIcon(id.dualcast, icon.verthunder);
-    }
-    else if (maxIndex == 1) {
-      addIcon(id.hardcast, icon.jolt);
-      addIcon(id.dualcast, icon.veraero);
-    }
-    else if (maxIndex == 2) {
-      addIcon(id.hardcast, icon.verfire);
-      addIcon(id.dualcast, icon.verthunder);
-    }
-    else if (maxIndex == 3) {
-      addIcon(id.hardcast, icon.verfire);
-      addIcon(id.dualcast, icon.veraero);
-    }
-    else if (maxIndex == 4) {
-      addIcon(id.hardcast, icon.verstone);
-      addIcon(id.dualcast, icon.verthunder);
-    }
-    else if (maxIndex == 5) {
-      addIcon(id.hardcast, icon.verstone);
-      addIcon(id.dualcast, icon.veraero);
-    }
-    else if (maxIndex == 6) {
-      addIcon(id.hardcast, icon.swiftcast);
-      addIcon(id.dualcast, icon.verthunder);
-    }
-    else if (maxIndex == 7) {
-      addIcon(id.hardcast, icon.swiftcast);
-      addIcon(id.dualcast, icon.veraero);
+    // Check for ideal combo situations
+
+    else if (player.level >= 70
+    && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 80
+    && player.jobDetail.blackMana > player.jobDetail.whiteMana
+    && checkStatus("verstoneready", player.name) < 0) {
+      addText("debug1", "Start combo - Verholy (100% proc)");
+      rdmHolyCombo();
     }
 
-    // Debug to check values
-    addText("debug0", "J+VT:"  + next.dualcast[0] + " J+VA:"  + next.dualcast[1]);
-    addText("debug1", "VF+VT:" + next.dualcast[2] + " VF+VA:" + next.dualcast[3]);
-    addText("debug2", "VS+VT:" + next.dualcast[4] + " VS+VA:" + next.dualcast[5]);
-    addText("debug3", "SC+VT:" + next.dualcast[6] + " SC+VA:" + next.dualcast[7]);
+    else if (player.level >= 68
+    && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 80
+    && player.jobDetail.whiteMana > player.jobDetail.blackMana
+    && checkStatus("verfireready", player.name) < 0) {
+      addText("debug1", "Start combo - Verflare (100% proc)");
+      rdmFlareCombo();
+    }
+
+    // No fancy stuff before 68
+
+    else if (player.level < 68
+    && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 80) {
+      addText("debug1", "Start combo");
+      rdmCombo();
+    }
+
+    else {
+
+      // Weigh value for possible cast options
+
+      next.dualcast = [0, 0, 0, 0, 0, 0, 0, 0];
+      // [0] J+VT, [1] J+VA, [2] VF+VT, [3] VF+VA, [4] VS+VT, [5] VS+VA, [6] SC+VT, [7] SC+VA
+      next.dualcast[0] = rdmDualcastValue("Jolt", "Verthunder", 14, 3, toggle.manafication);
+      next.dualcast[1] = rdmDualcastValue("Jolt", "Veraero", 3, 14, toggle.manafication);
+
+      if (checkStatus("verfireready", player.name) > 5000) {
+        next.dualcast[2] = rdmDualcastValue("Verfire", "Verthunder", 20, 0, toggle.manafication);
+        next.dualcast[3] = rdmDualcastValue("Verfire", "Veraero", 9, 11, toggle.manafication);
+      }
+      else {
+        next.dualcast[2] = -1000;
+        next.dualcast[3] = -1000;
+      }
+
+      if (checkStatus("verstoneready", player.name) > 5000) {
+        next.dualcast[4] = rdmDualcastValue("Verstone", "Verthunder", 11, 9, toggle.manafication);
+        next.dualcast[5] = rdmDualcastValue("Verstone", "Veraero", 0, 20, toggle.manafication);
+      }
+      else {
+        next.dualcast[4] = -1000;
+        next.dualcast[5] = -1000;
+      }
+
+      if (player.level >= 18
+      && checkCooldown("swiftcast", player.name) < 0) {
+        next.dualcast[6] = rdmDualcastValue("Swiftcast", "Verthunder", 11, 0, toggle.manafication);
+        next.dualcast[7] = rdmDualcastValue("Swiftcast", "Veraero", 0, 11, toggle.manafication);
+      }
+      else {
+        next.dualcast[6] = -1000;
+        next.dualcast[7] = -1000;
+      }
+
+      var max = next.dualcast[0];
+      var maxIndex = 0;
+
+      for (var i = 1; i < next.dualcast.length; i++) {
+        if (next.dualcast[i] > max) {
+            maxIndex = i;
+            max = next.dualcast[i];
+        }
+      }
+
+      if (maxIndex == 0) {
+        addIcon(id.hardcast, icon.jolt);
+        addIcon(id.dualcast, icon.verthunder);
+      }
+      else if (maxIndex == 1) {
+        addIcon(id.hardcast, icon.jolt);
+        addIcon(id.dualcast, icon.veraero);
+      }
+      else if (maxIndex == 2) {
+        addIcon(id.hardcast, icon.verfire);
+        addIcon(id.dualcast, icon.verthunder);
+      }
+      else if (maxIndex == 3) {
+        addIcon(id.hardcast, icon.verfire);
+        addIcon(id.dualcast, icon.veraero);
+      }
+      else if (maxIndex == 4) {
+        addIcon(id.hardcast, icon.verstone);
+        addIcon(id.dualcast, icon.verthunder);
+      }
+      else if (maxIndex == 5) {
+        addIcon(id.hardcast, icon.verstone);
+        addIcon(id.dualcast, icon.veraero);
+      }
+      else if (maxIndex == 6) {
+        addIcon(id.hardcast, icon.swiftcast);
+        addIcon(id.dualcast, icon.verthunder);
+      }
+      else if (maxIndex == 7) {
+        addIcon(id.hardcast, icon.swiftcast);
+        addIcon(id.dualcast, icon.veraero);
+      }
+
+      // Debug to check values
+      addText("debug0", "J+VT:"  + next.dualcast[0] + " J+VA:"  + next.dualcast[1]);
+      addText("debug1", "VF+VT:" + next.dualcast[2] + " VF+VA:" + next.dualcast[3]);
+      addText("debug2", "VS+VT:" + next.dualcast[4] + " VS+VA:" + next.dualcast[5]);
+      addText("debug3", "SC+VT:" + next.dualcast[6] + " SC+VA:" + next.dualcast[7]);
+    }
+
+    clearTimeout(timeout.dualcast);
+    timeout.dualcast = setTimeout(rdmDualcastTimeout, 12500);
   }
-
-  clearTimeout(timeout.dualcast);
-  timeout.dualcast = setTimeout(rdmDualcastTimeout, 12500);
-
 }
 
 function rdmDualcastTimeout() {

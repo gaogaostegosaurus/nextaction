@@ -4,13 +4,13 @@ var shadowfangBuffer = 9000; // Refresh Shadow Fang under this many seconds
 var mudraCount = 0;
 toggle.mudra = "";
 
-id.mudra1 = "next0";
-id.mudra2 = "next1";
-id.mudra3 = "next2";
-id.ninjutsu = "next3";
-id.spinningedge = "next4";
-id.gustslash = "next5";
-id.aeolianedge = "next6";
+id.mudra1 = "0";
+id.mudra2 = "1";
+id.mudra3 = "2";
+id.ninjutsu = "3";
+id.spinningedge = "4";
+id.gustslash = "5";
+id.aeolianedge = "6";
 id.shadowfang = id.aeolianedge;
 id.armorcrush = id.aeolianedge;
 

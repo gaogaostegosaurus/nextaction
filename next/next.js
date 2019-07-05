@@ -31,7 +31,7 @@ var player = {};
 var target = {};
 
 actionRegExp = new RegExp(' 1[56]:([\\dA-F]{8}):(.*?):[\\dA-F]{1,4}:(.*?):([\\dA-F]{8}):(.*?):([\\dA-F]{1,8}):');
-statusRegExp = new RegExp(' 1[AE]:(.*?) (gains|loses) the effect of (.*?) from (.*?)(?: for )?(\\d*\\.\\d*)?(?: Seconds)?\\.');
+statusRegExp = new RegExp(' 1[AE]:([\\dA-F]{8}):(.*?) (gains|loses) the effect of (.*?) from (.*?)(?: for )?(\\d*\\.\\d*)?(?: Seconds)?\\.');
 
 // onPlayerChangedEvent: fires whenever player change detected (including HP, MP, other resources, positions, etc.)
 document.addEventListener("onPlayerChangedEvent", function(e) {
@@ -47,7 +47,7 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
 
     if (player.job == "BRD") {
       actionRegExp = new RegExp(' 1[56]:([\\dA-F]{8}):(' + player.name + '):[\\dA-F]{2,8}:(' + actionList.brd.join("|") + '):([\\dA-F]{2,8}):([^:]*):([\\dA-F]{1,8}):');
-      statusRegExp = new RegExp(' 1[AE]:(.*) (gains|loses) the effect of (' + statusList.brd.join("|") + ') from (' + player.name + ')(?: for )?(\\d*\\.\\d*)?(?: Seconds)?\\.');
+      statusRegExp = new RegExp(' 1[AE]:([\\dA-F]{8}):(.*) (gains|loses) the effect of (' + statusList.brd.join("|") + ') from (' + player.name + ')(?: for )?(\\d*\\.\\d*)?(?: Seconds)?\\.');
     }
 
     else if (player.job == "RDM") {
@@ -69,7 +69,8 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
     // 1:SourceID 2:SourceName 3:SkillName 4:TargetID 5:TargetName 6:Result
 
     // Status
-    // 1:TargetName 2:GainsLoses 3:Status 4:SourceName 5:Seconds (doesn't exist for "Loses")
+    // 1: TargetID 2:TargetName 3:GainsLoses 4:Status 5:SourceName 6:Seconds (doesn't exist for "Loses")
+    // Old line (2.0.2.2) 1:TargetName 2:GainsLoses 3:Status 4:SourceName 5:Seconds (doesn't exist for "Loses")
 
     // Backup method for weird zones like Eureka - create toggle for this later?
     // statusRegExp2 = new RegExp(' 00:08[\\da-f]{2}:.*(You) (gain|lose) the effect of (' + selfStatusList.rdm.join("|") + ')\\.');

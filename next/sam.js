@@ -14,6 +14,8 @@ actionList.sam = [
   "Enpi"
 ];
 
+function samInCombatChangedEvent() {}
+
 function samJobChange() {
 
   id.iaijutsu1 = "0";
@@ -36,7 +38,6 @@ function samJobChange() {
   id.seigan = id.shinten;
   id.shoha = "14";
 }
-
 
 function samAction(logLine) {
 
@@ -212,59 +213,59 @@ function samStatus(logLine) {
 
   // To anyone from anyone (non-stacking)
 
-  if (logLine[3] == "Slashing Resistance Down") {
-    if (logLine[2] == "gains") {
+  if (logLine[4] == "Slashing Resistance Down") {
+    if (logLine[3] == "gains") {
     }
-    else if (logLine[2] == "loses") {
+    else if (logLine[3] == "loses") {
     }
   }
 
   // To player from anyone
 
-  else if (logLine[1] == player.name) {
+  else if (logLine[1] == player.id.toString(16)) {
 
-    if (logLine[3] == "Jinpu") {
-      if (logLine[2] == "gains") {
-        addStatus("jinpu", logLine[1], parseInt(logLine[5]) * 1000);
+    if (logLine[4] == "Jinpu") {
+      if (logLine[3] == "gains") {
+        addStatus("jinpu", logLine[1], parseInt(logLine[6]) * 1000);
       }
-      else if (logLine[2] == "loses") {
+      else if (logLine[3] == "loses") {
         removeStatus("jinpu", logLine[1]);
       }
     }
 
-    else if (logLine[3] == "Shifu") {
-      if (logLine[2] == "gains") {
-        addStatus("shifu", logLine[1], parseInt(logLine[5]) * 1000);
+    else if (logLine[4] == "Shifu") {
+      if (logLine[3] == "gains") {
+        addStatus("shifu", logLine[1], parseInt(logLine[6]) * 1000);
       }
-      else if (logLine[2] == "loses") {
+      else if (logLine[3] == "loses") {
         removeStatus("shifu", logLine[1]);
       }
     }
 
-    else if (logLine[3] == "Meikyo Shisui") {
-      if (logLine[2] == "gains") {
-        addStatus("meikyoshisui", logLine[1], parseInt(logLine[5]) * 1000);
+    else if (logLine[4] == "Meikyo Shisui") {
+      if (logLine[3] == "gains") {
+        addStatus("meikyoshisui", logLine[1], parseInt(logLine[6]) * 1000);
       }
-      else if (logLine[2] == "loses") {
+      else if (logLine[3] == "loses") {
         removeStatus("meikyoshisui", logLine[1]);
         samCombo();
       }
     }
 
-    else if (logLine[3] == "Hissatsu: Kaiten") {
-      if (logLine[2] == "gains") {
-        addStatus("kaiten", logLine[1], parseInt(logLine[5]) * 1000);
+    else if (logLine[4] == "Hissatsu: Kaiten") {
+      if (logLine[3] == "gains") {
+        addStatus("kaiten", logLine[1], parseInt(logLine[6]) * 1000);
       }
-      else if (logLine[2] == "loses") {
+      else if (logLine[3] == "loses") {
         removeStatus("kaiten", logLine[1]);
       }
     }
 
-    else if (logLine[3] == "Meditate") {
-      if (logLine[2] == "gains") {
-        addStatus("meditate", logLine[1], parseInt(logLine[5]) * 1000);
+    else if (logLine[4] == "Meditate") {
+      if (logLine[3] == "gains") {
+        addStatus("meditate", logLine[1], parseInt(logLine[6]) * 1000);
       }
-      else if (logLine[2] == "loses") {
+      else if (logLine[3] == "loses") {
         removeStatus("meditate", logLine[1]);
         samKenki();
       }
@@ -273,13 +274,13 @@ function samStatus(logLine) {
 
   // To NOT player from player
 
-  else if (logLine[4] == player.name) {
+  else if (logLine[5] == player.name) {
 
-    if (logLine[3] == "Higanbana") {
-      if (logLine[2] == "gains") {
-        addStatus("higanbana", logLine[1], parseInt(logLine[5]) * 1000);
+    if (logLine[4] == "Higanbana") {
+      if (logLine[3] == "gains") {
+        addStatus("higanbana", logLine[1], parseInt(logLine[6]) * 1000);
       }
-      else if (logLine[2] == "loses") {
+      else if (logLine[3] == "loses") {
         removeStatus("higanbana", logLine[1]);
       }
     }
@@ -516,7 +517,6 @@ function samComboTimeout() {
     samCombo();
   }
 }
-
 
 function gekkoCombo() {
   toggle.combo = 1;
