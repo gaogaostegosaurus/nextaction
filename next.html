@@ -93,6 +93,17 @@
       display: table-row;
     }
 
+    .fadein {
+      opacity: 0;
+      animation: fadein 0.1s forwards;
+      animation-delay: 0s;
+    }
+
+    .fadeout {
+      animation: fadeout 1s forwards;
+      animation-delay: 2s;
+    }
+
     /* Icon animations */
     .addfadein {
       width: 0;
@@ -139,41 +150,43 @@
 
 <body>
   <div id="loadmessage" class="textdiv"></div>
-  <div class="row">
-    <div id="next0" class="icondiv"><img id="icon0" class="icon" src=""><img class="overlay" id="overlay0" src="icons/overlay.png"></div>
-    <div id="next1" class="icondiv"><img id="icon1" class="icon" src=""><img class="overlay" id="overlay1" src="icons/overlay.png"></div>
-    <div id="next2" class="icondiv"><img id="icon2" class="icon" src=""><img class="overlay" id="overlay2" src="icons/overlay.png"></div>
-    <div id="next3" class="icondiv"><img id="icon3" class="icon" src=""><img class="overlay" id="overlay3" src="icons/overlay.png"></div>
-    <div id="next4" class="icondiv"><img id="icon4" class="icon" src=""><img class="overlay" id="overlay4" src="icons/overlay.png"></div>
-    <div id="next5" class="icondiv"><img id="icon5" class="icon" src=""><img class="overlay" id="overlay5" src="icons/overlay.png"></div>
-    <div id="next6" class="icondiv"><img id="icon6" class="icon" src=""><img class="overlay" id="overlay6" src="icons/overlay.png"></div>
-    <div id="next7" class="icondiv"><img id="icon7" class="icon" src="icons/9vWCpDYwb7DjJ35QXTusOuPTaA.png"><img class="overlay" id="overlay7" src="icons/overlay.png"></div>
-    <div id="next8" class="icondiv"><img id="icon8" class="icon" src="icons/eytwlJikgqXuLL8u6rxAB0t0w4.png"><img class="overlay" id="overlay8" src="icons/overlay.png"></div>
-    <div id="next9" class="icondiv"><img id="icon9" class="icon" src="icons/W29MrhEmsNo9M_ptkmTejtHOgk.png"><img class="overlay" id="overlay9" src="icons/overlay.png"></div>
-  </div>
-  <div class="row">
-    <div id="next10" class="icondiv"><img id="icon10" class="icon" src=""><img class="overlay" id="overlay10" src="icons/overlay.png"></div>
-    <div id="next11" class="icondiv"><img id="icon11" class="icon" src=""><img class="overlay" id="overlay11" src="icons/overlay.png"></div>
-    <div id="next12" class="icondiv"><img id="icon12" class="icon" src=""><img class="overlay" id="overlay12" src="icons/overlay.png"></div>
-    <div id="next13" class="icondiv"><img id="icon13" class="icon" src=""><img class="overlay" id="overlay13" src="icons/overlay.png"></div>
-    <div id="next14" class="icondiv"><img id="icon14" class="icon" src=""><img class="overlay" id="overlay14" src="icons/overlay.png"></div>
-    <div id="next15" class="icondiv"><img id="icon15" class="icon" src=""><img class="overlay" id="overlay15" src="icons/overlay.png"></div>
-    <div id="next16" class="icondiv"><img id="icon16" class="icon" src=""><img class="overlay" id="overlay16" src="icons/overlay.png"></div>
-    <div id="next17" class="icondiv"><img id="icon17" class="icon" src=""><img class="overlay" id="overlay17" src="icons/overlay.png"></div>
-    <div id="next18" class="icondiv"><img id="icon18" class="icon" src=""><img class="overlay" id="overlay18" src="icons/overlay.png"></div>
-    <div id="next19" class="icondiv"><img id="icon19" class="icon" src=""><img class="overlay" id="overlay19" src="icons/overlay.png"></div>
-  </div>
-  <div class="row">
-    <div id="next20" class="icondiv"><img id="icon20" class="icon" src=""><img class="overlay" id="overlay20" src="icons/overlay.png"></div>
-    <div id="next21" class="icondiv"><img id="icon21" class="icon" src=""><img class="overlay" id="overlay21" src="icons/overlay.png"></div>
-    <div id="next22" class="icondiv"><img id="icon22" class="icon" src=""><img class="overlay" id="overlay22" src="icons/overlay.png"></div>
-    <div id="next23" class="icondiv"><img id="icon23" class="icon" src=""><img class="overlay" id="overlay23" src="icons/overlay.png"></div>
-    <div id="next24" class="icondiv"><img id="icon24" class="icon" src=""><img class="overlay" id="overlay24" src="icons/overlay.png"></div>
-    <div id="next25" class="icondiv"><img id="icon25" class="icon" src=""><img class="overlay" id="overlay25" src="icons/overlay.png"></div>
-    <div id="next26" class="icondiv"><img id="icon26" class="icon" src=""><img class="overlay" id="overlay26" src="icons/overlay.png"></div>
-    <div id="next27" class="icondiv"><img id="icon27" class="icon" src=""><img class="overlay" id="overlay27" src="icons/overlay.png"></div>
-    <div id="next28" class="icondiv"><img id="icon28" class="icon" src=""><img class="overlay" id="overlay28" src="icons/overlay.png"></div>
-    <div id="next29" class="icondiv"><img id="icon29" class="icon" src=""><img class="overlay" id="overlay29" src="icons/overlay.png"></div>
+  <div id="nextdiv" class="hide">
+    <div class="row">
+      <div id="next0" class="icondiv"><img id="icon0" class="icon" src=""><img class="overlay" id="overlay0" src="icons/overlay.png"></div>
+      <div id="next1" class="icondiv"><img id="icon1" class="icon" src=""><img class="overlay" id="overlay1" src="icons/overlay.png"></div>
+      <div id="next2" class="icondiv"><img id="icon2" class="icon" src=""><img class="overlay" id="overlay2" src="icons/overlay.png"></div>
+      <div id="next3" class="icondiv"><img id="icon3" class="icon" src=""><img class="overlay" id="overlay3" src="icons/overlay.png"></div>
+      <div id="next4" class="icondiv"><img id="icon4" class="icon" src=""><img class="overlay" id="overlay4" src="icons/overlay.png"></div>
+      <div id="next5" class="icondiv"><img id="icon5" class="icon" src=""><img class="overlay" id="overlay5" src="icons/overlay.png"></div>
+      <div id="next6" class="icondiv"><img id="icon6" class="icon" src=""><img class="overlay" id="overlay6" src="icons/overlay.png"></div>
+      <div id="next7" class="icondiv"><img id="icon7" class="icon" src="icons/9vWCpDYwb7DjJ35QXTusOuPTaA.png"><img class="overlay" id="overlay7" src="icons/overlay.png"></div>
+      <div id="next8" class="icondiv"><img id="icon8" class="icon" src="icons/eytwlJikgqXuLL8u6rxAB0t0w4.png"><img class="overlay" id="overlay8" src="icons/overlay.png"></div>
+      <div id="next9" class="icondiv"><img id="icon9" class="icon" src="icons/W29MrhEmsNo9M_ptkmTejtHOgk.png"><img class="overlay" id="overlay9" src="icons/overlay.png"></div>
+    </div>
+    <div class="row">
+      <div id="next10" class="icondiv"><img id="icon10" class="icon" src=""><img class="overlay" id="overlay10" src="icons/overlay.png"></div>
+      <div id="next11" class="icondiv"><img id="icon11" class="icon" src=""><img class="overlay" id="overlay11" src="icons/overlay.png"></div>
+      <div id="next12" class="icondiv"><img id="icon12" class="icon" src=""><img class="overlay" id="overlay12" src="icons/overlay.png"></div>
+      <div id="next13" class="icondiv"><img id="icon13" class="icon" src=""><img class="overlay" id="overlay13" src="icons/overlay.png"></div>
+      <div id="next14" class="icondiv"><img id="icon14" class="icon" src=""><img class="overlay" id="overlay14" src="icons/overlay.png"></div>
+      <div id="next15" class="icondiv"><img id="icon15" class="icon" src=""><img class="overlay" id="overlay15" src="icons/overlay.png"></div>
+      <div id="next16" class="icondiv"><img id="icon16" class="icon" src=""><img class="overlay" id="overlay16" src="icons/overlay.png"></div>
+      <div id="next17" class="icondiv"><img id="icon17" class="icon" src=""><img class="overlay" id="overlay17" src="icons/overlay.png"></div>
+      <div id="next18" class="icondiv"><img id="icon18" class="icon" src=""><img class="overlay" id="overlay18" src="icons/overlay.png"></div>
+      <div id="next19" class="icondiv"><img id="icon19" class="icon" src=""><img class="overlay" id="overlay19" src="icons/overlay.png"></div>
+    </div>
+    <div class="row">
+      <div id="next20" class="icondiv"><img id="icon20" class="icon" src=""><img class="overlay" id="overlay20" src="icons/overlay.png"></div>
+      <div id="next21" class="icondiv"><img id="icon21" class="icon" src=""><img class="overlay" id="overlay21" src="icons/overlay.png"></div>
+      <div id="next22" class="icondiv"><img id="icon22" class="icon" src=""><img class="overlay" id="overlay22" src="icons/overlay.png"></div>
+      <div id="next23" class="icondiv"><img id="icon23" class="icon" src=""><img class="overlay" id="overlay23" src="icons/overlay.png"></div>
+      <div id="next24" class="icondiv"><img id="icon24" class="icon" src=""><img class="overlay" id="overlay24" src="icons/overlay.png"></div>
+      <div id="next25" class="icondiv"><img id="icon25" class="icon" src=""><img class="overlay" id="overlay25" src="icons/overlay.png"></div>
+      <div id="next26" class="icondiv"><img id="icon26" class="icon" src=""><img class="overlay" id="overlay26" src="icons/overlay.png"></div>
+      <div id="next27" class="icondiv"><img id="icon27" class="icon" src=""><img class="overlay" id="overlay27" src="icons/overlay.png"></div>
+      <div id="next28" class="icondiv"><img id="icon28" class="icon" src=""><img class="overlay" id="overlay28" src="icons/overlay.png"></div>
+      <div id="next29" class="icondiv"><img id="icon29" class="icon" src=""><img class="overlay" id="overlay29" src="icons/overlay.png"></div>
+    </div>
   </div>
   <div class="hide">
     <div id="debug0" class="textdiv"></div>

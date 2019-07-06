@@ -16,14 +16,6 @@ actionList.sam = [
 
 function samInCombatChangedEvent(e) {
 
-  samMeikyoShisui();
-
-  if (player.level >= 68
-  && checkCooldown("ikishoten", player.ID) < 0) {
-    addIconBlink(id.ikishoten,icon.ikishoten);
-  }
-
-  samCombo();
 }
 
 function samJobChange() {
@@ -49,6 +41,16 @@ function samJobChange() {
   id.kyuten = id.shinten;
   id.seigan = id.shinten;
   id.shoha = "14";
+
+
+    samMeikyoShisui();
+
+    if (player.level >= 68
+    && checkCooldown("ikishoten", player.ID) < 0) {
+      addIconBlink(id.ikishoten,icon.ikishoten);
+    }
+    samKenki();
+    samSen();
 }
 
 
@@ -74,17 +76,6 @@ function samAction(logLine) {
               "Higanbana", "Midare Setsugekka", "Kaeshi: Higanbana", "Kaeshi: Setsugekka"].indexOf(logLine[3]) > -1)
     {
       delete toggle.aoe;
-    }
-
-    // Clear Tsubame-gaeshi
-
-    if (icon.iaijutsu == "003159" // Set to this after Iaijutsu is inactive
-    && ["Hakaze", "Jinpu", "Shifu", "Gekko", "Kasha", "Yukikaze",
-        "Fuga", "Mangetsu", "Oka",
-        "Enpi"].indexOf(logLine[3]) > -1) {
-      icon.tsubamegaeshi = "003180";
-      removeIcon(id.tsubamegaeshi1);
-      removeIcon(id.tsubamegaeshi2);
     }
 
     // These actions don't interrupt combos
@@ -113,7 +104,7 @@ function samAction(logLine) {
     }
 
     else if (["Kaeshi: Higanbana", "Kaeshi: Goken", "Kaeshi: Setsugekka"].indexOf(logLine[3]) > -1) {
-      addCooldown("tsubamegaeshi", player.ID);
+      addCooldown("tsubamegaeshi", player.ID, recast.tsubamegaeshi);
       icon.tsubamegaeshi = "003180";
       clearTimeout(timeout.tsubamegaeshi);
       removeIcon(id.tsubamegaeshi1);
@@ -171,8 +162,10 @@ function samAction(logLine) {
     }
 
     else if (logLine[3] == "Hakaze"
-    && logLine[6].length >= 2
-    && [1,2,3].indexOf(toggle.combo) > -1) {
+    && logLine[6].length >= 2) {
+      if ([1,2,3].indexOf(toggle.combo) == -1) {
+        samCombo();
+      }
       removeIcon(id.hakaze);
       samKenki();
     }
@@ -247,7 +240,19 @@ function samAction(logLine) {
       samKenki();
       samCombo();
     }
+
     samMeikyoShisui();
+
+    // Clear Tsubame-gaeshi
+
+    if (icon.iaijutsu == "003159" // Set to this after Iaijutsu is inactive
+    && ["Hakaze", "Jinpu", "Shifu", "Gekko", "Kasha", "Yukikaze",
+        "Fuga", "Mangetsu", "Oka",
+        "Enpi"].indexOf(logLine[3]) > -1) {
+      icon.tsubamegaeshi = "003180";
+      removeIcon(id.tsubamegaeshi1);
+      removeIcon(id.tsubamegaeshi2);
+    }
   }
 }
 
@@ -357,8 +362,9 @@ function samSen() {
 
 
   removeIcon(id.iaijutsu1);
-  removeIcon(id.tsubamegaeshi1);
   removeIcon(id.iaijutsu2);
+
+  removeIcon(id.tsubamegaeshi1);
   removeIcon(id.tsubamegaeshi2);
 
   // Choose Iaijutsu icon
@@ -379,13 +385,13 @@ function samSen() {
   // Choose Tsubame-gaeshi icon
   if (player.level >= 74
   && checkCooldown("tsubamegaeshi", player.ID) < 5000
-  && player.jobDetail.gekko + player.jobDetail.ka + player.jobDetail.setsu == 2
+  && icon.iaijutsu == icon.tenkagoken
   && toggle.aoe) {
     icon.tsubamegaeshi = icon.kaeshigoken;
   }
   else if (player.level >= 74
   && checkCooldown("tsubamegaeshi", player.ID) < 5000
-  && player.jobDetail.gekko + player.jobDetail.ka + player.jobDetail.setsu == 3) {
+  && icon.iaijutsu == icon.midaresetsugekka) {
     icon.tsubamegaeshi = icon.kaeshisetsugekka;
   }
   else {

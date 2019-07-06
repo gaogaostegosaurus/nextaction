@@ -63,50 +63,52 @@ function warJobChange() {
   else {
     icon.steelcyclone = "002552";
   }
+
+
+    if (player.level >= 46
+    && checkCooldown("vengeance", player.ID) < 0) {
+      addIconBlink(id.vengeance,icon.vengeance);
+    }
+    else if (player.level >= 56
+    && checkCooldown("rawintuition", player.ID) < 0) {
+      addIconBlink(id.rawintuition,icon.rawintuition);
+    }
+    else if (player.level >= 8
+    && checkCooldown("rampart", player.ID) < 0) {
+      addIconBlink(id.rampart,icon.rampart);
+    }
+
+    if (player.level >= 50
+    && checkCooldown("infuriate1", player.ID) < 0) {
+      addIconBlink(id.infuriate,icon.infuriate);
+    }
+
+    // Berserk is complicated
+    if (player.level >= 64
+    && checkCooldown("upheaval", player.ID) < 0
+    && checkCooldown("berserk", player.ID) > 25000 ) {
+      addIconBlink(id.upheaval,icon.upheaval);
+    }
+    else if (player.level >= 74
+    && checkCooldown("infuriate1", player.ID) < 0) {
+      removeIcon(id.berserk);
+    }
+    else if (player.level >= 50
+    && checkStatus("stormseye", player.ID) < 20000) {
+      removeIcon(id.berserk);
+    }
+    else if (player.level >= 6
+    && checkCooldown("berserk", player.ID) < 0) {
+      addIconBlink(id.berserk,icon.berserk);
+    }
+
+    warGauge();
+
+
 }
 
 // Checks and activates things when entering combat
 function warInCombatChangedEvent(e) {
-
-  if (player.level >= 46
-  && checkCooldown("vengeance", player.ID) < 0) {
-    addIconBlink(id.vengeance,icon.vengeance);
-  }
-  else if (player.level >= 56
-  && checkCooldown("rawintuition", player.ID) < 0) {
-    addIconBlink(id.rawintuition,icon.rawintuition);
-  }
-  else if (player.level >= 8
-  && checkCooldown("rampart", player.ID) < 0) {
-    addIconBlink(id.rampart,icon.rampart);
-  }
-
-  if (player.level >= 50
-  && checkCooldown("infuriate1", player.ID) < 0) {
-    addIconBlink(id.infuriate,icon.infuriate);
-  }
-
-  // Berserk is complicated
-  if (player.level >= 64
-  && checkCooldown("upheaval", player.ID) < 0
-  && checkCooldown("berserk", player.ID) > 25000 ) {
-    addIconBlink(id.upheaval,icon.upheaval);
-  }
-  else if (player.level >= 74
-  && checkCooldown("infuriate1", player.ID) < 0) {
-    removeIcon(id.berserk);
-  }
-  else if (player.level >= 50
-  && checkStatus("stormseye", player.ID) < 20000) {
-    removeIcon(id.berserk);
-  }
-  else if (player.level >= 6
-  && checkCooldown("berserk", player.ID) < 0) {
-    addIconBlink(id.berserk,icon.berserk);
-  }
-
-  warCombo();
-  warGauge();
 
 }
 
@@ -232,8 +234,8 @@ function warAction(logLine) {
       && logLine[6].length >= 2) {
         if (!toggle.combo) {
           warCombo();
-          removeIcon(id.heavyswing);
         }
+        removeIcon(id.heavyswing);
       }
 
       else if (logLine[3] == "Maim"

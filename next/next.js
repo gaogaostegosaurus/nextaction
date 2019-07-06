@@ -84,18 +84,16 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
   previous.level = player.level;
 
   // This is probably only useful for jobs that need to watch things that "tick" up or down
-  if (toggle.combat) { // Prevents functions from activating outside of combat (to prevent annoying stuff popping up)
-
-    if (player.job == "BRD") {
-      brdPlayerChangedEvent(e);
-    }
-    else if (player.job == "RDM") {
-      rdmPlayerChangedEvent(e);
-    }
-    else if (player.job == "WHM") {
-      whmPlayerChangedEvent(e);
-    }
+  if (player.job == "BRD") {
+    brdPlayerChangedEvent(e);
   }
+  else if (player.job == "RDM") {
+    rdmPlayerChangedEvent(e);
+  }
+  else if (player.job == "WHM") {
+    whmPlayerChangedEvent(e);
+  }
+
 });
 
 document.addEventListener('onTargetChangedEvent', function(e) {
@@ -107,17 +105,13 @@ document.addEventListener("onInCombatChangedEvent", function(e) {
 // Fires when character exits or enters combat
 
   if (! e.detail.inGameCombat) {
-
     delete toggle.combat;
-    clearTimeout(timeout.clearElements);
-
-    timeout.clearElements = setTimeout(clearElements, 4000);
-    // Wait 4 seconds before clearing stuff (DoTs can be annoying otherwise)
+    document.getElementById("nextdiv").className = "fadeout";
   }
   else {
 
-    clearTimeout(timeout.clearElements);
     toggle.combat = Date.now();
+    document.getElementById("nextdiv").className = "fadein";
 
     if (player.job == "BRD") {
       brdInCombatChangedEvent(e);
@@ -264,19 +258,15 @@ function removeStatus(statusname, targetid) {
 // Icon functions
 
 function addIcon(nextid, actionicon) {
-  if (toggle.combat) {
-    document.getElementById("icon" + nextid).src = "icons/" + actionicon + ".png";
-    document.getElementById("next" + nextid).className = "icondiv addfadein";
-    document.getElementById("next" + nextid).style.display = "table-cell";
-  }
+  document.getElementById("icon" + nextid).src = "icons/" + actionicon + ".png";
+  document.getElementById("next" + nextid).className = "icondiv addfadein";
+  document.getElementById("next" + nextid).style.display = "table-cell";
 }
 
 function addIconBlink(nextid, actionicon) {
-  if (toggle.combat) {
-    document.getElementById("icon" + nextid).src = "icons/" + actionicon + ".png";
-    document.getElementById("next" + nextid).className = "icondiv addfadeinblink";
-    document.getElementById("next" + nextid).style.display = "table-cell";
-  }
+  document.getElementById("icon" + nextid).src = "icons/" + actionicon + ".png";
+  document.getElementById("next" + nextid).className = "icondiv addfadeinblink";
+  document.getElementById("next" + nextid).style.display = "table-cell";
 }
 
 function addIconWithTimeout(action,delay,nextid,actionicon) {

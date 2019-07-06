@@ -1,6 +1,6 @@
 "use strict";
 
-actionList.rdm = [
+actionList.blm = [
 
   "Corps-A-Corps", "Displacement", "Fleche", "Contre Sixte", "Acceleration", "Manafication",
 
@@ -61,30 +61,6 @@ function rdmJobChange() {
   else {
     recast.contresixte = 45000;
   }
-
-
-
-    if (player.level >= 6
-    && checkCooldown("corpsacorps", player.ID) < 0) {
-      addIconBlink(id.corpsacorps,icon.corpsacorps);
-    }
-    if (player.level >= 40
-    && checkCooldown("displacement", player.ID) < 0) {
-      addIconBlink(id.displacement,icon.displacement);
-    }
-    if (player.level >= 45
-    && checkCooldown("fleche", player.ID) < 0) {
-      addIconBlink(id.fleche,icon.fleche);
-    }
-    if (player.level >= 50
-    && checkCooldown("acceleration", player.ID) < 0) {
-      addIconBlink(id.acceleration,icon.acceleration);
-    }
-    if (player.level >= 56
-    && checkCooldown("contresixte", player.ID) < 0) {
-      addIconBlink(id.contresixte,icon.contresixte);
-    }
-
 }
 
 function rdmPlayerChangedEvent(e) {
@@ -102,7 +78,28 @@ function rdmPlayerChangedEvent(e) {
 // Checks and activates things when entering combat
 function rdmInCombatChangedEvent(e) {
 
+  if (player.level >= 6
+  && checkCooldown("corpsacorps", player.ID) < 0) {
+    addIconBlink(id.corpsacorps,icon.corpsacorps);
+  }
+  if (player.level >= 40
+  && checkCooldown("displacement", player.ID) < 0) {
+    addIconBlink(id.displacement,icon.displacement);
+  }
+  if (player.level >= 45
+  && checkCooldown("fleche", player.ID) < 0) {
+    addIconBlink(id.fleche,icon.fleche);
+  }
+  if (player.level >= 50
+  && checkCooldown("acceleration", player.ID) < 0) {
+    addIconBlink(id.acceleration,icon.acceleration);
+  }
+  if (player.level >= 56
+  && checkCooldown("contresixte", player.ID) < 0) {
+    addIconBlink(id.contresixte,icon.contresixte);
+  }
 
+  rdmDualcast();
 }
 
 function rdmAction(logLine) {
