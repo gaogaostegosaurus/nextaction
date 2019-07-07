@@ -1,121 +1,42 @@
 "use strict";
 
 actionList.blm = [
-
-  "Corps-A-Corps", "Displacement", "Fleche", "Contre Sixte", "Acceleration", "Manafication",
-
-  "Riposte", "Zwerchhau", "Redoublement", "Moulinet", "Reprise",
-  "Enchanted Riposte", "Enchanted Zwerchhau", "Enchanted Redoublement", "Enchanted Moulinet", "Enchanted Reprise",
-  "Verflare", "Verholy", "Scorch",
-
-  "Jolt", "Verfire", "Verstone", "Jolt II", "Verthunder", "Veraero",
-  "Verthunder II", "Veraero II", "Impact", "Scatter",
-
+  "Blizzard", "Blizzard II", "Blizzard III", "Blizzard IV",
+  "Fire", "Fire II", "Fire III", "Fire IV",
+  "Thunder", "Thunder II", "Thunder III", "Thunder IV",
+  "Freeze", "Flare", "Despair",
+  "Sharpcast",
   "Swiftcast", "Lucid Dreaming"
 ];
 
-function rdmJobChange() {
+// Circle Of Power (Leylines)
 
-  id.luciddreaming = "0";
-  id.riposte = "1";
-  id.moulinet = id.riposte;
-  id.zwerchhau = "2";
-  id.redoublement = "3";
-  id.verflare = "4";
-  id.verholy = id.verflare;
-  id.scorch = "5";
-  id.hardcast = "6";
-  id.dualcast = "7";
+// Rotation
+// B3 -> B4 -> T3 -> F3 -> F4x3 -> F1 -> F4x3 -> Despair
+// T3 can be moved to fire phase without impacting 6 F4 rotation. Use Xeno for any of: movement, raid buffs, weaving, ice filler, etc.
 
-  id.manafication = "11";
-  id.fleche = "12";
-  id.contresixte = "13";
-  id.acceleration = "14";
-  id.corpsacorps = "15";
-  id.displacement = "16";
+function blmJobChange() {
 
-  if (player.level >= 62) {
-    icon.jolt = icon.jolt2;
-  }
-  else {
-    icon.jolt = "003202";
-  }
 
-  if (player.level >= 66) {
-    icon.scatter = icon.impact;
-  }
-  else {
-    icon.scatter = "003207";
-  }
+// Put cooldown trackers here
 
-  if (player.level >= 74) {
-    recast.manafication = 110000;
-  }
-  else {
-    recast.manafication = 120000;
-  }
-
-  if (player.level >= 78) {
-    recast.contresixte = 35000;
-  }
-  else {
-    recast.contresixte = 45000;
-  }
-}
-
-function rdmPlayerChangedEvent(e) {
-
-  // Lucid Dreaming Low MP
-  if (player.currentMP / player.maxMP < 0.85
-  && checkCooldown("luciddreaming", player.ID) < 0) {
-    addIconBlink(id.luciddreaming,icon.luciddreaming);
-  }
-  else {
-    removeIcon(id.luciddreaming);
-  }
 }
 
 // Checks and activates things when entering combat
-function rdmInCombatChangedEvent(e) {
 
-  if (player.level >= 6
-  && checkCooldown("corpsacorps", player.ID) < 0) {
-    addIconBlink(id.corpsacorps,icon.corpsacorps);
-  }
-  if (player.level >= 40
-  && checkCooldown("displacement", player.ID) < 0) {
-    addIconBlink(id.displacement,icon.displacement);
-  }
-  if (player.level >= 45
-  && checkCooldown("fleche", player.ID) < 0) {
-    addIconBlink(id.fleche,icon.fleche);
-  }
-  if (player.level >= 50
-  && checkCooldown("acceleration", player.ID) < 0) {
-    addIconBlink(id.acceleration,icon.acceleration);
-  }
-  if (player.level >= 56
-  && checkCooldown("contresixte", player.ID) < 0) {
-    addIconBlink(id.contresixte,icon.contresixte);
-  }
-
-  rdmDualcast();
-}
-
-function rdmAction(logLine) {
+function blmAction(logLine) {
 
   // From Player
   if (logLine[1] == player.ID
-  && actionList.rdm.indexOf(logLine[3]) > -1) {
+  && actionList.blm.indexOf(logLine[3]) > -1) {
 
     removeText("loadmessage");
 
     // AoE toggle
-    if (["Verthunder II", "Veraero II", "Enchanted Moulinet"].indexOf(logLine[3]) > -1) {
+    if (["Freeze", "Flare"].indexOf(logLine[3]) > -1) {
       toggle.aoe = Date.now();
     }
-    else if (["Jolt", "Verfire", "Verstone", "Jolt II", "Verthunder", "Veraero", "Enchanted Riposte", "Enchanted Zwerchhau", "Enchanted Redoublement", "Verflare", "Verholy", "Scorch"].indexOf(logLine[3]) > -1) {
-      // Does "Enchanted Reprise" go here too?
+    else if (["Blizzard III", "Blizzard IV", "Thunder III", "Fire", "Fire III", "Fire IV", "Despair"].indexOf(logLine[3]) > -1) {
       delete toggle.aoe;
     }
 

@@ -115,7 +115,7 @@ function samAction(logLine) {
       addCooldown("meikyoshisui", player.ID, recast.meikyoshisui);
       addStatus("meikyoshisui", player.ID, duration.meikyoshisui);
       removeIcon(id.meikyoshisui);
-      samCombo();
+      samCombo(); // Clears combo and activates next Sen generating move
     }
 
     else if (logLine[3] == "Hissatsu: Kaiten") {
@@ -344,12 +344,16 @@ function samStatus(logLine) {
 }
 
 function samMeikyoShisui() {
-  if (player.level >= 76
-  && checkCooldown("tsubamegaeshi", player.ID) > 2500) {
-    // Attempt to save Meikyo to quickly activate Tsubame-gaeshi
-    removeIcon(id.meikyoshisui);
-  }
-  else if (player.level >= 50
+  // if (player.level >= 76
+  // && checkCooldown("tsubamegaeshi", player.ID) > 2500) {
+  //   // Attempt to save Meikyo to quickly activate Tsubame-gaeshi
+  //   removeIcon(id.meikyoshisui);
+  // }
+  // else
+
+  // Set to use on cooldown for now
+
+  if (player.level >= 50
   && checkCooldown("meikyoshisui", player.ID) < 0) {
     addIconBlink(id.meikyoshisui,icon.meikyoshisui);
   }
@@ -453,7 +457,7 @@ function samKenki() {
   // Set Kenki target
   if (player.level >= 70
   && checkCooldown("ikishoten", player.ID) > checkCooldown("guren", player.ID)
-  && checkCooldown("guren", player.ID) < 30000) {
+  && checkCooldown("guren", player.ID) < 20000) {
     gauge.target = 70;
   }
   else {
