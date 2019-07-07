@@ -12,13 +12,23 @@ actionList.blm = [
 // Circle Of Power (Leylines)
 
 // Rotation
-// B3 -> B4 -> T3 -> F3 -> F4x3 -> F1 -> F4x3 -> Despair
 // T3 can be moved to fire phase without impacting 6 F4 rotation. Use Xeno for any of: movement, raid buffs, weaving, ice filler, etc.
+
+// Losing uptime = drop a F4
+// Lost Astral
+
 
 function blmJobChange() {
 
-
 // Put cooldown trackers here
+
+}
+
+
+function blmRotation() {
+  // B3 -> B4 -> T3 -> F3 -> F4x3 -> F1 -> F4x3 -> Despair
+
+
 
 }
 
@@ -39,6 +49,17 @@ function blmAction(logLine) {
     else if (["Blizzard III", "Blizzard IV", "Thunder III", "Fire", "Fire III", "Fire IV", "Despair"].indexOf(logLine[3]) > -1) {
       delete toggle.aoe;
     }
+
+
+    // Calculate BLM spell time
+    // Needs to be not activated during Swiftcast or Ley Lines
+
+    if (recast.blmcast > Date.now() - previous.blmcast) {
+      recast.blmcast = Date.now() - previous.blmcast;
+    }
+    previous.blmcast = Date.now()
+
+
 
     // These actions don't interrupt combos
 
@@ -164,9 +185,9 @@ function blmAction(logLine) {
   }
 }
 
-function rdmStatus(logLine) {
+function blmStatus(logLine) {
 
-  // addText("debug1", logLine[1] + " " + logLine[3] + " " + logLine[4]);
+  // Looks like a lot of stuff is tracked by character data - research later
 
   // To anyone from anyone (non-stacking)
 
@@ -176,61 +197,24 @@ function rdmStatus(logLine) {
 
   else if (logLine[1] == player.ID) {
 
-    if (logLine[4] == "Dualcast") {
+    if (logLine[4] == "Enochian") {
       if (logLine[3] == "gains") {
-        addStatus("dualcast", player.ID, parseInt(logLine[6]) * 1000);
-        removeIcon(id.hardcast);
+        addStatus("enochian", player.ID, parseInt(logLine[6]) * 1000);
       }
       else if (logLine[3] == "loses") {
-        removeStatus("dualcast", player.ID);
-        rdmDualcast();
-      }
-    }
-
-    else if (logLine[4] == "Verfire Ready") {
-      if (logLine[3] == "gains") {
-        addStatus("verfireready", player.ID, parseInt(logLine[6]) * 1000);
-        rdmDualcast();
-      }
-      else if (logLine[3] == "loses") {
-        removeStatus("verfireready", player.ID)
-      }
-    }
-
-    else if (logLine[4] == "Verstone Ready") {
-      if (logLine[3] == "gains") {
-        addStatus("verstoneready", player.ID, parseInt(logLine[6]) * 1000);
-        rdmDualcast();
-      }
-      else if (logLine[3] == "loses") {
-        removeStatus("verstoneready", player.ID)
+        removeStatus("enochian", player.ID);
       }
     }
 
     else if (logLine[4] == "Swiftcast") {
       if (logLine[3] == "gains") {
         addStatus("swiftcast", player.ID, parseInt(logLine[6]) * 1000);
-        removeIcon(id.hardcast);
       }
       else if (logLine[3] == "loses") {
         removeStatus("swiftcast", player.ID);
-        rdmDualcast();
       }
     }
   }
-
-  // To NOT player from player
-
-  // else if (logLine[1] != player.ID
-  // && logLine[5] == player.name) {
-  //
-  //   if (logLine[4] == "test") {
-  //     if (logLine[3] == "gains") {
-  //     }
-  //     else if (logLine[3] == "loses") {
-  //     }
-  //   }
-  // }
 }
 
 function rdmDualcast() {
