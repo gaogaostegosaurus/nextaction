@@ -20,18 +20,27 @@ var previous = {};
 var next = {};
 
 var actionList = {};
-var actionRegExp;
-var actionLog;
 
 var statusList = {};
-var statusRegExp;
-var statusLog;
 
 var player = {};
 var target = {};
 
-actionRegExp = new RegExp(' 1[56]:([\\dA-F]{8}):(.*?):[\\dA-F]{1,4}:(.*?):([\\dA-F]{8}):(.*?):([\\dA-F]{1,8}):');
-statusRegExp = new RegExp(' 1[AE]:([\\dA-F]{8}):(.*?) (gains|loses) the effect of (.*?) from (.*?)(?: for )?(\\d*\\.\\d*)?(?: Seconds)?\\.');
+var actionRegExp = new RegExp(' 1[56]:([\\dA-F]{8}):(.*?):[\\dA-F]{1,4}:(.*?):([\\dA-F]{8}):(.*?):([\\dA-F]{1,8}):');
+var actionLog;
+var actionGroups = {};
+
+var statusRegExp = new RegExp(' 1[AE]:([\\dA-F]{8}):(.*?) (gains|loses) the effect of (.*?) from (.*?)(?: for )?(\\d*\\.\\d*)?(?: Seconds)?\\.');
+var statusLog;
+var statusGroups = {};
+
+var startRegExp =  new RegExp(' 14:[\\dA-F]{1,4}:(.*?) starts using (.*?) on (.*?)\\.');
+var startLog;
+var startGroups = {};
+
+var cancelRegExp = new RegExp(' 17:([\\dA-F]{8}):(.*?):[\\dA-F]{1,4}:(.*?):Cancelled:');
+var cancelLog;
+var cancelGroups = {};
 
 // onPlayerChangedEvent: fires whenever player change detected (including HP, MP, other resources, positions, etc.)
 document.addEventListener("onPlayerChangedEvent", function(e) {
@@ -113,6 +122,8 @@ document.addEventListener("onInCombatChangedEvent", function(e) {
     toggle.combat = Date.now();
     document.getElementById("nextdiv").className = "fadein";
 
+    // Try to get rid of this section
+
     if (player.job == "BRD") {
       brdInCombatChangedEvent(e);
     }
@@ -131,15 +142,75 @@ document.addEventListener("onInCombatChangedEvent", function(e) {
   }
 });
 
-document.addEventListener("onLogEvent", function(e) {
-// Fires on log event
+document.addEventListener("onLogEvent", function(e) { // Fires on log event
 
   for (let i = 0; i < e.detail.logs.length; i++) {
 
+    // Replaces named regex groups until CEF updated
+
+    actionGroups.sourceID = "";
+    actionGroups.sourcename = "";
+    actionGroups.actionname = "";
+    actionGroups.targetID = "";
+    actionGroups.targetname = "";
+    actionGroups.result = "";
+
+    statusGroups.targetID = "";
+    statusGroups.targetname = "";
+    statusGroups.gainsloses = "";
+    statusGroups.statusname = "";
+    //statusGroups.sourceID = "";  // Maybe someday
+    statusGroups.sourcename = "";
+    statusGroups.duration = "";
+
+    // startGroups.sourceID = "";
+    startGroups.sourcename = "";
+    startGroups.actionname = "";
+    // startGroups.targetID = "";
+    startGroups.targetname = "";
+
+    cancelGroups.sourceID = "";
+    cancelGroups.sourcename = "";
+    cancelGroups.actionname = "";
+
     actionLog = e.detail.logs[i].match(actionRegExp);
     statusLog = e.detail.logs[i].match(statusRegExp);
+    startLog  = e.detail.logs[i].match(startRegExp);
+    cancelLog = e.detail.logs[i].match(cancelRegExp);
 
     if (actionLog) {
+      actionGroups.sourceID = actionLog[1];
+      actionGroups.sourcename = actionLog[2];
+      actionGroups.actionname = actionLog[3];
+      actionGroups.targetID = actionLog[4];
+      actionGroups.targetname = actionLog[5];
+      actionGroups.result = actionLog[6];
+    }
+
+    else if (statusLog) {
+      statusGroups.targetID = statusLog[1];
+      statusGroups.targetname = statusLog[2];
+      statusGroups.gainsloses = statusLog[3];
+      statusGroups.statusname = statusLog[4];
+      statusGroups.sourcename = statusLog[5];
+      statusGroups.duration = statusLog[6];
+    }
+
+    else if (startLog) {
+      startGroups.sourcename = startLog[1];
+      startGroups.actionname = startLog[2];
+      startGroups.targetname = startLog[3];
+    }
+
+    else if (cancelLog) {
+      cancelGroups.sourceID = cancelLog[1];
+      cancelGroups.sourcename = cancelLog[2];
+      cancelGroups.actionname = cancelLog[3];
+    }
+
+    // 
+
+    if (actionGroups.sourceID == player.ID) {
       if (player.job == "BRD") {
         brdAction(actionLog);
       }
@@ -160,7 +231,8 @@ document.addEventListener("onLogEvent", function(e) {
       }
     }
 
-    else if (statusLog) {
+    //else if (statusLog[5] == player.name) {
+    else if (statusGroups.sourcename == player.name) {
       if (player.job == "BRD") {
         brdStatus(statusLog);
       }
@@ -180,6 +252,19 @@ document.addEventListener("onLogEvent", function(e) {
       //   whmStatus(statusLog);
       // }
     }
+
+    else if (startGroups.sourcename == player.name) {
+      if (player.job == "BLM") {
+        blmStartsUsing(statusLog);
+      }
+    }
+
+    else if (cancelGroups.sourceID == player.ID) {
+      if (player.job == "BLM") {
+        blmCancelled(statusLog);
+      }
+    }
+
   }
 });
 

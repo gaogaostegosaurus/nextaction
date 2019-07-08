@@ -30,15 +30,15 @@ actionList.whm = [
 //
 
 function whmJobChange() {
-  id.luciddreaming = "0";
+  id.luciddreaming = 0;
   id.freecure = "1";
-  id.assize;
-  id.asylum;
-  id.tetragrammaton;
-  id.thinair;
-  id.divinebenison;
-  id.afflatussolace ;
-  id.benediction = 1;
+  id.assize = "12";
+  id.asylum = "13";
+  id.tetragrammaton = "10";
+  id.thinair = "14";
+  id.divinebenison = "11";
+  id.afflatussolace = "10";
+  id.benediction = "10";
   id.afflatusmisery;
   id.afflatusrapture;
 
@@ -89,19 +89,18 @@ function whmStatus(logLine) {
   //
   // // To player from anyone
   //
-  // else if (logLine[1] == player.name) {
-  //
-  //   if (logLine[3] == "playertotarget") {
-  //     if (logLine[2] == "gains") {
-  //       addStatus("playertotarget", player.name, parseInt(logLine[5]) * 1000);
-  //       removeIcon(id.playertotarget);
-  //     }
-  //     else if (logLine[2] == "loses") {
-  //       removeStatus("playertotarget", player.name);
-  //       rdmDualcast();
-  //     }
-  //   }
-  //
+  if (logLine[1] == player.name) {
+
+    if (logLine[3] == "Freecure") {
+      if (logLine[2] == "gains") {
+        addStatus("freecure", player.name, parseInt(logLine[5]) * 1000);
+        addIcon(id.freecure, icon.cure2);
+      }
+      else if (logLine[2] == "loses") {
+        removeIcon(id.freecure);
+      }
+    }
+  }
   // }
   //
   // // To NOT player from player

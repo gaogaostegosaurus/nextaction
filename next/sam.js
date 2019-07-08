@@ -20,27 +20,27 @@ function samInCombatChangedEvent(e) {
 
 function samJobChange() {
 
-  id.iaijutsu1 = "0";
-  id.tsubamegaeshi1 = "1";
-  id.hakaze = "2";
+  id.iaijutsu1 = 0;
+  id.tsubamegaeshi1 = 1;
+  id.hakaze = 2;
   id.fuga = id.hakaze;
-  id.jinpu = "3";
+  id.jinpu = 3;
   id.shifu = id.jinpu;
-  id.iaijutsu2 = "4";
-  id.tsubamegaeshi2 = "5";
-  id.gekko = "6";
+  id.iaijutsu2 = 4;
+  id.tsubamegaeshi2 = 5;
+  id.gekko = 6;
   id.kasha = id.gekko;
   id.yukikaze = id.gekko;
   id.mangetsu = id.gekko;
   id.oka = id.gekko;
-  id.ikishoten = "10";
-  id.meikyoshisui = "11";
-  id.guren = "12";
+  id.ikishoten = 10;
+  id.meikyoshisui = 11;
+  id.guren = 12;
   id.senei = id.guren;
-  id.shinten = "13";
+  id.shinten = 13;
   id.kyuten = id.shinten;
   id.seigan = id.shinten;
-  id.shoha = "14";
+  id.shoha = 14;
 
 
     samMeikyoShisui();

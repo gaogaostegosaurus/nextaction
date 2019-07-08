@@ -16,23 +16,23 @@ actionList.rdm = [
 
 function rdmJobChange() {
 
-  id.luciddreaming = "0";
-  id.riposte = "1";
+  id.luciddreaming = 0;
+  id.riposte = 1;
   id.moulinet = id.riposte;
-  id.zwerchhau = "2";
-  id.redoublement = "3";
-  id.verflare = "4";
+  id.zwerchhau = 2;
+  id.redoublement = 3;
+  id.verflare = 4;
   id.verholy = id.verflare;
-  id.scorch = "5";
-  id.hardcast = "6";
-  id.dualcast = "7";
+  id.scorch = 5;
+  id.hardcast = 6;
+  id.dualcast = 7;
 
-  id.manafication = "11";
-  id.fleche = "12";
-  id.contresixte = "13";
-  id.acceleration = "14";
-  id.corpsacorps = "15";
-  id.displacement = "16";
+  id.manafication = 11;
+  id.fleche = 12;
+  id.contresixte = 13;
+  id.acceleration = 14;
+  id.corpsacorps = 15;
+  id.displacement = 16;
 
   if (player.level >= 62) {
     icon.jolt = icon.jolt2;
@@ -109,73 +109,73 @@ function rdmAction(logLine) {
 
   // From Player
   if (logLine[1] == player.ID
-  && actionList.rdm.indexOf(logLine[3]) > -1) {
+  && actionList.rdm.indexOf(actionGroups.actionname) > -1) {
 
     removeText("loadmessage");
 
     // AoE toggle
-    if (["Verthunder II", "Veraero II", "Enchanted Moulinet"].indexOf(logLine[3]) > -1) {
+    if (["Verthunder II", "Veraero II", "Enchanted Moulinet"].indexOf(actionGroups.actionname) > -1) {
       toggle.aoe = Date.now();
     }
-    else if (["Jolt", "Verfire", "Verstone", "Jolt II", "Verthunder", "Veraero", "Enchanted Riposte", "Enchanted Zwerchhau", "Enchanted Redoublement", "Verflare", "Verholy", "Scorch"].indexOf(logLine[3]) > -1) {
+    else if (["Jolt", "Verfire", "Verstone", "Jolt II", "Verthunder", "Veraero", "Enchanted Riposte", "Enchanted Zwerchhau", "Enchanted Redoublement", "Verflare", "Verholy", "Scorch"].indexOf(actionGroups.actionname) > -1) {
       // Does "Enchanted Reprise" go here too?
       delete toggle.aoe;
     }
 
     // These actions don't interrupt combos
 
-    if (logLine[3] == "Acceleration") {
+    if (actionGroups.actionname == "Acceleration") {
       addCooldown("acceleration", player.ID, recast.acceleration);
       removeIcon(id.acceleration);
       addIconBlinkTimeout("acceleration",recast.acceleration,id.acceleration,icon.acceleration);
     }
 
-    else if (logLine[3] == "Contre Sixte") {
+    else if (actionGroups.actionname == "Contre Sixte") {
       addCooldown("contresixte", player.ID, recast.contresixte);
       removeIcon(id.contresixte);
       addIconBlinkTimeout("contresixte",recast.contresixte,id.contresixte,icon.contresixte);
     }
 
-    else if (logLine[3] == "Corps-A-Corps") {
+    else if (actionGroups.actionname == "Corps-A-Corps") {
       addCooldown("corpsacorps", player.ID, recast.corpsacorps);
       removeIcon(id.corpsacorps);
       addIconBlinkTimeout("corpsacorps",recast.corpsacorps,id.corpsacorps,icon.corpsacorps);
     }
 
-    else if (logLine[3] == "Displacement") {
+    else if (actionGroups.actionname == "Displacement") {
       addCooldown("displacement", player.ID, recast.displacement);
       removeIcon(id.displacement);
       addIconBlinkTimeout("displacement",recast.displacement,id.displacement,icon.displacement);
     }
 
-    else if (logLine[3] == "Fleche") {
+    else if (actionGroups.actionname == "Fleche") {
       addCooldown("fleche", player.ID, recast.fleche);
       removeIcon(id.fleche);
       addIconBlinkTimeout("fleche",recast.fleche,id.fleche,icon.fleche);
     }
 
-    // else if (logLine[3] == "Embolden") {
+    // else if (actionGroups.actionname == "Embolden") {
     //   addCooldown("embolden", player.ID, recast.embolden);
     //   removeIcon(id.embolden);
     //   addIconBlinkTimeout("fleche",recast.embolden,id.embolden,icon.embolden);
     // }
 
-    else if (logLine[3] == "Swiftcast") {
+    else if (actionGroups.actionname == "Swiftcast") {
       addCooldown("swiftcast", player.ID, recast.swiftcast);
     }
 
-    else if (logLine[3] == "Lucid Dreaming") {
+    else if (actionGroups.actionname == "Lucid Dreaming") {
       removeIcon(id.luciddreaming);
       addCooldown("luciddreaming", player.ID, recast.luciddreaming);
     }
 
     // Combo actions
 
-    else if (logLine[3] == "Enchanted Riposte") {
+    else if (actionGroups.actionname == "Enchanted Riposte") {
       removeIcon(id.riposte);
     }
 
-    else if (logLine[3] == "Enchanted Zwerchhau") {
+    else if (actionGroups.actionname == "Enchanted Zwerchhau") {
       removeIcon(id.zwerchhau);
       if (player.level < 50) {
         delete toggle.combo;
@@ -183,7 +183,7 @@ function rdmAction(logLine) {
       }
     }
 
-    else if (logLine[3] == "Enchanted Redoublement") {
+    else if (actionGroups.actionname == "Enchanted Redoublement") {
       removeIcon(id.redoublement);
       if (player.level < 68) {
         delete toggle.combo;
@@ -191,7 +191,7 @@ function rdmAction(logLine) {
       }
     }
 
-    else if (logLine[3] == "Verflare") {
+    else if (actionGroups.actionname == "Verflare") {
       removeIcon(id.verflare);
       if (player.level < 80) {
         delete toggle.combo;
@@ -199,7 +199,7 @@ function rdmAction(logLine) {
       }
     }
 
-    else if (logLine[3] == "Verholy") {
+    else if (actionGroups.actionname == "Verholy") {
       removeIcon(id.verholy);
       if (player.level < 80) {
         delete toggle.combo;
@@ -207,7 +207,7 @@ function rdmAction(logLine) {
       }
     }
 
-    else if (logLine[3] == "Scorch") {
+    else if (actionGroups.actionname == "Scorch") {
       removeIcon(id.scorch);
       delete toggle.combo;
       rdmDualcast();
@@ -225,15 +225,15 @@ function rdmAction(logLine) {
       removeIcon(id.verflare);
 
 
-      if (logLine[3] == "Verfire") {
+      if (actionGroups.actionname == "Verfire") {
         removeStatus("verfireready", player.ID)
       }
 
-      else if (logLine[3] == "Verstone") {
+      else if (actionGroups.actionname == "Verstone") {
         removeStatus("verstoneready", player.ID)
       }
 
-      else if (logLine[3] == "Manafication") {
+      else if (actionGroups.actionname == "Manafication") {
         addCooldown("manafication", player.ID, recast.manafication);
         clearTimeout(timeout.corpsacorps);
         clearTimeout(timeout.displacement);

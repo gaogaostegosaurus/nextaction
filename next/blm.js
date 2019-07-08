@@ -19,17 +19,42 @@ actionList.blm = [
 
 
 function blmJobChange() {
+id.blizzard3 = 0
+
+id.blizzard4 = 2
+id.thunder3 = 3
+id.fire3p = 10
+id.thunder3p = 10
+id.xenoglossia = 10
+
+
 
 // Put cooldown trackers here
+
+  id.fire4 = [1,2,3,4,5,6]
+
+  if (checkStatus("thundercloud") > 2500) {
+
+  }
 
 }
 
 
 function blmRotation() {
   // B3 -> B4 -> T3 -> F3 -> F4x3 -> F1 -> F4x3 -> Despair
+  //
 
 
+}
 
+function blmStartsUsing(logLine) {
+
+}
+
+function blmCancelled(logLine) {
+  if (logLine[1] == player.ID) {
+    // Reevaluate
+  }
 }
 
 // Checks and activates things when entering combat
