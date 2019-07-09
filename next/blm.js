@@ -17,46 +17,126 @@ actionList.blm = [
 // Losing uptime = drop a F4
 // Lost Astral
 
+function blmPlayerChangedEvent(e) {
+
+  if (player.currentMP == 10000
+  && player.jobDetail.umbralStacks < 0
+  && player.jobDetail.umbralHearts == 3) {
+    addIconBlink(id.fire3, icon.fire3);
+  }
+  else if (player.currentMP < 1600
+  && player.jobDetail.umbralStacks > 0
+  && checkStatus("firestarter", player.ID) < 0) {
+    addIconBlink(id.blizzard3, icon.blizzard3);
+  }
+  else if (player.jobDetail.enochian == 0
+  && player.jobDetail.umbralStacks == 0) {
+    addIconBlink(id.blizzard3, icon.blizzard3);
+  }
+  else {
+    removeIcon(id.fire3);
+  }
+
+  if (player.currentMP >= 4800
+  && player.jobDetail.umbralStacks > 0
+  && player.jobDetail.umbralMilliseconds > 12000
+  && player.jobDetail.enochian > 0) {
+    addIconBlink(id.fire4_1, icon.fire4);
+  }
+  else {
+    removeIcon(id.fire4_1);
+  }
+
+  if (player.currentMP >= 3200
+  && player.jobDetail.umbralStacks > 0
+  && player.jobDetail.umbralMilliseconds > 9000
+  && player.jobDetail.enochian > 0) {
+    addIconBlink(id.fire4_2, icon.fire4);
+  }
+  else {
+    removeIcon(id.fire4_2);
+  }
+
+  if (player.currentMP >= 1600
+  && player.jobDetail.umbralStacks > 0
+  && player.jobDetail.umbralMilliseconds > 6000
+  && player.jobDetail.enochian > 0) {
+    addIconBlink(id.fire4_3, icon.fire4);
+  }
+  else {
+    removeIcon(id.fire4_3);
+  }
+
+  if (player.currentMP > 7000
+  && player.jobDetail.umbralStacks >= 0
+  && player.jobDetail.umbralMilliseconds > 0
+  && checkStatus("firestarter", player.ID) < 0) {
+    addIconBlink(id.fire, icon.fire);
+  }
+  else if (player.currentMP >= 800
+  && player.currentMP < 7000
+  && player.jobDetail.umbralStacks > 0
+  && player.jobDetail.umbralMilliseconds > 0
+  && player.jobDetail.enochian > 0) {
+    addIconBlink(id.despair, icon.despair);
+  }
+  else {
+    removeIcon(id.fire);
+  }
+
+  if (checkStatus("thunder", target.ID) < 6000
+  && player.jobDetail.umbralStacks < 0) {
+    addIconBlink(id.thunder3, icon.thunder3);
+  }
+  else {
+    removeIcon(id.thunder3);
+  }
+
+  if (player.jobDetail.umbralStacks < 0
+  && player.jobDetail.umbralHearts == 0
+  && player.jobDetail.enochian > 0) {
+    addIconBlink(id.blizzard4, icon.blizzard4);
+  }
+  else {
+    removeIcon(id.blizzard4);
+  }
+
+}
+
 function blmJobChange() {
-
-  id.thundercloud = 10;
-  id.firestarter = 11;
-
-  // id.blizzard3 = 0;
-  // id.blizzard4 = 1;
-  // id.thunder3 = 2;
-  //
-  // id.fire3 = 0;
-  // id.fire4_1 = 1;
-  // id.fire4_2 = 2;
-  // id.fire4_3 = 3;
-  // id.fire4_4 = 4;
-  // id.fire = 5;
-  // id.fire4_4 = 5;
-  // id.fire4_5 = 6;
-  // id.fire4_6 = 7;
-  // id.fire3p = 8;
-  // id.despair = 9;
-  //
-  // id.fire3p = 10;
-  // id.thunder3p = 10;
-  // id.xenoglossia = 10;
-
+  id.thundercloud = 0;
+  id.fire3 = 1;
+  id.blizzard3 = 1;
+  id.fire4_1 = 2;
+  id.fire4_2 = 3;
+  id.fire4_3 = 4;
+  id.firestarter = 5;
+  id.fire = 6;
+  id.despair = 6;
+  id.thunder3 = 7;
+  id.blizzard4 = 8;
 }
 
-function blmStartsUsing(logLine) {
+function blmStart(logLine) {
   blmCheckProcs();
+  if (startGroups.actionname == "Fire IV") {
+    count.fire4 = count.fire4 - 1;
+  }
 }
 
-function blmCancelled(logLine) {
+function blmCancel(logLine) {
   blmCheckProcs();
+  if (cancelGroups.actionname == "Fire IV") {
+    count.fire4 = count.fire4 + 1;
+  }
 }
 
 // Checks and activates things when entering combat
 
 function blmAction(logLine) {
   blmCheckProcs();
-  if (actionList.blm.indexOf(logLine[3]) > -1) {
+
+  if (actionList.blm.indexOf(actionGroups.actionname) > -1) {
 
     removeText("loadmessage");
 
@@ -66,6 +146,11 @@ function blmAction(logLine) {
     else if (["Blizzard", "Blizzard III", "Blizzard IV", "Fire", "Fire IV", "Thunder III"].indexOf(actionGroups.actionname) > -1) {
       delete toggle.aoe;
     }
+
+    if (actionGroups.actionname == "Thunder III") {
+      addStatus("thunder", actionGroups.targetID, 24000);
+    }
+
   }
 }
 
@@ -159,8 +244,19 @@ function blmCheckProcs() {
 
 }
 
-function blmAstralRotation() {
+function blmCountFire4() {
 
+
+
+    addIcon(id.fire4count_1, icon.gold[count.fire4 - 3])
+    addIcon(id.fire4count_1, icon.gold[Math.min(3, count.fire4 - 3)])
+
+}
+
+function blmRotation() {
+  if (player.jobDetail.umbralStacks > 0) { // In Astral Phase
+
+  }
 }
 
 function blmUmbralRotation() {

@@ -8,9 +8,15 @@ icon.swiftcast = "000866";
 
 // BLM
 
+icon.fire = "000451";
 icon.fire3 = "000453";
+icon.blizzard3 = "000456";
 icon.thunder = "000457";
 icon.thunder3 = "000459";
+icon.fire4 = "002660";
+icon.blizzard4 = "002659";
+icon.despair = "002665";
+icon.xenoglossy = "002667";
 
 // RDM
 

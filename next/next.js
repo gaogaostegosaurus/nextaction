@@ -96,6 +96,9 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
   previous.level = player.level;
 
   // This is probably only useful for jobs that need to watch things that "tick" up or down
+  if (player.job == "BLM") {
+    blmPlayerChangedEvent(e);
+  }
   if (player.job == "BRD") {
     brdPlayerChangedEvent(e);
   }
@@ -265,13 +268,13 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
 
     else if (startGroups.sourcename == player.name) {  // Status source = player
       if (player.job == "BLM") {
-        blmStartsUsing(statusLog);
+        blmStart(statusLog);
       }
     }
 
     else if (cancelGroups.sourceID == player.ID) {  // Status source = player
       if (player.job == "BLM") {
-        blmCancelled(statusLog);
+        blmCancel(statusLog);
       }
     }
 
