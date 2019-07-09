@@ -364,6 +364,7 @@ function samMeikyoShisui() {
 
 function samSen() {
 
+  player.jobDetail.getsu = player.jobDetail.gekko; // Until cactbot fixes this
 
   removeIcon(id.iaijutsu1);
   removeIcon(id.iaijutsu2);
@@ -372,14 +373,14 @@ function samSen() {
   removeIcon(id.tsubamegaeshi2);
 
   // Choose Iaijutsu icon
-  if (player.jobDetail.gekko + player.jobDetail.ka + player.jobDetail.setsu == 1
+  if (player.jobDetail.getsu + player.jobDetail.ka + player.jobDetail.setsu == 1
   && checkStatus("higanbana", target.ID) < 15000) {
     icon.iaijutsu = icon.higanbana;
   }
-  else if (player.jobDetail.gekko + player.jobDetail.ka + player.jobDetail.setsu == 2) {
+  else if (player.jobDetail.getsu + player.jobDetail.ka + player.jobDetail.setsu == 2) {
     icon.iaijutsu = icon.tenkagoken;
   }
-  else if (player.jobDetail.gekko + player.jobDetail.ka + player.jobDetail.setsu == 3) {
+  else if (player.jobDetail.getsu + player.jobDetail.ka + player.jobDetail.setsu == 3) {
     icon.iaijutsu = icon.midaresetsugekka;
   }
   else {
@@ -493,7 +494,7 @@ function samKenki() {
 }
 
 function samCombo() {
-
+  player.jobDetail.getsu = player.jobDetail.gekko // Until cactbot fixes this
   delete toggle.combo;
 
   // Reset icons
@@ -509,12 +510,12 @@ function samCombo() {
       && checkStatus("shifu", player.ID) < checkStatus("jinpu", player.ID)) {
         addIconBlink(id.oka,icon.oka);
       }
-      else if (player.jobDetail.gekko == false
+      else if (player.jobDetail.getsu == false
       && checkStatus("jinpu", player.ID) < checkStatus("shifu", player.ID)) {
         addIconBlink(id.mangetsu,icon.mangetsu);
       }
 
-      else if (player.jobDetail.gekko == false) {
+      else if (player.jobDetail.getsu == false) {
         addIconBlink(id.mangetsu,icon.mangetsu);
       }
       else if (player.jobDetail.ka == false) {
@@ -534,13 +535,13 @@ function samCombo() {
         okaCombo();
       }
       else if (player.level >= 35
-      && player.jobDetail.gekko == false
+      && player.jobDetail.getsu == false
       && checkStatus("jinpu", player.ID) < checkStatus("shifu", player.ID)) {
         mangetsuCombo();
       }
 
       else if (player.level >= 35
-      && player.jobDetail.gekko == false) {
+      && player.jobDetail.getsu == false) {
         mangetsuCombo();
       }
       else if (player.level >= 45
@@ -554,7 +555,7 @@ function samCombo() {
 
     if (checkStatus("meikyoshisui", player.ID) > 0) {
 
-      if (player.jobDetail.gekko == false) {
+      if (player.jobDetail.getsu == false) {
         addIconBlink(id.gekko,icon.gekko);
       }
       else if (player.jobDetail.ka == false) {
@@ -573,13 +574,13 @@ function samCombo() {
         kashaCombo();
       }
       else if (player.level >= 4
-      && player.jobDetail.gekko == false
+      && player.jobDetail.getsu == false
       && checkStatus("jinpu", player.ID) < checkStatus("shifu", player.ID)) {
         gekkoCombo();
       }
 
       else if (player.level >= 30
-      && player.jobDetail.gekko == false) {
+      && player.jobDetail.getsu == false) {
         gekkoCombo();
       }
       else if (player.level >= 40

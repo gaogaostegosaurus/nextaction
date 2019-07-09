@@ -32,17 +32,15 @@ actionList.whm = [
 function whmJobChange() {
   id.luciddreaming = 0;
   id.freecure = "1";
-  id.assize = "12";
-  id.asylum = "13";
-  id.tetragrammaton = "10";
-  id.thinair = "14";
-  id.divinebenison = "11";
   id.afflatussolace = "10";
+  id.tetragrammaton = "10";
   id.benediction = "10";
+  id.assize = "11";
+  id.divinebenison = "12";
+  id.asylum = "13";
+  id.thinair = "14";
   id.afflatusmisery;
   id.afflatusrapture;
-
-
 }
 
 function whmPlayerChangedEvent(e) {
@@ -66,10 +64,9 @@ function whmInCombatChangedEvent(e) {
 
 function whmAction(logLine) {
 
-  if (logLine[1] == player.ID
-  && actionList.whm.indexOf(logLine[3]) > -1) {
+  if (actionList.whm.indexOf(actionGroups.actionname) > -1) {
 
-    if (logLine[3] == "Lucid Dreaming") {
+    if (actionGroups.actionname == "Lucid Dreaming") {
       removeIcon(id.luciddreaming);
       addCooldown("luciddreaming", player.ID, recast.luciddreaming);
     }
@@ -78,22 +75,11 @@ function whmAction(logLine) {
 
 function whmStatus(logLine) {
 
-  // // addText("debug1", logLine[1] + " " + logLine[2] + " " + logLine[3]);
-  //
-  // // To anyone from anyone (non-stacking)
-  //
-  // if (logLine[3] == "nonstackingstatus") {
-  //   // if (logLine[2] == "gains") { }
-  //   // else if (logLine[2] == "loses") { }
-  // }
-  //
-  // // To player from anyone
-  //
-  if (logLine[1] == player.name) {
+  if (statusGroups.targetID == player.ID) {
 
-    if (logLine[3] == "Freecure") {
+    if (statusGroups.statusname == "Freecure") {
       if (logLine[2] == "gains") {
-        addStatus("freecure", player.name, parseInt(logLine[5]) * 1000);
+        addStatus("freecure", player.name, parseInt(statusGroups.duration) * 1000);
         addIcon(id.freecure, icon.cure2);
       }
       else if (logLine[2] == "loses") {
@@ -101,18 +87,4 @@ function whmStatus(logLine) {
       }
     }
   }
-  // }
-  //
-  // // To NOT player from player
-  //
-  // else if (logLine[1] != player.name
-  // && logLine[4] == player.name) {
-  //
-  //   if (logLine[3] == "test") {
-  //     if (logLine[2] == "gains") {
-  //     }
-  //     else if (logLine[2] == "loses") {
-  //     }
-  //   }
-  // }
 }

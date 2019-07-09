@@ -1,9 +1,16 @@
+
 // Role Actions
 
 icon.rampart = "000801";
 icon.luciddreaming = "000865";
 icon.swiftcast = "000866";
 
+
+// BLM
+
+icon.fire3 = "000453";
+icon.thunder = "000457";
+icon.thunder3 = "000459";
 
 // RDM
 
@@ -110,3 +117,12 @@ icon.assize = "002634";
 icon.divinebenison = "002635";
 icon.thinair = "002636";
 icon.plenaryindulgence = "002639";
+
+
+
+
+// Other
+icon.gold0 = "066181";
+icon.gold1 = "066182";
+icon.gold2 = "066183";
+icon.gold3 = "066184";

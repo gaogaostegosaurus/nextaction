@@ -108,7 +108,7 @@ function rdmInCombatChangedEvent(e) {
 function rdmAction(logLine) {
 
   // From Player
-  if (logLine[1] == player.ID
+  if (actionGroups.sourceID == player.ID
   && actionList.rdm.indexOf(actionGroups.actionname) > -1) {
 
     removeText("loadmessage");
@@ -248,53 +248,45 @@ function rdmAction(logLine) {
 
 function rdmStatus(logLine) {
 
-  // addText("debug1", logLine[1] + " " + logLine[3] + " " + logLine[4]);
+  if (statusGroups.targetID == player.ID) {
 
-  // To anyone from anyone (non-stacking)
-
-  if (logLine[4] == "non-stacking status") { }
-
-  // To player from anyone
-
-  else if (logLine[1] == player.ID) {
-
-    if (logLine[4] == "Dualcast") {
-      if (logLine[3] == "gains") {
-        addStatus("dualcast", player.ID, parseInt(logLine[6]) * 1000);
+    if (statusGroups.statusname == "Dualcast") {
+      if (statusGroups.gainsloses == "gains") {
+        addStatus("dualcast", player.ID, parseInt(statusGroups.duration) * 1000);
         removeIcon(id.hardcast);
       }
-      else if (logLine[3] == "loses") {
+      else if (statusGroups.gainsloses == "loses") {
         removeStatus("dualcast", player.ID);
         rdmDualcast();
       }
     }
 
-    else if (logLine[4] == "Verfire Ready") {
-      if (logLine[3] == "gains") {
-        addStatus("verfireready", player.ID, parseInt(logLine[6]) * 1000);
+    else if (statusGroups.statusname == "Verfire Ready") {
+      if (statusGroups.gainsloses == "gains") {
+        addStatus("verfireready", player.ID, parseInt(statusGroups.duration) * 1000);
         rdmDualcast();
       }
-      else if (logLine[3] == "loses") {
+      else if (statusGroups.gainsloses == "loses") {
         removeStatus("verfireready", player.ID)
       }
     }
 
-    else if (logLine[4] == "Verstone Ready") {
-      if (logLine[3] == "gains") {
-        addStatus("verstoneready", player.ID, parseInt(logLine[6]) * 1000);
+    else if (statusGroups.statusname == "Verstone Ready") {
+      if (statusGroups.gainsloses == "gains") {
+        addStatus("verstoneready", player.ID, parseInt(statusGroups.duration) * 1000);
         rdmDualcast();
       }
-      else if (logLine[3] == "loses") {
+      else if (statusGroups.gainsloses == "loses") {
         removeStatus("verstoneready", player.ID)
       }
     }
 
-    else if (logLine[4] == "Swiftcast") {
-      if (logLine[3] == "gains") {
-        addStatus("swiftcast", player.ID, parseInt(logLine[6]) * 1000);
+    else if (statusGroups.statusname == "Swiftcast") {
+      if (statusGroups.gainsloses == "gains") {
+        addStatus("swiftcast", player.ID, parseInt(statusGroups.duration) * 1000);
         removeIcon(id.hardcast);
       }
-      else if (logLine[3] == "loses") {
+      else if (statusGroups.gainsloses == "loses") {
         removeStatus("swiftcast", player.ID);
         rdmDualcast();
       }
@@ -303,13 +295,13 @@ function rdmStatus(logLine) {
 
   // To NOT player from player
 
-  // else if (logLine[1] != player.ID
+  // else if (statusGroups.targetID != player.ID
   // && logLine[5] == player.name) {
   //
-  //   if (logLine[4] == "test") {
-  //     if (logLine[3] == "gains") {
+  //   if (statusGroups.statusname == "test") {
+  //     if (statusGroups.gainsloses == "gains") {
   //     }
-  //     else if (logLine[3] == "loses") {
+  //     else if (statusGroups.gainsloses == "loses") {
   //     }
   //   }
   // }

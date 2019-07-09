@@ -55,7 +55,10 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
 
     addText("loadmessage", "Plugin loaded for " + player.level + player.job);
 
-    if (player.job == "BRD") {
+    if (player.job == "BLM") {
+      blmJobChange();
+    }
+    else if (player.job == "BRD") {
       actionRegExp = new RegExp(' 1[56]:([\\dA-F]{8}):(' + player.name + '):[\\dA-F]{2,8}:(' + actionList.brd.join("|") + '):([\\dA-F]{2,8}):([^:]*):([\\dA-F]{1,8}):');
       statusRegExp = new RegExp(' 1[AE]:([\\dA-F]{8}):(.*) (gains|loses) the effect of (' + statusList.brd.join("|") + ') from (' + player.name + ')(?: for )?(\\d*\\.\\d*)?(?: Seconds)?\\.');
     }
@@ -208,10 +211,13 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
       cancelGroups.actionname = cancelLog[3];
     }
 
-    // 
+    //
 
-    if (actionGroups.sourceID == player.ID) {
-      if (player.job == "BRD") {
+    if (actionGroups.sourceID == player.ID) {  // Status source = player
+      if (player.job == "BLM") {
+        blmAction(actionLog);
+      }
+      else if (player.job == "BRD") {
         brdAction(actionLog);
       }
       else if (player.job == "MNK") {
@@ -231,9 +237,13 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
       }
     }
 
-    //else if (statusLog[5] == player.name) {
-    else if (statusGroups.sourcename == player.name) {
-      if (player.job == "BRD") {
+    // Checks for status
+
+    else if (statusGroups.sourcename == player.name) {  // Status source = player
+      if (player.job == "BLM") {
+        blmStatus(statusLog);
+      }
+      else if (player.job == "BRD") {
         brdStatus(statusLog);
       }
       else if (player.job == "MNK") {
@@ -253,13 +263,13 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
       // }
     }
 
-    else if (startGroups.sourcename == player.name) {
+    else if (startGroups.sourcename == player.name) {  // Status source = player
       if (player.job == "BLM") {
         blmStartsUsing(statusLog);
       }
     }
 
-    else if (cancelGroups.sourceID == player.ID) {
+    else if (cancelGroups.sourceID == player.ID) {  // Status source = player
       if (player.job == "BLM") {
         blmCancelled(statusLog);
       }
