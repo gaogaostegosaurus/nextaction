@@ -1,12 +1,12 @@
 "use strict";
 
 var recast = {};
-var duration = {};
 var cooldowntracker = {};     // Holds timestamps for cooldowns
 var statustracker = {};       // Holds timestamps for statuses
 var cooldowntime = {};        // Holds timestamps for cooldowns
 var statustime = {};          // Holds timestamps for statuses
 var statuslength = {};        // Holds durations... probably should rename it to durations...
+var duration = {};            // OK I DID IT
 var gauge = {};
 var buffertime = {};
 
@@ -26,27 +26,30 @@ var statusList = {};
 var player = {};
 var target = {};
 
-var actionRegExp = new RegExp(' 1[56]:([\\dA-F]{8}):(.*?):[\\dA-F]{1,4}:(.*?):([\\dA-F]{8}):(.*?):([\\dA-F]{1,8}):');
+// new RegExp() because strings - don't know if I will put them in later but keeping it like this for now.
+
+var actionRegExp = new RegExp(' 1[56]:([\\dA-F]{8}):([ -~]+?):[\\dA-F]{1,4}:([ -~]+?):([\\dA-F]{8}):([ -~]+?):([\\dA-F]{1,8}):');
 var actionLog;
 var actionGroups = {};
 
-var statusRegExp = new RegExp(' 1[AE]:([\\dA-F]{8}):(.*?) (gains|loses) the effect of (.*?) from (.*?)(?: for )?(\\d*\\.\\d*)?(?: Seconds)?\\.');
+var statusRegExp = new RegExp(' 1[AE]:([\\dA-F]{8}):([ -~]+?) (gains|loses) the effect of ([ -~]+?) from ([ -~]+?)(?: for )?(\\d*\\.\\d*)?(?: Seconds)?\\.');
 var statusLog;
 var statusGroups = {};
 
-var startRegExp =  new RegExp(' 14:[\\dA-F]{1,4}:(.*?) starts using (.*?) on (.*?)\\.');
+var startRegExp =  new RegExp(' 14:[\\dA-F]{1,4}:([ -~]+?) starts using ([ -~]+?) on ([ -~]+?)\\.');
 var startLog;
 var startGroups = {};
 
-var cancelRegExp = new RegExp(' 17:([\\dA-F]{8}):(.*?):[\\dA-F]{1,4}:(.*?):Cancelled:');
+var cancelRegExp = new RegExp(' 17:([\\dA-F]{8}):([ -~]+?):[\\dA-F]{1,4}:([ -~]+?):Cancelled:');
 var cancelLog;
 var cancelGroups = {};
+
 
 // onPlayerChangedEvent: fires whenever player change detected (including HP, MP, other resources, positions, etc.)
 document.addEventListener("onPlayerChangedEvent", function(e) {
 
   player = e.detail;
-  player.ID = e.detail.id.toString(16).toUpperCase(); // player.id.toString(16) is lowercase
+  player.ID = e.detail.id.toString(16).toUpperCase(); // player.id.toString(16) is lowercase; using "ID" to designate uppercase lettering
 
   // Detects name/job/level change and clears elements
   if (previous.name != player.name || previous.job != player.job || previous.level != player.level) {
@@ -59,10 +62,9 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
       blmJobChange();
     }
     else if (player.job == "BRD") {
-      actionRegExp = new RegExp(' 1[56]:([\\dA-F]{8}):(' + player.name + '):[\\dA-F]{2,8}:(' + actionList.brd.join("|") + '):([\\dA-F]{2,8}):([^:]*):([\\dA-F]{1,8}):');
-      statusRegExp = new RegExp(' 1[AE]:([\\dA-F]{8}):(.*) (gains|loses) the effect of (' + statusList.brd.join("|") + ') from (' + player.name + ')(?: for )?(\\d*\\.\\d*)?(?: Seconds)?\\.');
+      // actionRegExp = new RegExp(' 1[56]:([\\dA-F]{8}):(' + player.name + '):[\\dA-F]{2,8}:(' + actionList.brd.join("|") + '):([\\dA-F]{2,8}):([^:]*):([\\dA-F]{1,8}):');
+      // statusRegExp = new RegExp(' 1[AE]:([\\dA-F]{8}):(.*) (gains|loses) the effect of (' + statusList.brd.join("|") + ') from (' + player.name + ')(?: for )?(\\d*\\.\\d*)?(?: Seconds)?\\.');
     }
-
     else if (player.job == "RDM") {
       rdmJobChange();
     }
@@ -75,19 +77,6 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
     else if (player.job == "WHM") {
       whmJobChange();
     }
-
-    //// NOTES FOR REGEX CAPTURES ////
-
-    // Action
-    // 1:SourceID 2:SourceName 3:SkillName 4:TargetID 5:TargetName 6:Result
-
-    // Status
-    // 1: TargetID 2:TargetName 3:GainsLoses 4:Status 5:SourceName 6:Seconds (doesn't exist for "Loses")
-    // Avoid using player.ID or target.ID here
-    // Old line (2.0.2.2) 1:TargetName 2:GainsLoses 3:Status 4:SourceName 5:Seconds (doesn't exist for "Loses")
-
-    // Backup method for weird zones like Eureka - create toggle for this later?
-    // statusRegExp2 = new RegExp(' 00:08[\\da-f]{2}:.*(You) (gain|lose) the effect of (' + selfStatusList.rdm.join("|") + ')\\.');
 
   }
 
@@ -103,7 +92,7 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
     brdPlayerChangedEvent(e);
   }
   else if (player.job == "RDM") {
-    rdmPlayerChangedEvent(e);
+    rdmPlayerChangedEvent();
   }
   else if (player.job == "WHM") {
     whmPlayerChangedEvent(e);
@@ -133,9 +122,6 @@ document.addEventListener("onInCombatChangedEvent", function(e) {
     if (player.job == "BRD") {
       brdInCombatChangedEvent(e);
     }
-    else if (player.job == "RDM") {
-      rdmInCombatChangedEvent(e);
-    }
     else if (player.job == "SAM") {
       samInCombatChangedEvent(e);
     }
@@ -150,7 +136,9 @@ document.addEventListener("onInCombatChangedEvent", function(e) {
 
 document.addEventListener("onLogEvent", function(e) { // Fires on log event
 
-  for (let i = 0; i < e.detail.logs.length; i++) {
+  let l = e.detail.logs.length;
+
+  for (let i = 0; i < l; i++) {
 
     // Replaces named regex groups until CEF updated
 
@@ -227,7 +215,7 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
         mnkAction(actionLog);
       }
       else if (player.job == "RDM") {
-        rdmAction(actionLog);
+        rdmAction();
       }
       else if (player.job == "SAM") {
         samAction(actionLog);
@@ -253,7 +241,7 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
         mnkStatus(statusLog);
       }
       else if (player.job == "RDM") {
-        rdmStatus(statusLog);
+        rdmStatus();
       }
       else if (player.job == "SAM") {
         samStatus(statusLog);
@@ -284,11 +272,6 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
 
 function addCooldown(cooldownname, sourceid, recast) {
 
-  //// NOTES FOR SELF ////
-  //// (Unless I change it up again) ////
-  // logLine[1] = source ID in action logLine
-  // logLine[2] = source name in action logLine
-
   if (!cooldowntracker[cooldownname]) { // Create array if it doesn't exist yet
     cooldowntracker[cooldownname] = [sourceid, recast + Date.now()];
   }
@@ -313,13 +296,6 @@ function checkCooldown(cooldownname, sourceid) {
 }
 
 function addStatus(statusname, targetid, duration) {
-
-  //// NOTES FOR SELF ////
-  //// (Unless I change it up again) ////
-  // logLine[4] - target ID in action logLine - it might be good to eventually include this, but status logLines don't include ID
-  // logLine[5] - target name in action logLine
-  // logLine[1] - target ID in status logLine
-  // target.name - from change target function - probably works all the time? Maybe?
 
   if (!statustracker[statusname]) { // Create array if it doesn't exist yet
     statustracker[statusname] = [targetid, Date.now() + duration];
@@ -395,29 +371,3 @@ function clearElements() {
     document.getElementById("next" + x).style.display = "none";
   }
 }
-
-// Should call timeouts inside the function - self-referring stuff
-
-// function timeoutCombo() {
-// // Call this function at the end of event log checker to prevent combos from lingering more than they should
-//   clearTimeout(timeout.combo);
-//   timeout.combo = setTimeout(resetCombo, 12000);
-// }
-//
-// function resetCombo() {
-//   delete toggle.combo;
-//   if (toggle.combat) {
-//     if (player.job == "DRG") {
-//       drgCombo();
-//     }
-//     else if (player.job == "NIN") {
-//       ninCombo();
-//     }
-//     else if (player.job == "SAM") {
-//       samCombo();
-//     }
-//     else if (player.job == "WAR") {
-//       warCombo();
-//     }
-//   }
-// }

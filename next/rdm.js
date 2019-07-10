@@ -34,6 +34,8 @@ function rdmJobChange() {
   id.corpsacorps = 15;
   id.displacement = 16;
 
+  // Make modifications depending on traits
+
   if (player.level >= 62) {
     icon.jolt = icon.jolt2;
   }
@@ -62,34 +64,34 @@ function rdmJobChange() {
     recast.contresixte = 45000;
   }
 
+  // Create cooldown notifications
 
-
-    if (player.level >= 6
-    && checkCooldown("corpsacorps", player.ID) < 0) {
-      addIconBlink(id.corpsacorps,icon.corpsacorps);
-    }
-    if (player.level >= 40
-    && checkCooldown("displacement", player.ID) < 0) {
-      addIconBlink(id.displacement,icon.displacement);
-    }
-    if (player.level >= 45
-    && checkCooldown("fleche", player.ID) < 0) {
-      addIconBlink(id.fleche,icon.fleche);
-    }
-    if (player.level >= 50
-    && checkCooldown("acceleration", player.ID) < 0) {
-      addIconBlink(id.acceleration,icon.acceleration);
-    }
-    if (player.level >= 56
-    && checkCooldown("contresixte", player.ID) < 0) {
-      addIconBlink(id.contresixte,icon.contresixte);
-    }
+  if (player.level >= 6
+  && checkCooldown("corpsacorps", player.ID) < 0) {
+    addIconBlink(id.corpsacorps,icon.corpsacorps);
+  }
+  if (player.level >= 40
+  && checkCooldown("displacement", player.ID) < 0) {
+    addIconBlink(id.displacement,icon.displacement);
+  }
+  if (player.level >= 45
+  && checkCooldown("fleche", player.ID) < 0) {
+    addIconBlink(id.fleche,icon.fleche);
+  }
+  if (player.level >= 50
+  && checkCooldown("acceleration", player.ID) < 0) {
+    addIconBlink(id.acceleration,icon.acceleration);
+  }
+  if (player.level >= 56
+  && checkCooldown("contresixte", player.ID) < 0) {
+    addIconBlink(id.contresixte,icon.contresixte);
+  }
 
 }
 
-function rdmPlayerChangedEvent(e) {
+function rdmPlayerChangedEvent() {
 
-  // Lucid Dreaming Low MP
+  // Lucid Dreaming
   if (player.currentMP / player.maxMP < 0.85
   && checkCooldown("luciddreaming", player.ID) < 0) {
     addIconBlink(id.luciddreaming,icon.luciddreaming);
@@ -99,17 +101,9 @@ function rdmPlayerChangedEvent(e) {
   }
 }
 
-// Checks and activates things when entering combat
-function rdmInCombatChangedEvent(e) {
+function rdmAction() {
 
-
-}
-
-function rdmAction(logLine) {
-
-  // From Player
-  if (actionGroups.sourceID == player.ID
-  && actionList.rdm.indexOf(actionGroups.actionname) > -1) {
+  if (actionList.rdm.indexOf(actionGroups.actionname) > -1) {
 
     removeText("loadmessage");
 
@@ -224,7 +218,6 @@ function rdmAction(logLine) {
       removeIcon(id.redoublement);
       removeIcon(id.verflare);
 
-
       if (actionGroups.actionname == "Verfire") {
         removeStatus("verfireready", player.ID)
       }
@@ -246,7 +239,7 @@ function rdmAction(logLine) {
   }
 }
 
-function rdmStatus(logLine) {
+function rdmStatus() {
 
   if (statusGroups.targetID == player.ID) {
 
@@ -292,19 +285,6 @@ function rdmStatus(logLine) {
       }
     }
   }
-
-  // To NOT player from player
-
-  // else if (statusGroups.targetID != player.ID
-  // && logLine[5] == player.name) {
-  //
-  //   if (statusGroups.statusname == "test") {
-  //     if (statusGroups.gainsloses == "gains") {
-  //     }
-  //     else if (statusGroups.gainsloses == "loses") {
-  //     }
-  //   }
-  // }
 }
 
 function rdmDualcast() {
@@ -371,7 +351,6 @@ function rdmDualcast() {
       // Weigh value for possible cast options
 
       next.dualcast = [0, 0, 0, 0, 0, 0, 0, 0];
-      // [0] J+VT, [1] J+VA, [2] VF+VT, [3] VF+VA, [4] VS+VT, [5] VS+VA, [6] SC+VT, [7] SC+VA
       next.dualcast[0] = rdmDualcastValue("Jolt", "Verthunder", 14, 3, toggle.manafication);
       next.dualcast[1] = rdmDualcastValue("Jolt", "Veraero", 3, 14, toggle.manafication);
 
@@ -447,10 +426,14 @@ function rdmDualcast() {
       }
 
       // Debug to check values
-      addText("debug0", "J+VT:"  + next.dualcast[0] + " J+VA:"  + next.dualcast[1]);
-      addText("debug1", "VF+VT:" + next.dualcast[2] + " VF+VA:" + next.dualcast[3]);
-      addText("debug2", "VS+VT:" + next.dualcast[4] + " VS+VA:" + next.dualcast[5]);
-      addText("debug3", "SC+VT:" + next.dualcast[6] + " SC+VA:" + next.dualcast[7]);
+      addText("debug2", "Jolt + Verthunder:"  + next.dualcast[0]);
+      addText("debug3", "Jolt + Veraero:"  + next.dualcast[1]);
+      addText("debug4", "Verfire + Verthunder:" + next.dualcast[2]);
+      addText("debug5", "Verfire + Veraero:" + next.dualcast[3]);
+      addText("debug6", "Verstone + Verthunder:" + next.dualcast[4]);
+      addText("debug7", "Verstone + Veraero:" + next.dualcast[5]);
+      addText("debug8", "Swiftcast + Verthunder:" + next.dualcast[6]);
+      addText("debug9", "Swiftcast + Veraero:" + next.dualcast[7]);
     }
 
     clearTimeout(timeout.dualcast);
@@ -464,7 +447,12 @@ function rdmDualcastTimeout() {
   }
 }
 
+
+
 function rdmDualcastValue(hardcastaction, dualcastaction, black, white, manafication) {
+
+  // This function assigns values to various situations.
+  // Adjust values to make some situations more (or less) weighted than others.
 
   // Calculates mana after dualcast and manafication
   if (manafication) {

@@ -19,88 +19,94 @@ actionList.blm = [
 
 function blmPlayerChangedEvent(e) {
 
-  if (player.currentMP == 10000
-  && player.jobDetail.umbralStacks < 0
-  && player.jobDetail.umbralHearts == 3) {
-    addIconBlink(id.fire3, icon.fire3);
-  }
-  else if (player.currentMP < 1600
-  && player.jobDetail.umbralStacks > 0
-  && checkStatus("firestarter", player.ID) < 0) {
-    addIconBlink(id.blizzard3, icon.blizzard3);
-  }
-  else if (player.jobDetail.enochian == 0
-  && player.jobDetail.umbralStacks == 0) {
-    addIconBlink(id.blizzard3, icon.blizzard3);
-  }
-  else {
-    removeIcon(id.fire3);
+  if (toggle.aoe) {
+
   }
 
-  if (player.currentMP >= 4800
-  && player.jobDetail.umbralStacks > 0
-  && player.jobDetail.umbralMilliseconds > 12000
-  && player.jobDetail.enochian > 0) {
-    addIconBlink(id.fire4_1, icon.fire4);
-  }
   else {
-    removeIcon(id.fire4_1);
-  }
+    if (player.currentMP == 10000
+    && player.jobDetail.umbralStacks < 0
+    && player.jobDetail.umbralHearts == 3) {
+      addIconBlink(id.fire3, icon.fire3);
+    }
+    else if (player.currentMP < 1600
+    && player.jobDetail.umbralStacks > 0
+    && checkStatus("firestarter", player.ID) < 0) {
+      addIconBlink(id.blizzard3, icon.blizzard3);
+    }
+    else if (player.jobDetail.enochian == 0
+    && player.jobDetail.umbralStacks == 0) {
+      addIconBlink(id.blizzard3, icon.blizzard3);
+    }
+    else {
+      removeIcon(id.fire3);
+    }
 
-  if (player.currentMP >= 3200
-  && player.jobDetail.umbralStacks > 0
-  && player.jobDetail.umbralMilliseconds > 9000
-  && player.jobDetail.enochian > 0) {
-    addIconBlink(id.fire4_2, icon.fire4);
-  }
-  else {
-    removeIcon(id.fire4_2);
-  }
+    if (player.currentMP >= 4800
+    && player.jobDetail.umbralStacks > 0
+    && player.jobDetail.umbralMilliseconds > 12000
+    && player.jobDetail.enochian > 0) {
+      addIconBlink(id.fire4_1, icon.fire4);
+    }
+    else {
+      removeIcon(id.fire4_1);
+    }
 
-  if (player.currentMP >= 1600
-  && player.jobDetail.umbralStacks > 0
-  && player.jobDetail.umbralMilliseconds > 6000
-  && player.jobDetail.enochian > 0) {
-    addIconBlink(id.fire4_3, icon.fire4);
-  }
-  else {
-    removeIcon(id.fire4_3);
-  }
+    if (player.currentMP >= 3200
+    && player.jobDetail.umbralStacks > 0
+    && player.jobDetail.umbralMilliseconds > 9000
+    && player.jobDetail.enochian > 0) {
+      addIconBlink(id.fire4_2, icon.fire4);
+    }
+    else {
+      removeIcon(id.fire4_2);
+    }
 
-  if (player.currentMP > 7000
-  && player.jobDetail.umbralStacks >= 0
-  && player.jobDetail.umbralMilliseconds > 0
-  && checkStatus("firestarter", player.ID) < 0) {
-    addIconBlink(id.fire, icon.fire);
-  }
-  else if (player.currentMP >= 800
-  && player.currentMP < 7000
-  && player.jobDetail.umbralStacks > 0
-  && player.jobDetail.umbralMilliseconds > 0
-  && player.jobDetail.enochian > 0) {
-    addIconBlink(id.despair, icon.despair);
-  }
-  else {
-    removeIcon(id.fire);
-  }
+    if (player.currentMP >= 1600
+    && player.jobDetail.umbralStacks > 0
+    && player.jobDetail.umbralMilliseconds > 6000
+    && player.jobDetail.enochian > 0) {
+      addIconBlink(id.fire4_3, icon.fire4);
+    }
+    // Possibly change to fire if running out of time
+    else {
+      removeIcon(id.fire4_3);
+    }
 
-  if (checkStatus("thunder", target.ID) < 6000
-  && player.jobDetail.umbralStacks < 0) {
-    addIconBlink(id.thunder3, icon.thunder3);
-  }
-  else {
-    removeIcon(id.thunder3);
-  }
+    if (player.currentMP > 7000
+    && player.jobDetail.umbralStacks >= 0
+    && player.jobDetail.umbralMilliseconds > 0
+    && checkStatus("firestarter", player.ID) < 0) {
+      addIconBlink(id.fire, icon.fire);
+    }
+    else if (player.currentMP >= 800
+    && player.currentMP < 7000
+    && player.jobDetail.umbralStacks > 0
+    && player.jobDetail.umbralMilliseconds > 0
+    && player.jobDetail.enochian > 0) {
+      addIconBlink(id.despair, icon.despair);
+    }
+    else {
+      removeIcon(id.fire);
+    }
 
-  if (player.jobDetail.umbralStacks < 0
-  && player.jobDetail.umbralHearts == 0
-  && player.jobDetail.enochian > 0) {
-    addIconBlink(id.blizzard4, icon.blizzard4);
-  }
-  else {
-    removeIcon(id.blizzard4);
-  }
+    if (checkStatus("thunder", target.ID) < 6000
+    && player.jobDetail.umbralStacks < 0) {
+      addIconBlink(id.thunder3, icon.thunder3);
+    }
+    else {
+      removeIcon(id.thunder3);
+    }
 
+    if (player.jobDetail.umbralStacks < 0
+    && player.jobDetail.umbralHearts == 0
+    && player.jobDetail.enochian > 0) {
+      addIconBlink(id.blizzard4, icon.blizzard4);
+    }
+    else {
+      removeIcon(id.blizzard4);
+    }
+  }
 }
 
 function blmJobChange() {
