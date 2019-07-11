@@ -4,7 +4,7 @@ actionList.whm = [
   // Role actions
   "Lucid Dreaming",
 
-  // Cooldowns
+  // oGCD actions
   "Presence Of Mind", "Benediction", "Asylum", "Assize", "Thin Air", "Tetragrammaton", "Divine Benison",
 
   // GCD actions
