@@ -12,6 +12,7 @@ actionList.whm = [
 ];
 
 function whmJobChange() {
+
   id.freecure = 0;
   id.regen = 1;
   id.aero = 2;
@@ -23,21 +24,6 @@ function whmJobChange() {
   id.luciddreaming = 10;
   id.thinair = 11;
   id.presenceofmind = 12;
-}
-
-function whmPlayerChangedEvent(e) {
-
-  if (player.level >= 24
-  && player.currentMP / player.maxMP < 0.85
-  && checkCooldown("luciddreaming", player.ID) < 0) {
-    addIconBlink(id.luciddreaming,icon.luciddreaming);
-  }
-  else {
-    removeIcon(id.luciddreaming);
-  }
-}
-
-function whmInCombatChangedEvent(e) {
 
   if (checkStatus("freecure", player.ID) > 0) {
     addIconBlink(id.freecure,icon.cure2);
@@ -102,7 +88,18 @@ function whmInCombatChangedEvent(e) {
   else {
     removeIcon(id.presenceofmind)
   }
+}
 
+function whmPlayerChangedEvent() {
+
+  if (player.level >= 24
+  && player.currentMP / player.maxMP < 0.85
+  && checkCooldown("luciddreaming", player.ID) < 0) {
+    addIconBlink(id.luciddreaming,icon.luciddreaming);
+  }
+  else {
+    removeIcon(id.luciddreaming);
+  }
 }
 
 function whmTargetChangedEvent() {
@@ -118,9 +115,7 @@ function whmTargetChangedEvent() {
   }
 }
 
-
-
-function whmAction(logLine) {
+function whmAction() {
 
   if (actionList.whm.indexOf(actionGroups.actionname) > -1) {
 
@@ -181,7 +176,7 @@ function whmAction(logLine) {
   }
 }
 
-function whmStatus(logLine) {
+function whmStatus() {
 
   if (statusGroups.targetID == player.ID) {
 
