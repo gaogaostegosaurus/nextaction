@@ -25,6 +25,16 @@ function whmJobChange() {
   id.thinair = 11;
   id.presenceofmind = 12;
 
+  if (player.level >= 72) {
+    icon.aero = icon.dia;
+  }
+  else if (player.level >= 46) {
+    icon.aero = icon.aero2;
+  }
+  else {
+    icon.aero = "000401";
+  }
+
   if (checkStatus("freecure", player.ID) > 0) {
     addIconBlink(id.freecure,icon.cure2);
   }
@@ -186,7 +196,7 @@ function whmStatus() {
         addIcon(id.freecure, icon.cure2);
       }
       else if (statusGroups.gainsloses == "loses") {
-        removeStatus("Regen", player.ID);
+        removeStatus("freecure", player.ID);
         removeIcon(id.freecure);
       }
     }

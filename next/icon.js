@@ -77,19 +77,16 @@ icon.shoha = "003184";
 
 
 // WAR
-
 icon.overpower = "000254";
 icon.maim = "000255";
 icon.stormspath = "000258";
 icon.berserk = "000259";
 icon.heavyswing = "000260";
 icon.tomahawk = "000261";
-icon.butchersblock = "000262";
 icon.thrillofbattle = "000263";
 icon.stormseye = "000264";
 icon.holmgang = "000266";
 icon.vengeance = "000267";
-
 icon.defiance = "002551";
 icon.steelcyclone = "002552";
 icon.innerbeast = "002553";
@@ -107,9 +104,7 @@ icon.chaoticcyclone = "002566";
 icon.nascentflash = "002567";
 icon.innerchaos = "002568";
 
-
 // WHM
-
 icon.aero = "000401";
 icon.aero2 = "000402";
 icon.freecure = "000406";
@@ -123,9 +118,7 @@ icon.assize = "002634";
 icon.divinebenison = "002635";
 icon.thinair = "002636";
 icon.plenaryindulgence = "002639";
-
-
-
+icon.dia = "002641";
 
 // Other
 icon.gold0 = "066181";
