@@ -26,7 +26,7 @@ var statusList = {};
 var player = {};
 var target = {};
 
-// new RegExp() because strings - don't know if I will put them in later but keeping it like this for now.
+// new RegExp() because strings not supported otherwise - don't know if I will put them in later but keeping it like this for now.
 
 var actionRegExp = new RegExp(' 1[56]:([\\dA-F]{8}):([ -~]+?):[\\dA-F]{1,4}:([ -~]+?):([\\dA-F]{8}):([ -~]+?):([\\dA-F]{1,8}):');
 var actionLog;
@@ -95,7 +95,7 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
     rdmPlayerChangedEvent();
   }
   else if (player.job == "WHM") {
-    whmPlayerChangedEvent(e);
+    whmPlayerChangedEvent();
   }
 
 });
@@ -103,6 +103,10 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
 document.addEventListener('onTargetChangedEvent', function(e) {
   target = e.detail;
   target.ID = e.detail.id.toString(16).toUpperCase(); //
+
+  if (player.job == "WHM") {
+    whmTargetChangedEvent();
+  }
 });
 
 document.addEventListener("onInCombatChangedEvent", function(e) {
@@ -127,9 +131,6 @@ document.addEventListener("onInCombatChangedEvent", function(e) {
     }
     else if (player.job == "WAR") {
       warInCombatChangedEvent(e);
-    }
-    else if (player.job == "WHM") {
-      whmInCombatChangedEvent(e);
     }
   }
 });
@@ -224,7 +225,7 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
         warAction(actionLog);
       }
       else if (player.job == "WHM") {
-        whmAction(actionLog);
+        whmAction();
       }
     }
 
@@ -249,9 +250,9 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
       else if (player.job == "WAR") {
         warStatus(statusLog);
       }
-      // else if (player.job == "WHM") {
-      //   whmStatus(statusLog);
-      // }
+      else if (player.job == "WHM") {
+        whmStatus();
+      }
     }
 
     else if (startGroups.sourcename == player.name) {  // Status source = player
