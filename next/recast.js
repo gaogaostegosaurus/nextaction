@@ -2,7 +2,7 @@
 
 // Role actions
 recast.luciddreaming = 60000;
-recast.peloton
+recast.peloton = 5000;
 recast.rampart = 90000;
 recast.swiftcast = 60000;
 
