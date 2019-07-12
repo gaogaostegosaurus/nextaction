@@ -86,8 +86,7 @@ function mchAction() {
     if (["Spread Shot", "Auto Crossbow", "Flamethrower", "Bioblaster"].indexOf(actionGroups.actionname) > -1) {
       toggle.aoe = Date.now();
     }
-    else if (["Split Shot", "Slug Shot", "Clean Shot", 
-              "Heated Split Shot", "Heated Slug Shot", "Heated Clean Shot",
+    else if (["Split Shot", "Slug Shot", "Clean Shot", "Heated Split Shot", "Heated Slug Shot", "Heated Clean Shot", 
               "Hot Shot", "Heat Blast"].indexOf(actionGroups.actionname) > -1) {
       delete toggle.aoe;
     }
@@ -124,34 +123,54 @@ function mchAction() {
     }
   
     else if ("Gauss Round" == actionGroups.actionname) {
-      if (player.level >= 74 
-          && checkCooldown("gaussround3", player.ID) < 0) {
-        addCooldown("gaussround3", player.ID, recast.gaussround);
+      if (player.level >= 74) {
+        if (checkCooldown("gaussround3", player.ID) < 0) {
+          addCooldown("gaussround3", player.ID, recast.gaussround);
+        }
+        else if (checkCooldown("gaussround2", player.ID) < 0) {
+          addCooldown("gaussround2", player.ID, checkCooldown("gaussround3", player.ID));
+          addCooldown("gaussround3", player.ID, checkCooldown("gaussround3", player.ID) + recast.gaussround);
+        }
+        else if (checkCooldown("gaussround1", player.ID) < 0) {
+          addCooldown("gaussround1", player.ID, checkCooldown("gaussround2", player.ID));
+          addCooldown("gaussround2", player.ID, checkCooldown("gaussround2", player.ID) + recast.gaussround);
+          addCooldown("gaussround3", player.ID, checkCooldown("gaussround3", player.ID) + recast.gaussround);
+        }
       }
-      else if (checkCooldown("gaussround2", player.ID) < 0) {
-        addCooldown("gaussround2", player.ID, checkCooldown("gaussround3", player.ID));
-        addCooldown("gaussround3", player.ID, checkCooldown("gaussround3", player.ID) + recast.gaussround);
-      }
-      else if (checkCooldown("gaussround1", player.ID) < 0) {
-        addCooldown("gaussround1", player.ID, checkCooldown("gaussround2", player.ID));
-        addCooldown("gaussround2", player.ID, checkCooldown("gaussround2", player.ID) + recast.gaussround);
-        addCooldown("gaussround3", player.ID, checkCooldown("gaussround3", player.ID) + recast.gaussround);
+      else {
+        if (checkCooldown("gaussround2", player.ID) < 0) {
+          addCooldown("gaussround2", player.ID, recast.gaussround);
+        }
+        else if (checkCooldown("gaussround1", player.ID) < 0) {
+          addCooldown("gaussround1", player.ID, checkCooldown("gaussround2", player.ID));
+          addCooldown("gaussround2", player.ID, checkCooldown("gaussround2", player.ID) + recast.gaussround);
+        }
       }
     }
     
     else if ("Ricochet" == actionGroups.actionname) {
-      if (player.level >= 74 
-          && checkCooldown("ricochet3", player.ID) < 0) {
-        addCooldown("ricochet3", player.ID, recast.gaussround);
+      if (player.level >= 74) {
+        if (checkCooldown("ricochet3", player.ID) < 0) {
+          addCooldown("ricochet3", player.ID, recast.ricochet);
+        }
+        else if (checkCooldown("ricochet2", player.ID) < 0) {
+          addCooldown("ricochet2", player.ID, checkCooldown("ricochet3", player.ID));
+          addCooldown("ricochet3", player.ID, checkCooldown("ricochet3", player.ID) + recast.ricochet);
+        }
+        else if (checkCooldown("ricochet1", player.ID) < 0) {
+          addCooldown("ricochet1", player.ID, checkCooldown("ricochet2", player.ID));
+          addCooldown("ricochet2", player.ID, checkCooldown("ricochet2", player.ID) + recast.ricochet);
+          addCooldown("ricochet3", player.ID, checkCooldown("ricochet3", player.ID) + recast.ricochet);
+        }
       }
-      else if (checkCooldown("ricochet2", player.ID) < 0) {
-        addCooldown("ricochet2", player.ID, checkCooldown("ricochet3", player.ID));
-        addCooldown("ricochet3", player.ID, checkCooldown("ricochet3", player.ID) + recast.gaussround);
-      }
-      else if (checkCooldown("ricochet1", player.ID) < 0) {
-        addCooldown("ricochet1", player.ID, checkCooldown("ricochet2", player.ID));
-        addCooldown("ricochet2", player.ID, checkCooldown("ricochet2", player.ID) + recast.gaussround);
-        addCooldown("ricochet3", player.ID, checkCooldown("ricochet3", player.ID) + recast.gaussround);
+      else {
+        if (checkCooldown("ricochet2", player.ID) < 0) {
+          addCooldown("ricochet2", player.ID, recast.ricochet);
+        }
+        else if (checkCooldown("ricochet1", player.ID) < 0) {
+          addCooldown("ricochet1", player.ID, checkCooldown("ricochet2", player.ID));
+          addCooldown("ricochet2", player.ID, checkCooldown("ricochet2", player.ID) + recast.ricochet);
+        }
       }
     }
     
@@ -182,7 +201,7 @@ function mchAction() {
     // Combo
 
     else if (["Split Shot", "Heated Split Shot"].indexOf(actionGroups.actionname) > -1
-    && logLine[6].length >= 2) {
+             && logLine[6].length >= 2) {
       if (!toggle.combo) {
         mchCombo();
       }
@@ -190,7 +209,7 @@ function mchAction() {
     }
 
     else if (["Slug Shot", "Heated Slug Shot"].indexOf(actionGroups.actionname) > -1
-    && logLine[6].length == 8) {
+             && logLine[6].length == 8) {
       if (!toggle.combo) {
         mchCombo();
       }
@@ -215,78 +234,8 @@ function mchAction() {
 }
 
 function mchStatus(logLine) {
-
-  if (statusGroups.targetID == player.ID) {
-
-    if (logLine[4] == "Jinpu") {
-      if (logLine[3] == "gains") {
-        addStatus("jinpu", logLine[1], parseInt(logLine[6]) * 1000);
-      }
-      else if (logLine[3] == "loses") {
-        removeStatus("jinpu", logLine[1]);
-      }
-    }
-
-    else if (logLine[4] == "Open Eyes") {
-      if (logLine[3] == "gains") {
-        addStatus("openeyes", logLine[1], parseInt(logLine[6]) * 1000);
-      }
-      else if (logLine[3] == "loses") {
-        removeStatus("openeyes", logLine[1]);
-      }
-    }
-
-    else if (logLine[4] == "Shifu") {
-      if (logLine[3] == "gains") {
-        addStatus("shifu", logLine[1], parseInt(logLine[6]) * 1000);
-      }
-      else if (logLine[3] == "loses") {
-        removeStatus("shifu", logLine[1]);
-      }
-    }
-
-    else if (logLine[4] == "Meikyo Shisui") {
-      if (logLine[3] == "gains") {
-        addStatus("meikyoshisui", logLine[1], parseInt(logLine[6]) * 1000);
-      }
-      else if (logLine[3] == "loses") {
-        removeStatus("meikyoshisui", logLine[1]);
-        samCombo();
-      }
-    }
-
-    else if (logLine[4] == "Hissatsu: Kaiten") {
-      if (logLine[3] == "gains") {
-        addStatus("kaiten", logLine[1], parseInt(logLine[6]) * 1000);
-      }
-      else if (logLine[3] == "loses") {
-        removeStatus("kaiten", logLine[1]);
-      }
-    }
-
-    else if (logLine[4] == "Meditate") {
-      if (logLine[3] == "gains") {
-        addStatus("meditate", logLine[1], parseInt(logLine[6]) * 1000);
-      }
-      else if (logLine[3] == "loses") {
-        removeStatus("meditate", logLine[1]);
-        samKenki();
-      }
-    }
-  }
-
-  // To NOT player from player
-
-  else if (logLine[5] == player.name) {
-
-    if (logLine[4] == "Higanbana") {
-      if (logLine[3] == "gains") {
-        addStatus("higanbana", logLine[1], parseInt(logLine[6]) * 1000);
-      }
-      else if (logLine[3] == "loses") {
-        removeStatus("higanbana", logLine[1]);
-      }
-    }
+  if (statusGroups.statusname == "Wildfire") {
+    addStatus("wildfire", statusGroups.targetID, statusGroups.duration * 1000);
   }
 }
 
