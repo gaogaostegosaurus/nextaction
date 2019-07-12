@@ -2,8 +2,25 @@
 
 // Role actions
 recast.luciddreaming = 60000;
+recast.peloton
 recast.rampart = 90000;
 recast.swiftcast = 60000;
+
+// MCH
+recast.barrelstabilizer = 120000;
+recast.drill = 20000;
+recast.bioblaster = recast.drill;
+recast.flamethrower = 60000;
+recast.gaussround = 30000;
+recast.hypercharge = 10000;
+recast.hotshot = 40000;
+recast.airanchor = recast.hotshot;
+recast.reassemble = 60000;
+recast.ricochet = 30000;
+recast.rookautoturret = 6000;
+recast.automatonqueen = recast.rookautoturret;
+recast.tactician = 180000;
+recast.wildfire = 120000;
 
 // RDM
 recast.acceleration = 35000;
