@@ -1,5 +1,8 @@
 // Duration properties - list by alphabetical job then alphabetical status
 
+// MCH
+duration.hypercharge = 10000;
+
 // SAM
 duration.jinpu = 40000;
 duration.kaiten = 10000;
