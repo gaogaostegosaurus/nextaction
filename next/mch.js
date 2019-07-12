@@ -77,7 +77,7 @@ function mchJobChange() {
 
 function mchAction() {
 
-  if (actionList.mch.indexOf(actionGroups.actionname) > -1) { // Check if from player
+  if (actionList.mch.indexOf(actionGroups.actionname) > -1) {
 
     removeText("loadmessage");
 
@@ -177,6 +177,7 @@ function mchAction() {
     else if ("Reassemble" == actionGroups.actionname) {
       removeIcon(id.reassemble);
       addCooldown("reassemble", player.ID, recast.reassemble);
+      addIconBlinkTimeout("reassemble", recast.reassemble, id.reassemble, icon.reassemble);
     }
     
     else if ("Hypercharge" == actionGroups.actionname) {
@@ -202,30 +203,33 @@ function mchAction() {
 
     else if (["Split Shot", "Heated Split Shot"].indexOf(actionGroups.actionname) > -1
              && logLine[6].length >= 2) {
-      if (!toggle.combo) {
-        mchCombo();
-      }
+      toggle.combo = Date.now();
       removeIcon(id.splitshot);
+      mchHeat();
+      mchComboTimeout();
     }
 
     else if (["Slug Shot", "Heated Slug Shot"].indexOf(actionGroups.actionname) > -1
              && logLine[6].length == 8) {
       if (!toggle.combo) {
         mchCombo();
+        toggle.combo = Date.now();
       }
       removeIcon(id.splitshot);
       removeIcon(id.slugshot);
+      mchHeat();
     }
 
-    // else if (["Clean Shot", "Heated Clean Shot"].indexOf(actionGroups.actionname) > -1
-    // && logLine[6].length == 8) {
-    //   if (!toggle.combo) {
-    //     mchCombo();
-    //   }
-    //   removeIcon(id.splitshot);
-    //   removeIcon(id.slugshot);
-    //   removeIcon(id.cleanshot);
-    // }
+    else if (["Clean Shot", "Heated Clean Shot"].indexOf(actionGroups.actionname) > -1 
+             && logLine[6].length == 8) {
+      delete toggle.combo;
+      removeIcon(id.splitshot);
+      removeIcon(id.slugshot);
+      removeIcon(id.cleanshot);
+      mchCombo();
+      mchHeat();
+      mchBattery();
+    }
 
     else { // Everything else finishes or breaks combo
       mchCombo();
@@ -240,8 +244,7 @@ function mchStatus(logLine) {
 }
 
 function mchCombo() {
-  delete toggle.combo;
-
+  
   // Reset icons
   removeIcon(id.splitshot);
   removeIcon(id.slugshot);
@@ -260,13 +263,25 @@ function mchCombo() {
       addIcon(id.cleanshot,icon.cleanshot);
     }
   }
-
-  clearTimeout(timeout.combo);
-  timeout.combo = setTimeout(mchComboTimeout, 12500);
 }
 
-function mchComboTimeout() {
-  if (toggle.combat) {
-    mchCombo();
+function mchComboTimeout() { // Set between combo actions
+  clearTimeout(timeout.combo);
+  timeout.combo = setTimeout(mchCombo, 12500);
+}
+
+function mchHeat() {
+  // get player.heat from player.debugJob
+  if (player.heat >= 50
+      && checkCooldown("drill", player.ID) > 12500
+      && (player.level >=76 && checkCooldown("hotshot", player.ID) > 12500) {
+    //no
+  }
+}
+
+function mchBattery() {
+  // get player.battery from player.debugJob
+  if (player.battery >= 50) {
+    addIconBlink(id.rookautoturret, icon.rookautoturret);
   }
 }
