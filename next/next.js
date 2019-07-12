@@ -72,6 +72,9 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
       // actionRegExp = new RegExp(' 1[56]:([\\dA-F]{8}):(' + player.name + '):[\\dA-F]{2,8}:(' + actionList.brd.join("|") + '):([\\dA-F]{2,8}):([^:]*):([\\dA-F]{1,8}):');
       // statusRegExp = new RegExp(' 1[AE]:([\\dA-F]{8}):(.*) (gains|loses) the effect of (' + statusList.brd.join("|") + ') from (' + player.name + ')(?: for )?(\\d*\\.\\d*)?(?: Seconds)?\\.');
     }
+    else if (player.job == "MCH") {
+      mchJobChange();
+    }
     else if (player.job == "RDM") {
       rdmJobChange();
     }
@@ -216,6 +219,9 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
       else if (player.job == "BRD") {
         brdAction(actionLog);
       }
+      else if (player.job == "MCH") {
+        mchAction();
+      }
       else if (player.job == "MNK") {
         mnkAction(actionLog);
       }
@@ -241,6 +247,9 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
       }
       else if (player.job == "BRD") {
         brdStatus(statusLog);
+      }
+      else if (player.job == "MCH") {
+        mchStatus(statusLog);
       }
       else if (player.job == "MNK") {
         mnkStatus(statusLog);

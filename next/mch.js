@@ -263,7 +263,7 @@ function mchAction() {
   }
 }
 
-function mchStatus(logLine) {
+function mchStatus() {
   if (statusGroups.statusname == "Wildfire") {
     addStatus("wildfire", statusGroups.targetID, statusGroups.duration * 1000);
   }
