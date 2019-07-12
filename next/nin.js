@@ -26,9 +26,9 @@ actionList.nin = ["Shade Shift", "Hide", "Assassinate", "Mug", "Trick Attack", "
 "Fuma Shuriken", "Katon", "Raiton", "Hyoton", "Huton", "Doton", "Suiton",
 "Spinning Edge", "Gust Slash", "Throwing Dagger", "Aeolian Edge", "Shadow Fang", "Death Blossom", "Armor Crush"];
 
-statusList.nin = ["Slashing Resistance Down", "Vulnerability Up",
-"Mudra", "Doton", "Suiton", "Kassatsu", "Duality", "Ten Chi Jin",
-"Shadow Fang"];
+// statusList.nin = ["Slashing Resistance Down", "Vulnerability Up",
+// "Mudra", "Doton", "Suiton", "Kassatsu", "Duality", "Ten Chi Jin",
+// "Shadow Fang"];
 
 function ninPlayerChangedEvent(e) {
 

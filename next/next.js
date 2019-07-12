@@ -1,5 +1,6 @@
 "use strict";
 
+var dom = {};
 var recast = {};
 var cooldowntracker = {};     // Holds timestamps for cooldowns
 var statustracker = {};       // Holds timestamps for statuses
@@ -22,11 +23,11 @@ var next = {};
 
 var dom = {};
 for (var x = 0; x < 30; x++) {
-  dom.["next" + x] = document.getElementById("next" + x);
-  dom.["icon" + x] = document.getElementById("icon" + x);
+  dom["next" + x] = document.getElementById("next" + x);
+  dom["icon" + x] = document.getElementById("icon" + x);
 }
 for (var x = 0; x < 10; x++) {
-  dom.["debug" + x] = document.getElementById("debug" + x);
+  dom["debug" + x] = document.getElementById("debug" + x);
 }
 
 var player = {};

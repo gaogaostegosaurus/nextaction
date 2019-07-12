@@ -46,7 +46,7 @@ function mchJobChange() {
   id.gaussround = 14;
   id.ricochet = 15;
   id.flamethrower = 16;
-  // id.tactician = ?;
+  // id.tactician = 99;
 
   if (player.level >= 76) {
     icon.hotshot = icon.airanchor;
@@ -54,18 +54,21 @@ function mchJobChange() {
   else {
     icon.hotshot = "003003";
   }
+
   if (player.level >= 64) {
     icon.cleanshot = icon.heatedcleanshot;
   }
   else {
     icon.cleanshot = "003004";
   }
+
   if (player.level >= 60) {
     icon.slugshot = icon.heatedslugshot;
   }
   else {
     icon.slugshot = "003002";
   }
+
   if (player.level >= 54) {
     icon.splitshot = icon.heatedsplitshot;
   }
@@ -99,16 +102,17 @@ function mchAction() {
 
     if (["Hot Shot", "Air Anchor"].indexOf(actionGroups.actionname) > -1) {
       if (previous.hotshot
-          && recast.hotshot > Date.now() - previous.hotshot) {
+      && recast.hotshot > Date.now() - previous.hotshot) {
         recast.hotshot = Date.now() - previous.hotshot;
       }
       previous.hotshot = Date.now();
       addCooldown("hotshot", player.ID, recast.hotshot);
+      mchBattery();
     }
 
     else if (["Drill", "Bioblaster"].indexOf(actionGroups.actionname) > -1) {
       if (previous.drill
-          && recast.drill > Date.now() - previous.drill) {
+      && recast.drill > Date.now() - previous.drill) {
         recast.drill = Date.now() - previous.drill;
       }
       previous.drill = Date.now();
@@ -187,7 +191,8 @@ function mchAction() {
     else if ("Hypercharge" == actionGroups.actionname) {
       removeIcon(id.hypercharge);
       addCooldown("hypercharge", player.ID, recast.hypercharge);
-      addStatus("hypercharge", player.ID, duration.hypercharge)
+      addStatus("hypercharge", player.ID, duration.hypercharge);
+      mchHeat();
     }
 
     else if (["Rook Autoturret", "Automaton Queen"].indexOf(actionGroups.actionname) > -1) {
@@ -202,6 +207,7 @@ function mchAction() {
     else if ("Barrel Stabilizer" == actionGroups.actionname) {
       removeIcon(id.barrelstabilizer);
       addCooldown("barrelstabilizer", player.ID, recast.barrelstabilizer);
+      mchHeat();
     }
 
     // Combo
@@ -221,11 +227,13 @@ function mchAction() {
     && logLine[6].length == 8) {
       removeIcon(id.slugshot);
       mchHeat();
-      mchComboTimeout();
       if (player.level < 26) {
         delete toggle.combo;
         delete next.combo;
         mchCombo();
+      }
+      else {
+        mchComboTimeout();
       }
     }
 

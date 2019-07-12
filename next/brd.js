@@ -3,8 +3,8 @@
 actionList.brd = ["Heavy Shot", "Straight Shot", "Venomous Bite", "Quick Nock", "Windbite", "Iron Jaws", "Caustic Bite", "Stormbite", "Refulgent Arrow",
   "Raging Strikes", "Barrage", "Mage\'s Ballad", "Army\'s Paeon", "Battle Voice", "The Wanderer\'s Minuet", "Empyreal Arrow", "Sidewinder"];
 
-statusList.brd = ["Straight Shot", "Straighter Shot", "Raging Strikes", "Foe Requiem",
-  "Venomous Bite", "Windbite", "Caustic Bite", "Stormbite"];
+// statusList.brd = ["Straight Shot", "Straighter Shot", "Raging Strikes", "Foe Requiem",
+//   "Venomous Bite", "Windbite", "Caustic Bite", "Stormbite"];
 
 var heavyshotchecktimeout = {};
 var empyrealarrowCount = 0;

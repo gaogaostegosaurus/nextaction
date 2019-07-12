@@ -1,10 +1,10 @@
 "use strict";
 
 actionList.mnk = ["Bootshine", "True Strike", "Snap Punch", "Twin Snakes", "Demolish", "Dragon Kick"];
-
-statusList.mnk = ["Twin Snakes",
-  "Demolish",
-  "Blunt Resistance Down"];
+//
+// statusList.mnk = ["Twin Snakes",
+//   "Demolish",
+//   "Blunt Resistance Down"];
 
 id.bootshine = "next0";
 id.dragonkick = id.bootshine;
