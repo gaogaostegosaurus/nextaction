@@ -75,8 +75,6 @@ function mchJobChange() {
 }
 
 
-// 1:SourceID 2:SourceName 3:SkillName 4:TargetID 5:TargetName 6:Result
-
 function mchAction() {
 
   if (actionList.mch.indexOf(actionGroups.actionname) > -1) { // Check if from player
@@ -88,96 +86,100 @@ function mchAction() {
     if (["Spread Shot", "Auto Crossbow", "Flamethrower", "Bioblaster"].indexOf(actionGroups.actionname) > -1) {
       toggle.aoe = Date.now();
     }
-    else if (["Split Shot", "Slug Shot", "Clean Shot",
+    else if (["Split Shot", "Slug Shot", "Clean Shot", 
               "Heated Split Shot", "Heated Slug Shot", "Heated Clean Shot",
-              "Hot Shot", "Heat Blast"
-             ].indexOf(actionGroups.actionname) > -1)
-    {
+              "Hot Shot", "Heat Blast"].indexOf(actionGroups.actionname) > -1) {
       delete toggle.aoe;
     }
 
     // These actions don't interrupt combos
 
-    if (.indexOf(actionGroups.actionname) > -1) {
-      addStatus("higanbana", logLine[4], duration.higanbana);
-      if (checkStatus("meikyoshisui", player.ID) > 0) {
-        samCombo(); // Consuming Sen under Meikyo will trigger a new combo
+    if (["Hot Shot", "Air Anchor"].indexOf(actionGroups.actionname) > -1) {
+      if (previous.hotshot
+          && recast.hotshot > Date.now() - previous.hotshot) {
+        recast.hotshot = Date.now() - previous.hotshot;
       }
-      icon.iaijutsu = "003159";
-      removeIcon(id.iaijutsu1);
-      removeIcon(id.iaijutsu2);
-      timeout.tsubamegaeshi1 = setTimeout(removeIcon, 12500, id.tsubamegaeshi1);
-      timeout.tsubamegaeshi2 = setTimeout(removeIcon, 12500, id.tsubamegaeshi2);
+      previous.hotshot = Date.now();
+      addCooldown("hotshot", player.ID, recast.hotshot);  
     }
-
-    else if (["Tenka Goken", "Midare Setsugekka"].indexOf(logLine[3]) > -1) {
-      if (checkStatus("meikyoshisui", player.ID) > 0) {
-        samCombo(); // Consuming Sen under Meikyo will trigger a new combo
+    
+    else if (["Drill", "Bioblaster"].indexOf(actionGroups.actionname) > -1) {
+      if (previous.drill
+          && recast.drill > Date.now() - previous.drill) {
+        recast.drill = Date.now() - previous.drill;
       }
-      icon.iaijutsu = "003159";
-      removeIcon(id.iaijutsu1);
-      removeIcon(id.iaijutsu2);
-      timeout.tsubamegaeshi1 = setTimeout(removeIcon, 12500, id.tsubamegaeshi1);
-      timeout.tsubamegaeshi2 = setTimeout(removeIcon, 12500, id.tsubamegaeshi2);
+      previous.drill = Date.now();
+      addCooldown("drill", player.ID, recast.drill);  
+    }
+    
+    else if (["Heat Blast", "Auto Crossbow"].indexOf(actionGroups.actionname) > -1) {
+      addCooldown("gaussround1", player.ID, checkCooldown("gaussround1", player.ID) - 15000);
+      addCooldown("gaussround2", player.ID, checkCooldown("gaussround2", player.ID) - 15000);
+      addCooldown("ricochet1", player.ID, checkCooldown("ricochet1", player.ID) - 15000);
+      addCooldown("ricochet2", player.ID, checkCooldown("ricochet2", player.ID) - 15000);
+      if (player.level >= 74) {
+        addCooldown("gaussround3", player.ID, checkCooldown("gaussround3", player.ID) - 15000);
+        addCooldown("ricochet3", player.ID, checkCooldown("ricochet3", player.ID) - 15000);
+      }
+    }
+  
+    else if ("Gauss Round" == actionGroups.actionname) {
+      if (player.level >= 74 
+          && checkCooldown("gaussround3", player.ID) < 0) {
+        addCooldown("gaussround3", player.ID, recast.gaussround);
+      }
+      else if (checkCooldown("gaussround2", player.ID) < 0) {
+        addCooldown("gaussround2", player.ID, checkCooldown("gaussround3", player.ID));
+        addCooldown("gaussround3", player.ID, checkCooldown("gaussround3", player.ID) + recast.gaussround);
+      }
+      else if (checkCooldown("gaussround1", player.ID) < 0) {
+        addCooldown("gaussround1", player.ID, checkCooldown("gaussround2", player.ID));
+        addCooldown("gaussround2", player.ID, checkCooldown("gaussround2", player.ID) + recast.gaussround);
+        addCooldown("gaussround3", player.ID, checkCooldown("gaussround3", player.ID) + recast.gaussround);
+      }
+    }
+    
+    else if ("Ricochet" == actionGroups.actionname) {
+      if (player.level >= 74 
+          && checkCooldown("ricochet3", player.ID) < 0) {
+        addCooldown("ricochet3", player.ID, recast.gaussround);
+      }
+      else if (checkCooldown("ricochet2", player.ID) < 0) {
+        addCooldown("ricochet2", player.ID, checkCooldown("ricochet3", player.ID));
+        addCooldown("ricochet3", player.ID, checkCooldown("ricochet3", player.ID) + recast.gaussround);
+      }
+      else if (checkCooldown("ricochet1", player.ID) < 0) {
+        addCooldown("ricochet1", player.ID, checkCooldown("ricochet2", player.ID));
+        addCooldown("ricochet2", player.ID, checkCooldown("ricochet2", player.ID) + recast.gaussround);
+        addCooldown("ricochet3", player.ID, checkCooldown("ricochet3", player.ID) + recast.gaussround);
+      }
+    }
+    
+    else if ("Reassemble" == actionGroups.actionname) {
+      removeIcon(id.reassemble);
+      addCooldown("reassemble", player.ID, recast.reassemble);
+    }
+    
+    else if ("Hypercharge" == actionGroups.actionname) {
+      removeIcon(id.hypercharge);
+      addCooldown("hypercharge", player.ID, recast.hypercharge);
+    }
+    
+    else if (["Rook Autoturret", "Automaton Queen"].indexOf(actionGroups.actionname) > -1) {
+      removeIcon(id.rookautoturret);
+    }
+    
+    else if ("Wildfire" == actionGroups.actionname) {
+      removeIcon(id.wildfire);
+      addCooldown("wildfire", player.ID, recast.wildfire);
+    }
+    
+    else if ("Barrel Stabilizer" == actionGroups.actionname) {
+      removeIcon(id.barrelstabilizer);
+      addCooldown("barrelstabilizer", player.ID, recast.barrelstabilizer);
     }
 
-    else if (["Kaeshi: Higanbana", "Kaeshi: Goken", "Kaeshi: Setsugekka"].indexOf(logLine[3]) > -1) {
-      addCooldown("tsubamegaeshi", player.ID, recast.tsubamegaeshi);
-      icon.tsubamegaeshi = "003180";
-      clearTimeout(timeout.tsubamegaeshi);
-      removeIcon(id.tsubamegaeshi1);
-      removeIcon(id.tsubamegaeshi2);
-    }
-
-    else if (logLine[3] == "Meikyo Shisui") {
-      addCooldown("meikyoshisui", player.ID, recast.meikyoshisui);
-      addStatus("meikyoshisui", player.ID, duration.meikyoshisui);
-      removeIcon(id.meikyoshisui);
-      samCombo(); // Clears combo and activates next Sen generating move
-    }
-
-    else if (logLine[3] == "Hissatsu: Kaiten") {
-      addStatus("kaiten", player.ID, duration.kaiten);
-      samKenki();
-    }
-
-    else if (logLine[3] == "Hissatsu: Shinten") {
-      removeIcon(id.shinten);
-      samKenki();
-    }
-
-    else if (logLine[3] == "Hissatsu: Kyuten") {
-      removeIcon(id.kyuten);
-      samKenki();
-    }
-
-    else if (logLine[3] == "Hissatsu: Seigan") {
-      removeIcon(id.seigan);
-      samKenki();
-    }
-
-    else if (logLine[3] == "Ikishoten") {
-      addCooldown("ikishoten", player.ID, recast.ikishoten);
-      removeIcon(id.ikishoten);
-      addIconBlinkTimeout("ikishoten", recast.ikishoten, id.ikishoten, icon.ikishoten);
-      samKenki();
-    }
-
-    else if (logLine[3] == "Hissatsu: Guren" || logLine[3] == "Hissatsu: Senei") {
-      // Senei is on same cooldown as Guren
-      addCooldown("guren", player.ID, recast.guren);
-      removeIcon(id.guren);
-      samKenki();
-    }
-
-    // Trigger combos
-
-    else if (["Hot Shot", "Air Anchor"].indexOf(actionGroups.actionname) > -1
-    && logLine[6].length >= 2) {
-      removeIcon(id.hotshot);
-      addCooldown("hotshot", player.ID, recast.hotshot);
-    }
-
+    // Combo
 
     else if (["Split Shot", "Heated Split Shot"].indexOf(actionGroups.actionname) > -1
     && logLine[6].length >= 2) {
@@ -212,20 +214,9 @@ function mchAction() {
   }
 }
 
-function samStatus(logLine) {
+function mchStatus(logLine) {
 
-  // To anyone from anyone (non-stacking)
-
-  if (logLine[4] == "Slashing Resistance Down") {
-    if (logLine[3] == "gains") {
-    }
-    else if (logLine[3] == "loses") {
-    }
-  }
-
-  // To player from anyone
-
-  else if (logLine[1] == player.ID) {
+  if (statusGroups.targetID == player.ID) {
 
     if (logLine[4] == "Jinpu") {
       if (logLine[3] == "gains") {
