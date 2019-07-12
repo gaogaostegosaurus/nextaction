@@ -16,6 +16,7 @@ actionList.rdm = [
 
 function rdmJobChange() {
 
+  // Set up UI
   id.luciddreaming = 0;
   id.riposte = 1;
   id.moulinet = id.riposte;
@@ -26,7 +27,6 @@ function rdmJobChange() {
   id.scorch = 5;
   id.hardcast = 6;
   id.dualcast = 7;
-
   id.manafication = 11;
   id.fleche = 12;
   id.contresixte = 13;
@@ -34,15 +34,13 @@ function rdmJobChange() {
   id.corpsacorps = 15;
   id.displacement = 16;
 
-  // Make modifications depending on traits
-
+  // Set up icons
   if (player.level >= 62) {
     icon.jolt = icon.jolt2;
   }
   else {
     icon.jolt = "003202";
   }
-
   if (player.level >= 66) {
     icon.scatter = icon.impact;
   }
@@ -50,6 +48,7 @@ function rdmJobChange() {
     icon.scatter = "003207";
   }
 
+  // Set up traits
   if (player.level >= 74) {
     recast.manafication = 110000;
   }
@@ -108,7 +107,7 @@ function rdmAction() {
     removeText("loadmessage");
 
     // AoE toggle
-    if (["Verthunder II", "Veraero II", "Enchanted Moulinet"].indexOf(actionGroups.actionname) > -1) {
+    if (["Verthunder II", "Veraero II"].indexOf(actionGroups.actionname) > -1) {
       toggle.aoe = Date.now();
     }
     else if (["Jolt", "Verfire", "Verstone", "Jolt II", "Verthunder", "Veraero", "Enchanted Riposte", "Enchanted Zwerchhau", "Enchanted Redoublement", "Verflare", "Verholy", "Scorch"].indexOf(actionGroups.actionname) > -1) {

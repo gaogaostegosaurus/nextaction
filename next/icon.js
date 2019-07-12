@@ -1,13 +1,12 @@
+// Icon properties - list by alphabetical job then alphabetical action
 
 // Role Actions
-
 icon.rampart = "000801";
 icon.luciddreaming = "000865";
 icon.swiftcast = "000866";
 
 
 // BLM
-
 icon.fire = "000451";
 icon.fire3 = "000453";
 icon.blizzard3 = "000456";
@@ -18,8 +17,32 @@ icon.blizzard4 = "002659";
 icon.despair = "002665";
 icon.xenoglossy = "002667";
 
-// RDM
+// MCH
+icon.splitshot = "003001";
+icon.slugshot = "003002";
+icon.hotshot = "003003";
+icon.cleanshot = "003004";
+icon.gaussround = "003005";
+icon.spreadshot = "003014";
+icon.ricochet = "003017";
+icon.wildfire = "003018";
+icon.reassemble = "003022";
+icon.rookautoturret = "003026";
+icon.heatblast = "003030";
+icon.heatedsplitshot = "003031";
+icon.heatedslugshot = "003032";
+icon.heatedcleanshot = "003033";
+icon.barrelstabilizer = "003034";
+icon.flamethrower = "003038";
+icon.tactician = "003040";
+icon.hypercharge = "003041";
+icon.autocrossbow = "003042";
+icon.drill = "003043";
+icon.bioblaster = "003044";
+icon.airanchor = "003045";
+icon.automatonqueen = "003501";
 
+// RDM
 icon.jolt = "003202";
 icon.verthunder = "003203";
 icon.corpsacorps = "003204";
@@ -45,9 +68,7 @@ icon.veraero2 = "003230";
 icon.reprise = "003232";
 icon.scorch = "003234";
 
-
 // SAM
-
 icon.hakaze = "003151";
 icon.jinpu = "003152";
 icon.shifu = "003156";
@@ -74,7 +95,6 @@ icon.kaeshihiganbana = "003181";
 icon.kaeshigoken = "003182";
 icon.kaeshisetsugekka = "003183";
 icon.shoha = "003184";
-
 
 // WAR
 icon.overpower = "000254";

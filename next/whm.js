@@ -1,6 +1,7 @@
 "use strict";
 
 actionList.whm = [
+
   // Role actions
   "Lucid Dreaming",
 
@@ -13,6 +14,7 @@ actionList.whm = [
 
 function whmJobChange() {
 
+  // Set up UI
   id.freecure = 0;
   id.regen = 1;
   id.aero = 2;
@@ -22,9 +24,10 @@ function whmJobChange() {
   id.benediction = 6;
   id.asylum = 7;
   id.luciddreaming = 10;
-  id.thinair = 11;
-  id.presenceofmind = 12;
+  id.thinair = 10;
+  id.presenceofmind = 11;
 
+  // Set up icons
   if (player.level >= 72) {
     icon.aero = icon.dia;
   }
@@ -42,28 +45,26 @@ function whmJobChange() {
     removeIcon(id.freecure)
   }
 
-  if (player.level >= 56
-  && checkCooldown("assize", player.ID) < 0) {
-    addIconBlink(id.assize,icon.assize);
+  if (player.level >= 24
+  && player.currentMP / player.maxMP < 0.8
+  && checkCooldown("luciddreaming", player.ID) < 0) {
+    addIconBlink(id.luciddreaming,icon.luciddreaming);
+  }
+  else if (player.level >= 58
+  && player.currentMP / player.maxMP < 0.8
+  && checkCooldown("thinair", player.ID) < 0) {
+    addIconBlink(id.thinair,icon.thinair);
   }
   else {
-    removeIcon(id.assize)
+    removeIcon(id.luciddreaming)
   }
 
-  if (player.level >= 66
-  && checkCooldown("divinebenison", player.ID) < 0) {
-    addIconBlink(id.divinebenison,icon.divinebenison);
+  if (player.level >= 30
+  && checkCooldown("presenceofmind", player.ID) < 0) {
+    addIconBlink(id.presenceofmind,icon.presenceofmind);
   }
   else {
-    removeIcon(id.divinebenison)
-  }
-
-  if (player.level >= 60
-  && checkCooldown("tetragrammaton", player.ID) < 0) {
-    addIconBlink(id.tetragrammaton,icon.tetragrammaton);
-  }
-  else {
-    removeIcon(id.tetragrammaton)
+    removeIcon(id.presenceofmind)
   }
 
   if (player.level >= 50
@@ -82,30 +83,43 @@ function whmJobChange() {
     removeIcon(id.asylum)
   }
 
-  if (player.level >= 24
-  && player.currentMP / player.maxMP < 0.85
-  && checkCooldown("luciddreaming", player.ID) < 0) {
-    addIconBlink(id.luciddreaming,icon.luciddreaming);
+  if (player.level >= 56
+  && checkCooldown("assize", player.ID) < 0) {
+    addIconBlink(id.assize,icon.assize);
   }
   else {
-    removeIcon(id.luciddreaming)
+    removeIcon(id.assize)
   }
 
-  if (player.level >= 30
-  && checkCooldown("presenceofmind", player.ID) < 0) {
-    addIconBlink(id.presenceofmind,icon.presenceofmind);
+  if (player.level >= 60
+  && checkCooldown("tetragrammaton", player.ID) < 0) {
+    addIconBlink(id.tetragrammaton,icon.tetragrammaton);
   }
   else {
-    removeIcon(id.presenceofmind)
+    removeIcon(id.tetragrammaton)
+  }
+
+  if (player.level >= 66
+  && checkCooldown("divinebenison", player.ID) < 0) {
+    addIconBlink(id.divinebenison,icon.divinebenison);
+  }
+  else {
+    removeIcon(id.divinebenison)
   }
 }
 
 function whmPlayerChangedEvent() {
 
+  // MP recovery - Lucid and Thin Air share same spot
   if (player.level >= 24
-  && player.currentMP / player.maxMP < 0.85
+  && player.currentMP / player.maxMP < 0.8
   && checkCooldown("luciddreaming", player.ID) < 0) {
     addIconBlink(id.luciddreaming,icon.luciddreaming);
+  }
+  else if (player.level >= 58
+  && player.currentMP / player.maxMP < 0.8
+  && checkCooldown("thinair", player.ID) < 0) {
+    addIconBlink(id.thinair,icon.thinair);
   }
   else {
     removeIcon(id.luciddreaming);
@@ -203,6 +217,7 @@ function whmStatus() {
   }
 
   else {
+
     if (statusGroups.statusname == "Regen") {
       if (statusGroups.gainsloses == "gains") {
         addStatus("regen", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);

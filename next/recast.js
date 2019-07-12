@@ -1,3 +1,4 @@
+// Recast properties - list by alphabetical job then alphabetical action
 
 // Role actions
 recast.luciddreaming = 60000;

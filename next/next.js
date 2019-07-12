@@ -14,19 +14,24 @@ var timeout = {};             // For timeout variables
 var id = {};                  // Store document id - location on page for icons, etc.
 var icon = {};                // Store icon name
 var toggle = {};              // Toggley things
-var count = {};               // County things
-
+var count = {};               // County things?
 var previous = {};
 var next = {};
 
-var actionList = {};
+// var statusList = {};
 
-var statusList = {};
+var dom = {};
+for (var x = 0; x < 30; x++) {
+  dom.["next" + x] = document.getElementById("next" + x);
+  dom.["icon" + x] = document.getElementById("icon" + x);
+}
+for (var x = 0; x < 10; x++) {
+  dom.["debug" + x] = document.getElementById("debug" + x);
+}
 
 var player = {};
 var target = {};
-
-// new RegExp() because strings not supported otherwise - don't know if I will put them in later but keeping it like this for now.
+var actionList = {};
 
 var actionRegExp = new RegExp(' 1[56]:([\\dA-F]{8}):([ -~]+?):[\\dA-F]{1,4}:([ -~]+?):([\\dA-F]{8}):([ -~]+?):([\\dA-F]{1,8}):');
 var actionLog;
@@ -44,6 +49,7 @@ var cancelRegExp = new RegExp(' 17:([\\dA-F]{8}):([ -~]+?):[\\dA-F]{1,4}:([ -~]+
 var cancelLog;
 var cancelGroups = {};
 
+// Note to self: using new RegExp() here because strings not supported otherwise - don't know if I will put them in later but keeping it like this for now.
 
 // onPlayerChangedEvent: fires whenever player change detected (including HP, MP, other resources, positions, etc.)
 document.addEventListener("onPlayerChangedEvent", function(e) {
@@ -125,9 +131,6 @@ document.addEventListener("onInCombatChangedEvent", function(e) {
 
     if (player.job == "BRD") {
       brdInCombatChangedEvent(e);
-    }
-    else if (player.job == "SAM") {
-      samInCombatChangedEvent(e);
     }
     else if (player.job == "WAR") {
       warInCombatChangedEvent(e);
