@@ -17,22 +17,22 @@ actionList.rdm = [
 function rdmJobChange() {
 
   // Set up UI
-  id.luciddreaming = 0;
-  id.riposte = 1;
-  id.moulinet = id.riposte;
-  id.zwerchhau = 2;
-  id.redoublement = 3;
-  id.verflare = 4;
-  id.verholy = id.verflare;
-  id.scorch = 5;
-  id.hardcast = 6;
-  id.dualcast = 7;
-  id.manafication = 11;
-  id.fleche = 12;
-  id.contresixte = 13;
-  id.acceleration = 14;
-  id.corpsacorps = 15;
-  id.displacement = 16;
+  nextid.luciddreaming = 0;
+  nextid.riposte = 1;
+  nextid.moulinet = nextid.riposte;
+  nextid.zwerchhau = 2;
+  nextid.redoublement = 3;
+  nextid.verflare = 4;
+  nextid.verholy = nextid.verflare;
+  nextid.scorch = 5;
+  nextid.hardcast = 6;
+  nextid.dualcast = 7;
+  nextid.manafication = 11;
+  nextid.fleche = 12;
+  nextid.contresixte = 13;
+  nextid.acceleration = 14;
+  nextid.corpsacorps = 15;
+  nextid.displacement = 16;
 
   // Set up icons
   if (player.level >= 62) {
@@ -67,23 +67,23 @@ function rdmJobChange() {
 
   if (player.level >= 6
   && checkCooldown("corpsacorps", player.ID) < 0) {
-    addIconBlink(id.corpsacorps,icon.corpsacorps);
+    addIconBlink(nextid.corpsacorps,icon.corpsacorps);
   }
   if (player.level >= 40
   && checkCooldown("displacement", player.ID) < 0) {
-    addIconBlink(id.displacement,icon.displacement);
+    addIconBlink(nextid.displacement,icon.displacement);
   }
   if (player.level >= 45
   && checkCooldown("fleche", player.ID) < 0) {
-    addIconBlink(id.fleche,icon.fleche);
+    addIconBlink(nextid.fleche,icon.fleche);
   }
   if (player.level >= 50
   && checkCooldown("acceleration", player.ID) < 0) {
-    addIconBlink(id.acceleration,icon.acceleration);
+    addIconBlink(nextid.acceleration,icon.acceleration);
   }
   if (player.level >= 56
   && checkCooldown("contresixte", player.ID) < 0) {
-    addIconBlink(id.contresixte,icon.contresixte);
+    addIconBlink(nextid.contresixte,icon.contresixte);
   }
 
 }
@@ -93,10 +93,10 @@ function rdmPlayerChangedEvent() {
   // Lucid Dreaming
   if (player.currentMP / player.maxMP < 0.85
   && checkCooldown("luciddreaming", player.ID) < 0) {
-    addIconBlink(id.luciddreaming,icon.luciddreaming);
+    addIconBlink(nextid.luciddreaming,icon.luciddreaming);
   }
   else {
-    removeIcon(id.luciddreaming);
+    removeIcon(nextid.luciddreaming);
   }
 }
 
@@ -119,38 +119,38 @@ function rdmAction() {
 
     if (actionGroups.actionname == "Acceleration") {
       addCooldown("acceleration", player.ID, recast.acceleration);
-      removeIcon(id.acceleration);
-      addIconBlinkTimeout("acceleration",recast.acceleration,id.acceleration,icon.acceleration);
+      removeIcon(nextid.acceleration);
+      addIconBlinkTimeout("acceleration",recast.acceleration,nextid.acceleration,icon.acceleration);
     }
 
     else if (actionGroups.actionname == "Contre Sixte") {
       addCooldown("contresixte", player.ID, recast.contresixte);
-      removeIcon(id.contresixte);
-      addIconBlinkTimeout("contresixte",recast.contresixte,id.contresixte,icon.contresixte);
+      removeIcon(nextid.contresixte);
+      addIconBlinkTimeout("contresixte",recast.contresixte,nextid.contresixte,icon.contresixte);
     }
 
     else if (actionGroups.actionname == "Corps-A-Corps") {
       addCooldown("corpsacorps", player.ID, recast.corpsacorps);
-      removeIcon(id.corpsacorps);
-      addIconBlinkTimeout("corpsacorps",recast.corpsacorps,id.corpsacorps,icon.corpsacorps);
+      removeIcon(nextid.corpsacorps);
+      addIconBlinkTimeout("corpsacorps",recast.corpsacorps,nextid.corpsacorps,icon.corpsacorps);
     }
 
     else if (actionGroups.actionname == "Displacement") {
       addCooldown("displacement", player.ID, recast.displacement);
-      removeIcon(id.displacement);
-      addIconBlinkTimeout("displacement",recast.displacement,id.displacement,icon.displacement);
+      removeIcon(nextid.displacement);
+      addIconBlinkTimeout("displacement",recast.displacement,nextid.displacement,icon.displacement);
     }
 
     else if (actionGroups.actionname == "Fleche") {
       addCooldown("fleche", player.ID, recast.fleche);
-      removeIcon(id.fleche);
-      addIconBlinkTimeout("fleche",recast.fleche,id.fleche,icon.fleche);
+      removeIcon(nextid.fleche);
+      addIconBlinkTimeout("fleche",recast.fleche,nextid.fleche,icon.fleche);
     }
 
     // else if (actionGroups.actionname == "Embolden") {
     //   addCooldown("embolden", player.ID, recast.embolden);
-    //   removeIcon(id.embolden);
-    //   addIconBlinkTimeout("fleche",recast.embolden,id.embolden,icon.embolden);
+    //   removeIcon(nextid.embolden);
+    //   addIconBlinkTimeout("fleche",recast.embolden,nextid.embolden,icon.embolden);
     // }
 
     else if (actionGroups.actionname == "Swiftcast") {
@@ -158,18 +158,18 @@ function rdmAction() {
     }
 
     else if (actionGroups.actionname == "Lucid Dreaming") {
-      removeIcon(id.luciddreaming);
+      removeIcon(nextid.luciddreaming);
       addCooldown("luciddreaming", player.ID, recast.luciddreaming);
     }
 
     // Combo actions
 
     else if (actionGroups.actionname == "Enchanted Riposte") {
-      removeIcon(id.riposte);
+      removeIcon(nextid.riposte);
     }
 
     else if (actionGroups.actionname == "Enchanted Zwerchhau") {
-      removeIcon(id.zwerchhau);
+      removeIcon(nextid.zwerchhau);
       if (player.level < 50) {
         delete toggle.combo;
         rdmDualcast();
@@ -177,7 +177,7 @@ function rdmAction() {
     }
 
     else if (actionGroups.actionname == "Enchanted Redoublement") {
-      removeIcon(id.redoublement);
+      removeIcon(nextid.redoublement);
       if (player.level < 68) {
         delete toggle.combo;
         rdmDualcast();
@@ -185,7 +185,7 @@ function rdmAction() {
     }
 
     else if (actionGroups.actionname == "Verflare") {
-      removeIcon(id.verflare);
+      removeIcon(nextid.verflare);
       if (player.level < 80) {
         delete toggle.combo;
         rdmDualcast();
@@ -193,7 +193,7 @@ function rdmAction() {
     }
 
     else if (actionGroups.actionname == "Verholy") {
-      removeIcon(id.verholy);
+      removeIcon(nextid.verholy);
       if (player.level < 80) {
         delete toggle.combo;
         rdmDualcast();
@@ -201,7 +201,7 @@ function rdmAction() {
     }
 
     else if (actionGroups.actionname == "Scorch") {
-      removeIcon(id.scorch);
+      removeIcon(nextid.scorch);
       delete toggle.combo;
       rdmDualcast();
     }
@@ -212,10 +212,10 @@ function rdmAction() {
 
       delete toggle.combo;
 
-      removeIcon(id.riposte);
-      removeIcon(id.zwerchhau);
-      removeIcon(id.redoublement);
-      removeIcon(id.verflare);
+      removeIcon(nextid.riposte);
+      removeIcon(nextid.zwerchhau);
+      removeIcon(nextid.redoublement);
+      removeIcon(nextid.verflare);
 
       if (actionGroups.actionname == "Verfire") {
         removeStatus("verfireready", player.ID)
@@ -229,9 +229,9 @@ function rdmAction() {
         addCooldown("manafication", player.ID, recast.manafication);
         clearTimeout(timeout.corpsacorps);
         clearTimeout(timeout.displacement);
-        addIconBlink(id.corpsacorps,icon.corpsacorps);
-        addIconBlink(id.displacement,icon.displacement);
-        removeIcon(id.manafication);
+        addIconBlink(nextid.corpsacorps,icon.corpsacorps);
+        addIconBlink(nextid.displacement,icon.displacement);
+        removeIcon(nextid.manafication);
         rdmDualcast();
       }
     }
@@ -245,7 +245,7 @@ function rdmStatus() {
     if (statusGroups.statusname == "Dualcast") {
       if (statusGroups.gainsloses == "gains") {
         addStatus("dualcast", player.ID, parseInt(statusGroups.duration) * 1000);
-        removeIcon(id.hardcast);
+        removeIcon(nextid.hardcast);
       }
       else if (statusGroups.gainsloses == "loses") {
         removeStatus("dualcast", player.ID);
@@ -276,7 +276,7 @@ function rdmStatus() {
     else if (statusGroups.statusname == "Swiftcast") {
       if (statusGroups.gainsloses == "gains") {
         addStatus("swiftcast", player.ID, parseInt(statusGroups.duration) * 1000);
-        removeIcon(id.hardcast);
+        removeIcon(nextid.hardcast);
       }
       else if (statusGroups.gainsloses == "loses") {
         removeStatus("swiftcast", player.ID);
@@ -290,13 +290,13 @@ function rdmDualcast() {
 
   if (!toggle.combo) {
 
-    removeIcon(id.hardcast);
-    removeIcon(id.dualcast);
-    removeIcon(id.riposte);
-    removeIcon(id.zwerchhau);
-    removeIcon(id.redoublement);
-    removeIcon(id.verflare);
-    removeIcon(id.scorch);
+    removeIcon(nextid.hardcast);
+    removeIcon(nextid.dualcast);
+    removeIcon(nextid.riposte);
+    removeIcon(nextid.zwerchhau);
+    removeIcon(nextid.redoublement);
+    removeIcon(nextid.verflare);
+    removeIcon(nextid.scorch);
 
     rdmManafication();
 
@@ -306,16 +306,16 @@ function rdmDualcast() {
     && toggle.aoe) {
 
       if (player.jobDetail.blackMana < player.jobDetail.whiteMana) {
-        addIcon(id.hardcast, icon.verthunder2);
-        addIcon(id.dualcast, icon.scatter);
+        addIcon(nextid.hardcast, icon.verthunder2);
+        addIcon(nextid.dualcast, icon.scatter);
       }
       else {
-        addIcon(id.hardcast, icon.veraero2);
-        addIcon(id.dualcast, icon.scatter);
+        addIcon(nextid.hardcast, icon.veraero2);
+        addIcon(nextid.dualcast, icon.scatter);
       }
       if (Math.min(player.jobDetail.blackMana < player.jobDetail.whiteMana) >= 20
       && !toggle.manafication) {
-        addIcon(id.riposte, icon.moulinet);
+        addIcon(nextid.riposte, icon.moulinet);
       }
     }
 
@@ -392,36 +392,36 @@ function rdmDualcast() {
       }
 
       if (maxIndex == 0) {
-        addIcon(id.hardcast, icon.jolt);
-        addIcon(id.dualcast, icon.verthunder);
+        addIcon(nextid.hardcast, icon.jolt);
+        addIcon(nextid.dualcast, icon.verthunder);
       }
       else if (maxIndex == 1) {
-        addIcon(id.hardcast, icon.jolt);
-        addIcon(id.dualcast, icon.veraero);
+        addIcon(nextid.hardcast, icon.jolt);
+        addIcon(nextid.dualcast, icon.veraero);
       }
       else if (maxIndex == 2) {
-        addIcon(id.hardcast, icon.verfire);
-        addIcon(id.dualcast, icon.verthunder);
+        addIcon(nextid.hardcast, icon.verfire);
+        addIcon(nextid.dualcast, icon.verthunder);
       }
       else if (maxIndex == 3) {
-        addIcon(id.hardcast, icon.verfire);
-        addIcon(id.dualcast, icon.veraero);
+        addIcon(nextid.hardcast, icon.verfire);
+        addIcon(nextid.dualcast, icon.veraero);
       }
       else if (maxIndex == 4) {
-        addIcon(id.hardcast, icon.verstone);
-        addIcon(id.dualcast, icon.verthunder);
+        addIcon(nextid.hardcast, icon.verstone);
+        addIcon(nextid.dualcast, icon.verthunder);
       }
       else if (maxIndex == 5) {
-        addIcon(id.hardcast, icon.verstone);
-        addIcon(id.dualcast, icon.veraero);
+        addIcon(nextid.hardcast, icon.verstone);
+        addIcon(nextid.dualcast, icon.veraero);
       }
       else if (maxIndex == 6) {
-        addIcon(id.hardcast, icon.swiftcast);
-        addIcon(id.dualcast, icon.verthunder);
+        addIcon(nextid.hardcast, icon.swiftcast);
+        addIcon(nextid.dualcast, icon.verthunder);
       }
       else if (maxIndex == 7) {
-        addIcon(id.hardcast, icon.swiftcast);
-        addIcon(id.dualcast, icon.veraero);
+        addIcon(nextid.hardcast, icon.swiftcast);
+        addIcon(nextid.dualcast, icon.veraero);
       }
 
       // Debug to check values
@@ -593,28 +593,28 @@ function rdmDualcastValue(hardcastaction, dualcastaction, black, white, manafica
 
 function rdmCombo() {
   toggle.combo = Date.now();
-  addIcon(id.riposte,icon.riposte);
+  addIcon(nextid.riposte,icon.riposte);
   if (player.level >= 35) {
-    addIcon(id.zwerchhau,icon.zwerchhau);
+    addIcon(nextid.zwerchhau,icon.zwerchhau);
   }
   if (player.level >= 50) {
-    addIcon(id.redoublement,icon.redoublement);
+    addIcon(nextid.redoublement,icon.redoublement);
   }
 }
 
 function rdmFlareCombo() {
   rdmCombo();
-  addIcon(id.verflare,icon.verflare);
+  addIcon(nextid.verflare,icon.verflare);
   if (player.level >= 80) {
-    addIcon(id.scorch, icon.scorch);
+    addIcon(nextid.scorch, icon.scorch);
   }
 }
 
 function rdmHolyCombo() {
   rdmCombo();
-  addIcon(id.verholy,icon.verholy);
+  addIcon(nextid.verholy,icon.verholy);
   if (player.level >= 80) {
-    addIcon(id.scorch, icon.scorch);
+    addIcon(nextid.scorch, icon.scorch);
   }
 }
 
@@ -629,14 +629,14 @@ function rdmManafication() {
 
     // Don't use Manafication if more than 28 away from 50/50
     if (Math.abs(player.jobDetail.blackMana - 50) + Math.abs(player.jobDetail.whiteMana - 50) > 28) {
-      removeIcon(id.manafication);
+      removeIcon(nextid.manafication);
       delete toggle.manafication;
     }
 
     // Use if able to get 5x Moulinet for AOE
     else if (toggle.aoe
     && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 50) {
-      addIconBlink(id.manafication,icon.manafication);
+      addIconBlink(nextid.manafication,icon.manafication);
       toggle.manafication = Date.now();
     }
 
@@ -647,7 +647,7 @@ function rdmManafication() {
     && player.jobDetail.whiteMana < 50
     && player.jobDetail.blackMana > player.jobDetail.whiteMana
     && checkStatus("verstoneready", player.ID) < 2500) {
-      addIconBlink(id.manafication,icon.manafication);
+      addIconBlink(nextid.manafication,icon.manafication);
       toggle.manafication = Date.now();
     }
 
@@ -657,25 +657,25 @@ function rdmManafication() {
     && player.jobDetail.blackMana < 50
     && player.jobDetail.whiteMana > player.jobDetail.blackMana
     && checkStatus("verfireready", player.ID) < 2500) {
-      addIconBlink(id.manafication,icon.manafication);
+      addIconBlink(nextid.manafication,icon.manafication);
       toggle.manafication = Date.now();
     }
 
     // Use if otherwise over 45/45
     else if (player.level >= 60
     && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 45) {
-      addIconBlink(id.manafication,icon.manafication);
+      addIconBlink(nextid.manafication,icon.manafication);
       toggle.manafication = Date.now();
     }
 
     else {
       // Hide otherwise?
-      removeIcon(id.manafication);
+      removeIcon(nextid.manafication);
       delete toggle.manafication;
     }
   }
   else {
-    removeIcon(id.manafication);
+    removeIcon(nextid.manafication);
     delete toggle.manafication;
   }
 }

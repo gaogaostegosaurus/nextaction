@@ -15,17 +15,17 @@ actionList.whm = [
 function whmJobChange() {
 
   // Set up UI
-  id.freecure = 0;
-  id.regen = 1;
-  id.aero = 2;
-  id.assize = 3;
-  id.divinebenison = 4;
-  id.tetragrammaton = 5;
-  id.benediction = 6;
-  id.asylum = 7;
-  id.luciddreaming = 10;
-  id.thinair = 10;
-  id.presenceofmind = 11;
+  nextid.freecure = 0;
+  nextid.regen = 1;
+  nextid.aero = 2;
+  nextid.assize = 3;
+  nextid.divinebenison = 4;
+  nextid.tetragrammaton = 5;
+  nextid.benediction = 6;
+  nextid.asylum = 7;
+  nextid.luciddreaming = 10;
+  nextid.thinair = 10;
+  nextid.presenceofmind = 11;
 
   // Set up icons
   if (player.level >= 72) {
@@ -39,72 +39,72 @@ function whmJobChange() {
   }
 
   if (checkStatus("freecure", player.ID) > 0) {
-    addIconBlink(id.freecure,icon.cure2);
+    addIconBlink(nextid.freecure,icon.cure2);
   }
   else {
-    removeIcon(id.freecure)
+    removeIcon(nextid.freecure)
   }
 
   if (player.level >= 24
   && player.currentMP / player.maxMP < 0.8
   && checkCooldown("luciddreaming", player.ID) < 0) {
-    addIconBlink(id.luciddreaming,icon.luciddreaming);
+    addIconBlink(nextid.luciddreaming,icon.luciddreaming);
   }
   else if (player.level >= 58
   && player.currentMP / player.maxMP < 0.8
   && checkCooldown("thinair", player.ID) < 0) {
-    addIconBlink(id.thinair,icon.thinair);
+    addIconBlink(nextid.thinair,icon.thinair);
   }
   else {
-    removeIcon(id.luciddreaming)
+    removeIcon(nextid.luciddreaming)
   }
 
   if (player.level >= 30
   && checkCooldown("presenceofmind", player.ID) < 0) {
-    addIconBlink(id.presenceofmind,icon.presenceofmind);
+    addIconBlink(nextid.presenceofmind,icon.presenceofmind);
   }
   else {
-    removeIcon(id.presenceofmind)
+    removeIcon(nextid.presenceofmind)
   }
 
   if (player.level >= 50
   && checkCooldown("benediction", player.ID) < 0) {
-    addIconBlink(id.benediction,icon.benediction);
+    addIconBlink(nextid.benediction,icon.benediction);
   }
   else {
-    removeIcon(id.benediction)
+    removeIcon(nextid.benediction)
   }
 
   if (player.level >= 52
   && checkCooldown("asylum", player.ID) < 0) {
-    addIconBlink(id.asylum,icon.asylum);
+    addIconBlink(nextid.asylum,icon.asylum);
   }
   else {
-    removeIcon(id.asylum)
+    removeIcon(nextid.asylum)
   }
 
   if (player.level >= 56
   && checkCooldown("assize", player.ID) < 0) {
-    addIconBlink(id.assize,icon.assize);
+    addIconBlink(nextid.assize,icon.assize);
   }
   else {
-    removeIcon(id.assize)
+    removeIcon(nextid.assize)
   }
 
   if (player.level >= 60
   && checkCooldown("tetragrammaton", player.ID) < 0) {
-    addIconBlink(id.tetragrammaton,icon.tetragrammaton);
+    addIconBlink(nextid.tetragrammaton,icon.tetragrammaton);
   }
   else {
-    removeIcon(id.tetragrammaton)
+    removeIcon(nextid.tetragrammaton)
   }
 
   if (player.level >= 66
   && checkCooldown("divinebenison", player.ID) < 0) {
-    addIconBlink(id.divinebenison,icon.divinebenison);
+    addIconBlink(nextid.divinebenison,icon.divinebenison);
   }
   else {
-    removeIcon(id.divinebenison)
+    removeIcon(nextid.divinebenison)
   }
 }
 
@@ -114,15 +114,15 @@ function whmPlayerChangedEvent() {
   if (player.level >= 24
   && player.currentMP / player.maxMP < 0.8
   && checkCooldown("luciddreaming", player.ID) < 0) {
-    addIconBlink(id.luciddreaming,icon.luciddreaming);
+    addIconBlink(nextid.luciddreaming,icon.luciddreaming);
   }
   else if (player.level >= 58
   && player.currentMP / player.maxMP < 0.8
   && checkCooldown("thinair", player.ID) < 0) {
-    addIconBlink(id.thinair,icon.thinair);
+    addIconBlink(nextid.thinair,icon.thinair);
   }
   else {
-    removeIcon(id.luciddreaming);
+    removeIcon(nextid.luciddreaming);
   }
 }
 
@@ -132,10 +132,10 @@ function whmTargetChangedEvent() {
   if (player.level >= 35
   && ["PLD", "WAR", "DRK", "GNB"].indexOf(target.job) > -1
   && checkStatus("regen", target.ID) < 0) {
-    addIconBlink(id.regen,icon.regen);
+    addIconBlink(nextid.regen,icon.regen);
   }
   else {
-    removeIcon(id.regen)
+    removeIcon(nextid.regen)
   }
 }
 
@@ -144,57 +144,57 @@ function whmAction() {
   if (actionList.whm.indexOf(actionGroups.actionname) > -1) {
 
     if (actionGroups.actionname == "Lucid Dreaming") {
-      removeIcon(id.luciddreaming);
+      removeIcon(nextid.luciddreaming);
       addCooldown("luciddreaming", player.ID, recast.luciddreaming);
     }
 
     else if (actionGroups.actionname == "Presence Of Mind") {
-      removeIcon(id.presenceofmind);
+      removeIcon(nextid.presenceofmind);
       addCooldown("presenceofmind", player.ID, recast.presenceofmind);
     }
 
     else if (actionGroups.actionname == "Benediction") {
-      removeIcon(id.benediction);
+      removeIcon(nextid.benediction);
       addCooldown("benediction", player.ID, recast.benediction);
     }
 
     else if (actionGroups.actionname == "Asylum") {
-      removeIcon(id.asylum);
+      removeIcon(nextid.asylum);
       addCooldown("asylum", player.ID, recast.asylum);
     }
 
     else if (actionGroups.actionname == "Assize") {
-      removeIcon(id.assize);
+      removeIcon(nextid.assize);
       addCooldown("assize", player.ID, recast.assize);
     }
 
     else if (actionGroups.actionname == "Thin Air") {
-      removeIcon(id.thinair);
+      removeIcon(nextid.thinair);
       addCooldown("thinair", player.ID, recast.thinair);
     }
 
     else if (actionGroups.actionname == "Tetragrammaton") {
-      removeIcon(id.tetragrammaton);
+      removeIcon(nextid.tetragrammaton);
       addCooldown("tetragrammaton", player.ID, recast.tetragrammaton);
     }
 
     else if (actionGroups.actionname == "Divine Benison") {
-      removeIcon(id.divinebenison);
+      removeIcon(nextid.divinebenison);
       addCooldown("divinebenison", player.ID, recast.divinebenison);
     }
 
     else if (actionGroups.actionname == "Regen") {
-      removeIcon(id.regen);
+      removeIcon(nextid.regen);
       addStatus("regen", actionGroups.targetID, duration.regen);
     }
 
     else if (["Aero", "Aero II"].indexOf(actionGroups.actionname) > -1) {
-      removeIcon(id.aero);
+      removeIcon(nextid.aero);
       addStatus("aero", actionGroups.targetID, duration.aero);
     }
 
     else if (actionGroups.actionname == "Dia") {
-      removeIcon(id.aero);
+      removeIcon(nextid.aero);
       addStatus("aero", actionGroups.targetID, duration.dia);
     }
   }
@@ -207,11 +207,11 @@ function whmStatus() {
     if (statusGroups.statusname == "Freecure") {
       if (statusGroups.gainsloses == "gains") {
         addStatus("freecure", player.ID, parseInt(statusGroups.duration) * 1000);
-        addIcon(id.freecure, icon.cure2);
+        addIcon(nextid.freecure, icon.cure2);
       }
       else if (statusGroups.gainsloses == "loses") {
         removeStatus("freecure", player.ID);
-        removeIcon(id.freecure);
+        removeIcon(nextid.freecure);
       }
     }
   }
@@ -221,7 +221,7 @@ function whmStatus() {
     if (statusGroups.statusname == "Regen") {
       if (statusGroups.gainsloses == "gains") {
         addStatus("regen", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
-        removeIcon(id.regen);
+        removeIcon(nextid.regen);
       }
       else if (statusGroups.gainsloses == "loses") {
         removeStatus("regen", statusGroups.targetID);
@@ -231,7 +231,7 @@ function whmStatus() {
     else if (["Aero", "Aero II", "Dia"].indexOf(statusGroups.statusname) > -1) {
       if (statusGroups.gainsloses == "gains") {
         addStatus("aero", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
-        removeIcon(id.aero);
+        removeIcon(nextid.aero);
       }
       else if (statusGroups.gainsloses == "loses") {
         removeStatus("aero", statusGroups.targetID);

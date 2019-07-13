@@ -12,7 +12,7 @@ var gauge = {};
 var buffertime = {};
 
 var timeout = {};             // For timeout variables
-var id = {};                  // Store document id - location on page for icons, etc.
+var nextid = {};                  // Store document id - location on page for icons, etc.
 var icon = {};                // Store icon name
 var toggle = {};              // Toggley things
 var count = {};               // County things?
@@ -56,7 +56,7 @@ var cancelGroups = {};
 document.addEventListener("onPlayerChangedEvent", function(e) {
 
   player = e.detail;
-  player.ID = e.detail.id.toString(16).toUpperCase(); // player.id.toString(16) is lowercase; using "ID" to designate uppercase lettering
+  player.ID = e.detail.nextid.toString(16).toUpperCase(); // player.nextid.toString(16) is lowercase; using "ID" to designate uppercase lettering
 
   // Detects name/job/level change and clears elements
   if (previous.name != player.name || previous.job != player.job || previous.level != player.level) {
@@ -112,7 +112,7 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
 
 document.addEventListener('onTargetChangedEvent', function(e) {
   target = e.detail;
-  target.ID = e.detail.id.toString(16).toUpperCase(); //
+  target.ID = e.detail.nextid.toString(16).toUpperCase(); //
 
   if (player.job == "WHM") {
     whmTargetChangedEvent();

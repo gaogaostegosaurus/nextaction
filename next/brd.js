@@ -16,23 +16,23 @@ var brdBuffer = 5000;
 statustime.venomousbite = [];
 statustime.windbite = [];
 
-id.ironjaws = "next0";
-id.straightshot = "next1";
-id.windbite = "next2";
-id.venomousbite = "next3";
-id.openingstraightshot = "next4";
-id.straightershot = "next5";
-id.refulgentarrow = id.straightershot;
-id.heavyshot = "next6";
+nextid.ironjaws = "next0";
+nextid.straightshot = "next1";
+nextid.windbite = "next2";
+nextid.venomousbite = "next3";
+nextid.openingstraightshot = "next4";
+nextid.straightershot = "next5";
+nextid.refulgentarrow = nextid.straightershot;
+nextid.heavyshot = "next6";
 
-id.ballad = "next10";
-id.paeon = id.ballad;
-id.minuet = id.ballad;
-id.pitchperfect = "next11";
-id.empyrealarrow = "next12";
-id.sidewinder = "next13";
-id.ragingstrikes = "next14";
-id.barrage = "next15";
+nextid.ballad = "next10";
+nextid.paeon = nextid.ballad;
+nextid.minuet = nextid.ballad;
+nextid.pitchperfect = "next11";
+nextid.empyrealarrow = "next12";
+nextid.sidewinder = "next13";
+nextid.ragingstrikes = "next14";
+nextid.barrage = "next15";
 
 icon.ragingstrikes = "000352";
 icon.barrage = "000353";
@@ -75,20 +75,20 @@ function brdPlayerChangedEvent(e) {
   // Pitch Perfect
   if (player.jobDetail.songName == "Minuet"
   && player.jobDetail.songProcs == 3) {
-    addIcon(id.pitchperfect,icon.pitchperfect);
+    addIcon(nextid.pitchperfect,icon.pitchperfect);
   }
   else if (player.jobDetail.songName == "Minuet"
   && player.jobDetail.songProcs > 0
   && player.jobDetail.songMilliseconds < brdBuffer) {
-    addIcon(id.pitchperfect,icon.pitchperfect);
+    addIcon(nextid.pitchperfect,icon.pitchperfect);
   }
   else {
-    removeIcon(id.pitchperfect);
+    removeIcon(nextid.pitchperfect);
   }
 
   // Don't use EA without song after 68
   if (player.level >= 68 && player.jobDetail.songMilliseconds == 0) {
-    removeIcon(id.empyrealarrow);
+    removeIcon(nextid.empyrealarrow);
   }
 }
 
@@ -99,86 +99,86 @@ function brdInCombatChangedEvent(e) { // Fires when player enters combat
   if (player.level >= 54
   && statustime.venomousbite[statustime.venomousbite.indexOf(target.name) + 1] - Date.now() - brdBuffer * 2 < 0
   && statustime.windbite[statustime.windbite.indexOf(target.name) + 1] - Date.now() < 0 - brdBuffer * 2 ) {
-    brdAddIcon(id.ironjaws,icon.ironjaws);
+    brdAddIcon(nextid.ironjaws,icon.ironjaws);
   }
 
   if (player.level >= 18
   && statustime.windbite.indexOf(target.id) > -1) {
-    brdAddIcon(id.windbite,icon.windbite);
+    brdAddIcon(nextid.windbite,icon.windbite);
   }
 
   if (player.level >= 6
   && statustime.windbite.indexOf(target.id) > -1) {
-    brdAddIcon(id.venomousbite,icon.venomousbite);
+    brdAddIcon(nextid.venomousbite,icon.venomousbite);
   }
 
   if (player.level >= 2
   && (!statustime.straightshot || statustime.straightshot - Date.now() - brdBuffer < 0)) {
-    brdAddIcon(id.openingstraightshot,icon.straightshot);
+    brdAddIcon(nextid.openingstraightshot,icon.straightshot);
   }
 
   if (statustime.straightershot) { // This feels like it needs to be fixed/cleaned up
     if (player.level >= 70) {
-      brdAddIcon(id.straightershot,icon.refulgentarrow);
+      brdAddIcon(nextid.straightershot,icon.refulgentarrow);
     }
   }
 
   if (player.jobDetail.songName == "") { // Activate if no song
 
-    removeIcon(id.pitchperfect);
+    removeIcon(nextid.pitchperfect);
 
     if (player.level >= 52
     && (!cooldowntime.ragingstrikes || cooldowntime.ragingstrikes - Date.now() < 0)
     && (!cooldowntime.barrage || cooldowntime.barrage - Date.now() < 0)
     && (!cooldowntime.minuet || cooldowntime.minuet - Date.now() < 0)) {
-      addIcon(id.ballad,icon.minuet);
+      addIcon(nextid.ballad,icon.minuet);
     }
     else if (player.level >= 30
     && (!cooldowntime.ballad || cooldowntime.ballad - Date.now() < 0)) {
-      addIcon(id.ballad,icon.ballad);
+      addIcon(nextid.ballad,icon.ballad);
     }
     else if (player.level >= 40
     && (!cooldowntime.paeon || cooldowntime.paeon - Date.now() < 0)) {
-      addIcon(id.ballad,icon.paeon);
+      addIcon(nextid.ballad,icon.paeon);
     }
   }
 
   else if (player.jobDetail.songName == "Minuet") {
     if (player.jobDetail.songProcs == 3) {
-      addIcon(id.pitchperfect,icon.pitchperfect);
+      addIcon(nextid.pitchperfect,icon.pitchperfect);
     }
     else if (player.jobDetail.songProcs > 0
     && player.jobDetail.songMilliseconds < brdBuffer) {
-      addIcon(id.pitchperfect,icon.pitchperfect);
+      addIcon(nextid.pitchperfect,icon.pitchperfect);
     }
     else {
-      removeIcon(id.pitchperfect);
+      removeIcon(nextid.pitchperfect);
     }
   }
 
   if (player.level >= 68
   && (!cooldowntime.empyrealarrow || cooldowntime.empyrealarrow - Date.now() < 0)
   && player.jobDetail.songName != "") {
-    addIcon(id.empyrealarrow,icon.empyrealarrow);
+    addIcon(nextid.empyrealarrow,icon.empyrealarrow);
   }
   else if (player.level >= 54
   && (!cooldowntime.empyrealarrow || cooldowntime.empyrealarrow - Date.now() < 0)) {
-    addIcon(id.empyrealarrow,icon.empyrealarrow);
+    addIcon(nextid.empyrealarrow,icon.empyrealarrow);
   }
 
   if (player.level >= 60
   && (!cooldowntime.sidewinder || cooldowntime.sidewinder - Date.now() < 0)) {
-    addIcon(id.sidewinder,icon.sidewinder);
+    addIcon(nextid.sidewinder,icon.sidewinder);
   }
 
   if (player.level >= 4 &&
   (!cooldowntime.ragingstrikes || cooldowntime.ragingstrikes - Date.now() < 0)) {
-    addIcon(id.ragingstrikes,icon.ragingstrikes);
+    addIcon(nextid.ragingstrikes,icon.ragingstrikes);
   }
 
   if (player.level >= 4 &&
   (!cooldowntime.ragingstrikes || cooldowntime.ragingstrikes - Date.now() < 0)) {
-    addIcon(id.ragingstrikes,icon.ragingstrikes);
+    addIcon(nextid.ragingstrikes,icon.ragingstrikes);
   }
 }
 
@@ -190,9 +190,9 @@ function brdAction(logLine) {
 
     if (logLine[3] == "Straight Shot") {
       statustime.straightshot = Date.now() + 30000;
-      brdRemoveIcon(id.straightshot);
-      brdRemoveIcon(id.openingstraightshot);
-      brdRemoveIcon(id.straightershot);
+      brdRemoveIcon(nextid.straightshot);
+      brdRemoveIcon(nextid.openingstraightshot);
+      brdRemoveIcon(nextid.straightershot);
     }
 
     else if (logLine[3] == "Iron Jaws") {
@@ -212,46 +212,46 @@ function brdAction(logLine) {
       else if (statustime.windbite.indexOf(logLine[5]) > -1) {
         addStatus("windbite", logLine[5], 18000);
       }
-      brdRemoveIcon(id.ironjaws);
+      brdRemoveIcon(nextid.ironjaws);
     }
 
     else if (logLine[3] == "Windbite") {
       addStatus("windbite", logLine[5], 18000);
-      brdRemoveIcon(id.windbite);
+      brdRemoveIcon(nextid.windbite);
     }
 
     else if (logLine[3] == "Stormbite") {
       addStatus("windbite", logLine[5], 30000);
-      brdRemoveIcon(id.windbite);
+      brdRemoveIcon(nextid.windbite);
     }
 
     else if (logLine[3] == "Venomous Bite") {
       addStatus("venomousbite", logLine[5], 18000);
-      brdRemoveIcon(id.venomousbite);
+      brdRemoveIcon(nextid.venomousbite);
     }
 
     else if (logLine[3] == "Caustic Bite") {
       addStatus("venomousbite", logLine[5], 30000);
-      brdRemoveIcon(id.venomousbite);
+      brdRemoveIcon(nextid.venomousbite);
     }
 
     else if (logLine[3] == "Refulgent Arrow") {
-      brdRemoveIcon(id.straightershot);
+      brdRemoveIcon(nextid.straightershot);
       if (Math.min(statustime.venomousbite[statustime.venomousbite.indexOf(target.name) + 1], statustime.windbite[statustime.windbite.indexOf(target.name) + 1]) - Date.now() - brdBuffer - brdBuffer < 0) {
-        brdAddIcon(id.straightshot,icon.straightshot);
+        brdAddIcon(nextid.straightshot,icon.straightshot);
       }
     }
 
     if (logLine[3] == "Raging Strikes") {
       cooldowntime.ragingstrikes = Date.now() + recast.ragingstrikes;
-      removeIcon(id.ragingstrikes);
-      addIconWithTimeout("ragingstrikes",recast.ragingstrikes,id.ragingstrikes,icon.ragingstrikes);
+      removeIcon(nextid.ragingstrikes);
+      addIconWithTimeout("ragingstrikes",recast.ragingstrikes,nextid.ragingstrikes,icon.ragingstrikes);
     }
 
     else if (logLine[3] == "Barrage") {
       cooldowntime.barrage = Date.now() + recast.barrage;
-      removeIcon(id.barrage);
-      addIconWithTimeout("barrage",recast.barrage,id.barrage,icon.barrage);
+      removeIcon(nextid.barrage);
+      addIconWithTimeout("barrage",recast.barrage,nextid.barrage,icon.barrage);
     }
 
     else if (logLine[3] == "Battle Voice") {
@@ -260,14 +260,14 @@ function brdAction(logLine) {
 
     else if (logLine[3] == "Sidewinder") {
       cooldowntime.sidewinder = Date.now() + 60 * 1000;
-      removeIcon(id.sidewinder);
-      addIconWithTimeout("sidewinder",recast.sidewinder,id.sidewinder,icon.sidewinder);
+      removeIcon(nextid.sidewinder);
+      addIconWithTimeout("sidewinder",recast.sidewinder,nextid.sidewinder,icon.sidewinder);
     }
 
     else if (logLine[3] == "Mage's Ballad") {
       cooldowntime.ballad = Date.now() + recast.ballad;
       statustime.song = Date.now() + 30000;
-      removeIcon(id.ballad);
+      removeIcon(nextid.ballad);
       songRotation();
     }
 
@@ -281,20 +281,20 @@ function brdAction(logLine) {
         statustime.song = Date.now() + 30000;
       }
 
-      removeIcon(id.ballad);
+      removeIcon(nextid.ballad);
       songRotation();
     }
 
     else if (logLine[3] == "The Wanderer's Minuet") {
       cooldowntime.minuet = Date.now() + recast.minuet;
       statustime.song = Date.now() + 30000;
-      removeIcon(id.ballad);
+      removeIcon(nextid.ballad);
       songRotation();
     }
 
     else if (logLine[3] == "Empyreal Arrow") {
 
-      removeIcon(id.empyrealarrow);
+      removeIcon(nextid.empyrealarrow);
 
       if (previous.empyrealarrow
       && recast.empyrealarrow > Date.now() - previous.empyrealarrow
@@ -312,20 +312,20 @@ function brdAction(logLine) {
         if (recast.empyrealarrow < player.jobDetail.songMilliseconds) { // Check if EA should be reused within song duration
           if (player.jobDetail.songName = "Paeon"
           && empyrealarrowCount < 1) {
-            addIconWithTimeout("empyrealarrow",recast.empyrealarrow,id.empyrealarrow,icon.empyrealarrow);
+            addIconWithTimeout("empyrealarrow",recast.empyrealarrow,nextid.empyrealarrow,icon.empyrealarrow);
           }
           else if (player.jobDetail.songName = "Ballad") {
-            addIconWithTimeout("empyrealarrow",recast.empyrealarrow,id.empyrealarrow,icon.empyrealarrow);
+            addIconWithTimeout("empyrealarrow",recast.empyrealarrow,nextid.empyrealarrow,icon.empyrealarrow);
           }
           else if (player.jobDetail.songName = "Minuet"
           && empyrealarrowCount < 2) {
-            addIconWithTimeout("empyrealarrow",recast.empyrealarrow,id.empyrealarrow,icon.empyrealarrow);
+            addIconWithTimeout("empyrealarrow",recast.empyrealarrow,nextid.empyrealarrow,icon.empyrealarrow);
           }
         }
       }
 
       else {
-        addIconWithTimeout("empyrealarrow",recast.empyrealarrow,id.empyrealarrow,icon.empyrealarrow);
+        addIconWithTimeout("empyrealarrow",recast.empyrealarrow,nextid.empyrealarrow,icon.empyrealarrow);
       }
     }
 
@@ -355,12 +355,12 @@ function brdStatus(logLine) {
     if (logLine[3] == "Straight Shot") {
       if (logLine[2] == "gains") {
         statustime.straightshot = Date.now() + parseInt(logLine[5]) * 1000;
-        brdRemoveIcon(id.straightshot);
-        brdAddIconWithTimeout("straightshot",parseInt(logLine[5]) * 1000 - brdBuffer,id.straightshot,icon.straightshot);
+        brdRemoveIcon(nextid.straightshot);
+        brdAddIconWithTimeout("straightshot",parseInt(logLine[5]) * 1000 - brdBuffer,nextid.straightshot,icon.straightshot);
       }
       else if (logLine[2] == "loses") {
         delete statustime.straightshot;
-        brdAddIcon(id.straightshot,icon.straightshot);
+        brdAddIcon(nextid.straightshot,icon.straightshot);
       }
     }
 
@@ -369,15 +369,15 @@ function brdStatus(logLine) {
         statustime.straightershot = Date.now() + parseInt(logLine[5]) * 1000;
         if (player.level >= 70
         && Math.min(statustime.venomousbite[statustime.venomousbite.indexOf(target.name) + 1], statustime.windbite[statustime.windbite.indexOf(target.name) + 1]) - brdBuffer * 2 - Date.now() > 0) {
-          brdAddIcon(id.straightershot,icon.refulgentarrow);
+          brdAddIcon(nextid.straightershot,icon.refulgentarrow);
         }
         else {
-          brdAddIcon(id.straightshot,icon.straightshot);
+          brdAddIcon(nextid.straightshot,icon.straightshot);
         }
       }
       else if (logLine[2] == "loses") {
         delete statustime.straightershot;
-        brdRemoveIcon(id.straightershot);
+        brdRemoveIcon(nextid.straightershot);
       }
     }
 
@@ -428,11 +428,11 @@ function brdStatus(logLine) {
 
 function ironjawsTimeout() {
 
-  brdAddIconWithTimeout("ironjaws",Math.min(statustime.venomousbite[statustime.venomousbite.indexOf(target.name) + 1], statustime.windbite[statustime.windbite.indexOf(target.name) + 1]) - Date.now() - brdBuffer,id.ironjaws,icon.ironjaws); // Determine next Iron Jaws depending on how many seconds left of shortest dot
+  brdAddIconWithTimeout("ironjaws",Math.min(statustime.venomousbite[statustime.venomousbite.indexOf(target.name) + 1], statustime.windbite[statustime.windbite.indexOf(target.name) + 1]) - Date.now() - brdBuffer,nextid.ironjaws,icon.ironjaws); // Determine next Iron Jaws depending on how many seconds left of shortest dot
 
   if (Math.min(statustime.venomousbite[statustime.venomousbite.indexOf(target.name) + 1], statustime.windbite[statustime.windbite.indexOf(target.name) + 1]) - statustime.straightshot < brdBuffer
   && Math.min(statustime.venomousbite[statustime.venomousbite.indexOf(target.name) + 1], statustime.windbite[statustime.windbite.indexOf(target.name) + 1]) - statustime.straightshot >= 0) {
-    brdAddIconWithTimeout("straightshot",Math.min(statustime.venomousbite[statustime.venomousbite.indexOf(target.name) + 1], statustime.windbite[statustime.windbite.indexOf(target.name) + 1]) - brdBuffer - Date.now() - brdBuffer,id.straightshot,icon.straightshot); // Adjust Straight Shot countdown depending on if Straight Shot will expire at an awkward time
+    brdAddIconWithTimeout("straightshot",Math.min(statustime.venomousbite[statustime.venomousbite.indexOf(target.name) + 1], statustime.windbite[statustime.windbite.indexOf(target.name) + 1]) - brdBuffer - Date.now() - brdBuffer,nextid.straightshot,icon.straightshot); // Adjust Straight Shot countdown depending on if Straight Shot will expire at an awkward time
   }
 }
 
@@ -462,36 +462,36 @@ function songRotation() {
   // Reset EA count and start countdown if needed
   if (player.level >= 68) {
     empyrealarrowCount = 0;
-    addIconWithTimeout("empyrealarrow",cooldowntime.empyrealarrow - Date.now(),id.empyrealarrow,icon.empyrealarrow);
+    addIconWithTimeout("empyrealarrow",cooldowntime.empyrealarrow - Date.now(),nextid.empyrealarrow,icon.empyrealarrow);
   }
 
   // Shows next song
   if (player.level >= 52) {
     if (Math.max(cooldowntime.minuet,cooldowntime.barrage,cooldowntime.ragingstrikes) <= Math.min(cooldowntime.ballad, cooldowntime.paeon)) {
-      addIconWithTimeout("song",Math.max(statustime.song,cooldowntime.ragingstrikes,cooldowntime.barrage,cooldowntime.minuet) - Date.now(),id.ballad,icon.minuet);
+      addIconWithTimeout("song",Math.max(statustime.song,cooldowntime.ragingstrikes,cooldowntime.barrage,cooldowntime.minuet) - Date.now(),nextid.ballad,icon.minuet);
       addText("debug1",Math.max(statustime.song,cooldowntime.ragingstrikes,cooldowntime.barrage,cooldowntime.minuet) - Date.now())
     }
     else if (cooldowntime.ballad <= cooldowntime.paeon) {
-      addIconWithTimeout("song",Math.max(statustime.song,cooldowntime.ballad) - Date.now(),id.ballad,icon.ballad);
+      addIconWithTimeout("song",Math.max(statustime.song,cooldowntime.ballad) - Date.now(),nextid.ballad,icon.ballad);
       addText("debug1",Math.max(statustime.song,cooldowntime.ballad) - Date.now());
     }
     else {
-      addIconWithTimeout("song",Math.max(statustime.song,cooldowntime.paeon) - Date.now(),id.ballad,icon.paeon);
+      addIconWithTimeout("song",Math.max(statustime.song,cooldowntime.paeon) - Date.now(),nextid.ballad,icon.paeon);
       addText("debug1",Math.max(statustime.song,cooldowntime.paeon) - Date.now());
     }
   }
 
   else if (player.level >= 40) {
     if (cooldowntime.ballad < cooldowntime.paeon) {
-      addIconWithTimeout("song",Math.max(statustime.song, cooldowntime.ballad) - Date.now(),id.ballad,icon.ballad);
+      addIconWithTimeout("song",Math.max(statustime.song, cooldowntime.ballad) - Date.now(),nextid.ballad,icon.ballad);
     }
     else {
-      addIconWithTimeout("song",Math.max(statustime.song, cooldowntime.paeon) - Date.now(),id.ballad,icon.paeon);
+      addIconWithTimeout("song",Math.max(statustime.song, cooldowntime.paeon) - Date.now(),nextid.ballad,icon.paeon);
     }
   }
 
   else if (player.level >= 30) {
-    addIconWithTimeout("song",Math.max(statustime.song, cooldowntime.ballad) - Date.now(),id.ballad,icon.ballad);
+    addIconWithTimeout("song",Math.max(statustime.song, cooldowntime.ballad) - Date.now(),nextid.ballad,icon.ballad);
   }
 }
 
@@ -500,7 +500,7 @@ function songRotation() {
 function brdAddIcon(actionid,actionicon) {
   if (toggle.combat) {
     document.getElementById(actionid).src = "icons/" + actionicon + ".png";
-    removeIcon(id.heavyshot);
+    removeIcon(nextid.heavyshot);
   }
 }
 
@@ -512,12 +512,12 @@ function brdAddIconWithTimeout(action,delay,actionid,actionicon) {
 function brdRemoveIcon(actionid) {
   document.getElementById(actionid).src = "";
 
-  if (!document.getElementById(id.ironjaws).src.endsWith("png")
-  && !document.getElementById(id.straightshot).src.endsWith("png")
-  && !document.getElementById(id.windbite).src.endsWith("png")
-  && !document.getElementById(id.venomousbite).src.endsWith("png")
-  && !document.getElementById(id.openingstraightshot).src.endsWith("png")
-  && !document.getElementById(id.straightershot).src.endsWith("png") ) {
-    addIcon(id.heavyshot,icon.heavyshot);
+  if (!document.getElementById(nextid.ironjaws).src.endsWith("png")
+  && !document.getElementById(nextid.straightshot).src.endsWith("png")
+  && !document.getElementById(nextid.windbite).src.endsWith("png")
+  && !document.getElementById(nextid.venomousbite).src.endsWith("png")
+  && !document.getElementById(nextid.openingstraightshot).src.endsWith("png")
+  && !document.getElementById(nextid.straightershot).src.endsWith("png") ) {
+    addIcon(nextid.heavyshot,icon.heavyshot);
   }
 }

@@ -55,8 +55,8 @@
 //   && checkStatus("verstoneready", player.name) > 0
 //   && checkStatus("verfireready", player.name) > 0) {
 //     addText("debug1", "Ignore Verfire Ready, set up Verholy");
-//     addIcon(id.hardcast,icon.verstone);
-//     addIcon(id.dualcast,icon.verthunder);
+//     addIcon(nextid.hardcast,icon.verstone);
+//     addIcon(nextid.dualcast,icon.verthunder);
 //   }
 //
 //   else if (player.jobDetail.blackMana + 9 >= gauge.target
@@ -65,8 +65,8 @@
 //   && checkStatus("verfireready", player.name) > 0
 //   && checkStatus("verstoneready", player.name) > 0) {
 //     addText("debug1", "Ignore Verstone Ready, set up Verflare");
-//     addIcon(id.hardcast,icon.verfire);
-//     addIcon(id.dualcast,icon.veraero);
+//     addIcon(nextid.hardcast,icon.verfire);
+//     addIcon(nextid.dualcast,icon.veraero);
 //   }
 //
 //   else if (player.level >= 70
@@ -75,8 +75,8 @@
 //   && checkStatus("verfireready", player.name) > 0
 //   && checkStatus("verstoneready", player.name) < 0) {
 //     addText("debug1", "Set up Verholy");
-//     addIcon(id.hardcast,icon.verfire);
-//     addIcon(id.dualcast,icon.verthunder);
+//     addIcon(nextid.hardcast,icon.verfire);
+//     addIcon(nextid.dualcast,icon.verthunder);
 //   }
 //
 //   else if (player.jobDetail.blackMana >= gauge.target
@@ -84,8 +84,8 @@
 //   && checkStatus("verstoneready", player.name) > 0
 //   && checkStatus("verfireready", player.name) < 0) {
 //     addText("debug1", "Set up Verflare");
-//     addIcon(id.hardcast,icon.verstone);
-//     addIcon(id.dualcast,icon.veraero);
+//     addIcon(nextid.hardcast,icon.verstone);
+//     addIcon(nextid.dualcast,icon.veraero);
 //   }
 //
 //   else if (player.level >= 70
@@ -94,8 +94,8 @@
 //   && checkStatus("verstoneready", player.name) > 0
 //   && checkStatus("verfireready", player.name) < 0) {
 //     addText("debug1", "Set up Verholy");
-//     addIcon(id.hardcast,icon.verstone);
-//     addIcon(id.dualcast,icon.verthunder);
+//     addIcon(nextid.hardcast,icon.verstone);
+//     addIcon(nextid.dualcast,icon.verthunder);
 //   }
 //
 //   else if (player.jobDetail.blackMana + 9 >= gauge.target
@@ -103,8 +103,8 @@
 //   && checkStatus("verfireready", player.name) > 0
 //   && checkStatus("verstoneready", player.name) < 0) {
 //     addText("debug1", "Set up Verflare");
-//     addIcon(id.hardcast,icon.verfire);
-//     addIcon(id.dualcast,icon.veraero);
+//     addIcon(nextid.hardcast,icon.verfire);
+//     addIcon(nextid.dualcast,icon.veraero);
 //   }
 //
 //   else if (player.level >= 70
@@ -113,8 +113,8 @@
 //   && checkCooldown("swiftcast", player.name) < 0
 //   && checkStatus("verstoneready", player.name) < 0) {
 //     addText("debug1", "Set up Verholy");
-//     addIcon(id.hardcast,icon.swiftcast);
-//     addIcon(id.dualcast,icon.verthunder);
+//     addIcon(nextid.hardcast,icon.swiftcast);
+//     addIcon(nextid.dualcast,icon.verthunder);
 //   }
 //
 //   else if (player.jobDetail.blackMana >= gauge.target
@@ -122,8 +122,8 @@
 //   && checkCooldown("swiftcast", player.name) < 0
 //   && checkStatus("verfireready", player.name) < 0) {
 //     addText("debug1", "Set up Verflare");
-//     addIcon(id.hardcast,icon.swiftcast);
-//     addIcon(id.dualcast,icon.veraero);
+//     addIcon(nextid.hardcast,icon.swiftcast);
+//     addIcon(nextid.dualcast,icon.veraero);
 //   }
 //
 //   else if (player.level >= 70
@@ -131,16 +131,16 @@
 //   && Math.min(player.jobDetail.blackMana + 14, gauge.cap)> player.jobDetail.whiteMana + 3
 //   && checkStatus("verstoneready", player.name) < 0) {
 //     addText("debug1", "Set up Verholy");
-//     addIcon(id.hardcast,icon.jolt);
-//     addIcon(id.dualcast,icon.verthunder);
+//     addIcon(nextid.hardcast,icon.jolt);
+//     addIcon(nextid.dualcast,icon.verthunder);
 //   }
 //
 //   else if (player.jobDetail.blackMana + 3 >= gauge.target
 //   && Math.min(player.jobDetail.whiteMana + 14, gauge.cap)> player.jobDetail.blackMana + 3
 //   && checkStatus("verfireready", player.name) < 0) {
 //     addText("debug1", "Set up Verflare");
-//     addIcon(id.hardcast,icon.jolt);
-//     addIcon(id.dualcast,icon.veraero);
+//     addIcon(nextid.hardcast,icon.jolt);
+//     addIcon(nextid.dualcast,icon.veraero);
 //   }
 //
 //   // Unfixable mana situations
@@ -178,13 +178,13 @@
 //   else if (checkStatus("verfireready", player.name) > 5000 && checkStatus("verstoneready", player.name) > 5000) {
 //     if (player.jobDetail.blackMana >= player.jobDetail.whiteMana) {
 //       addText("debug1", "Using Verstone");
-//       addIcon(id.hardcast,icon.verstone);
-//       addIcon(id.dualcast,icon.veraero);
+//       addIcon(nextid.hardcast,icon.verstone);
+//       addIcon(nextid.dualcast,icon.veraero);
 //     }
 //     else {
 //       addText("debug1", "Using Verfire");
-//       addIcon(id.hardcast,icon.verfire);
-//       addIcon(id.dualcast,icon.verthunder);
+//       addIcon(nextid.hardcast,icon.verfire);
+//       addIcon(nextid.dualcast,icon.verthunder);
 //     }
 //   }
 //
@@ -194,18 +194,18 @@
 //
 //     if (Math.min(player.jobDetail.blackMana + 9, 100) - player.jobDetail.whiteMana > 30) {
 //       addText("debug1", "Ignoring Verfire to keep balance");
-//       addIcon(id.hardcast,icon.jolt);
-//       addIcon(id.dualcast,icon.veraero);
+//       addIcon(nextid.hardcast,icon.jolt);
+//       addIcon(nextid.dualcast,icon.veraero);
 //     }
 //
 //     else if (player.jobDetail.blackMana + 9 < player.jobDetail.whiteMana) {
-//       addIcon(id.hardcast,icon.verfire);
-//       addIcon(id.dualcast,icon.verthunder);
+//       addIcon(nextid.hardcast,icon.verfire);
+//       addIcon(nextid.dualcast,icon.verthunder);
 //     }
 //
 //     else {
-//       addIcon(id.hardcast,icon.verfire);
-//       addIcon(id.dualcast,icon.veraero);
+//       addIcon(nextid.hardcast,icon.verfire);
+//       addIcon(nextid.dualcast,icon.veraero);
 //     }
 //   }
 //
@@ -217,18 +217,18 @@
 //
 //     if (Math.min(player.jobDetail.whiteMana + 9, 100) - player.jobDetail.blackMana > 30) {
 //       addText("debug1", "Ignoring Verstone to keep balance");
-//       addIcon(id.hardcast,icon.jolt);
-//       addIcon(id.dualcast,icon.verthunder);
+//       addIcon(nextid.hardcast,icon.jolt);
+//       addIcon(nextid.dualcast,icon.verthunder);
 //     }
 //
 //     else if (player.jobDetail.whiteMana + 9 < player.jobDetail.blackMana) {
-//       addIcon(id.hardcast,icon.verstone);
-//       addIcon(id.dualcast,icon.veraero);
+//       addIcon(nextid.hardcast,icon.verstone);
+//       addIcon(nextid.dualcast,icon.veraero);
 //     }
 //
 //     else {
-//       addIcon(id.hardcast,icon.verstone);
-//       addIcon(id.dualcast,icon.verthunder);
+//       addIcon(nextid.hardcast,icon.verstone);
+//       addIcon(nextid.dualcast,icon.verthunder);
 //     }
 //   }
 //
@@ -238,24 +238,24 @@
 //
 //     addText("debug1", "Using Swiftcast");
 //
-//     addIcon(id.hardcast,icon.swiftcast);
+//     addIcon(nextid.hardcast,icon.swiftcast);
 //
 //     if (player.jobDetail.blackMana + 11 == player.jobDetail.whiteMana) {
 //       addText("debug1", "Avoiding equal mana with Swiftcast");
-//       addIcon(id.dualcast,icon.veraero);
+//       addIcon(nextid.dualcast,icon.veraero);
 //     }
 //
 //     else if (player.jobDetail.blackMana == player.jobDetail.whiteMana + 11) {
 //       addText("debug1", "Avoiding equal mana with Swiftcast");
-//       addIcon(id.dualcast,icon.verthunder);
+//       addIcon(nextid.dualcast,icon.verthunder);
 //     }
 //
 //     else if (player.jobDetail.blackMana >= player.jobDetail.whiteMana) {
-//       addIcon(id.dualcast,icon.veraero);
+//       addIcon(nextid.dualcast,icon.veraero);
 //     }
 //
 //     else {
-//       addIcon(id.dualcast,icon.verthunder);
+//       addIcon(nextid.dualcast,icon.verthunder);
 //     }
 //   }
 //
@@ -264,13 +264,13 @@
 //   else {
 //     addText("debug1", "Using Jolt");
 //
-//     addIcon(id.hardcast,icon.jolt);
+//     addIcon(nextid.hardcast,icon.jolt);
 //
 //     if (player.jobDetail.blackMana >= player.jobDetail.whiteMana) {
-//       addIcon(id.dualcast,icon.veraero);
+//       addIcon(nextid.dualcast,icon.veraero);
 //     }
 //     else {
-//       addIcon(id.dualcast,icon.verthunder);
+//       addIcon(nextid.dualcast,icon.verthunder);
 //     }
 //   }
 // }
