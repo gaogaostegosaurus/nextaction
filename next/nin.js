@@ -221,7 +221,7 @@ function ninStatus() {
 
     if ("Mudra" == statusGroups.statusname) {
       if ("gains" == statusGroups.gainsloses) {
-        addStatus("mudra", statusGroups.targetID, statusGroups.duration * 1000);
+        addStatus("mudra", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
       }
       else if ("loses" == statusGroups.gainsloses) {
         removeStatus("mudra", player.ID);
@@ -231,7 +231,7 @@ function ninStatus() {
 
     else if ("Doton" == statusGroups.statusname) {
       if ("gains" == statusGroups.gainsloses) {
-        addStatus("doton", statusGroups.targetID, statusGroups.duration * 1000);
+        addStatus("doton", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
       }
       else if ("loses" == statusGroups.gainsloses) {
         removeStatus("doton", statusGroups.targetID);
@@ -240,7 +240,7 @@ function ninStatus() {
 
     else if ("Suiton" == statusGroups.statusname) {
       if ("gains" == statusGroups.gainsloses) {
-        addStatus("suiton", statusGroups.targetID, statusGroups.duration * 1000);
+        addStatus("suiton", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
       }
       else if ("loses" == statusGroups.gainsloses) {
         clearTimeout(timeout.trickattack);
@@ -251,7 +251,7 @@ function ninStatus() {
 
     else if ("Kassatsu" == statusGroups.statusname) {
       if ("gains" == statusGroups.gainsloses) {
-        addStatus("kassatsu", statusGroups.targetID, statusGroups.duration * 1000);
+        addStatus("kassatsu", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
       }
       else if ("loses" == statusGroups.gainsloses) {
         removeStatus("kassatsu", statusGroups.targetID);
@@ -260,7 +260,7 @@ function ninStatus() {
 
     else if ("Ten Chi Jin" == statusGroups.statusname) {
       if ("gains" == statusGroups.gainsloses) {
-        addStatus("tenchijin", statusGroups.targetID, statusGroups.duration * 1000);
+        addStatus("tenchijin", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
       }
       else if ("loses" == statusGroups.gainsloses) {
         removeStatus("tenchijin", statusGroups.targetID);
@@ -272,7 +272,7 @@ function ninStatus() {
   else {
     if ("Shadow Fang" == statusGroups.statusname) {
       if ("gains" == statusGroups.gainsloses) {
-        addStatus("shadowfang", statusGroups.targetID, statusGroups.duration * 1000);
+        addStatus("shadowfang", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
       }
       else if ("loses" == statusGroups.gainsloses) {
         removeStatus("shadowfang", statusGroups.targetID);
