@@ -245,13 +245,13 @@ function brdAction(logLine) {
     if (logLine[3] == "Raging Strikes") {
       cooldowntime.ragingstrikes = Date.now() + recast.ragingstrikes;
       removeIcon(nextid.ragingstrikes);
-      addIconWithTimeout("ragingstrikes",recast.ragingstrikes,nextid.ragingstrikes,icon.ragingstrikes);
+      addIconTimeout("ragingstrikes",recast.ragingstrikes,nextid.ragingstrikes,icon.ragingstrikes);
     }
 
     else if (logLine[3] == "Barrage") {
       cooldowntime.barrage = Date.now() + recast.barrage;
       removeIcon(nextid.barrage);
-      addIconWithTimeout("barrage",recast.barrage,nextid.barrage,icon.barrage);
+      addIconTimeout("barrage",recast.barrage,nextid.barrage,icon.barrage);
     }
 
     else if (logLine[3] == "Battle Voice") {
@@ -261,7 +261,7 @@ function brdAction(logLine) {
     else if (logLine[3] == "Sidewinder") {
       cooldowntime.sidewinder = Date.now() + 60 * 1000;
       removeIcon(nextid.sidewinder);
-      addIconWithTimeout("sidewinder",recast.sidewinder,nextid.sidewinder,icon.sidewinder);
+      addIconTimeout("sidewinder",recast.sidewinder,nextid.sidewinder,icon.sidewinder);
     }
 
     else if (logLine[3] == "Mage's Ballad") {
@@ -312,20 +312,20 @@ function brdAction(logLine) {
         if (recast.empyrealarrow < player.jobDetail.songMilliseconds) { // Check if EA should be reused within song duration
           if (player.jobDetail.songName = "Paeon"
           && empyrealarrowCount < 1) {
-            addIconWithTimeout("empyrealarrow",recast.empyrealarrow,nextid.empyrealarrow,icon.empyrealarrow);
+            addIconTimeout("empyrealarrow",recast.empyrealarrow,nextid.empyrealarrow,icon.empyrealarrow);
           }
           else if (player.jobDetail.songName = "Ballad") {
-            addIconWithTimeout("empyrealarrow",recast.empyrealarrow,nextid.empyrealarrow,icon.empyrealarrow);
+            addIconTimeout("empyrealarrow",recast.empyrealarrow,nextid.empyrealarrow,icon.empyrealarrow);
           }
           else if (player.jobDetail.songName = "Minuet"
           && empyrealarrowCount < 2) {
-            addIconWithTimeout("empyrealarrow",recast.empyrealarrow,nextid.empyrealarrow,icon.empyrealarrow);
+            addIconTimeout("empyrealarrow",recast.empyrealarrow,nextid.empyrealarrow,icon.empyrealarrow);
           }
         }
       }
 
       else {
-        addIconWithTimeout("empyrealarrow",recast.empyrealarrow,nextid.empyrealarrow,icon.empyrealarrow);
+        addIconTimeout("empyrealarrow",recast.empyrealarrow,nextid.empyrealarrow,icon.empyrealarrow);
       }
     }
 
@@ -356,7 +356,7 @@ function brdStatus(logLine) {
       if (logLine[2] == "gains") {
         statustime.straightshot = Date.now() + parseInt(logLine[5]) * 1000;
         brdRemoveIcon(nextid.straightshot);
-        brdAddIconWithTimeout("straightshot",parseInt(logLine[5]) * 1000 - brdBuffer,nextid.straightshot,icon.straightshot);
+        brdaddIconTimeout("straightshot",parseInt(logLine[5]) * 1000 - brdBuffer,nextid.straightshot,icon.straightshot);
       }
       else if (logLine[2] == "loses") {
         delete statustime.straightshot;
@@ -428,11 +428,11 @@ function brdStatus(logLine) {
 
 function ironjawsTimeout() {
 
-  brdAddIconWithTimeout("ironjaws",Math.min(statustime.venomousbite[statustime.venomousbite.indexOf(target.name) + 1], statustime.windbite[statustime.windbite.indexOf(target.name) + 1]) - Date.now() - brdBuffer,nextid.ironjaws,icon.ironjaws); // Determine next Iron Jaws depending on how many seconds left of shortest dot
+  brdaddIconTimeout("ironjaws",Math.min(statustime.venomousbite[statustime.venomousbite.indexOf(target.name) + 1], statustime.windbite[statustime.windbite.indexOf(target.name) + 1]) - Date.now() - brdBuffer,nextid.ironjaws,icon.ironjaws); // Determine next Iron Jaws depending on how many seconds left of shortest dot
 
   if (Math.min(statustime.venomousbite[statustime.venomousbite.indexOf(target.name) + 1], statustime.windbite[statustime.windbite.indexOf(target.name) + 1]) - statustime.straightshot < brdBuffer
   && Math.min(statustime.venomousbite[statustime.venomousbite.indexOf(target.name) + 1], statustime.windbite[statustime.windbite.indexOf(target.name) + 1]) - statustime.straightshot >= 0) {
-    brdAddIconWithTimeout("straightshot",Math.min(statustime.venomousbite[statustime.venomousbite.indexOf(target.name) + 1], statustime.windbite[statustime.windbite.indexOf(target.name) + 1]) - brdBuffer - Date.now() - brdBuffer,nextid.straightshot,icon.straightshot); // Adjust Straight Shot countdown depending on if Straight Shot will expire at an awkward time
+    brdaddIconTimeout("straightshot",Math.min(statustime.venomousbite[statustime.venomousbite.indexOf(target.name) + 1], statustime.windbite[statustime.windbite.indexOf(target.name) + 1]) - brdBuffer - Date.now() - brdBuffer,nextid.straightshot,icon.straightshot); // Adjust Straight Shot countdown depending on if Straight Shot will expire at an awkward time
   }
 }
 
@@ -462,36 +462,36 @@ function songRotation() {
   // Reset EA count and start countdown if needed
   if (player.level >= 68) {
     empyrealarrowCount = 0;
-    addIconWithTimeout("empyrealarrow",cooldowntime.empyrealarrow - Date.now(),nextid.empyrealarrow,icon.empyrealarrow);
+    addIconTimeout("empyrealarrow",cooldowntime.empyrealarrow - Date.now(),nextid.empyrealarrow,icon.empyrealarrow);
   }
 
   // Shows next song
   if (player.level >= 52) {
     if (Math.max(cooldowntime.minuet,cooldowntime.barrage,cooldowntime.ragingstrikes) <= Math.min(cooldowntime.ballad, cooldowntime.paeon)) {
-      addIconWithTimeout("song",Math.max(statustime.song,cooldowntime.ragingstrikes,cooldowntime.barrage,cooldowntime.minuet) - Date.now(),nextid.ballad,icon.minuet);
+      addIconTimeout("song",Math.max(statustime.song,cooldowntime.ragingstrikes,cooldowntime.barrage,cooldowntime.minuet) - Date.now(),nextid.ballad,icon.minuet);
       addText("debug1",Math.max(statustime.song,cooldowntime.ragingstrikes,cooldowntime.barrage,cooldowntime.minuet) - Date.now())
     }
     else if (cooldowntime.ballad <= cooldowntime.paeon) {
-      addIconWithTimeout("song",Math.max(statustime.song,cooldowntime.ballad) - Date.now(),nextid.ballad,icon.ballad);
+      addIconTimeout("song",Math.max(statustime.song,cooldowntime.ballad) - Date.now(),nextid.ballad,icon.ballad);
       addText("debug1",Math.max(statustime.song,cooldowntime.ballad) - Date.now());
     }
     else {
-      addIconWithTimeout("song",Math.max(statustime.song,cooldowntime.paeon) - Date.now(),nextid.ballad,icon.paeon);
+      addIconTimeout("song",Math.max(statustime.song,cooldowntime.paeon) - Date.now(),nextid.ballad,icon.paeon);
       addText("debug1",Math.max(statustime.song,cooldowntime.paeon) - Date.now());
     }
   }
 
   else if (player.level >= 40) {
     if (cooldowntime.ballad < cooldowntime.paeon) {
-      addIconWithTimeout("song",Math.max(statustime.song, cooldowntime.ballad) - Date.now(),nextid.ballad,icon.ballad);
+      addIconTimeout("song",Math.max(statustime.song, cooldowntime.ballad) - Date.now(),nextid.ballad,icon.ballad);
     }
     else {
-      addIconWithTimeout("song",Math.max(statustime.song, cooldowntime.paeon) - Date.now(),nextid.ballad,icon.paeon);
+      addIconTimeout("song",Math.max(statustime.song, cooldowntime.paeon) - Date.now(),nextid.ballad,icon.paeon);
     }
   }
 
   else if (player.level >= 30) {
-    addIconWithTimeout("song",Math.max(statustime.song, cooldowntime.ballad) - Date.now(),nextid.ballad,icon.ballad);
+    addIconTimeout("song",Math.max(statustime.song, cooldowntime.ballad) - Date.now(),nextid.ballad,icon.ballad);
   }
 }
 
@@ -504,7 +504,7 @@ function brdAddIcon(actionid,actionicon) {
   }
 }
 
-function brdAddIconWithTimeout(action,delay,actionid,actionicon) {
+function brdaddIconTimeout(action,delay,actionid,actionicon) {
   clearTimeout(timeout[action]);
   timeout[action] = setTimeout(brdAddIcon, delay, actionid, actionicon);
 }

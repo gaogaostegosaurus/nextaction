@@ -357,7 +357,7 @@ function addIconBlink(nextid, actionicon) {
   document.getElementById("next" + nextid).style.display = "table-cell";
 }
 
-function addIconWithTimeout(action,delay,nextid,actionicon) {
+function addIconTimeout(action, delay, nextid, actionicon) {
   clearTimeout(timeout[action]);
   timeout[action] = setTimeout(addIcon, delay, nextid, actionicon);
 }
