@@ -22,6 +22,18 @@ recast.automatonqueen = recast.rookautoturret;
 recast.tactician = 180000;
 recast.wildfire = 120000;
 
+// NIN
+recast.hide = 20000;
+recast.mug = 110000;
+recast.ninjutsu = 20000;
+recast.trickattack = 60000;
+recast.ninjutsu = 20000;
+recast.kassatsu = 60000;
+recast.dreamwithinadream = 60000;
+recast.tenchijin = 100000;
+recast.meisui = 60000;
+recast.bunshin = 110000;
+
 // RDM
 recast.acceleration = 35000;
 recast.contresixte = 45000;

@@ -3,6 +3,16 @@
 // MCH
 duration.hypercharge = 10000;
 
+// NIN
+duration.shadowfang = 24000;
+duration.mudra = 5000;
+duration.doton = 24000;
+duration.suiton = 20000;
+duration.kassatsu = 15000;
+duration.assassinateready = 10000;
+duration.tenchijin = 10000;
+duration.bunshin = 15000;
+
 // SAM
 duration.jinpu = 40000;
 duration.kaiten = 10000;
