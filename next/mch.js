@@ -31,9 +31,9 @@ function mchJobChange() {
   id.splitshot = 4;
   id.heatedsplitshot = id.splitshot;
   id.spreadshot = id.splitshot;
-  id.slugshot = 4;
+  id.slugshot = 5;
   id.heatedslugshot = id.slugshot;
-  id.cleanshot = 5;
+  id.cleanshot = 6;
   id.heatedcleanshot = id.cleanshot;
   id.rookautoturret = 10;
   id.rookoverdrive = id.rookautoturret;
@@ -48,11 +48,21 @@ function mchJobChange() {
   id.flamethrower = 16;
   // id.tactician = 99;
 
+  // Set up action changes from level
+
   if (player.level >= 76) {
     icon.hotshot = icon.airanchor;
   }
   else {
     icon.hotshot = "003003";
+  }
+
+  if (player.level >= 72
+  && toggle.aoe) {
+    icon.drill = icon.bioblaster;
+  }
+  else {
+    icon.drill = "003043";
   }
 
   if (player.level >= 64) {
@@ -75,6 +85,82 @@ function mchJobChange() {
   else {
     icon.splitshot = "003001";
   }
+
+  if (player.level >= 52
+  && toggle.aoe) {
+    icon.heatblast = icon.autocrossbow;
+  }
+  else {
+    icon.heatblast = "003030";
+  }
+
+  // Show available cooldowns
+
+  if (player.level >= 4
+  && checkCooldown("hotshot", player.ID) < 0) {
+    addIconBlink(id.hotshot, icon.hotshot);
+  }
+  else {
+    removeIcon(id.hotshot);
+  }
+
+  if (player.level >= 10
+  && checkCooldown("reassemble", player.ID) < 0) {
+    addIconBlink(id.reassemble, icon.reassemble);
+  }
+  else {
+    removeIcon(id.reassemble);
+  }
+
+  if (player.level >= 15
+  && checkCooldown("gaussround1", player.ID) < 0) {
+    addIconBlink(id.gaussround, icon.gaussround);
+  }
+  else {
+    removeIcon(id.gaussround);
+  }
+
+  if (player.level >= 45
+  && checkCooldown("wildfire", player.ID) < 0) {
+    addIconBlink(id.wildfire, icon.wildfire);
+  }
+  else {
+    removeIcon(id.wildfire);
+  }
+
+  if (player.level >= 50
+  && checkCooldown("ricochet1", player.ID) < 0) {
+    addIconBlink(id.ricochet, icon.ricochet);
+  }
+  else {
+    removeIcon(id.ricochet);
+  }
+
+  if (player.level >= 58
+  && checkCooldown("drill", player.ID) < 0) {
+    addIconBlink(id.drill, icon.drill);
+  }
+  else {
+    removeIcon(id.drill);
+  }
+
+  if (player.level >= 66
+  && checkCooldown("barrelstabilizer", player.ID) < 0) {
+    addIconBlink(id.barrelstabilizer, icon.barrelstabilizer);
+  }
+  else {
+    removeIcon(id.barrelstabilizer);
+  }
+
+  if (player.level >= 70
+  && toggle.aoe
+  && checkCooldown("flamethrower", player.ID) < 0) {
+    addIconBlink(id.flamethrower, icon.flamethrower);
+  }
+  else {
+    removeIcon(id.flamethrower);
+  }
+
 }
 
 
@@ -90,12 +176,27 @@ function mchAction() {
       "Spread Shot", "Auto Crossbow", "Flamethrower", "Bioblaster"
     ].indexOf(actionGroups.actionname) > -1) {
       toggle.aoe = Date.now();
+      if (player.level >= 72) {
+        icon.drill = icon.bioblaster;
+      }
+      if (player.level >= 52) {
+        icon.heatblast = icon.autocrossbow;
+      }
+      if (player.level >= 70
+      && checkCooldown("flamethrower", player.ID) < 0) {
+        addIconBlink(id.flamethrower, icon.flamethrower);
+      }
+      addIconBlinkTimeout("drill", checkCooldown("drill", player.ID), id.drill, icon.drill); // Not sure if necessary
     }
     else if ([
       "Split Shot", "Slug Shot", "Clean Shot", "Heated Split Shot",
       "Heated Slug Shot", "Heated Clean Shot", "Hot Shot", "Heat Blast"
     ].indexOf(actionGroups.actionname) > -1) {
       delete toggle.aoe;
+      icon.drill = "003043";
+      icon.heatblast = "003030";
+      addIconBlinkTimeout("drill", checkCooldown("drill", player.ID), id.drill, icon.drill);
+      removeIcon(id.flamethrower);
     }
 
     // These actions don't interrupt combos
@@ -106,7 +207,9 @@ function mchAction() {
         recast.hotshot = Date.now() - previous.hotshot;
       }
       previous.hotshot = Date.now();
+      removeIcon(id.hotshot);
       addCooldown("hotshot", player.ID, recast.hotshot);
+      addIconBlinkTimeout("hotshot", recast.hotshot, id.hotshot, icon.hotshot);
       mchBattery();
     }
 
@@ -116,7 +219,9 @@ function mchAction() {
         recast.drill = Date.now() - previous.drill;
       }
       previous.drill = Date.now();
+      removeIcon(id.drill);
       addCooldown("drill", player.ID, recast.drill);
+      addIconBlinkTimeout("drill", recast.drill, id.drill, icon.drill);
     }
 
     else if (["Heat Blast", "Auto Crossbow"].indexOf(actionGroups.actionname) > -1) {
@@ -213,7 +318,7 @@ function mchAction() {
     // Combo
 
     else if (["Split Shot", "Heated Split Shot"].indexOf(actionGroups.actionname) > -1
-    && logLine[6].length >= 2) {
+    && actionGroups.result.length >= 2) {
       if (!next.combo) {
        mchCombo();
       }
@@ -224,7 +329,7 @@ function mchAction() {
     }
 
     else if (["Slug Shot", "Heated Slug Shot"].indexOf(actionGroups.actionname) > -1
-    && logLine[6].length == 8) {
+    && actionGroups.result.length == 8) {
       removeIcon(id.slugshot);
       mchHeat();
       if (player.level < 26) {
@@ -238,7 +343,7 @@ function mchAction() {
     }
 
     else if (["Clean Shot", "Heated Clean Shot"].indexOf(actionGroups.actionname) > -1
-    && logLine[6].length == 8) {
+    && actionGroups.result.length == 8) {
       removeIcon(id.cleanshot);
       mchHeat();
       mchBattery();
@@ -247,7 +352,7 @@ function mchAction() {
       mchCombo();
     }
 
-    else if (["Spread Shot" == actionGroups.actionname) {
+    else if ("Spread Shot" == actionGroups.actionname) {
       removeIcon(id.spreadshot);
       mchHeat();
       delete toggle.combo;
@@ -303,7 +408,7 @@ function mchHeat() {
   if (player.heat >= 50
   && checkCooldown("hypercharge", player.ID) < 2500
   && checkCooldown("drill", player.ID) > 12500
-  && (player.level >= 76 && checkCooldown("hotshot", player.ID) > 12500) {
+  && (player.level >= 76 && checkCooldown("hotshot", player.ID) > 12500)) {
     addIconBlink(id.hypercharge, icon.hypercharge);
   }
   else {
