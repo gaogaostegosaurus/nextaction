@@ -41,6 +41,14 @@ function ninJobChange() {
   id.bhavacakra = id.hellfrogmedium;
   id.tenchijin = 12;
 
+  count.aoe = 1;
+  previous.deathblossom = 0;
+  previous.hakkemujinsatsu = 0;
+  previous.katon = 0; // Includes Goka Mekkyaku
+  previous.hellfrogmedium = 0;
+
+  ninCombo();
+
 }
 
 function ninAction(logLine) {
@@ -94,13 +102,13 @@ function ninAction(logLine) {
     }
 
     else if (["Katon", "Goka Mekkyaku"].indexOf(actionGroups.actionname) > -1) {
-      if (previous.katon - Date.now() > 1000) {
+      if (Date.now() - previous.katon > 1000) {
+        previous.katon = Date.now()
         count.aoe = 1;
       }
       else {
         count.aoe = count.aoe + 1;
       }
-      previous.katon = Date.now()
     }
 
     else if ("Kassatsu" == actionGroups.actionname) {
@@ -128,13 +136,13 @@ function ninAction(logLine) {
     }
 
     else if ("Hellfrog Medium" == actionGroups.actionname) {
-      if (previous.hellfrogmedium - Date.now() > 1000) {
+      if (Date.now() - previous.hellfrogmedium > 1000) {
+        previous.hellfrogmedium = Date.now()
         count.aoe = 1;
       }
       else {
         count.aoe = count.aoe + 1;
       }
-      previous.hellfrogmedium = Date.now()
       removeIcon(id.hellfrogmedium);
     }
 
@@ -175,13 +183,13 @@ function ninAction(logLine) {
 
     else if ("Death Blossom" == actionGroups.actionname
     && actionGroups.result.length >= 2) {
-      if (previous.deathblossom - Date.now() > 1000) {
+      if (Date.now() - previous.deathblossom > 1000) {
+        previous.deathblossom = Date.now()
         count.aoe = 1;
       }
       else {
         count.aoe = count.aoe + 1;
       }
-      previous.deathblossom = Date.now()
       ninCombo();
       removeIcon(id.deathblossom);
       if (player.level < 52) {
@@ -191,13 +199,13 @@ function ninAction(logLine) {
 
     else if ("Hakke Mujinsatsu" == actionGroups.actionname
     && actionGroups.result.length == 8) {
-      if (previous.hakkemujinsatsu - Date.now() > 1000) {
+      if (Date.now() - previous.hakkemujinsatsu > 1000) {
+        previous.hakkemujinsatsu = Date.now()
         count.aoe = 1;
       }
       else {
         count.aoe = count.aoe + 1;
       }
-      previous.hakkemujinsatsu = Date.now()
       ninCombo();
     }
 

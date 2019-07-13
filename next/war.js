@@ -44,11 +44,15 @@ function warJobChange() {
   id.vengeance = id.rampart;
   id.rawintuition = id.rampart;
   id.mitigation = id.rampart;
-
   id.infuriate = "11";
   id.berserk = "12";
   id.innerrelease = id.berserk;
   id.upheaval = id.berserk;
+
+  count.aoe = 1;
+  previous.overpower = 0;
+  previous.mythriltempest = 0;
+  previous.steelcyclone = 0;
 
   if (player.level >= 54) {
     icon.innerbeast = icon.fellcleave;
@@ -115,19 +119,12 @@ function warAction(logLine) {
 
     // Toggle AoE
 
-    if (["Overpower", "Mythril Tempest", "Steel Cyclone", "Decimate"].indexOf(logLine[3]) > -1) {
-      toggle.aoe = Date.now();
-    }
-    else if (["Storm\'s Path", "Fell Cleave", "Inner Chaos"].indexOf(logLine[3]) > -1) {
-      delete toggle.aoe;
-    }
-    else if (logLine[3] == "Chaotic Cyclone"
-    && player.level >= 80) {
-      toggle.aoe = Date.now();
+    if (["Storm\'s Path", "Fell Cleave", "Inner Chaos"].indexOf(logLine[3]) > -1) {
+      count.aoe = 1;
     }
     else if (logLine[3] == "Inner Beast"
     && player.level >= 45) {
-      delete toggle.aoe;
+      count.aoe = 1;
     }
 
     // These actions don't break combo
@@ -171,13 +168,13 @@ function warAction(logLine) {
       // Code treats Infuriate like two different skills to juggle the charges.
 
       if (checkCooldown("infuriate2", player.ID) < 0) {
+        addCooldown("infuriate1", player.ID, -1);
         addCooldown("infuriate2", player.ID, recast.infuriate);
-        addCooldown("infuriate1", player.ID, 0);
       }
       else {
         removeIcon(id.infuriate);
+        addCooldown("infuriate1", player.ID, checkCooldown("infuriate2", player.ID));
         addCooldown("infuriate2", player.ID, checkCooldown("infuriate2", player.ID) + recast.infuriate);
-        addCooldown("infuriate1", player.ID, checkCooldown("infuriate2", player.ID) - recast.infuriate);
         addIconBlinkTimeout("infuriate", checkCooldown("infuriate1", player.ID), id.infuriate, icon.infuriate);
       }
       warGauge();
@@ -200,19 +197,22 @@ function warAction(logLine) {
     }
 
     else if (logLine[3] == "Steel Cyclone" || logLine[3] == "Decimate" || logLine[3] == "Chaotic Cyclone") {
+      if (Date.now() - previous.steelcyclone > 1000) {
 
-      if (player.level >= 66) { // Enhanced Infuriate
+        count.aoe = 1;
+        previous.steelcyclone = Date.now();
 
-        // Me: "WHY ARE MY COOLDOWNS SCREWED UP!!??!?!1/1/1/1"
-        // Since 1 line is created for every AoE hit, this is needed to prevent every line from triggering Enhanced Infuriate
-
-        if (!previous.steelcyclone || Date.now() - previous.steelcyclone > 1000) {
-          previous.steelcyclone = Date.now();
+        if (player.level >= 66) { // Enhanced Infuriate
+          // Me: "WHY ARE MY COOLDOWNS SCREWED UP!!??!?!1/1/1/1"
+          // Since 1 line is created for every AoE hit, this is needed to prevent every line from triggering Enhanced Infuriate
           addCooldown("infuriate1", player.ID, checkCooldown("infuriate1", player.ID) - 5000);
           addCooldown("infuriate2", player.ID, checkCooldown("infuriate2", player.ID) - 5000);
           removeIcon(id.infuriate);
           addIconBlinkTimeout("infuriate",checkCooldown("infuriate1", player.ID),id.infuriate,icon.infuriate);
         }
+      }
+      else {
+        count.aoe = count.aoe + 1;
       }
       removeIcon(id.innerbeast);
       warGauge();
@@ -254,6 +254,13 @@ function warAction(logLine) {
 
       else if (logLine[3] == "Overpower"
       && logLine[6].length >= 2) {
+        if (Date.now() - previous.overpower > 1000) {
+          previous.overpower = Date.now();
+          count.aoe = 1;
+        }
+        else {
+          count.aoe = count.aoe + 1;
+        }
         if (player.level >= 40) {
           mythriltempestCombo();
           removeIcon(id.overpower);
@@ -263,10 +270,15 @@ function warAction(logLine) {
       else if (logLine[3] == "Mythril Tempest"
       && logLine[6].length >= 8) {
 
-        if (!previous.mythriltempest || Date.now() - previous.mythriltempest > 1000
-        && checkStatus("stormseye", player.ID > 0)) {
+        if (Date.now() - previous.mythriltempest > 1000) {
           previous.mythriltempest = Date.now();
-          addStatus("stormseye", player.ID, Math.min(checkStatus("stormseye", player.ID) + 10000, duration.stormseye));
+          count.aoe = 1;
+          if (checkStatus("stormseye", player.ID) > 0) {
+            addStatus("stormseye", player.ID, Math.min(checkStatus("stormseye", player.ID) + 10000, duration.stormseye));
+          }
+        }
+        else {
+          count.aoe = count.aoe + 1;
         }
       }
 
@@ -485,7 +497,7 @@ function warGauge() {
     gauge.max = 50; // Avoid wasting Nascent Chaos
   }
   else if (player.level >= 50
-  && toggle.aoe
+  && count.aoe <= 3
   && checkStatus("stormseye", player.ID) < 15000) {
     addText("debug2", "Waiting for Storm's Eye");
     gauge.max = 90; // Avoid letting Storm's Eye fall off during AoE
@@ -534,7 +546,7 @@ function warCombo() {
   // Clear debug
   addText("debug1", "");
 
-  if (toggle.aoe) {
+  if (count.aoe >= 3) {
     addText("debug1", "Mythril Tempest Combo");
     mythriltempestCombo();
   }
