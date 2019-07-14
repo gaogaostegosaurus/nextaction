@@ -43,7 +43,10 @@ function samJobChange() {
   previous.oka = 0;
   previous.tenkagoken = 0;
   previous.kaeshigoken = 0;
+<<<<<<< HEAD
   previous.guren = 0;
+=======
+>>>>>>> 09b11c89f715aaf5a705fd2eda6ba5e99578e0df
 
   if (player.level >= 68
   && checkCooldown("ikishoten", player.ID) < 0) {
