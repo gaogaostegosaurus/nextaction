@@ -96,10 +96,10 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
 
   // This is probably only useful for jobs that need to watch things that "tick" up or down
   if (player.job == "BLM") {
-    blmPlayerChangedEvent(e);
+    blmPlayerChangedEvent();
   }
   if (player.job == "BRD") {
-    brdPlayerChangedEvent(e);
+    brdPlayerChangedEvent();
   }
   else if (player.job == "RDM") {
     rdmPlayerChangedEvent();
@@ -135,9 +135,6 @@ document.addEventListener("onInCombatChangedEvent", function(e) {
 
     if (player.job == "BRD") {
       brdInCombatChangedEvent(e);
-    }
-    else if (player.job == "WAR") {
-      warInCombatChangedEvent(e);
     }
   }
 });
