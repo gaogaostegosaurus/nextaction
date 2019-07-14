@@ -14,10 +14,6 @@ actionList.sam = [
   "Enpi"
 ];
 
-function samInCombatChangedEvent(e) {
-
-}
-
 function samJobChange() {
 
   nextid.iaijutsu1 = 0;
@@ -42,39 +38,29 @@ function samJobChange() {
   nextid.seigan = nextid.shinten;
   nextid.shoha = 14;
 
+  previous.fuga = 0;
+  previous.mangetsu = 0;
+  previous.oka = 0;
+  previous.tenkagoken = 0;
+  previous.kaeshigoken = 0;
+  previous.guren = 0;
 
-    samMeikyoShisui();
+  if (player.level >= 68
+  && checkCooldown("ikishoten", player.ID) < 0) {
+    addIconBlink(nextid.ikishoten,icon.ikishoten);
+  }
 
-    if (player.level >= 68
-    && checkCooldown("ikishoten", player.ID) < 0) {
-      addIconBlink(nextid.ikishoten,icon.ikishoten);
-    }
-    samKenki();
-    samSen();
+  samMeikyoShisui();
+  samKenki();
+  samSen();
 }
 
 function samAction() {
 
-  if (actionGroups.sourceID == player.ID
-  && actionList.sam.indexOf(actionGroups.actionname) > -1) { // Check if from player
+  if (actionList.sam.indexOf(actionGroups.actionname) > -1) {
 
     removeText("loadmessage");
     // removeText("debug1");
-
-    // Toggle AoE
-
-    if (["Fuga", "Mangetsu", "Oka", "Hissatsu: Kyuten", "Kaeshi: Goken"].indexOf(actionGroups.actionname) > -1
-    || (actionGroups.actionname == "Tenka Goken" && player.level >= 50)
-    || (actionGroups.actionname == "Hissatsu: Guren" && player.level >= 72)) {
-      toggle.aoe = Date.now();
-    }
-    else if (["Hakaze", "Jinpu", "Shifu", "Gekko", "Kasha", "Yukikaze",
-              "Hissatsu: Shinten", "Hissatsu: Senei",
-              "Higanbana", "Midare Setsugekka", "Kaeshi: Higanbana", "Kaeshi: Setsugekka"].indexOf(actionGroups.actionname) > -1)
-    {
-      delete toggle.aoe;
-    }
-
     // These actions don't interrupt combos
 
     if (actionGroups.actionname == "Higanbana") {
@@ -89,7 +75,25 @@ function samAction() {
       timeout.tsubamegaeshi2 = setTimeout(removeIcon, 12500, id.tsubamegaeshi2);
     }
 
-    else if (["Tenka Goken", "Midare Setsugekka"].indexOf(actionGroups.actionname) > -1) {
+    else if ("Tenka Goken" == actionGroups.actionname) {
+      if (Date.now() - previous.tenkagoken > 1000) {
+        previous.tenkagoken = Date.now();
+        count.aoe = 1;
+      }
+      else {
+        count.aoe = count.aoe + 1;
+      }
+      if (checkStatus("meikyoshisui", player.ID) > 0) {
+        samCombo(); // Consuming Sen under Meikyo will trigger a new combo
+      }
+      icon.iaijutsu = "003159";
+      removeIcon(id.iaijutsu1);
+      removeIcon(id.iaijutsu2);
+      timeout.tsubamegaeshi1 = setTimeout(removeIcon, 12500, id.tsubamegaeshi1);
+      timeout.tsubamegaeshi2 = setTimeout(removeIcon, 12500, id.tsubamegaeshi2);
+    }
+
+    else if ("Midare Setsugekka" == actionGroups.actionname) {
       if (checkStatus("meikyoshisui", player.ID) > 0) {
         samCombo(); // Consuming Sen under Meikyo will trigger a new combo
       }
@@ -143,6 +147,13 @@ function samAction() {
     }
 
     else if (actionGroups.actionname == "Hissatsu: Guren" || actionGroups.actionname == "Hissatsu: Senei") {
+      if (Date.now() - previous.guren > 1000) {
+        previous.guren = Date.now();
+        count.aoe = 1;
+      }
+      else {
+        count.aoe = count.aoe + 1;
+      }
       // Senei is on same cooldown as Guren
       addCooldown("guren", player.ID, recast.guren);
       removeIcon(id.guren);
@@ -170,6 +181,13 @@ function samAction() {
     else if (actionGroups.actionname == "Fuga"
     && actionGroups.result.length >= 2
     && [4,5].indexOf(toggle.combo) > -1) {
+      if (Date.now() - previous.fuga > 1000) {
+        previous.fuga = Date.now();
+        count.aoe = 1;
+      }
+      else {
+        count.aoe = count.aoe + 1;
+      }
       removeIcon(id.fuga);
       samKenki();
     }
@@ -204,10 +222,15 @@ function samAction() {
 
     else if (actionGroups.actionname == "Mangetsu"
     && actionGroups.result.length >= 8) {
-      if (!previous.mangetsu || Date.now() - previous.mangetsu > 1000
-      && checkStatus("jinpu", player.ID) > 0) {
+      if (Date.now() - previous.mangetsu > 1000) {
         previous.mangetsu = Date.now();
-        addStatus("jinpu", player.ID, Math.min(checkStatus("jinpu", player.ID) + 15000, duration.jinpu));
+        count.aoe = 1;
+        if (checkStatus("jinpu", player.ID) > 0) {
+          addStatus("jinpu", player.ID, Math.min(checkStatus("jinpu", player.ID) + 15000, duration.jinpu));
+        }
+      }
+      else {
+        count.aoe = count.aoe + 1;
       }
       samKenki();
       samSen();
@@ -216,10 +239,15 @@ function samAction() {
 
     else if (actionGroups.actionname == "Oka"
     && actionGroups.result.length >= 8) {
-      if (!previous.oka || Date.now() - previous.oka > 1000
-      && checkStatus("shifu", player.ID) > 0) {
+      if (Date.now() - previous.oka > 1000) {
         previous.oka = Date.now();
-        addStatus("shifu", player.ID, Math.min(checkStatus("shifu", player.ID) + 15000, duration.shifu));
+        count.aoe = 1;
+        if (checkStatus("shifu", player.ID) > 0) {
+          addStatus("shifu", player.ID, Math.min(checkStatus("shifu", player.ID) + 15000, duration.shifu));
+        }
+      }
+      else {
+        count.aoe = count.aoe + 1;
       }
       samKenki();
       samSen();
