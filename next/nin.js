@@ -4,7 +4,7 @@ actionList.nin = [
 
   // Single Target
   "Gust Slash", "Aeolian Edge", "Armor Crush"
-  "Raiton", "Bhavacakra", "Hyosho Ranyu"
+  "Raiton", "Bhavacakra", "Hyosho Ranyu",
 
   // AoE
   "Death Blossom", "Hakke Mujinsatsu",
