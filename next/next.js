@@ -57,6 +57,11 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
 
   player = e.detail;
   player.ID = e.detail.id.toString(16).toUpperCase(); // player.id.toString(16) is lowercase; using "ID" to designate uppercase lettering
+  player.debugJobSplit = player.debugJob.split(" ");
+
+  player.jobDetail.heat = parseInt(player.debugJobSplit[4], 16);
+  player.jobDetail.battery = parseInt(player.debugJobSplit[5], 16);
+  player.jobDetail.overheated = player.debugJobSplit[7]; // Just 0 or 1
 
   // Detects name/job/level change and clears elements
   if (previous.name != player.name || previous.job != player.job || previous.level != player.level) {
@@ -98,8 +103,11 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
   if (player.job == "BLM") {
     blmPlayerChangedEvent();
   }
-  if (player.job == "BRD") {
+  else if (player.job == "BRD") {
     brdPlayerChangedEvent();
+  }
+  else if (player.job == "MCH") {
+    mchPlayerChangedEvent();
   }
   else if (player.job == "RDM") {
     rdmPlayerChangedEvent();
