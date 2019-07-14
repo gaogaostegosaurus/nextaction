@@ -42,39 +42,28 @@ function samJobChange() {
   nextid.seigan = nextid.shinten;
   nextid.shoha = 14;
 
+  previous.fuga = 0;
+  previous.mangetsu = 0;
+  previous.oka = 0;
+  previous.tenkagoken = 0;
+  previous.kaeshigoken = 0;
 
-    samMeikyoShisui();
+  if (player.level >= 68
+  && checkCooldown("ikishoten", player.ID) < 0) {
+    addIconBlink(nextid.ikishoten,icon.ikishoten);
+  }
 
-    if (player.level >= 68
-    && checkCooldown("ikishoten", player.ID) < 0) {
-      addIconBlink(nextid.ikishoten,icon.ikishoten);
-    }
-    samKenki();
-    samSen();
+  samMeikyoShisui();
+  samKenki();
+  samSen();
 }
 
 function samAction() {
 
-  if (actionGroups.sourceID == player.ID
-  && actionList.sam.indexOf(actionGroups.actionname) > -1) { // Check if from player
+  if (actionList.sam.indexOf(actionGroups.actionname) > -1) {
 
     removeText("loadmessage");
     // removeText("debug1");
-
-    // Toggle AoE
-
-    if (["Fuga", "Mangetsu", "Oka", "Hissatsu: Kyuten", "Kaeshi: Goken"].indexOf(actionGroups.actionname) > -1
-    || (actionGroups.actionname == "Tenka Goken" && player.level >= 50)
-    || (actionGroups.actionname == "Hissatsu: Guren" && player.level >= 72)) {
-      toggle.aoe = Date.now();
-    }
-    else if (["Hakaze", "Jinpu", "Shifu", "Gekko", "Kasha", "Yukikaze",
-              "Hissatsu: Shinten", "Hissatsu: Senei",
-              "Higanbana", "Midare Setsugekka", "Kaeshi: Higanbana", "Kaeshi: Setsugekka"].indexOf(actionGroups.actionname) > -1)
-    {
-      delete toggle.aoe;
-    }
-
     // These actions don't interrupt combos
 
     if (actionGroups.actionname == "Higanbana") {
@@ -89,7 +78,25 @@ function samAction() {
       timeout.tsubamegaeshi2 = setTimeout(removeIcon, 12500, id.tsubamegaeshi2);
     }
 
-    else if (["Tenka Goken", "Midare Setsugekka"].indexOf(actionGroups.actionname) > -1) {
+    else if ("Tenka Goken" == actionGroups.actionname) {
+      if (Date.now() - previous.tenkagoken > 1000) {
+        previous.tenkagoken = Date.now();
+        count.aoe = 1;
+      }
+      else {
+        count.aoe = count.aoe + 1;
+      }
+      if (checkStatus("meikyoshisui", player.ID) > 0) {
+        samCombo(); // Consuming Sen under Meikyo will trigger a new combo
+      }
+      icon.iaijutsu = "003159";
+      removeIcon(id.iaijutsu1);
+      removeIcon(id.iaijutsu2);
+      timeout.tsubamegaeshi1 = setTimeout(removeIcon, 12500, id.tsubamegaeshi1);
+      timeout.tsubamegaeshi2 = setTimeout(removeIcon, 12500, id.tsubamegaeshi2);
+    }
+
+    else if ("Midare Setsugekka" == actionGroups.actionname) {
       if (checkStatus("meikyoshisui", player.ID) > 0) {
         samCombo(); // Consuming Sen under Meikyo will trigger a new combo
       }
