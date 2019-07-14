@@ -28,24 +28,24 @@ actionList.war = [
 
 function warJobChange() {
 
-  nextid.innerbeast = "0";
+  nextid.rampart = 0;
+  nextid.vengeance = nextid.rampart;
+  nextid.rawintuition = nextid.rampart;
+  nextid.mitigation = nextid.rampart;
+  nextid.innerbeast = 1;
   nextid.steelcyclone = nextid.innerbeast;
   nextid.fellcleave = nextid.innerbeast;
   nextid.decimate = nextid.innerbeast;
   nextid.chaoticcyclone = nextid.innerbeast;
   nextid.innerchaos = nextid.innerbeast;
-  nextid.heavyswing = "1";
+  nextid.heavyswing = 2;
   nextid.overpower = nextid.heavyswing;
-  nextid.maim = "2";
-  nextid.stormspath = "3";
+  nextid.maim = 3;
+  nextid.stormspath = 4;
   nextid.stormseye = nextid.stormspath;
   nextid.mythriltempest = nextid.stormspath;
-  nextid.rampart = "9";
-  nextid.vengeance = nextid.rampart;
-  nextid.rawintuition = nextid.rampart;
-  nextid.mitigation = nextid.rampart;
-  nextid.infuriate = "11";
-  nextid.berserk = "12";
+  nextid.infuriate = 10;
+  nextid.berserk = 11;
   nextid.innerrelease = nextid.berserk;
   nextid.upheaval = nextid.berserk;
 
@@ -105,32 +105,22 @@ function warJobChange() {
     addIconBlink(nextid.berserk,icon.berserk);
   }
 
+  warCombo();
   warGauge();
 }
 
-function warAction(logLine) {
+function warAction() {
 
   addText("debug3", "Infuriate x1: " + checkCooldown("infuriate1", player.ID) + "  Infuriate x2: " + checkCooldown("infuriate2", player.ID) );
 
-  if (logLine[1] == player.ID
-  && actionList.war.indexOf(logLine[3]) > -1) {
+  if (actionList.war.indexOf(actionGroups.actionname) > -1) {
 
     removeText("loadmessage");
 
-    // Toggle AoE
-
-    if (["Storm\'s Path", "Fell Cleave", "Inner Chaos"].indexOf(logLine[3]) > -1) {
-      count.aoe = 1;
-    }
-    else if (logLine[3] == "Inner Beast"
-    && player.level >= 45) {
-      count.aoe = 1;
-    }
-
     // These actions don't break combo
 
-    if (logLine[3] == "Berserk"
-    || logLine[3] == "Inner Release") {
+    if (actionGroups.actionname == "Berserk"
+    || actionGroups.actionname == "Inner Release") {
       removeIcon(nextid.berserk);
       addCooldown("berserk", player.ID, recast.berserk);
 
@@ -147,23 +137,23 @@ function warAction(logLine) {
       }
     }
 
-    else if (logLine[3] == "Upheaval") {
+    else if (actionGroups.actionname == "Upheaval") {
       removeIcon(nextid.upheaval);
       addCooldown("upheaval", player.ID, recast.upheaval);
       warGauge();
     }
 
-    else if (logLine[3] == "Rampart") {
+    else if (actionGroups.actionname == "Rampart") {
       addCooldown("rampart", player.ID, recast.rampart);
       removeIcon(nextid.rampart);
     }
 
-    else if (logLine[3] == "Vengeance") {
+    else if (actionGroups.actionname == "Vengeance") {
       addCooldown("vengeance", player.ID, recast.vengeance);
       removeIcon(nextid.mitigation);
     }
 
-    else if (logLine[3] == "Infuriate") {
+    else if (actionGroups.actionname == "Infuriate") {
 
       // Code treats Infuriate like two different skills to juggle the charges.
 
@@ -180,80 +170,84 @@ function warAction(logLine) {
       warGauge();
     }
 
-    else if (logLine[3] == "Raw Intuition") {
+    else if (actionGroups.actionname == "Raw Intuition") {
       addCooldown("rawintuition", player.ID, recast.rawintuition);
       removeIcon(nextid.rawintuition);
     }
 
-    else if (logLine[3] == "Inner Beast" || logLine[3] == "Fell Cleave" || logLine[3] == "Inner Chaos") {
-      if (player.level >= 66) { // Enhanced Infuriate
-        addCooldown("infuriate1", player.ID, checkCooldown("infuriate1", player.ID) - 5000);
-        addCooldown("infuriate2", player.ID, checkCooldown("infuriate2", player.ID) - 5000);
-        removeIcon(nextid.infuriate);
-        addIconBlinkTimeout("infuriate",checkCooldown("infuriate1", player.ID),nextid.infuriate,icon.infuriate);
-      }
-      removeIcon(nextid.innerbeast);
-      warGauge();
-    }
+    else { // GCD Trigger
 
-    else if (logLine[3] == "Steel Cyclone" || logLine[3] == "Decimate" || logLine[3] == "Chaotic Cyclone") {
-      if (Date.now() - previous.steelcyclone > 1000) {
-
-        count.aoe = 1;
-        previous.steelcyclone = Date.now();
-
+      if (actionGroups.actionname == "Inner Beast" || actionGroups.actionname == "Fell Cleave" || actionGroups.actionname == "Inner Chaos") {
+        if (player.level >= 45) {
+          count.aoe = 1;
+        }
         if (player.level >= 66) { // Enhanced Infuriate
-          // Me: "WHY ARE MY COOLDOWNS SCREWED UP!!??!?!1/1/1/1"
-          // Since 1 line is created for every AoE hit, this is needed to prevent every line from triggering Enhanced Infuriate
           addCooldown("infuriate1", player.ID, checkCooldown("infuriate1", player.ID) - 5000);
           addCooldown("infuriate2", player.ID, checkCooldown("infuriate2", player.ID) - 5000);
           removeIcon(nextid.infuriate);
           addIconBlinkTimeout("infuriate",checkCooldown("infuriate1", player.ID),nextid.infuriate,icon.infuriate);
         }
+        removeIcon(nextid.innerbeast);
+        warGauge();
       }
-      else {
-        count.aoe = count.aoe + 1;
-      }
-      removeIcon(nextid.innerbeast);
-      warGauge();
-    }
 
-    // These actions affect combo
+      else if (actionGroups.actionname == "Steel Cyclone" || actionGroups.actionname == "Decimate" || actionGroups.actionname == "Chaotic Cyclone") {
+        if (Date.now() - previous.steelcyclone > 1000) {
 
-    else {
+          count.aoe = 1;
+          previous.steelcyclone = Date.now();
 
-      if (logLine[3] == "Heavy Swing"
-      && logLine[6].length >= 2) {
-        if (!toggle.combo) {
-          warCombo();
+          if (player.level >= 66) { // Enhanced Infuriate
+            // Me: "WHY ARE MY COOLDOWNS SCREWED UP!!??!?!1/1/1/1"
+            // Since 1 line is created for every AoE hit, this is needed to prevent every line from triggering Enhanced Infuriate
+            addCooldown("infuriate1", player.ID, checkCooldown("infuriate1", player.ID) - 5000);
+            addCooldown("infuriate2", player.ID, checkCooldown("infuriate2", player.ID) - 5000);
+            removeIcon(nextid.infuriate);
+            addIconBlinkTimeout("infuriate",checkCooldown("infuriate1", player.ID),nextid.infuriate,icon.infuriate);
+          }
         }
-        removeIcon(nextid.heavyswing);
+        else {
+          count.aoe = count.aoe + 1;
+        }
+        removeIcon(nextid.innerbeast);
+        warGauge();
       }
 
-      else if (logLine[3] == "Maim"
-      && logLine[6].length >= 8) {
+      // These actions affect combo
+
+      else if (actionGroups.actionname == "Heavy Swing"
+        && actionGroups.result.length >= 2) {
+          if (!toggle.combo) {
+            warCombo();
+          }
+          removeIcon(nextid.heavyswing);
+        }
+
+      else if (actionGroups.actionname == "Maim"
+      && actionGroups.result.length >= 8) {
         removeIcon(nextid.heavyswing);
         removeIcon(nextid.maim);
         warGauge();
       }
 
-      else if (logLine[3] == "Storm's Path"
-      && logLine[6].length >= 8) {
+      else if (actionGroups.actionname == "Storm's Path"
+      && actionGroups.result.length >= 8) {
+        count.aoe = 1;
         delete toggle.combo;
         warCombo();
         warGauge();
       }
 
-      else if (logLine[3] == "Storm's Eye"
-      && logLine[6].length >= 8) {
+      else if (actionGroups.actionname == "Storm's Eye"
+      && actionGroups.result.length >= 8) {
         addStatus("stormseye", player.ID, duration.stormseye);
         delete toggle.combo;
         warCombo();
         warGauge();
       }
 
-      else if (logLine[3] == "Overpower"
-      && logLine[6].length >= 2) {
+      else if (actionGroups.actionname == "Overpower"
+      && actionGroups.result.length >= 2) {
         if (Date.now() - previous.overpower > 1000) {
           previous.overpower = Date.now();
           count.aoe = 1;
@@ -267,8 +261,8 @@ function warAction(logLine) {
         }
       }
 
-      else if (logLine[3] == "Mythril Tempest"
-      && logLine[6].length >= 8) {
+      else if (actionGroups.actionname == "Mythril Tempest"
+      && actionGroups.result.length >= 8) {
 
         if (Date.now() - previous.mythriltempest > 1000) {
           previous.mythriltempest = Date.now();
@@ -286,120 +280,100 @@ function warAction(logLine) {
         delete toggle.combo;
         warCombo();
       }
+
+      if (combo.aoe > 3
+      && checkStatus("mitigation", statusGroups.targetID) < 2500) {
+        warMitigation();
+      }
+
+      warGauge();
     }
   }
 }
 
 // 1: TargetID 2:TargetName 3:GainsLoses 4:StatusName 5:SourceName 6:Seconds (doesn't exist for "Loses")
-function warStatus(logLine) {
-
-  // addText("debug1", logLine[1] + " " + logLine[3] + " " + logLine[4]);
-
-  // Target and source is anything (non stacking status only)
-
-  if (logLine[4] == "Reprisal") {
-    if (logLine[3] == "gains") {
-      addStatus("reprisal", logLine[1], parseInt(logLine[6]) * 1000);
-    }
-    else if (logLine[3] == "loses") {
-      removeStatus("reprisal", logLine[1]);
-    }
-  }
+function warStatus() {
 
   // Target is player
 
-  else if (logLine[1] == player.ID) {
+  if (statusGroups.targetID == player.ID) {
 
-    if (logLine[4] == "Berserk"
-    || logLine[4] == "Inner Release") {
-      if (logLine[3] == "gains") {
-        addStatus("berserk", logLine[1], parseInt(logLine[6]) * 1000);
+    if (statusGroups.statusname == "Berserk"
+    || statusGroups.statusname == "Inner Release") {
+      if (statusGroups.gainsloses == "gains") {
+        addStatus("berserk", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
         if (checkCooldown("upheaval", player.ID) < 0) {
           addIconBlink(nextid.upheaval, icon.upheaval); // Show Upheaval if up during Berserk
         }
       }
-      else if (logLine[3] == "loses") {
-        removeStatus("berserk", logLine[1]);
+      else if (statusGroups.gainsloses == "loses") {
+        removeStatus("berserk", statusGroups.targetID);
       }
 
-      if (logLine[4] == "Inner Release") {
+      if (statusGroups.statusname == "Inner Release") {
         warGauge();
       }
     }
 
-    else if (logLine[4] == "Rampart") {
-      if (logLine[3] == "gains") {
-        if (checkStatus("mitigation", logLine[1]) < parseInt(logLine[6]) * 1000) {
-          addStatus("mitigation", logLine[1], parseInt(logLine[6]) * 1000);
+    else if (statusGroups.statusname == "Rampart") {
+      if (statusGroups.gainsloses == "gains") {
+        if (checkStatus("mitigation", statusGroups.targetID) < parseInt(statusGroups.duration) * 1000) {
+          addStatus("mitigation", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
         }
       }
-      else if (logLine[3] == "loses") {
-        if (checkStatus("mitigation", logLine[1]) < 0) {
-          removeStatus("mitigation", logLine[1]);
+      else if (statusGroups.gainsloses == "loses") {
+        if (checkStatus("mitigation", statusGroups.targetID) < 0) {
+          removeStatus("mitigation", statusGroups.targetID);
+        }
+      }
+    }
+
+    else if (statusGroups.statusname == "Vengeance") {
+      if (statusGroups.gainsloses == "gains") {
+        if (checkStatus("mitigation", statusGroups.targetID) < parseInt(statusGroups.duration) * 1000) {
+          addStatus("mitigation", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
+        }
+      }
+      else if (statusGroups.gainsloses == "loses") {
+        if (checkStatus("mitigation", statusGroups.targetID) < 0) {
+          removeStatus("mitigation", statusGroups.targetID);
+        }
+      }
+    }
+
+    else if (statusGroups.statusname == "Storm's Eye") {
+      if (statusGroups.gainsloses == "gains") {
+        addStatus("stormseye", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
+      }
+      else if (statusGroups.gainsloses == "loses") {
+        removeStatus("stormseye", statusGroups.targetID);
+      }
+    }
+
+    else if (statusGroups.statusname == "Raw Intuition") {
+      if (statusGroups.gainsloses == "gains") {
+        if (checkStatus("mitigation", statusGroups.targetID) < parseInt(statusGroups.duration) * 1000) {
+          addStatus("mitigation", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
+        }
+      }
+      else if (statusGroups.gainsloses == "loses") {
+        if (checkStatus("mitigation", statusGroups.targetID) < 0) {
+          removeStatus("mitigation", statusGroups.targetID);
           warMitigation();
         }
       }
     }
 
-    else if (logLine[4] == "Vengeance") {
-      if (logLine[3] == "gains") {
-        if (checkStatus("mitigation", logLine[1]) < parseInt(logLine[6]) * 1000) {
-          addStatus("mitigation", logLine[1], parseInt(logLine[6]) * 1000);
-        }
-      }
-      else if (logLine[3] == "loses") {
-        if (checkStatus("mitigation", logLine[1]) < 0) {
-          removeStatus("mitigation", logLine[1]);
-          warMitigation();
-        }
-      }
-    }
-
-    else if (logLine[4] == "Storm's Eye") {
-      if (logLine[3] == "gains") {
-        addStatus("stormseye", logLine[1], parseInt(logLine[6]) * 1000);
-      }
-      else if (logLine[3] == "loses") {
-        removeStatus("stormseye", logLine[1]);
-      }
-    }
-
-    else if (logLine[4] == "Raw Intuition") {
-      if (logLine[3] == "gains") {
-        if (checkStatus("mitigation", logLine[1]) < parseInt(logLine[6]) * 1000) {
-          addStatus("mitigation", logLine[1], parseInt(logLine[6]) * 1000);
-        }
-      }
-      else if (logLine[3] == "loses") {
-        if (checkStatus("mitigation", logLine[1]) < 0) {
-          removeStatus("mitigation", logLine[1]);
-          warMitigation();
-        }
-      }
-    }
-
-    else if (logLine[4] == "Nascent Chaos") {
-      if (logLine[3] == "gains") {
-        addStatus("nascentchaos", logLine[1], parseInt(logLine[6]) * 1000);
+    else if (statusGroups.statusname == "Nascent Chaos") {
+      if (statusGroups.gainsloses == "gains") {
+        addStatus("nascentchaos", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
         removeIcon(nextid.berserk);
       }
-      else if (logLine[3] == "loses") {
-        removeStatus("nascentchaos", logLine[1]);
+      else if (statusGroups.gainsloses == "loses") {
+        removeStatus("nascentchaos", statusGroups.targetID);
         addIconBlinkTimeout("berserk",checkCooldown("berserk", player.ID),nextid.berserk,icon.innerrelease);
       }
       warGauge()
-    }
-  }
-
-  // Target is not player, source is player
-
-  else if (logLine[5] == player.name) {
-
-    if (logLine[4] == "test") {
-      if (logLine[3] == "gains") {
-      }
-      else if (logLine[3] == "loses") {
-      }
     }
   }
 }
@@ -407,8 +381,7 @@ function warStatus(logLine) {
 
 function warMitigation() {
 
-  // Vengeance > Raw Intuition > Rampart
-  // I guess
+  // Vengeance > Raw Intuition > Rampart > Raw Intuition > Wake up DPS plz
 
   if (player.level >= 46
   && checkCooldown("vengeance", player.ID) < 0 ) {
@@ -470,7 +443,7 @@ function warGauge() {
   }
 
   if (player.level >= 70
-  && checkStatus("berserk", player.ID) > 0) { // Set to 0 just to be safe - function called when IR status lost anyway.
+  && checkStatus("berserk", player.ID) > -1) { // Possibly adjust this number
     addText("debug2", "Inner Release");
     gauge.max = 0; // Spam during Inner Release
   }
@@ -520,7 +493,7 @@ function warGauge() {
 
   if (player.level >= 70
   && checkCooldown("upheaval", player.ID) < 2500
-  && checkStatus("berserk", player.ID) > 0) {
+  && checkStatus("berserk", player.ID) > -1) {
     addIconBlink(nextid.upheaval,icon.upheaval);
   }
   else if (player.level >= 64
@@ -543,16 +516,13 @@ function warGauge() {
 
 function warCombo() {
 
-  // Clear debug
-  addText("debug1", "");
+  addText("debug1", "");   // Clear debug
+  removeIcon(nextid.heavyswing);
+  removeIcon(nextid.maim);
+  removeIcon(nextid.stormspath);
 
-  if (count.aoe >= 3) {
-    addText("debug1", "Mythril Tempest Combo");
-    mythriltempestCombo();
-  }
-
-  // Revisit this later if it double refreshing too often (or at all?)
-  else if (player.level >= 50
+  // Revisit this later if it is refreshing too much
+  if (player.level >= 50
   && checkCooldown("berserk", player.ID) < 17500
   && checkStatus("stormseye", player.ID) - Math.max(checkCooldown("berserk", player.ID), 0) < 20000) {
     addText("debug1", "Refresh Storm's Eye for Berserk");
@@ -566,23 +536,30 @@ function warCombo() {
     stormseyeCombo();
   }
 
+  else if (player.level >= 74
+  && count.aoe >= 2) {
+    addText("debug1", "Mythril Tempest Combo");
+    mythriltempestCombo();
+  }
+
+  else if (count.aoe >= 3) {
+    addText("debug1", "Mythril Tempest Combo");
+    mythriltempestCombo();
+  }
+
   else {
     addText("debug1", "Storm's Path Combo");
     stormspathCombo();
   }
-
-  clearTimeout(timeout.combo);
-  timeout.combo = setTimeout(warComboTimeout, 12500);
 }
 
 function warComboTimeout() {
-  if (toggle.combat) {
-    warCombo();
-  }
+  clearTimeout(timeout.combo);
+  timeout.combo = setTimeout(warCombo, 12500);
 }
 
 function stormspathCombo() {
-  toggle.combo = 1;
+  next.combo = 1;
   addIcon(nextid.heavyswing,icon.heavyswing);
   if (player.level >= 18) {
     addIcon(nextid.maim,icon.maim);
@@ -593,14 +570,14 @@ function stormspathCombo() {
 }
 
 function stormseyeCombo() {
-  toggle.combo = 2;
+  next.combo = 2;
   addIcon(nextid.heavyswing,icon.heavyswing);
   addIcon(nextid.maim,icon.maim);
   addIcon(nextid.stormseye,icon.stormseye);
 }
 
 function mythriltempestCombo() {
-  toggle.combo = 3;
+  next.combo = 3;
   addIcon(nextid.overpower,icon.overpower);
   removeIcon(nextid.maim);
   if (player.level >= 40) {
