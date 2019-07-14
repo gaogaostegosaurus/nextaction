@@ -3,8 +3,8 @@
 actionList.nin = [
 
   // Single Target
-  "Gust Slash", "Aeolian Edge", "Armor Crush"
-  "Raiton", "Bhavacakra", "Hyosho Ranyu"
+  "Gust Slash", "Aeolian Edge", "Armor Crush",
+  "Raiton", "Bhavacakra", "Hyosho Ranyu",
 
   // AoE
   "Death Blossom", "Hakke Mujinsatsu",
@@ -54,7 +54,7 @@ function ninJobChange() {
 function ninAction(logLine) {
 
   // AoE Toggle
-  if (["Gust Slash", "Aeolian Edge", "Armor Crush"
+  if (["Gust Slash", "Aeolian Edge", "Armor Crush",
   "Raiton", "Bhavacakra"].indexOf(actionGroups.actionname) > -1) {
     count.aoe = 1;
   }
@@ -306,7 +306,7 @@ function ninCombo() {
   }
 }
 
-ninAeolianEdgeCombo() {
+function ninAeolianEdgeCombo() {
   addIcon(nextid.spinningedge, icon.spinningedge);
   if (player.level >= 4) {
     addIcon(nextid.gustslash, icon.gustslash);
@@ -316,18 +316,18 @@ ninAeolianEdgeCombo() {
   }
 }
 
-ninShadowFangCombo() {
+function ninShadowFangCombo() {
   addIcon(nextid.spinningedge, icon.spinningedge);
   addIcon(nextid.shadowfang, icon.shadowfang);
 }
 
-ninArmorCrushCombo() {
+function ninArmorCrushCombo() {
   addIcon(nextid.spinningedge, icon.spinningedge);
   addIcon(nextid.gustslash, icon.gustslash);
   addIcon(nextid.armorcrush, icon.armorcrush);
 }
 
-ninHakkeMujinsatsuCombo() {
+function ninHakkeMujinsatsuCombo() {
   addIcon(nextid.deathblossom, icon.deathblossom);
   if (player.level >= 52) {
     addIcon(nextid.hakkemujinsatsu, icon.hakkemujinsatsu);
