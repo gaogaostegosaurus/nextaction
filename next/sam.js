@@ -43,10 +43,7 @@ function samJobChange() {
   previous.oka = 0;
   previous.tenkagoken = 0;
   previous.kaeshigoken = 0;
-<<<<<<< HEAD
   previous.guren = 0;
-=======
->>>>>>> 09b11c89f715aaf5a705fd2eda6ba5e99578e0df
 
   if (player.level >= 68
   && checkCooldown("ikishoten", player.ID) < 0) {
@@ -372,6 +369,7 @@ function samStatus() {
 }
 
 function samMeikyoShisui() {
+
   // if (player.level >= 76
   // && checkCooldown("tsubamegaeshi", player.ID) > 2500) {
   //   // Attempt to save Meikyo to quickly activate Tsubame-gaeshi
@@ -419,7 +417,7 @@ function samSen() {
   if (player.level >= 74
   && checkCooldown("tsubamegaeshi", player.ID) < 5000
   && icon.iaijutsu == icon.tenkagoken
-  && toggle.aoe) {
+  && check.aoe >= 3) {
     icon.tsubamegaeshi = icon.kaeshigoken;
   }
   else if (player.level >= 74
