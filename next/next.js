@@ -130,20 +130,20 @@ document.addEventListener('onTargetChangedEvent', function(e) {
 document.addEventListener("onInCombatChangedEvent", function(e) {
 // Fires when character exits or enters combat
 
-  if (! e.detail.inGameCombat) {
-    delete toggle.combat;
-    document.getElementById("nextdiv").className = "fadeout";
-  }
-  else {
-
+  if (e.detail.inGameCombat) {
     toggle.combat = Date.now();
     document.getElementById("nextdiv").className = "fadein";
+  }
+  else {
+    delete toggle.combat;
+    document.getElementById("nextdiv").className = "fadeout";
+
 
     // Try to get rid of this section
-
-    if (player.job == "BRD") {
-      brdInCombatChangedEvent(e);
-    }
+    //
+    // if (player.job == "BRD") {
+    //   brdInCombatChangedEvent(e);
+    // }
   }
 });
 
