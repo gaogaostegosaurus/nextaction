@@ -38,13 +38,14 @@ function mchJobChange() {
   nextid.hypercharge = 10;
   nextid.wildfire = nextid.hypercharge;
   nextid.barrelstabilizer = nextid.hypercharge;
+  nextid.flamethrower = nextid.hypercharge;
   nextid.rookautoturret = 11;
   nextid.rookoverdrive = nextid.rookautoturret;
   nextid.automatonqueen = nextid.rookautoturret;
   nextid.queenoverdrive = nextid.rookautoturret;
   nextid.gaussround = 12;
   nextid.ricochet = 13;
-  nextid.flamethrower = 14;
+
   // nextid.tactician = 99;
 
   previous.spreadshot = 0;
@@ -140,24 +141,7 @@ function mchJobChange() {
   else {
     removeIcon(nextid.drill);
   }
-
-  if (player.level >= 66
-  && checkCooldown("barrelstabilizer", player.ID) < 0) {
-    addIconBlink(nextid.barrelstabilizer, icon.barrelstabilizer);
-  }
-  else {
-    removeIcon(nextid.barrelstabilizer);
-  }
-
-  if (player.level >= 70
-  && count.aoe >= 2
-  && checkCooldown("flamethrower", player.ID) < 0) {
-    addIconBlink(nextid.flamethrower, icon.flamethrower);
-  }
-  else {
-    removeIcon(nextid.flamethrower);
-  }
-
+  
   mchHeat();
   mchBattery();
   mchCombo();
@@ -490,7 +474,13 @@ function mchHeat() {
     }
   }
   else {
-    removeIcon(nextid.hypercharge);
+    if (player.level >= 70
+    && checkCooldown("flamethrower", player.ID) > 0) {
+      addIconBlink(nextid.flamethrower, icon.flamethrower);
+    }
+    else {
+      removeIcon(nextid.hypercharge);
+    }
   }
 }
 
