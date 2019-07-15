@@ -274,10 +274,10 @@ function warAction() {
         else {
           count.aoe = count.aoe + 1;
         }
+        warCombo();
       }
 
       else {
-        delete toggle.combo;
         warCombo();
       }
 
