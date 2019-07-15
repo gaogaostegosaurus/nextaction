@@ -24,8 +24,8 @@ function mchJobChange() {
   nextid.heatblast = 0;
   nextid.autocrossbow = nextid.heatblast;
   nextid.reassemble = 1;
-  nextid.drill = 2;
-  nextid.bioblaster = nextid.drill;
+  nextid.drill = nextid.reassemble;
+  nextid.bioblaster = nextid.reassemble;
   nextid.hotshot = 3;
   nextid.airanchor = nextid.hotshot;
   nextid.splitshot = 4;
@@ -35,18 +35,22 @@ function mchJobChange() {
   nextid.heatedslugshot = nextid.slugshot;
   nextid.cleanshot = 6;
   nextid.heatedcleanshot = nextid.cleanshot;
-  nextid.rookautoturret = 10;
+  nextid.hypercharge = 10;
+  nextid.wildfire = nextid.hypercharge;
+  nextid.barrelstabilizer = nextid.hypercharge;
+  nextid.rookautoturret = 11;
   nextid.rookoverdrive = nextid.rookautoturret;
   nextid.automatonqueen = nextid.rookautoturret;
   nextid.queenoverdrive = nextid.rookautoturret;
-  nextid.barrelstabilizer = 11;
-  nextid.wildfire = 12;
-  nextid.detonator = nextid.wildfire;
-  nextid.hypercharge = 13;
-  nextid.gaussround = 14;
-  nextid.ricochet = 15;
-  nextid.flamethrower = 16;
+  nextid.gaussround = 12;
+  nextid.ricochet = 13;
+  nextid.flamethrower = 14;
   // nextid.tactician = 99;
+
+  previous.spreadshot = 0;
+  previous.flamethrower = 0;
+  previous.ricochet = 0;
+  previous.autocrossbow = 0;
 
   // Set up action changes from level
 
@@ -87,7 +91,7 @@ function mchJobChange() {
   }
 
   if (player.level >= 52
-  && toggle.aoe) {
+  && count.aoe >= 3) {
     icon.heatblast = icon.autocrossbow;
   }
   else {
@@ -104,28 +108,12 @@ function mchJobChange() {
     removeIcon(nextid.hotshot);
   }
 
-  if (player.level >= 10
-  && checkCooldown("reassemble", player.ID) < 0) {
-    addIconBlink(nextid.reassemble, icon.reassemble);
-  }
-  else {
-    removeIcon(nextid.reassemble);
-  }
-
   if (player.level >= 15
   && checkCooldown("gaussround1", player.ID) < 0) {
     addIconBlink(nextid.gaussround, icon.gaussround);
   }
   else {
     removeIcon(nextid.gaussround);
-  }
-
-  if (player.level >= 45
-  && checkCooldown("wildfire", player.ID) < 0) {
-    addIconBlink(nextid.wildfire, icon.wildfire);
-  }
-  else {
-    removeIcon(nextid.wildfire);
   }
 
   if (player.level >= 50
@@ -137,8 +125,17 @@ function mchJobChange() {
   }
 
   if (player.level >= 58
+  && checkCooldown("drill", player.ID) < 0
+  && checkCooldown("reassemble", player.ID) < 0) {
+    addIconBlink(nextid.reassemble, icon.reassemble);
+  }
+  else if (player.level >= 58
   && checkCooldown("drill", player.ID) < 0) {
     addIconBlink(nextid.drill, icon.drill);
+  }
+  else if (player.level >= 10
+  && checkCooldown("reassemble", player.ID) < 0) {
+    addIconBlink(nextid.reassemble, icon.reassemble);
   }
   else {
     removeIcon(nextid.drill);
@@ -153,7 +150,7 @@ function mchJobChange() {
   }
 
   if (player.level >= 70
-  && toggle.aoe
+  && count.aoe >= 2
   && checkCooldown("flamethrower", player.ID) < 0) {
     addIconBlink(nextid.flamethrower, icon.flamethrower);
   }
@@ -161,8 +158,21 @@ function mchJobChange() {
     removeIcon(nextid.flamethrower);
   }
 
+  mchHeat();
+  mchBattery();
+  mchCombo();
 }
 
+function mchPlayerChangedEvent() {
+
+  nextid.heatblast = 0;
+  if (player.jobDetail.overheated == 1) {
+    addIconBlink(nextid.heatblast, icon.heatblast);
+  }
+  else {
+    removeIcon(nextid.heatblast);
+  }
+}
 
 function mchAction() {
 
@@ -172,31 +182,35 @@ function mchAction() {
 
     // Toggle AoE
 
-    if ([
-      "Spread Shot", "Auto Crossbow", "Flamethrower", "Bioblaster"
-    ].indexOf(actionGroups.actionname) > -1) {
-      toggle.aoe = Date.now();
-      if (player.level >= 72) {
-        icon.drill = icon.bioblaster;
-      }
-      if (player.level >= 52) {
-        icon.heatblast = icon.autocrossbow;
-      }
-      if (player.level >= 70
-      && checkCooldown("flamethrower", player.ID) < 0) {
-        addIconBlink(nextid.flamethrower, icon.flamethrower);
-      }
-      addIconBlinkTimeout("drill", checkCooldown("drill", player.ID), nextid.drill, icon.drill); // Not sure if necessary
+    if (player.level >= 52
+    && count.aoe >= 3) {
+      icon.heatblast == icon.autocrossbow;
     }
-    else if ([
-      "Split Shot", "Slug Shot", "Clean Shot", "Heated Split Shot",
+    else {
+      icon.heatblast = "003030";
+    }
+
+    if (player.level >= 70
+    && checkCooldown("flamethrower", player.ID) < 0
+    && count.aoe >= 2) {
+      addIconBlink(nextid.flamethrower, icon.flamethrower);
+    }
+    else {
+      removeIcon(nextid.flamethrower);
+    }
+
+    if (player.level >= 72
+    && count.aoe >= 2) {
+      icon.drill == icon.bioblaster;
+    }
+    else {
+      icon.drill = "003043";
+    }
+
+    if (["Split Shot", "Slug Shot", "Clean Shot", "Heated Split Shot",
       "Heated Slug Shot", "Heated Clean Shot", "Hot Shot", "Heat Blast"
     ].indexOf(actionGroups.actionname) > -1) {
-      delete toggle.aoe;
-      icon.drill = "003043";
-      icon.heatblast = "003030";
-      addIconBlinkTimeout("drill", checkCooldown("drill", player.ID), nextid.drill, icon.drill);
-      removeIcon(nextid.flamethrower);
+      count.aoe = 1;
     }
 
     // These actions don't interrupt combos
@@ -211,6 +225,7 @@ function mchAction() {
       addCooldown("hotshot", player.ID, recast.hotshot);
       addIconBlinkTimeout("hotshot", recast.hotshot, nextid.hotshot, icon.hotshot);
       mchBattery();
+      mchHeat();
     }
 
     else if (["Drill", "Bioblaster"].indexOf(actionGroups.actionname) > -1) {
@@ -221,10 +236,17 @@ function mchAction() {
       previous.drill = Date.now();
       removeIcon(nextid.drill);
       addCooldown("drill", player.ID, recast.drill);
-      addIconBlinkTimeout("drill", recast.drill, nextid.drill, icon.drill);
+      if (checkCooldown("reassemble", player.ID) < checkCooldown("drill", player.ID)) {
+        addIconBlinkTimeout("drill", recast.drill, nextid.drill, icon.reassemble);
+      }
+      else {
+        addIconBlinkTimeout("drill", recast.drill, nextid.drill, icon.drill);
+      }
+      mchHeat();
     }
 
-    else if (["Heat Blast", "Auto Crossbow"].indexOf(actionGroups.actionname) > -1) {
+    else if ("Heat Blast" == actionGroups.actionname) {
+
       addCooldown("gaussround1", player.ID, checkCooldown("gaussround1", player.ID) - 15000);
       addCooldown("gaussround2", player.ID, checkCooldown("gaussround2", player.ID) - 15000);
       addCooldown("ricochet1", player.ID, checkCooldown("ricochet1", player.ID) - 15000);
@@ -232,6 +254,27 @@ function mchAction() {
       if (player.level >= 74) {
         addCooldown("gaussround3", player.ID, checkCooldown("gaussround3", player.ID) - 15000);
         addCooldown("ricochet3", player.ID, checkCooldown("ricochet3", player.ID) - 15000);
+      }
+    }
+
+    else if ("Auto Crossbow" == actionGroups.actionname
+    && actionGroups.result.length >= 2) {
+      if (Date.now() - previous.autocrossbow > 1000) {
+        previous.autocrossbow = Date.now();
+        count.aoe = 1;
+      }
+      else {
+        count.aoe = count.aoe + 1;
+      }
+    }
+
+    else if ("Flamethrower" == actionGroups.actionname) {
+      if (Date.now() - previous.flamethrower > 1000) {
+        previous.flamethrower = Date.now();
+        count.aoe = 1;
+      }
+      else {
+        count.aoe = count.aoe + 1;
       }
     }
 
@@ -248,6 +291,8 @@ function mchAction() {
           addCooldown("gaussround1", player.ID, checkCooldown("gaussround2", player.ID));
           addCooldown("gaussround2", player.ID, checkCooldown("gaussround2", player.ID) + recast.gaussround);
           addCooldown("gaussround3", player.ID, checkCooldown("gaussround3", player.ID) + recast.gaussround);
+          removeIcon(nextid.gaussround);
+          addIconBlinkTimeout("gaussround", checkCooldown("gaussround1", player.ID), nextid.gaussround, icon.gaussround);
         }
       }
       else {
@@ -257,11 +302,20 @@ function mchAction() {
         else if (checkCooldown("gaussround1", player.ID) < 0) {
           addCooldown("gaussround1", player.ID, checkCooldown("gaussround2", player.ID));
           addCooldown("gaussround2", player.ID, checkCooldown("gaussround2", player.ID) + recast.gaussround);
+          removeIcon(nextid.gaussround);
+          addIconBlinkTimeout("gaussround", checkCooldown("gaussround1", player.ID), nextid.gaussround, icon.gaussround);
         }
       }
     }
 
     else if ("Ricochet" == actionGroups.actionname) {
+      if (Date.now() - previous.ricochet > 1000) {
+        previous.ricochet = Date.now();
+        count.aoe = 1;
+      }
+      else {
+        count.aoe = count.aoe + 1;
+      }
       if (player.level >= 74) {
         if (checkCooldown("ricochet3", player.ID) < 0) {
           addCooldown("ricochet3", player.ID, recast.ricochet);
@@ -274,6 +328,8 @@ function mchAction() {
           addCooldown("ricochet1", player.ID, checkCooldown("ricochet2", player.ID));
           addCooldown("ricochet2", player.ID, checkCooldown("ricochet2", player.ID) + recast.ricochet);
           addCooldown("ricochet3", player.ID, checkCooldown("ricochet3", player.ID) + recast.ricochet);
+          removeIcon(nextid.ricochet);
+          addIconBlinkTimeout("ricochet", checkCooldown("ricochet1", player.ID), nextid.ricochet, icon.ricochet);
         }
       }
       else {
@@ -283,6 +339,8 @@ function mchAction() {
         else if (checkCooldown("ricochet1", player.ID) < 0) {
           addCooldown("ricochet1", player.ID, checkCooldown("ricochet2", player.ID));
           addCooldown("ricochet2", player.ID, checkCooldown("ricochet2", player.ID) + recast.ricochet);
+          removeIcon(nextid.ricochet);
+          addIconBlinkTimeout("ricochet", checkCooldown("ricochet1", player.ID), nextid.ricochet, icon.ricochet);
         }
       }
     }
@@ -290,28 +348,29 @@ function mchAction() {
     else if ("Reassemble" == actionGroups.actionname) {
       removeIcon(nextid.reassemble);
       addCooldown("reassemble", player.ID, recast.reassemble);
-      addIconBlinkTimeout("reassemble", recast.reassemble, nextid.reassemble, icon.reassemble);
+      if (player.level >= 58
+      && checkCooldown("drill", player.ID) < 0) {
+        addIcon(nextid.drill, icon.drill);
+      }
     }
 
     else if ("Hypercharge" == actionGroups.actionname) {
-      removeIcon(nextid.hypercharge);
-      addCooldown("hypercharge", player.ID, recast.hypercharge);
-      addStatus("hypercharge", player.ID, duration.hypercharge);
       mchHeat();
     }
 
     else if (["Rook Autoturret", "Automaton Queen"].indexOf(actionGroups.actionname) > -1) {
-      removeIcon(nextid.rookautoturret);
+      mchBattery();
     }
 
     else if ("Wildfire" == actionGroups.actionname) {
-      removeIcon(nextid.wildfire);
       addCooldown("wildfire", player.ID, recast.wildfire);
+      mchHeat();
     }
 
     else if ("Barrel Stabilizer" == actionGroups.actionname) {
       removeIcon(nextid.barrelstabilizer);
       addCooldown("barrelstabilizer", player.ID, recast.barrelstabilizer);
+      addIconBlinkTimeout("barrelstabilizer", recast.barrelstabilizer, nextid.barrelstabilizer, icon.barrelstabilizer);
       mchHeat();
     }
 
@@ -353,6 +412,13 @@ function mchAction() {
     }
 
     else if ("Spread Shot" == actionGroups.actionname) {
+      if (Date.now() - previous.spreadshot > 1000) {
+        previous.spreadshot = Date.now();
+        count.aoe = 1;
+      }
+      else {
+        count.aoe = count.aoe + 1;
+      }
       removeIcon(nextid.spreadshot);
       mchHeat();
       delete toggle.combo;
@@ -369,9 +435,7 @@ function mchAction() {
 }
 
 function mchStatus() {
-  if (statusGroups.statusname == "Wildfire") {
-    addStatus("wildfire", statusGroups.targetID, statusGroups.duration * 1000);
-  }
+ //????
 }
 
 function mchCombo() {
@@ -381,7 +445,7 @@ function mchCombo() {
   removeIcon(nextid.slugshot);
   removeIcon(nextid.cleanshot);
 
-  if (toggle.aoe) { // AoE\
+  if (count.aoe >= 3) {
     next.combo = 2;
     addIcon(nextid.spreadshot,icon.spreadshot);
   }
@@ -404,12 +468,26 @@ function mchComboTimeout() { // Set between combo actions
 }
 
 function mchHeat() {
-  // get player.heat from player.debugJob
-  if (player.heat >= 50
-  && checkCooldown("hypercharge", player.ID) < 2500
-  && checkCooldown("drill", player.ID) > 12500
-  && (player.level >= 76 && checkCooldown("hotshot", player.ID) > 12500)) {
-    addIconBlink(nextid.hypercharge, icon.hypercharge);
+  addText("debug1", "Heat: " + player.jobDetail.heat);
+  if (player.jobDetail.heat >= 50
+  && (player.level < 58 || checkCooldown("drill", player.ID) > 12500)
+  && (player.level < 76 || checkCooldown("hotshot", player.ID) > 12500)) {
+    if (player.level >= 45
+    && checkCooldown("wildfire", player.ID) < 1000) {
+      addIconBlink(nextid.wildfire, icon.wildfire);
+    }
+    else {
+      addIconBlink(nextid.hypercharge, icon.hypercharge);
+    }
+  }
+  else if (player.jobDetail.heat == 100) {
+    if (player.level >= 45
+    && checkCooldown("wildfire", player.ID) < 1000) {
+      addIconBlink(nextid.wildfire, icon.wildfire);
+    }
+    else {
+      addIconBlink(nextid.hypercharge, icon.hypercharge);
+    }
   }
   else {
     removeIcon(nextid.hypercharge);
@@ -417,8 +495,8 @@ function mchHeat() {
 }
 
 function mchBattery() {
-  // get player.battery from player.debugJob
-  if (player.battery >= 50) {
+  addText("debug2", "Battery: " + player.jobDetail.battery);
+  if (player.jobDetail.battery >= 50) {
     addIconBlink(nextid.rookautoturret, icon.rookautoturret);
   }
   else {
