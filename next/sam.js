@@ -390,8 +390,6 @@ function samMeikyoShisui() {
 
 function samSen() {
 
-  player.jobDetail.getsu = player.jobDetail.gekko; // Until cactbot fixes this
-
   removeIcon(nextid.iaijutsu1);
   removeIcon(nextid.iaijutsu2);
 
@@ -520,7 +518,7 @@ function samKenki() {
 }
 
 function samCombo() {
-  player.jobDetail.getsu = player.jobDetail.gekko // Until cactbot fixes this
+
   delete toggle.combo;
 
   // Reset icons
