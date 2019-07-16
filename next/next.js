@@ -1,6 +1,5 @@
 "use strict";
 
-var dom = {};
 var recast = {};
 var cooldowntracker = {};     // Holds timestamps for cooldowns
 var statustracker = {};       // Holds timestamps for statuses
@@ -18,8 +17,6 @@ var toggle = {};              // Toggley things
 var count = {};               // County things?
 var previous = {};
 var next = {};
-
-// var statusList = {};
 
 var dom = {};
 for (var x = 0; x < 30; x++) {
