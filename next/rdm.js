@@ -37,7 +37,7 @@ actionList.rdm = [
 function rdmJobChange() {
 
   // Set up UI
-  nextid.luciddreaming = 0;
+  nextid.manafication = 0;
   nextid.riposte = 1;
   nextid.moulinet = nextid.riposte;
   nextid.zwerchhau = 2;
@@ -47,18 +47,18 @@ function rdmJobChange() {
   nextid.scorch = 5;
   nextid.hardcast = 6;
   nextid.dualcast = 7;
-  nextid.manafication = 11;
-  nextid.fleche = 12;
-  nextid.contresixte = 13;
-  nextid.acceleration = 14;
-  nextid.corpsacorps = 15;
-  nextid.displacement = 16;
+  nextid.luciddreaming = 10;
+  nextid.fleche = 11;
+  nextid.contresixte = 12;
+  nextid.acceleration = 13;
+  nextid.corpsacorps = 14;
+  nextid.displacement = 15;
 
   previous.contresixte = 0;
   previous.verthunder2 = 0;
   previous.veraero2 = 0;
   previous.scatter = 0;
-  previous.impact = 0;
+  previous.moulinet = 0;
 
   // Set up icons
   if (player.level >= 62) {
@@ -132,19 +132,15 @@ function rdmAction() {
 
     removeText("loadmessage");
 
-    if (["Enchanted Riposte", "Enchanted Zwerchhau", "Enchanted Redoublement", "Verflare", "Verholy", "Scorch"].indexOf(actionGroups.actionname) > -1) {
-      // Does "Enchanted Reprise" go here too?
-    }
-
     // These actions don't interrupt combos
 
-    if (actionGroups.actionname == "Acceleration") {
+    if ("Acceleration" == actionGroups.actionname) {
       addCooldown("acceleration", player.ID, recast.acceleration);
       removeIcon(nextid.acceleration);
       addIconBlinkTimeout("acceleration",recast.acceleration,nextid.acceleration,icon.acceleration);
     }
 
-    else if (actionGroups.actionname == "Contre Sixte") {
+    else if ("Contre Sixte" == actionGroups.actionname) {
       addCooldown("contresixte", player.ID, recast.contresixte);
       removeIcon(nextid.contresixte);
       addIconBlinkTimeout("contresixte",recast.contresixte,nextid.contresixte,icon.contresixte);
@@ -157,51 +153,55 @@ function rdmAction() {
       }
     }
 
-    else if (actionGroups.actionname == "Corps-A-Corps") {
+    else if ("Corps-A-Corps" == actionGroups.actionname) {
       addCooldown("corpsacorps", player.ID, recast.corpsacorps);
       removeIcon(nextid.corpsacorps);
       addIconBlinkTimeout("corpsacorps",recast.corpsacorps,nextid.corpsacorps,icon.corpsacorps);
     }
 
-    else if (actionGroups.actionname == "Displacement") {
+    else if ("Displacement" == actionGroups.actionname) {
       addCooldown("displacement", player.ID, recast.displacement);
       removeIcon(nextid.displacement);
       addIconBlinkTimeout("displacement",recast.displacement,nextid.displacement,icon.displacement);
     }
 
-    else if (actionGroups.actionname == "Fleche") {
+    else if ("Fleche" == actionGroups.actionname) {
       addCooldown("fleche", player.ID, recast.fleche);
       removeIcon(nextid.fleche);
       addIconBlinkTimeout("fleche",recast.fleche,nextid.fleche,icon.fleche);
     }
 
-    // else if (actionGroups.actionname == "Embolden") {
+    // else if ("Embolden" == actionGroups.actionname) {
     //   addCooldown("embolden", player.ID, recast.embolden);
     //   removeIcon(nextid.embolden);
     //   addIconBlinkTimeout("fleche",recast.embolden,nextid.embolden,icon.embolden);
     // }
 
-    else if (actionGroups.actionname == "Swiftcast") {
+    else if ("Swiftcast" == actionGroups.actionname) {
       addCooldown("swiftcast", player.ID, recast.swiftcast);
     }
 
-    else if (actionGroups.actionname == "Lucid Dreaming") {
+    else if ("Lucid Dreaming" == actionGroups.actionname) {
       removeIcon(nextid.luciddreaming);
       addCooldown("luciddreaming", player.ID, recast.luciddreaming);
     }
 
     // Combo actions
 
-    else if (actionGroups.actionname == "Enchanted Riposte") {
+    else if (["Riposte", "Enchanted Riposte"].indexOf(actionGroups.actionname) > -1) {
       if (player.level >= 35) {
         toggle.combo = Date.now();
       }
-      count.aoe = 1;
+      if (player.level >= 52) {
+        count.aoe = 1;
+      }
       removeIcon(nextid.riposte);
     }
 
-    else if (actionGroups.actionname == "Enchanted Zwerchhau") {
-      count.aoe = 1;
+    else if (["Zwerchhau", "Enchanted Zwerchhau"].indexOf(actionGroups.actionname) > -1) {
+      if (player.level >= 52) {
+        count.aoe = 1;
+      }
       removeIcon(nextid.zwerchhau);
       if (player.level < 50) {
         delete toggle.combo;
@@ -209,7 +209,10 @@ function rdmAction() {
       }
     }
 
-    else if (actionGroups.actionname == "Enchanted Redoublement") {
+    else if (["Redoublement", "Enchanted Redoublement"].indexOf(actionGroups.actionname) > -1) {
+      if (player.level >= 52) {
+        count.aoe = 1;
+      }
       removeIcon(nextid.redoublement);
       if (player.level < 68) {
         delete toggle.combo;
@@ -217,7 +220,8 @@ function rdmAction() {
       }
     }
 
-    else if (actionGroups.actionname == "Verflare") {
+    else if ("Verflare" == actionGroups.actionname) {
+      count.aoe = 1;
       removeIcon(nextid.verflare);
       if (player.level < 80) {
         delete toggle.combo;
@@ -225,7 +229,8 @@ function rdmAction() {
       }
     }
 
-    else if (actionGroups.actionname == "Verholy") {
+    else if ("Verholy" == actionGroups.actionname) {
+      count.aoe = 1;
       removeIcon(nextid.verholy);
       if (player.level < 80) {
         delete toggle.combo;
@@ -233,15 +238,14 @@ function rdmAction() {
       }
     }
 
-    else if (actionGroups.actionname == "Scorch") {
+    else if ("Scorch" == actionGroups.actionname) {
+      count.aoe = 1;
       removeIcon(nextid.scorch);
       delete toggle.combo;
       rdmDualcast();
     }
 
-    // These actions interrupt combos
-
-    else {
+    else { // Interrupt combo
 
       delete toggle.combo;
 
@@ -251,11 +255,11 @@ function rdmAction() {
       removeIcon(nextid.verflare);
       removeIcon(nextid.scorch);
 
-      if (actionGroups.actionname == "Verfire") {
+      if ("Verfire" == actionGroups.actionname) {
         removeStatus("verfireready", player.ID)
       }
 
-      else if (actionGroups.actionname == "Verstone") {
+      else if ("Verstone" == actionGroups.actionname) {
         removeStatus("verstoneready", player.ID)
       }
 
@@ -264,7 +268,7 @@ function rdmAction() {
         count.aoe = 1;
       }
 
-      else if (actionGroups.actionname == "Verthunder II") {
+      else if ("Verthunder II" == actionGroups.actionname) {
         if (Date.now() - previous.verthunder2 > 1000) {
           previous.verthunder2 = Date.now();
           count.aoe = 1;
@@ -274,7 +278,7 @@ function rdmAction() {
         }
       }
 
-      else if (actionGroups.actionname == "Veraero II") {
+      else if ("Veraero II" == actionGroups.actionname) {
         if (Date.now() - previous.veraero2 > 1000) {
           previous.veraero2 = Date.now();
           count.aoe = 1;
@@ -292,9 +296,6 @@ function rdmAction() {
         else {
           count.aoe = count.aoe + 1;
         }
-        if (count.aoe < 4) {
-          rdmDualcast();
-        }
       }
 
       else if (["Moulinet", "Enchanted Moulinet"].indexOf(actionGroups.actionname) > -1) {
@@ -305,9 +306,10 @@ function rdmAction() {
         else {
           count.aoe = count.aoe + 1;
         }
+        rdmDualcast();
       }
 
-      else if (actionGroups.actionname == "Manafication") {
+      else if ("Manafication" == actionGroups.actionname) {
         addCooldown("manafication", player.ID, recast.manafication);
         clearTimeout(timeout.corpsacorps);
         clearTimeout(timeout.displacement);
@@ -324,23 +326,22 @@ function rdmStatus() {
 
   if (statusGroups.targetID == player.ID) {
 
-    if (statusGroups.statusname == "Dualcast") {
+    if ("Dualcast" == statusGroups.statusname) {
       if (statusGroups.gainsloses == "gains") {
         addStatus("dualcast", player.ID, parseInt(statusGroups.duration) * 1000);
         removeIcon(nextid.hardcast);
       }
       else if (statusGroups.gainsloses == "loses") {
-        addText("debug2", "Loses Dualcast");
         removeStatus("dualcast", player.ID);
         rdmDualcast();
       }
     }
 
-    else if (statusGroups.statusname == "Verfire Ready") {
+    else if ("Verfire Ready" == statusGroups.statusname) {
       if (statusGroups.gainsloses == "gains") {
         addStatus("verfireready", player.ID, parseInt(statusGroups.duration) * 1000);
         if (!toggle.combo) {
-          rdmDualcast(); // Prevents Verflare/Verholy procs from resetting combo
+          rdmDualcast(); // Prevents Verflare proc from resetting combo
         }
       }
       else if (statusGroups.gainsloses == "loses") {
@@ -348,11 +349,11 @@ function rdmStatus() {
       }
     }
 
-    else if (statusGroups.statusname == "Verstone Ready") {
+    else if ("Verstone Ready" == statusGroups.statusname) {
       if (statusGroups.gainsloses == "gains") {
         addStatus("verstoneready", player.ID, parseInt(statusGroups.duration) * 1000);
         if (!toggle.combo) {
-          rdmDualcast();
+          rdmDualcast(); // Prevents Verholy proc from resetting combo
         }
       }
       else if (statusGroups.gainsloses == "loses") {
@@ -360,7 +361,7 @@ function rdmStatus() {
       }
     }
 
-    else if (statusGroups.statusname == "Swiftcast") {
+    else if ("Swiftcast" == statusGroups.statusname) {
       if (statusGroups.gainsloses == "gains") {
         addStatus("swiftcast", player.ID, parseInt(statusGroups.duration) * 1000);
         removeIcon(nextid.hardcast);
@@ -383,40 +384,73 @@ function rdmDualcast() {
   removeIcon(nextid.verflare);
   removeIcon(nextid.scorch);
 
-  // rdmManafication();
-
-  if (player.level >= 70
-  && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 80
-  && player.jobDetail.blackMana > player.jobDetail.whiteMana
-  && checkStatus("verstoneready", player.ID) < 0) {
-    addText("debug1", "Start combo - Verholy (100% proc)");
-    rdmHolyCombo();
+  if (count.aoe >= 2
+  && checkCooldown("manafication", player.ID) < 0
+  && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 70) {
+    addIconBlink(nextid.moulinet, icon.moulinet);
   }
 
-  else if (player.level >= 68
-  && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 80
-  && player.jobDetail.whiteMana > player.jobDetail.blackMana
-  && checkStatus("verfireready", player.ID) < 0) {
-    addText("debug1", "Start combo - Verflare (100% proc)");
-    rdmFlareCombo();
+  else if (count.aoe >= 4
+  && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 20) {
+    addIconBlink(nextid.moulinet, icon.moulinet);
   }
 
-  // No fancy stuff before 68
+  else if (count.aoe >= 2
+  && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) > 90) {
+    addIconBlink(nextid.moulinet, icon.moulinet);
+  }
 
-  else if (player.level < 68
+  else if ((player.level < 52 || count.aoe == 1)
   && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 80) {
-    addText("debug1", "Start combo");
-    rdmCombo();
+    if (player.level >= 70
+    && player.jobDetail.blackMana > player.jobDetail.whiteMana
+    && checkStatus("verstoneready", player.ID) < 7000) {
+      addText("debug1", "Start combo - Verholy (100% proc)");
+      rdmHolyCombo();
+    }
+    else if (player.level >= 68
+    && player.jobDetail.whiteMana > player.jobDetail.blackMana
+    && checkStatus("verfireready", player.ID) < 7000) {
+      addText("debug1", "Start combo - Verflare (100% proc)");
+      rdmFlareCombo();
+    }
+    else if (player.level >= 70
+    && player.jobDetail.blackMana <= player.jobDetail.whiteMana
+    && player.jobDetail.whiteMana + 20 <= player.jobDetail.blackMana + 30
+    && checkStatus("verstoneready", player.ID) < 7000) {
+      addText("debug1", "Start combo - Verholy (20% proc)");
+      rdmHolyCombo();
+    }
+    else if (player.level >= 68
+    && player.jobDetail.whiteMana <= player.jobDetail.blackMana
+    && player.jobDetail.blackMana + 20 <= player.jobDetail.whiteMana + 30
+    && checkStatus("verfireready", player.ID) < 7000) {
+      addText("debug1", "Start combo - Verflare (20% proc)");
+      rdmFlareCombo();
+    }
+    else if (player.level >= 70
+    && player.jobDetail.whiteMana + 20 <= player.jobDetail.blackMana + 30) {
+      addText("debug1", "Start combo - Verholy (?)");
+      rdmHolyCombo();
+    }
+    else if (player.level >= 68
+    && player.jobDetail.blackMana + 20 <= player.jobDetail.whiteMana + 30) {
+      addText("debug1", "Start combo - Verflare (?)");
+      rdmFlareCombo();
+    }
+    // No fancy stuff before 68
+    else if (player.level < 68) {
+      addText("debug1", "Start combo");
+      rdmCombo();
+    }
   }
 
-  else {
-    rdmManafication();
+  else { // Loop through all possible combinations
     next.dualcast = [];
     next.dualcastvalue = 0;
-
+    rdmManafication(); // Check Manafication state
     for (i = 0; i < hardcastarraylength; i = i + 3) {
       for (j = 0; j < dualcastarraylength; j = j + 3) {
-
         if (rdmDualcastValue(hardcast[i], hardcast[i + 1], hardcast[i + 2], dualcast[j], dualcast[j + 1], dualcast[j + 2]) > next.dualcastvalue) {
           next.dualcast = [hardcast[i], dualcast[j]];
           next.dualcastvalue = rdmDualcastValue(hardcast[i], hardcast[i + 1], hardcast[i + 2], dualcast[j], dualcast[j + 1], dualcast[j + 2]);
@@ -425,7 +459,7 @@ function rdmDualcast() {
       }
     }
 
-
+    // Shows resulting icon
     if ("Jolt" == next.dualcast[0]) {
       addIcon(nextid.hardcast, icon.jolt);
     }
@@ -454,62 +488,50 @@ function rdmDualcast() {
     else if ("Scatter" == next.dualcast[1]) {
       addIcon(nextid.dualcast, icon.scatter);
     }
-
   }
 }
 
-function rdmDualcastTimeout() {
+function rdmComboTimeout() {
   if (toggle.combat) {
     rdmDualcast();
   }
 }
 
-
-
 function rdmDualcastValue(hardcastaction, hardcastblack, hardcastwhite, dualcastaction, dualcastblack, dualcastwhite) {
 
+  // Calculate manapotency using latest values... probably
   let manapotency = Math.max(9.1, 2.43 * count.aoe);
-
-  // TODO: assign potency values to mana gains and actual spells - that's almost definitely the best way to do this
-  // Loop through all possible combinations and then keep highest one
-  // This function assigns values to various situations.
-  // Adjust values to make some situations more (or less) weighted than others.
-  // Calculates mana after dualcast and manafication
-
-
-
 
   // Calculate initial value based on current mana potency
   let value = (hardcastblack + dualcastblack + hardcastwhite + dualcastwhite) * manapotency;
 
-  // Calculates mana after dualcast (no manafication)
-  next.hardcastblackMana = Math.min(player.jobDetail.blackMana + hardcastblack, 100);
-  next.hardcastwhiteMana = Math.min(player.jobDetail.whiteMana + hardcastwhite, 100);
+  // Calculates mana gain, adjusts value for wasted mana
   if (toggle.manafication) {
     next.blackMana = Math.min(2 * (player.jobDetail.blackMana + hardcastblack + dualcastblack), 100);
     next.whiteMana = Math.min(2 * (player.jobDetail.whiteMana + hardcastwhite + dualcastwhite), 100);
     value = value - (Math.max(2 * (player.jobDetail.blackMana + hardcastblack + dualcastblack), 100) - 100) * manapotency;
     value = value - (Math.max(2 * (player.jobDetail.whiteMana + hardcastwhite + dualcastwhite), 100) - 100) * manapotency;
-
   }
   else {
     next.blackMana = Math.min(player.jobDetail.blackMana + hardcastblack + dualcastblack, 100);
     next.whiteMana = Math.min(player.jobDetail.whiteMana + hardcastwhite + dualcastwhite, 100);
     value = value - (Math.max(player.jobDetail.blackMana + hardcastblack + dualcastblack, 100) - 100) * manapotency;
     value = value - (Math.max(player.jobDetail.whiteMana + hardcastwhite + dualcastwhite, 100) - 100) * manapotency;
-
   }
 
-  // Overcapping
+  // Calculates mana after hardcast
+  next.hardcastblackMana = Math.min(player.jobDetail.blackMana + hardcastblack, 100);
+  next.hardcastwhiteMana = Math.min(player.jobDetail.whiteMana + hardcastwhite, 100);
 
-
-  if (player.level >= 62
+  // Assign value to spells
+  if (player.level >= 2
   && "Jolt" == hardcastaction) {
-    value = value + 250;
-  }
-  else if (player.level >= 2
-  && "Jolt" == hardcastaction) {
-    value = value + 180;
+    if (player.level >= 62) { // Trait
+      value = value + 250;
+    }
+    else {
+      value = value + 180;
+    }
   }
   else if (checkStatus("verfireready", player.ID) > 5000
   && "Verfire" == hardcastaction) {
@@ -527,14 +549,24 @@ function rdmDualcastValue(hardcastaction, hardcastblack, hardcastwhite, dualcast
   }
   else if (player.level >= 18
   && "Verthunder II" == hardcastaction) {
-    value = value + 120 * count.aoe;
+    if (player.level >= 78) { // Trait
+      value = value + 120 * count.aoe;
+    }
+    else {
+      value = value + 100 * count.aoe;
+    }
     if (player.jobDetail.blackMana < player.jobDetail.whiteMana) {
       value = value + 1;
     }
   }
   else if (player.level >= 22
   && "Veraero II" == hardcastaction) {
-    value = value + 120 * count.aoe;
+    if (player.level >= 78) { // Trait
+      value = value + 120 * count.aoe;
+    }
+    else {
+      value = value + 100 * count.aoe;
+    }
     if (player.jobDetail.whiteMana < player.jobDetail.blackMana) {
       value = value + 1;
     }
@@ -542,7 +574,7 @@ function rdmDualcastValue(hardcastaction, hardcastblack, hardcastwhite, dualcast
   else if (player.level >= 18
   && checkCooldown("swiftcast", player.ID) < 0
   && "Swiftcast" == hardcastaction) {
-    value = value + 310; // check later
+    value = value + 310; // Not actually sure what it's worth, but this seems about right
   }
   else {
     value = value - 1000000;
@@ -550,25 +582,26 @@ function rdmDualcastValue(hardcastaction, hardcastblack, hardcastwhite, dualcast
 
   if (player.level >= 4
   && "Verthunder" == dualcastaction) {
-    value = value + 310;
+    value = value + 310 + 0.5 * procpotency;
     if (next.hardcastblackMana < next.hardcastwhiteMana) {
       value = value + 1;
     }
   }
   else if (player.level >= 10
   && "Veraero" == dualcastaction) {
-    value = value + 310;
+    value = value + 310 + 0.5 * procpotency;
     if (next.hardcastwhiteMana < next.hardcastblackMana) {
       value = value + 1;
     }
   }
-  else if (player.level >= 66
-  && "Scatter" == dualcastaction) {
-    value = value + 220 * count.aoe;
-  }
   else if (player.level >= 15
   && "Scatter" == dualcastaction) {
-    value = value + 120 * count.aoe;
+    if (player.level >= 66) { // Trait
+      value = value + 220 * count.aoe;
+    }
+    else {
+      value = value + 120 * count.aoe;
+    }
   }
   else {
     value = value - 1000000;
@@ -579,12 +612,11 @@ function rdmDualcastValue(hardcastaction, hardcastblack, hardcastwhite, dualcast
     value = value - 1000000; // Just don't do it?
   }
 
-  // Penalizes overwriting
-
+  // Penalizes wasting 50% proc chance
   if (dualcastaction == "Verthunder"
   && hardcastaction != "Verfire"
   && checkStatus("verfireready", player.ID) >= 5000) {
-    value = value - 0.5 * procpotency; // Wastes 50% proc chance
+    value = value - 0.5 * procpotency;
   }
   else if (dualcastaction == "Veraero"
   && hardcastaction != "Verstone"
@@ -592,50 +624,32 @@ function rdmDualcastValue(hardcastaction, hardcastblack, hardcastwhite, dualcast
     value = value - 0.5 * procpotency;
   }
 
+  // Finds combo transitions and adds proc value
   if (Math.min(next.blackMana, next.whiteMana) >= 80) {
-
     if (player.level >= 70
     && next.blackMana > next.whiteMana
     && (checkStatus("verstoneready", player.ID) < 5000 || hardcastaction == "Verstone")
     && dualcastaction != "Veraero") {
       value = value + procpotency; // Sets up for 100% proc Verholy
     }
-
     else if (player.level >= 68
     && next.blackMana < next.whiteMana
     && (checkStatus("verfireready", player.ID) < 5000 || hardcastaction == "Verfire")
     && dualcastaction != "Verthunder") {
       value = value + procpotency; // Sets up for 100% proc Verflare
     }
-
     else if (player.level >= 70
     && next.blackMana <= next.whiteMana
     && (checkStatus("verstoneready", player.ID) < 5000 || hardcastaction == "Verstone")
     && dualcastaction != "Veraero") {
-      value = value + 0.2 * procpotency; // Sets up for 100% proc Verholy
+      value = value + 0.2 * procpotency; // Sets up for 20% proc Verholy
     }
-
     else if (player.level >= 68
     && next.blackMana >= next.whiteMana
     && (checkStatus("verfireready", player.ID) < 5000 || hardcastaction == "Verfire")
     && dualcastaction != "Verthunder") {
-      value = value + 0.2 * procpotency; // Sets up for 100% proc Verflare
+      value = value + 0.2 * procpotency; // Sets up for 20% proc Verflare
     }
-
-
-    // else if (player.level >= 70
-    // && next.whiteMana + 21 - next.blackMana <= 30
-    // && (checkStatus("verstoneready", player.ID) < 5000 || hardcastaction == "Verstone")
-    // && dualcastaction != "Veraero") {
-    //   value = value + 100; // Sets up for 20% proc Verholy
-    // }
-    //
-    // else if (player.level >= 68
-    // && next.blackMana + 21 - next.whiteMana <= 30
-    // && (checkStatus("verfireready", player.ID) < 5000 || hardcastaction == "Verfire")
-    // && dualcastaction != "Verthunder") {
-    //   value = value + 100; // Sets up for 20% proc Verflare
-    // }
   }
 
   return value;
@@ -667,9 +681,6 @@ function rdmHolyCombo() {
   }
 }
 
-// Note to self
-// delete toggle.combo; is everywhere because Manafication relies on it to check
-
 function rdmManafication() {
 
   if (player.level >= 60
@@ -682,9 +693,14 @@ function rdmManafication() {
       delete toggle.manafication;
     }
 
-    // Use if able to get 5x Moulinet for AOE
-    else if (count.aoe > 2
+    else if (count.aoe >= 4
     && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 50) {
+      addIconBlink(nextid.manafication,icon.manafication);
+      toggle.manafication = Date.now();
+    }
+
+    else if (count.aoe >= 2
+    && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 46) {
       addIconBlink(nextid.manafication,icon.manafication);
       toggle.manafication = Date.now();
     }
