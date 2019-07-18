@@ -339,7 +339,9 @@ function rdmStatus() {
     else if (statusGroups.statusname == "Verfire Ready") {
       if (statusGroups.gainsloses == "gains") {
         addStatus("verfireready", player.ID, parseInt(statusGroups.duration) * 1000);
-        rdmDualcast();
+        if (!toggle.combo) {
+          rdmDualcast(); // Prevents Verflare/Verholy procs from resetting combo
+        }
       }
       else if (statusGroups.gainsloses == "loses") {
         removeStatus("verfireready", player.ID)
@@ -349,7 +351,9 @@ function rdmStatus() {
     else if (statusGroups.statusname == "Verstone Ready") {
       if (statusGroups.gainsloses == "gains") {
         addStatus("verstoneready", player.ID, parseInt(statusGroups.duration) * 1000);
-        rdmDualcast();
+        if (!toggle.combo) {
+          rdmDualcast();
+        }
       }
       else if (statusGroups.gainsloses == "loses") {
         removeStatus("verstoneready", player.ID)
