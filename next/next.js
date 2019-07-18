@@ -26,6 +26,7 @@ for (var x = 0; x < 30; x++) {
 for (var x = 0; x < 10; x++) {
   dom["debug" + x] = document.getElementById("debug" + x);
 }
+dom.loadmessage = document.getElementById("loadmessage");
 
 var player = {};
 var target = {};
@@ -374,8 +375,8 @@ function removeIcon(nextid) {
 }
 
 function addText(textid,message) {
-  document.getElementById(textid).style.display = "table-row";
-  document.getElementById(textid).innerText = message;
+  dom[textid].style.display = "table-row";
+  dom[textid].innerText = message;
 }
 
 function removeText(textid) {
