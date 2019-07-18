@@ -348,15 +348,15 @@ function removeStatus(statusname, targetid) {
 // Icon functions
 
 function addIcon(nextid, actionicon) {
-  document.getElementById("icon" + nextid).src = "icons/" + actionicon + ".png";
-  document.getElementById("next" + nextid).className = "icondiv addfadein";
-  document.getElementById("next" + nextid).style.display = "table-cell";
+  dom["icon" + nextid].src = "icons/" + actionicon + ".png";
+  dom["next" + nextid].className = "icondiv addfadein";
+  dom["next" + nextid].style.display = "table-cell";
 }
 
 function addIconBlink(nextid, actionicon) {
-  document.getElementById("icon" + nextid).src = "icons/" + actionicon + ".png";
-  document.getElementById("next" + nextid).className = "icondiv addfadeinblink";
-  document.getElementById("next" + nextid).style.display = "table-cell";
+  dom["icon" + nextid].src = "icons/" + actionicon + ".png";
+  dom["next" + nextid].className = "icondiv addfadeinblink";
+  dom["next" + nextid].style.display = "table-cell";
 }
 
 function addIconTimeout(action, delay, nextid, actionicon) {
@@ -370,20 +370,20 @@ function addIconBlinkTimeout(action, delay, nextid, actionicon) {
 }
 
 function removeIcon(nextid) {
-  document.getElementById("next" + nextid).className = "icondivtest fadeoutremove";
+  dom["next" + nextid].className = "icondivtest fadeoutremove";
 }
 
-function addText(actionid,message) {
-  document.getElementById(actionid).style.display = "table-row";
-  document.getElementById(actionid).innerText = message;
+function addText(textid,message) {
+  document.getElementById(textid).style.display = "table-row";
+  document.getElementById(textid).innerText = message;
 }
 
-function removeText(actionid) {
-  document.getElementById(actionid).style.display = "none";
+function removeText(textid) {
+  document.getElementById(textid).style.display = "none";
 }
 
 function clearElements() {
-  for (var x = 0; x < 30; x++) {
-    document.getElementById("next" + x).style.display = "none";
+  for (var nextid = 0; nextid < 30; nextid++) {
+    dom["next" + nextid].style.display = "none";
   }
 }
