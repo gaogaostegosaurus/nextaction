@@ -6,6 +6,16 @@ recast.peloton = 5000;
 recast.rampart = 90000;
 recast.swiftcast = 60000;
 
+// BRD
+recast.ballad = 80000;
+recast.ragingstrikes = 80000;
+recast.barrage = 80000;
+recast.paeon = 80000;
+recast.battlevoice = 120000;
+recast.minuet = 80000;
+recast.empyrealarrow = 15000;
+recast.sidewinder = 60000;
+
 // MCH
 recast.barrelstabilizer = 120000;
 recast.drill = 20000;

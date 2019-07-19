@@ -141,7 +141,7 @@ function mchJobChange() {
   else {
     removeIcon(nextid.drill);
   }
-  
+
   mchHeat();
   mchBattery();
   mchCombo();
@@ -149,7 +149,7 @@ function mchJobChange() {
 
 function mchPlayerChangedEvent() {
 
-  nextid.heatblast = 0;
+  nextid.heatblast = 0; // Can be null at odd times
   if (player.jobDetail.overheated == 1) {
     addIconBlink(nextid.heatblast, icon.heatblast);
   }

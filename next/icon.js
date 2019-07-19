@@ -17,6 +17,25 @@ icon.blizzard4 = "002659";
 icon.despair = "002665";
 icon.xenoglossy = "002667";
 
+// BRD
+icon.ragingstrikes = "000352";
+icon.barrage = "000353";
+icon.heavyshot = "000358";
+icon.straightshot = "000359";
+icon.venomousbite = "000363";
+icon.windbite = "000367";
+icon.ballad = "002602";
+icon.paeon = "002603";
+icon.requiem = "002604";
+icon.empyrealarrow = "002606";
+icon.minuet = "002607";
+icon.ironjaws = "002608";
+icon.sidewinder = "002610";
+icon.pitchperfect = "002611";
+icon.causticbite = "002613";
+icon.stormbite = "002614";
+icon.refulgentarrow = "002616";
+
 // MCH
 icon.splitshot = "003001";
 icon.slugshot = "003002";

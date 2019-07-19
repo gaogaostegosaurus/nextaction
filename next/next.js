@@ -118,9 +118,12 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
 
 document.addEventListener('onTargetChangedEvent', function(e) {
   target = e.detail;
-  target.ID = e.detail.id.toString(16).toUpperCase(); //
+  target.ID = e.detail.id.toString(16).toUpperCase(); // See player.ID above
 
-  if (player.job == "WHM") {
+  if (player.job == "BRD") {
+    brdTargetChangedEvent();
+  }
+  else if (player.job == "WHM") {
     whmTargetChangedEvent();
   }
 });
@@ -134,6 +137,7 @@ document.addEventListener("onInCombatChangedEvent", function(e) {
   }
   else {
     delete toggle.combat;
+    count.aoe = 1;
     document.getElementById("nextdiv").className = "fadeout";
 
 
