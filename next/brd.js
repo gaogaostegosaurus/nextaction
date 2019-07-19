@@ -1,7 +1,11 @@
 "use strict";
 
-actionList.brd = ["Heavy Shot", "Straight Shot", "Venomous Bite", "Quick Nock", "Windbite", "Iron Jaws", "Caustic Bite", "Stormbite", "Refulgent Arrow",
-  "Raging Strikes", "Barrage", "Mage\'s Ballad", "Army\'s Paeon", "Battle Voice", "The Wanderer\'s Minuet", "Empyreal Arrow", "Sidewinder"];
+actionList.brd = [
+  "Heavy Shot", "Straight Shot", "Venomous Bite", "Windbite", "Iron Jaws", "Caustic Bite", "Stormbite", "Refulgent Arrow",
+  "Quick Nock",
+  "Raging Strikes", "Barrage", "Battle Voice", "The Wanderer\'s Minuet", "Empyreal Arrow", "Sidewinder",
+  "Mage\'s Ballad", "Army\'s Paeon",
+];
 
 // statusList.brd = ["Straight Shot", "Straighter Shot", "Raging Strikes", "Foe Requiem",
 //   "Venomous Bite", "Windbite", "Caustic Bite", "Stormbite"];
@@ -16,52 +20,25 @@ var brdBuffer = 5000;
 statustime.venomousbite = [];
 statustime.windbite = [];
 
-nextid.ironjaws = "next0";
-nextid.straightshot = "next1";
-nextid.windbite = "next2";
-nextid.venomousbite = "next3";
-nextid.openingstraightshot = "next4";
-nextid.straightershot = "next5";
-nextid.refulgentarrow = nextid.straightershot;
-nextid.heavyshot = "next6";
+function brdJobChange() {
 
-nextid.ballad = "next10";
-nextid.paeon = nextid.ballad;
-nextid.minuet = nextid.ballad;
-nextid.pitchperfect = "next11";
-nextid.empyrealarrow = "next12";
-nextid.sidewinder = "next13";
-nextid.ragingstrikes = "next14";
-nextid.barrage = "next15";
-
-icon.ragingstrikes = "000352";
-icon.barrage = "000353";
-icon.heavyshot = "000358";
-icon.straightshot = "000359";
-icon.venomousbite = "000363";
-icon.windbite = "000367";
-icon.ballad = "002602";
-icon.paeon = "002603";
-icon.requiem = "002604";
-icon.empyrealarrow = "002606";
-icon.minuet = "002607";
-icon.ironjaws = "002608";
-icon.sidewinder = "002610";
-icon.pitchperfect = "002611";
-icon.causticbite = "002613";
-icon.stormbite = "002614";
-icon.refulgentarrow = "002616";
-
-recast.ballad = 80000;
-recast.ragingstrikes = 80000;
-recast.barrage = 80000;
-recast.paeon = 80000;
-recast.battlevoice = 120000;
-recast.minuet = 80000;
-recast.empyrealarrow = 15000;
-recast.sidewinder = 60000;
-
-function brdPlayerChangedEvent(e) {
+  nextid.ironjaws = 0;
+  nextid.windbite = 1;
+  nextid.venomousbite = 2;
+  nextid.straightshot = 3;
+  nextid.refulgentarrow = nextid.straightshot;
+  nextid.heavyshot = 4;
+  nextid.burstshot = nextid.heavyshot;
+  nextid.quicknock = nextid.heavyshot;
+  nextid.ballad = 10;
+  nextid.paeon = nextid.ballad;
+  nextid.minuet = nextid.ballad;
+  nextid.ragingstrikes = 11;
+  nextid.barrage = 12;
+  nextid.pitchperfect = 13;
+  nextid.empyrealarrow = 14;
+  nextid.sidewinder = 15;
+  nextid.shadowbite = nextid.sidewinder;
 
   if (player.level >= 64) {
     icon.venomousbite = icon.causticbite;
@@ -71,6 +48,29 @@ function brdPlayerChangedEvent(e) {
     icon.venomousbite = "000363";
     icon.windbite = "000367";
   }
+
+  if (player.level >= 70) {
+    icon.straightshot = icon.refulgentarrow;
+  }
+  else {
+    icon.straightshot = "000359";
+  }
+
+  if (player.level >= 76) {
+    icon.heavyshot = icon.burstshot;
+  }
+  else {
+    icon.heavyshot = "000358";
+  }
+
+  previous.quicknock = 0;
+  previous.rainofdeath = 0;
+  previous.shadowbite = 0;
+  previous.apexarrow = 0;
+}
+
+
+function brdPlayerChangedEvent() {
 
   // Pitch Perfect
   if (player.jobDetail.songName == "Minuet"
@@ -92,36 +92,28 @@ function brdPlayerChangedEvent(e) {
   }
 }
 
-function brdInCombatChangedEvent(e) { // Fires when player enters combat
-
-  // Populate icons
-
+function brdCheckDoTs() {
   if (player.level >= 54
-  && statustime.venomousbite[statustime.venomousbite.indexOf(target.name) + 1] - Date.now() - brdBuffer * 2 < 0
-  && statustime.windbite[statustime.windbite.indexOf(target.name) + 1] - Date.now() < 0 - brdBuffer * 2 ) {
-    brdAddIcon(nextid.ironjaws,icon.ironjaws);
+  && (checkStatus("venomousbite", target.ID) >= 5000 || checkStatus("windbite", target.ID) >= 5000)) {
+    addIconBlinkTimeout("ironjaws", Math.min(checkStatus("venomousbite", target.ID), checkStatus("windbite", target.ID)) - 5000, nextid.ironjaws, icon.ironjaws);
   }
-
-  if (player.level >= 18
-  && statustime.windbite.indexOf(target.id) > -1) {
-    brdAddIcon(nextid.windbite,icon.windbite);
-  }
-
-  if (player.level >= 6
-  && statustime.windbite.indexOf(target.id) > -1) {
-    brdAddIcon(nextid.venomousbite,icon.venomousbite);
-  }
-
-  if (player.level >= 2
-  && (!statustime.straightshot || statustime.straightshot - Date.now() - brdBuffer < 0)) {
-    brdAddIcon(nextid.openingstraightshot,icon.straightshot);
-  }
-
-  if (statustime.straightershot) { // This feels like it needs to be fixed/cleaned up
-    if (player.level >= 70) {
-      brdAddIcon(nextid.straightershot,icon.refulgentarrow);
+  else {
+    if (player.level >= 18) {
+      addIconBlinkTimeout("windbite", checkStatus("windbite", target.ID) - 2500, nextid.windbite, icon.windbite);
+    }
+    if (player.level >= 6) {
+      addIconBlinkTimeout("venomousbite", checkStatus("venomousbite", target.ID) - 2500, nextid.venomousbite, icon.venomousbite);
     }
   }
+}
+
+function brdTargetChangedEvent(){
+  brdCheckDoTs();
+}
+
+function brdInCombatChangedEvent() { // Fires when player enters combat
+
+  brdCheckDoTs();
 
   if (player.jobDetail.songName == "") { // Activate if no song
 
@@ -157,28 +149,34 @@ function brdInCombatChangedEvent(e) { // Fires when player enters combat
   }
 
   if (player.level >= 68
-  && (!cooldowntime.empyrealarrow || cooldowntime.empyrealarrow - Date.now() < 0)
+  && checkCooldown("empyrealarrow", player.ID) < 0
   && player.jobDetail.songName != "") {
-    addIcon(nextid.empyrealarrow,icon.empyrealarrow);
+    addIconBlink(nextid.empyrealarrow,icon.empyrealarrow);
   }
-  else if (player.level >= 54
-  && (!cooldowntime.empyrealarrow || cooldowntime.empyrealarrow - Date.now() < 0)) {
-    addIcon(nextid.empyrealarrow,icon.empyrealarrow);
+  else if (player.level < 68
+  && checkCooldown("empyrealarrow", player.ID) < 0) {
+    addIconBlink(nextid.empyrealarrow,icon.empyrealarrow);
+  }
+  else {
+    removeIcon(nextid.empyrealarrow);
   }
 
   if (player.level >= 60
-  && (!cooldowntime.sidewinder || cooldowntime.sidewinder - Date.now() < 0)) {
-    addIcon(nextid.sidewinder,icon.sidewinder);
+  && checkCooldown("sidewinder", player.ID) < 0
+  && checkStatus("venomousbite", target.ID) > 2500
+  && checkStatus("windbite", target.ID) > 2500) {
+    addIconBlink(nextid.sidewinder,icon.sidewinder);
+  }
+  else {
+    removeIcon(nextid.sidewinder);
   }
 
   if (player.level >= 4 &&
-  (!cooldowntime.ragingstrikes || cooldowntime.ragingstrikes - Date.now() < 0)) {
-    addIcon(nextid.ragingstrikes,icon.ragingstrikes);
+  && checkCooldown("ragingstrikes", player.ID) < 0) {
+    addIconBlink(nextid.ragingstrikes,icon.ragingstrikes);
   }
-
-  if (player.level >= 4 &&
-  (!cooldowntime.ragingstrikes || cooldowntime.ragingstrikes - Date.now() < 0)) {
-    addIcon(nextid.ragingstrikes,icon.ragingstrikes);
+  else {
+    removeIcon(nextid.ragingstrikes);
   }
 }
 
@@ -215,24 +213,14 @@ function brdAction(logLine) {
       brdRemoveIcon(nextid.ironjaws);
     }
 
-    else if (logLine[3] == "Windbite") {
-      addStatus("windbite", logLine[5], 18000);
-      brdRemoveIcon(nextid.windbite);
+    else if (["Windbite", "Stormbite"].indexOf(actionGroups.actionname) > -1) {
+      addStatus("windbite", actionGroups.targetID, 30000);
+      removeIcon(nextid.windbite);
     }
 
-    else if (logLine[3] == "Stormbite") {
-      addStatus("windbite", logLine[5], 30000);
-      brdRemoveIcon(nextid.windbite);
-    }
-
-    else if (logLine[3] == "Venomous Bite") {
-      addStatus("venomousbite", logLine[5], 18000);
-      brdRemoveIcon(nextid.venomousbite);
-    }
-
-    else if (logLine[3] == "Caustic Bite") {
-      addStatus("venomousbite", logLine[5], 30000);
-      brdRemoveIcon(nextid.venomousbite);
+    else if (["Venomous Bite", "Caustic Bite"].indexOf(actionGroups.actionname) > -1) {
+      addStatus("venomousbite", actionGroups.targetID, 30000);
+      removeIcon(nextid.windbite);
     }
 
     else if (logLine[3] == "Refulgent Arrow") {
@@ -335,36 +323,9 @@ function brdAction(logLine) {
 
 function brdStatus(logLine) {
 
-  addText("debug1", logLine[1] + " " + logLine[2] + " " + logLine[3]);
+  if (logLine[1] == player.name) {
 
-  // To anyone from anyone (non-stacking)
-
-  if (logLine[3] == "Foe Requiem") {
-    if (logLine[2] == "gains") {
-      statustime.foerequiem.push(logLine[1], Date.now() + parseInt(logLine[5]) * 1000);
-    }
-    else if (logLine[2] == "loses") {
-      statustime.foerequiem.splice(indexOf(logLine[1]),2);
-    }
-  }
-
-  // To player from anyone
-
-  else if (logLine[1] == player.name) {
-
-    if (logLine[3] == "Straight Shot") {
-      if (logLine[2] == "gains") {
-        statustime.straightshot = Date.now() + parseInt(logLine[5]) * 1000;
-        brdRemoveIcon(nextid.straightshot);
-        brdaddIconTimeout("straightshot",parseInt(logLine[5]) * 1000 - brdBuffer,nextid.straightshot,icon.straightshot);
-      }
-      else if (logLine[2] == "loses") {
-        delete statustime.straightshot;
-        brdAddIcon(nextid.straightshot,icon.straightshot);
-      }
-    }
-
-    else if (logLine[3] == "Straighter Shot") {
+    if (logLine[3] == "Straighter Shot") {
       if (logLine[2] == "gains") {
         statustime.straightershot = Date.now() + parseInt(logLine[5]) * 1000;
         if (player.level >= 70
