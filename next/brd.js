@@ -171,7 +171,7 @@ function brdInCombatChangedEvent() { // Fires when player enters combat
     removeIcon(nextid.sidewinder);
   }
 
-  if (player.level >= 4 &&
+  if (player.level >= 4
   && checkCooldown("ragingstrikes", player.ID) < 0) {
     addIconBlink(nextid.ragingstrikes,icon.ragingstrikes);
   }
