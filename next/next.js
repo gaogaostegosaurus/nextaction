@@ -57,10 +57,6 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
   player.ID = e.detail.id.toString(16).toUpperCase(); // player.id.toString(16) is lowercase; using "ID" to designate uppercase lettering
   player.debugJobSplit = player.debugJob.split(" ");
 
-  player.jobDetail.heat = parseInt(player.debugJobSplit[4], 16);
-  player.jobDetail.battery = parseInt(player.debugJobSplit[5], 16);
-  player.jobDetail.overheated = player.debugJobSplit[7]; // Just 0 or 1
-
   // Detects name/job/level change and clears elements
   if (previous.name != player.name || previous.job != player.job || previous.level != player.level) {
     delete toggle.combo;
@@ -72,10 +68,12 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
       blmJobChange();
     }
     else if (player.job == "BRD") {
-      // actionRegExp = new RegExp(' 1[56]:([\\dA-F]{8}):(' + player.name + '):[\\dA-F]{2,8}:(' + actionList.brd.join("|") + '):([\\dA-F]{2,8}):([^:]*):([\\dA-F]{1,8}):');
-      // statusRegExp = new RegExp(' 1[AE]:([\\dA-F]{8}):(.*) (gains|loses) the effect of (' + statusList.brd.join("|") + ') from (' + player.name + ')(?: for )?(\\d*\\.\\d*)?(?: Seconds)?\\.');
+      brdJobChange();
     }
     else if (player.job == "MCH") {
+      player.jobDetail.heat = parseInt(player.debugJobSplit[4], 16);
+      player.jobDetail.battery = parseInt(player.debugJobSplit[5], 16);
+      player.jobDetail.overheated = player.debugJobSplit[7]; // Just 0 or 1
       mchJobChange();
     }
     else if (player.job == "RDM") {
@@ -224,7 +222,7 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
         blmAction(actionLog);
       }
       else if (player.job == "BRD") {
-        brdAction(actionLog);
+        brdAction();
       }
       else if (player.job == "MCH") {
         mchAction();
@@ -253,7 +251,7 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
         blmStatus(statusLog);
       }
       else if (player.job == "BRD") {
-        brdStatus(statusLog);
+        brdStatus();
       }
       else if (player.job == "MCH") {
         mchStatus(statusLog);
@@ -309,10 +307,10 @@ function checkCooldown(cooldownname, sourceid) {
     return -1;
   }
   else if (cooldowntracker[cooldownname].indexOf(sourceid) > -1) {
-    return cooldowntracker[cooldownname][cooldowntracker[cooldownname].indexOf(sourceid) + 1] - Date.now();
+    return Math.max(cooldowntracker[cooldownname][cooldowntracker[cooldownname].indexOf(sourceid) + 1] - Date.now(), -1);
   }
   else {
-    return -1;
+    return -1; // Always eturns -1 when cooldown is available
   }
 }
 
@@ -334,7 +332,7 @@ function checkStatus(statusname, targetid) {
     return -1;
   }
   else if (statustracker[statusname].indexOf(targetid) > -1) {
-    return statustracker[statusname][statustracker[statusname].indexOf(targetid) + 1] - Date.now();
+    return Math.max(statustracker[statusname][statustracker[statusname].indexOf(targetid) + 1] - Date.now(), -1);
   }
   else {
     return -1;
