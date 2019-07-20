@@ -281,7 +281,7 @@ function warAction() {
         warCombo();
       }
 
-      if (combo.aoe > 3
+      if (count.aoe > 3
       && checkStatus("mitigation", statusGroups.targetID) < 2500) {
         warMitigation();
       }
