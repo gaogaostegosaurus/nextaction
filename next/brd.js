@@ -188,11 +188,23 @@ function brdAction() {
   }
 
   else if ("Quick Nock" == actionGroups.actionname) {
-
+    if (Date.now() - previous.quicknock > 1000) {
+      previous.quicknock = Date.now();
+      count.aoe = 1;
+    }
+    else {
+      count.aoe = count.aoe + 1;
+    }
   }
 
   else if ("Rain Of Death" == actionGroups.actionname) {
-
+    if (Date.now() - previous.rainofdeath > 1000) {
+      previous.rainofdeath = Date.now();
+      count.aoe = 1;
+    }
+    else {
+      count.aoe = count.aoe + 1;
+    }
   }
 
   else if ("Raging Strikes" == actionGroups.actionname) {
@@ -224,7 +236,7 @@ function brdAction() {
     removeIcon(nextid.sidewinder);
     addIconBlinkTimeout("sidewinder",recast.sidewinder,nextid.sidewinder,icon.sidewinder);
     if (Date.now() - previous.shadowbite > 1000) {
-      previous.overpower = Date.now();
+      previous.shadowbite = Date.now();
       count.aoe = 1;
     }
     else {
