@@ -115,6 +115,7 @@ function rdmJobChange() {
 }
 
 function rdmPlayerChangedEvent() {
+  nextid.luciddreaming = 10;
 
   // Lucid Dreaming
   if (player.currentMP / player.maxMP < 0.85

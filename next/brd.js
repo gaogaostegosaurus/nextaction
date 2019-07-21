@@ -187,6 +187,14 @@ function brdAction() {
     }
   }
 
+  else if ("Quick Nock" == actionGroups.actionname) {
+
+  }
+
+  else if ("Rain Of Death" == actionGroups.actionname) {
+
+  }
+
   else if ("Raging Strikes" == actionGroups.actionname) {
     addCooldown("ragingstrikes", player.ID, recast.ragingstrikes);
     removeIcon(nextid.ragingstrikes);
@@ -206,9 +214,22 @@ function brdAction() {
   }
 
   else if ("Sidewinder" == actionGroups.actionname) {
-    addCooldown("barrage", player.ID, recast.barrage);
-    removeIcon(nextid.barrage);
-    addIconBlinkTimeout("barrage",recast.barrage,nextid.barrage,icon.barrage);
+    addCooldown("sidewinder", player.ID, recast.sidewinder);
+    removeIcon(nextid.sidewinder);
+    addIconBlinkTimeout("sidewinder",recast.sidewinder,nextid.sidewinder,icon.sidewinder);
+  }
+
+  else if ("Shadowbite" == actionGroups.actionname) {
+    addCooldown("sidewinder", player.ID, recast.sidewinder); // Same cooldown as SW
+    removeIcon(nextid.sidewinder);
+    addIconBlinkTimeout("sidewinder",recast.sidewinder,nextid.sidewinder,icon.sidewinder);
+    if (Date.now() - previous.shadowbite > 1000) {
+      previous.overpower = Date.now();
+      count.aoe = 1;
+    }
+    else {
+      count.aoe = count.aoe + 1;
+    }
   }
 
   else if ("Mage's Ballad" == actionGroups.actionname) {

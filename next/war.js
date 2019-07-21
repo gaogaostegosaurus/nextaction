@@ -68,17 +68,19 @@ function warJobChange() {
     icon.steelcyclone = "002552";
   }
 
-  if (player.level >= 46
-  && checkCooldown("vengeance", player.ID) < 0) {
-    addIconBlink(nextid.vengeance,icon.vengeance);
-  }
-  else if (player.level >= 56
-  && checkCooldown("rawintuition", player.ID) < 0) {
-    addIconBlink(nextid.rawintuition,icon.rawintuition);
-  }
-  else if (player.level >= 8
-  && checkCooldown("rampart", player.ID) < 0) {
-    addIconBlink(nextid.rampart,icon.rampart);
+  if (count.aoe > 1) {
+    if (player.level >= 56
+    && checkCooldown("rawintuition", player.ID) < 0) {
+      addIconBlink(nextid.rawintuition,icon.rawintuition);
+    }
+    else if (player.level >= 8
+    && checkCooldown("rampart", player.ID) < 0) {
+      addIconBlink(nextid.rampart,icon.rampart);
+    }
+    else if (player.level >= 46
+    && checkCooldown("vengeance", player.ID) < 0) {
+      addIconBlink(nextid.vengeance,icon.vengeance);
+    }
   }
 
   if (player.level >= 50
