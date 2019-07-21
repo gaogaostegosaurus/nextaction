@@ -57,6 +57,16 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
   player.ID = e.detail.id.toString(16).toUpperCase(); // player.id.toString(16) is lowercase; using "ID" to designate uppercase lettering
   player.debugJobSplit = player.debugJob.split(" ");
 
+  // DRK resources
+  player.jobDetail.darkarts = player.debugJobSplit[4]; // 0 or 1
+  player.jobDetail.darkside = parseInt(player.debugJobSplit[2], 16) + parseInt(player.debugJobSplit[3], 16) * 256;
+  addText("debug1", player.jobDetail.darkside);
+
+  // MCH resources
+  player.jobDetail.heat = parseInt(player.debugJobSplit[4], 16);
+  player.jobDetail.battery = parseInt(player.debugJobSplit[5], 16);
+  player.jobDetail.overheated = player.debugJobSplit[7]; // Just 0 or 1
+
   // Detects name/job/level change and clears elements
   if (previous.name != player.name || previous.job != player.job || previous.level != player.level) {
     delete toggle.combo;
@@ -71,9 +81,6 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
       brdJobChange();
     }
     else if (player.job == "MCH") {
-      player.jobDetail.heat = parseInt(player.debugJobSplit[4], 16);
-      player.jobDetail.battery = parseInt(player.debugJobSplit[5], 16);
-      player.jobDetail.overheated = player.debugJobSplit[7]; // Just 0 or 1
       mchJobChange();
     }
     else if (player.job == "RDM") {
