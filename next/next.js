@@ -129,13 +129,16 @@ document.addEventListener('onTargetChangedEvent', function(e) {
 document.addEventListener("onInCombatChangedEvent", function(e) {
 // Fires when character exits or enters combat
 
+  count.aoe = 1;
+  // Can't think of a good way to consistently reset AoE count other than this
+  // Hopefully does not have a race condition with starting with AoEs...
+  
   if (e.detail.inGameCombat) {
     toggle.combat = Date.now();
     document.getElementById("nextdiv").className = "fadein";
   }
   else {
     delete toggle.combat;
-    count.aoe = 1;
     document.getElementById("nextdiv").className = "fadeout";
 
 
