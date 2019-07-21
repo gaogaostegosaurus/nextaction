@@ -22,7 +22,7 @@ var j;
 
 actionList.rdm = [
 
-  "Corps-A-Corps", "Displacement", "Fleche", "Contre Sixte", "Acceleration", "Manafication",
+  "Corps-A-Corps", "Displacement", "Fleche", "Contre Sixte", "Acceleration", "Manafication", "Engagement",
 
   "Riposte", "Zwerchhau", "Redoublement", "Moulinet", "Reprise",
   "Enchanted Riposte", "Enchanted Zwerchhau", "Enchanted Redoublement", "Enchanted Moulinet", "Enchanted Reprise",
@@ -160,7 +160,7 @@ function rdmAction() {
       addIconBlinkTimeout("corpsacorps",recast.corpsacorps,nextid.corpsacorps,icon.corpsacorps);
     }
 
-    else if ("Displacement" == actionGroups.actionname) {
+    else if (["Displacement", "Engagement"].indexOf(actionGroups.actionname) > -1) {
       addCooldown("displacement", player.ID, recast.displacement);
       removeIcon(nextid.displacement);
       addIconBlinkTimeout("displacement",recast.displacement,nextid.displacement,icon.displacement);
@@ -575,7 +575,7 @@ function rdmDualcastValue(hardcastaction, hardcastblack, hardcastwhite, dualcast
   else if (player.level >= 18
   && checkCooldown("swiftcast", player.ID) < 0
   && "Swiftcast" == hardcastaction) {
-    value = value + 310; // Not actually sure what it's worth, but this seems about right
+    value = value + Math.max(310, 220 * count.aoe); // Not actually sure what it's worth, but this seems about right
   }
   else {
     value = value - 1000000;
