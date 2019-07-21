@@ -211,12 +211,15 @@ function brdAction() {
     addCooldown("ragingstrikes", player.ID, recast.ragingstrikes);
     removeIcon(nextid.ragingstrikes);
     addIconBlinkTimeout("ragingstrikes",recast.ragingstrikes,nextid.ragingstrikes,icon.ragingstrikes);
+    if (player.level >= 38
+    && checkStatus("straightshotready") < 0) {
+      addIconBlinkTimeout("barrage", checkCooldown("barrage", player.ID), nextid.barrage, icon.barrage);
+    }
   }
 
   else if ("Barrage" == actionGroups.actionname) {
     addCooldown("barrage", player.ID, recast.barrage);
     removeIcon(nextid.barrage);
-    addIconBlinkTimeout("barrage",recast.barrage,nextid.barrage,icon.barrage);
   }
 
   else if ("Battle Voice" == actionGroups.actionname) {
@@ -351,10 +354,13 @@ function brdStatus() {
 
     if (statusGroups.statusname == "Straight Shot Ready") {
       if (statusGroups.gainsloses == "gains") {
+        addStatus("straightshotready", player.ID);
         addIconBlink(nextid.straightshot,icon.straightshot);
+        removeIcon(nextid.barrage);
       }
       else if (statusGroups.gainsloses == "loses") {
         removeIcon(nextid.straightshot);
+        addIconBlinkTimeout("barrage", checkCooldown("barrage", player.ID), nextid.barrage, icon.barrage);
       }
     }
 
