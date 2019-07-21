@@ -28,10 +28,10 @@ actionList.war = [
 
 function warJobChange() {
 
-  nextid.rampart = 0;
-  nextid.vengeance = nextid.rampart;
-  nextid.rawintuition = nextid.rampart;
-  nextid.mitigation = nextid.rampart;
+  nextid.mitigation = 0;
+  nextid.vengeance = nextid.mitigation;
+  nextid.rawintuition = nextid.mitigation;
+  nextid.rampart = nextid.mitigation;
   nextid.innerbeast = 1;
   nextid.steelcyclone = nextid.innerbeast;
   nextid.fellcleave = nextid.innerbeast;
@@ -66,7 +66,7 @@ function warJobChange() {
   else {
     icon.steelcyclone = "002552";
   }
-  
+
   if (player.level >= 70) {
     icon.berserk = icon.innerrelease;
   }
@@ -155,7 +155,7 @@ function warAction() {
       addCooldown("rawintuition", player.ID, recast.rawintuition);
       removeIcon(nextid.rawintuition);
     }
-    
+
     else if (actionGroups.actionname == "Rampart") {
       addCooldown("rampart", player.ID, recast.rampart);
       removeIcon(nextid.rampart);
@@ -268,7 +268,7 @@ function warAction() {
       }
 
       if (count.aoe >= 3
-      && checkStatus("mitigation", statusGroups.targetID) < 2500) {
+      && checkStatus("mitigation", statusGroups.targetID) < 1000) {
         warMitigation();
       }
       else {
@@ -302,37 +302,6 @@ function warStatus() {
       }
     }
 
-    else if (statusGroups.statusname == "Rampart") {
-      if (statusGroups.gainsloses == "gains") {
-        if (checkStatus("mitigation", statusGroups.targetID) < parseInt(statusGroups.duration) * 1000) {
-          addStatus("mitigation", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
-        }
-      }
-      else if (statusGroups.gainsloses == "loses") {
-        if (checkStatus("mitigation", statusGroups.targetID) < 0) {
-          removeStatus("mitigation", statusGroups.targetID);
-          if (count.aoe >= 3) {
-            warMitigation();
-          }
-        }
-      }
-    }
-
-    else if (statusGroups.statusname == "Vengeance") {
-      if (statusGroups.gainsloses == "gains") {
-        if (checkStatus("mitigation", statusGroups.targetID) < parseInt(statusGroups.duration) * 1000) {
-          addStatus("mitigation", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
-        }
-      }
-      else if (statusGroups.gainsloses == "loses") {
-        if (checkStatus("mitigation", statusGroups.targetID) < 0) {
-          removeStatus("mitigation", statusGroups.targetID);
-          if (count.aoe >= 3) {
-            warMitigation();
-          }
-        }
-      }
-    }
 
     else if (statusGroups.statusname == "Storm's Eye") {
       if (statusGroups.gainsloses == "gains") {
@@ -350,11 +319,37 @@ function warStatus() {
         }
       }
       else if (statusGroups.gainsloses == "loses") {
-        if (checkStatus("mitigation", statusGroups.targetID) < 0) {
-          removeStatus("mitigation", statusGroups.targetID);
-          if (count.aoe >= 3) {
-            warMitigation();
-          }
+        if (checkStatus("mitigation", statusGroups.targetID) < 0
+        && count.aoe >= 3) {
+          warMitigation();
+        }
+      }
+    }
+
+    else if (statusGroups.statusname == "Rampart") {
+      if (statusGroups.gainsloses == "gains") {
+        if (checkStatus("mitigation", statusGroups.targetID) < parseInt(statusGroups.duration) * 1000) {
+          addStatus("mitigation", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
+        }
+      }
+      else if (statusGroups.gainsloses == "loses") {
+        if (checkStatus("mitigation", statusGroups.targetID) < 0 // Check for overlaps
+        && count.aoe >= 3) {
+          warMitigation();
+        }
+      }
+    }
+
+    else if (statusGroups.statusname == "Vengeance") {
+      if (statusGroups.gainsloses == "gains") {
+        if (checkStatus("mitigation", statusGroups.targetID) < parseInt(statusGroups.duration) * 1000) {
+          addStatus("mitigation", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
+        }
+      }
+      else if (statusGroups.gainsloses == "loses") {
+        if (checkStatus("mitigation", statusGroups.targetID) < 0
+        && count.aoe >= 3) {
+          warMitigation();
         }
       }
     }
@@ -366,7 +361,7 @@ function warStatus() {
       }
       else if (statusGroups.gainsloses == "loses") {
         removeStatus("nascentchaos", statusGroups.targetID);
-        addIconBlinkTimeout("berserk",checkCooldown("berserk", player.ID),nextid.berserk,icon.innerrelease);
+        addIconBlinkTimeout("berserk",checkCooldown("berserk", player.ID),nextid.berserk,icon.berserk);
       }
       warGauge()
     }
@@ -376,18 +371,31 @@ function warStatus() {
 
 function warMitigation() {
 
-  // Vengeance > Raw Intuition > Rampart > Raw Intuition > Wake up DPS plz
+  // Shows next mitigation cooldown
+  // Ideally Vengeance > Raw Intuition > Rampart > Raw Intuition > DPS plz wake up and DPS
 
-  if (player.level >= 46
-  && checkCooldown("vengeance", player.ID) <= Math.min(checkCooldown("rampart", player.ID), checkCooldown("rawintuition", player.ID))) {
-    addIconBlinkTimeout("mitigation",checkCooldown("vengeance", player.ID),nextid.mitigation,icon.vengeance);
+  if (player.level >= 56) {
+    if (checkCooldown("vengeance", player.ID) <= Math.min(checkCooldown("rampart", player.ID), checkCooldown("rawintuition", player.ID))) {
+      addIconBlinkTimeout("mitigation",checkCooldown("vengeance", player.ID),nextid.mitigation,icon.vengeance);
+    }
+    else if (checkCooldown("rawintuition", player.ID) <= Math.min(checkCooldown("rampart", player.ID), checkCooldown("vengeance", player.ID))) {
+      addIconBlinkTimeout("mitigation",checkCooldown("rawintuition", player.ID),nextid.mitigation,icon.rawintuition);
+    }
+    else if (checkCooldown("rampart", player.ID) <= Math.min(checkCooldown("vengeance", player.ID), checkCooldown("rawintuition", player.ID))) {
+      addIconBlinkTimeout("mitigation",checkCooldown("rampart", player.ID),nextid.mitigation,icon.rampart);
+    }
   }
-  else if (player.level >= 56
-  && checkCooldown("rawintuition", player.ID) <= Math.min(checkCooldown("rampart", player.ID), checkCooldown("vengeance", player.ID))) {
-    addIconBlinkTimeout("mitigation",checkCooldown("rawintuition", player.ID),nextid.mitigation,icon.rawintuition);
+
+  else if (player.level >= 46) {
+    if (checkCooldown("vengeance", player.ID) <= checkCooldown("rampart", player.ID)) {
+      addIconBlinkTimeout("mitigation",checkCooldown("vengeance", player.ID),nextid.mitigation,icon.vengeance);
+    }
+    else if (checkCooldown("rampart", player.ID) <= checkCooldown("vengeance", player.ID)) {
+      addIconBlinkTimeout("mitigation",checkCooldown("rampart", player.ID),nextid.mitigation,icon.rampart);
+    }
   }
-  else if (player.level >= 8
-  && checkCooldown("rampart", player.ID) <= Math.min(checkCooldown("rawintuition", player.ID), checkCooldown("vengeance", player.ID))) {
+
+  else if (player.level >= 8) {
     addIconBlinkTimeout("mitigation",checkCooldown("rampart", player.ID),nextid.mitigation,icon.rampart);
   }
 }
@@ -488,10 +496,14 @@ function warGauge() {
     gauge.max = 50; // All other cases
   }
 
-
-  if (player.level >= 70
+  // Berserk/Inner Release
+  if (checkCooldown("berserk", player.ID) < 0
+  && checkStatus("stormseye", player.ID) > 0) {
+    addIconBlink(nextid.berserk,icon.berserk);
+  }
+  else if (player.level >= 70
   && checkCooldown("upheaval", player.ID) < 1000
-  && checkStatus("berserk", player.ID) > -1) {
+  && checkStatus("berserk", player.ID) > 0) {
     addIconBlink(nextid.upheaval,icon.upheaval);
   }
   else if (player.level >= 64
@@ -504,7 +516,7 @@ function warGauge() {
     removeIcon(nextid.upheaval);
   }
 
-  if (player.level >= 35 
+  if (player.level >= 35
   && player.jobDetail.beast >= gauge.max) {
     addIconBlink(nextid.innerbeast, icon.innerbeast);
   }
@@ -515,7 +527,6 @@ function warGauge() {
 
 function warCombo() {
 
-  addText("debug1", "");   // Clear debug
   removeIcon(nextid.heavyswing);
   removeIcon(nextid.maim);
   removeIcon(nextid.stormspath);
@@ -527,14 +538,14 @@ function warCombo() {
     addText("debug1", "Refresh Storm's Eye for Berserk");
     stormseyeCombo();
   }
-  
+
   else if (player.level >= 74
   && count.aoe >= 2
   && checkStatus("stormseye", player.ID) > 7500) {
     addText("debug1", "Mythril Tempest Combo");
     mythriltempestCombo();
   }
-  
+
   else if (count.aoe >= 3
   && checkStatus("stormseye", player.ID) > 7500) {
     addText("debug1", "Mythril Tempest Combo");
@@ -546,8 +557,8 @@ function warCombo() {
   && checkStatus("stormseye", player.ID) < 10000) {
     addText("debug1", "Refresh Storm's Eye");
     stormseyeCombo();
-  }  
-  
+  }
+
   else {
     addText("debug1", "Storm's Path Combo");
     stormspathCombo();
