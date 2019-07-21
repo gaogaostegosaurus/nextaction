@@ -132,7 +132,7 @@ document.addEventListener("onInCombatChangedEvent", function(e) {
   count.aoe = 1;
   // Can't think of a good way to consistently reset AoE count other than this
   // Hopefully does not have a race condition with starting with AoEs...
-  
+
   if (e.detail.inGameCombat) {
     toggle.combat = Date.now();
     document.getElementById("nextdiv").className = "fadein";
