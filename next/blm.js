@@ -38,7 +38,7 @@ function blmPlayerChangedEvent() {
 
 function blmStart() {
   if (player.jobDetail.umbralStacks < 0) {
-    console.log("Casting under Umbral");
+    // console.log("Casting under Umbral");
     if ("Thunder III" == startGroups.actionname) {
       removeIcon(nextid.thunder3);
       previous.thunder3 = Date.now(); // Use this to detect last Thunder III cast, since status only takes hold on cast
