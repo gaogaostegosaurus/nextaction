@@ -29,17 +29,20 @@ actionList.drk = [
 
 function drkJobChange() {
 
+  console.log("Loading initial values");
+
   nextid.mitigation = 0;
-  nextid.theblackestnight = nextid.mitigation;
   nextid.rampart = nextid.mitigation;
   nextid.shadowwall = nextid.mitigation;
-  nextid.bloodspiller = 1;
-  nextid.quietus = nextid.bloodspiller;
-  nextid.livingshadow = nextid.bloodspiller;
-  nextid.hardslash = 2;
+  nextid.theblackestnight = 1;
+  nextid.gaugespender = 2;
+  nextid.bloodspiller = nextid.gaugespender;
+  nextid.quietus = nextid.gaugespender;
+  nextid.livingshadow = nextid.gaugespender;
+  nextid.hardslash = 3;
   nextid.unleash = nextid.hardslash;
-  nextid.syphonstrike = 3;
-  nextid.souleater = 4;
+  nextid.syphonstrike = 4;
+  nextid.souleater = 5;
   nextid.stalwartsoul = nextid.souleater;
   nextid.floodofdarkness = 10;
   nextid.edgeofdarkness = nextid.floodofdarkness;
@@ -54,282 +57,210 @@ function drkJobChange() {
   previous.quietus = 0;
   previous.abyssaldrain = 0;
 
-  if (player.level >= 74) {
-    icon.floodofdarkness = icon.floodofshadow;
-    icon.edgeofdarkness = icon.edgeofshadow;
-  }
-  else {
-    icon.floodofdarkness = "";
-    icon.edgeofdarkness = "";
-  }
+  drkCombo();
+  drkGauge();
 
-  if (player.level >= 60) {
-    icon.steelcyclone = icon.decimate;
-  }
-  else {
-    icon.steelcyclone = "002552";
-  }
-
-  if (player.level >= 70) {
-    icon.berserk = icon.innerrelease;
-  }
-  else {
-    icon.berserk = "000259";
-  }
-
-  if (count.aoe > 1) {
-    if (player.level >= 56
-    && checkCooldown("rawintuition", player.ID) < 0) {
-      addIconBlink(nextid.rawintuition,icon.rawintuition);
-    }
-    else if (player.level >= 8
-    && checkCooldown("rampart", player.ID) < 0) {
-      addIconBlink(nextid.rampart,icon.rampart);
-    }
-    else if (player.level >= 46
-    && checkCooldown("vengeance", player.ID) < 0) {
-      addIconBlink(nextid.vengeance,icon.vengeance);
-    }
-  }
-
-  if (player.level >= 50
-  && checkCooldown("infuriate1", player.ID) < 0) {
-    addIconBlink(nextid.infuriate,icon.infuriate);
-  }
-
-  // Berserk is complicated
-  if (player.level >= 64
-  && checkCooldown("upheaval", player.ID) < 0
-  && checkCooldown("berserk", player.ID) > 25000 ) {
-    addIconBlink(nextid.upheaval,icon.upheaval); // Show Upheaval if Berserk is far away
-  }
-  else if (player.level >= 74
-  && checkCooldown("infuriate1", player.ID) < 0) {
-    removeIcon(nextid.berserk); // Hide Berserk to prevent wasting Nascent Chaos
-  }
-  else if (player.level >= 6
-  && checkCooldown("berserk", player.ID) < 0) {
-    addIconBlink(nextid.berserk,icon.berserk);
-  }
-
-  warCombo();
-  warGauge();
 }
 
-function warAction() {
+function drkPlayerChangedEvent() {
+  drkMP(); // Also handles Dark Arts and such
+}
 
-  if (actionList.war.indexOf(actionGroups.actionname) > -1) {
+function drkAction() {
+
+  if (actionList.drk.indexOf(actionGroups.actionname) > -1) {
 
     removeText("loadmessage");
 
     // These actions don't break combo
 
-    if (["Berserk", "Inner Release"].indexOf(actionGroups.actionname) > -1) {
-      removeIcon(nextid.berserk);
-      addStatus("berserk", actionGroups.targetID, duration.berserk);
-      addCooldown("berserk", player.ID, recast.berserk);
-      addIconBlinkTimeout("berserk",recast.berserk,nextid.berserk,icon.berserk);
-      if (player.level >= 70) {
-        warGauge(); // Triggers gauge stuff for Inner Release
-      }
+    if ("Delirium" == actionGroups.actionname) {
+      removeIcon(nextid.delirium);
+      addStatus("delirium", actionGroups.targetID, duration.delirium);
+      addCooldown("delirium", player.ID, recast.delirium);
+      addIconBlinkTimeout("delirium", recast.delirium, nextid.delirium, icon.delirium);
+      drkGauge();
     }
 
-    else if (actionGroups.actionname == "Upheaval") {
-      removeIcon(nextid.upheaval);
-      addCooldown("upheaval", player.ID, recast.upheaval);
-      warGauge();
+    else if (["Flood Of Darkness", "Edge Of Darkness", "Flood Of Shadow", "Edge Of Shadow"].indexOf(actionGroups.actionname) > -1) {
+      removeIcon(nextid.floodofdarkness);
+      addCooldown("floodofdarkness", player.ID, recast.floodofdarkness);
+      drkMP();
     }
 
-    else if (actionGroups.actionname == "Infuriate") { // Code treats Infuriate like two different skills to juggle the charges.
-      if (checkCooldown("infuriate2", player.ID) < 0) {
-        addCooldown("infuriate1", player.ID, -1);
-        addCooldown("infuriate2", player.ID, recast.infuriate);
+    else if ("Blood Weapon" == actionGroups.actionname) {
+      removeIcon(nextid.bloodweapon);
+      addCooldown("bloodweapon", player.ID, recast.bloodweapon);
+      addIconBlinkTimeout("bloodweapon", recast.bloodweapon, nextid.bloodweapon, icon.bloodweapon);
+    }
+
+    else if ("Salted Earth" == actionGroups.actionname) {
+      removeIcon(nextid.saltedearth);
+      addCooldown("carveandspit", player.ID, recast.saltedearth);
+      addIconBlinkTimeout("carveandspit", recast.saltedearth, nextid.saltedearth, icon.saltedearth);
+    }
+
+    else if ("Abyssal Drain" == actionGroups.actionname) {
+      if (Date.now() - previous.abyssaldrain > 1000) {
+        previous.abyssaldrain = Date.now();
+        count.aoe = 1;
       }
       else {
-        removeIcon(nextid.infuriate);
-        addCooldown("infuriate1", player.ID, checkCooldown("infuriate2", player.ID));
-        addCooldown("infuriate2", player.ID, checkCooldown("infuriate2", player.ID) + recast.infuriate);
-        addIconBlinkTimeout("infuriate", checkCooldown("infuriate1", player.ID), nextid.infuriate, icon.infuriate);
+        count.aoe = count.aoe + 1;
       }
-      warGauge();
+      removeIcon(nextid.abyssaldrain);
+      addCooldown("abyssaldrain", player.ID, recast.abyssaldrain);
+      addIconBlinkTimeout("abyssaldrain", recast.abyssaldrain, nextid.abyssaldrain, icon.abyssaldrain);
     }
 
-    else if (actionGroups.actionname == "Raw Intuition") {
-      addCooldown("rawintuition", player.ID, recast.rawintuition);
-      removeIcon(nextid.rawintuition);
+    else if ("Carve And Spit" == actionGroups.actionname) {
+      removeIcon(nextid.carveandspit);
+      addCooldown("carveandspit", player.ID, recast.carveandspit);
+      addIconBlinkTimeout("carveandspit", recast.carveandspit, nextid.carveandspit, icon.carveandspit);
     }
 
-    else if (actionGroups.actionname == "Rampart") {
+    else if ("Plunge" == actionGroups.actionname) { // Code treats Infuriate like two different skills to juggle the charges.
+      if (player.level >= 78) {
+        if (checkCooldown("plunge2", player.ID) < 0) {
+          addCooldown("plunge1", player.ID, -1);
+          addCooldown("plunge2", player.ID, recast.plunge);
+        }
+        else {
+          removeIcon(nextid.plunge);
+          addCooldown("plunge1", player.ID, checkCooldown("plunge2", player.ID));
+          addCooldown("plunge2", player.ID, checkCooldown("plunge2", player.ID) + recast.plunge);
+          addIconBlinkTimeout("plunge", checkCooldown("plunge1", player.ID), nextid.plunge, icon.plunge);
+        }
+      }
+      else {
+        addCooldown("plunge", player.ID, recast.plunge);
+        addIconBlinkTimeout("plunge", recast.plunge, nextid.plunge, icon.plunge);
+      }
+    }
+
+    else if ("The Blackest Night" == actionGroups.actionname) {
+      addCooldown("theblackestnight", player.ID, recast.theblackestnight);
+      removeIcon(nextid.theblackestnight);
+    }
+
+    else if ("Shadow Wall" == actionGroups.actionname) {
+      addCooldown("shadowwall", player.ID, recast.shadowwall);
+      removeIcon(nextid.shadowwall);
+    }
+
+    else if ("Rampart" == actionGroups.actionname) {
       addCooldown("rampart", player.ID, recast.rampart);
       removeIcon(nextid.rampart);
     }
 
-    else if (actionGroups.actionname == "Vengeance") {
-      addCooldown("vengeance", player.ID, recast.vengeance);
-      removeIcon(nextid.vengeance);
-    }
-
     else { // GCD actions
 
-      if (["Inner Beast", "Fell Cleave", "Inner Chaos"].indexOf(actionGroups.actionname) > -1) {
-        if (player.level >= 45
-        && player.level < 54) {
-          count.aoe = 1; // Steel Cyclone is stronger than Inner Beast at 2+ targets
-        }
-        if (player.level >= 66) { // Enhanced Infuriate
-          addCooldown("infuriate1", player.ID, checkCooldown("infuriate1", player.ID) - 5000);
-          addCooldown("infuriate2", player.ID, checkCooldown("infuriate2", player.ID) - 5000);
-          removeIcon(nextid.infuriate);
-          addIconBlinkTimeout("infuriate",checkCooldown("infuriate1", player.ID),nextid.infuriate,icon.infuriate);
-        }
-        removeIcon(nextid.innerbeast);
+      if ("Bloodspiller" == actionGroups.actionname) {
+        removeIcon(nextid.bloodspiller);
       }
 
-      else if (["Steel Cyclone", "Decimate", "Chaotic Cyclone"].indexOf(actionGroups.actionname) > -1) {
-        if (Date.now() - previous.steelcyclone > 1000) {
+      else if ("Quietus" == actionGroups.actionname) {
+        if (Date.now() - previous.quietus > 1000) {
+          previous.quietus = Date.now();
           count.aoe = 1;
-          previous.steelcyclone = Date.now();
-          if (player.level >= 66) { // Enhanced Infuriate
-            addCooldown("infuriate1", player.ID, checkCooldown("infuriate1", player.ID) - 5000);
-            addCooldown("infuriate2", player.ID, checkCooldown("infuriate2", player.ID) - 5000);
-            removeIcon(nextid.infuriate);
-            addIconBlinkTimeout("infuriate",checkCooldown("infuriate1", player.ID),nextid.infuriate,icon.infuriate);
-          }
         }
         else {
           count.aoe = count.aoe + 1;
         }
-        removeIcon(nextid.innerbeast);
+        removeIcon(nextid.quietus);
       }
 
       // These actions affect combo
 
-      else if (actionGroups.actionname == "Heavy Swing"
+      else if ("Hard Slash" == actionGroups.actionname
       && actionGroups.result.length >= 2) {
-        if (!toggle.combo) {
-          warCombo();
-        }
-        removeIcon(nextid.heavyswing);
-        warComboTimeout();
-      }
-
-      else if (actionGroups.actionname == "Maim"
-      && actionGroups.result.length >= 8) {
-        removeIcon(nextid.heavyswing);
-        removeIcon(nextid.maim);
-        warComboTimeout();
-      }
-
-      else if (actionGroups.actionname == "Storm's Path"
-      && actionGroups.result.length >= 8) {
         count.aoe = 1;
-        delete toggle.combo;
-        warCombo();
+        if (next.combo != 1) {
+          drkCombo();
+          toggle.combo = Date.now();
+        }
+        removeIcon(nextid.hardslash);
+        drkComboTimeout();
       }
 
-      else if (actionGroups.actionname == "Storm's Eye"
+      else if ("Syphon Strike" == actionGroups.actionname
       && actionGroups.result.length >= 8) {
-        addStatus("stormseye", player.ID, duration.stormseye);
-        delete toggle.combo;
-        warCombo();
+        removeIcon(nextid.hardslash);
+        removeIcon(nextid.syphonstrike);
+        drkComboTimeout();
       }
 
-      else if (actionGroups.actionname == "Overpower"
+      else if ("Souleater" == actionGroups.actionname
+      && actionGroups.result.length >= 8) {
+        drkCombo();
+      }
+
+      else if ("Unleash" == actionGroups.actionname
       && actionGroups.result.length >= 2) {
-        if (Date.now() - previous.overpower > 1000) {
-          previous.overpower = Date.now();
+        if (Date.now() - previous.unleash > 1000) {
+          previous.unleash = Date.now();
           count.aoe = 1;
         }
         else {
           count.aoe = count.aoe + 1;
         }
-        if (player.level >= 40) {
-          mythriltempestCombo();
-          removeIcon(nextid.overpower);
-          warComboTimeout();
+        if (next.combo != 2) {
+          stalwartsoulCombo();
+          toggle.combo = Date.now();
+        }
+        removeIcon(nextid.overpower);
+        if (player.level >= 74) {
+          drkComboTimeout();
+        }
+        else {
+          drkCombo();
         }
       }
 
-      else if (actionGroups.actionname == "Mythril Tempest"
+      else if ("Stalwart Soul" == actionGroups.actionname
       && actionGroups.result.length >= 8) {
-
-        if (Date.now() - previous.mythriltempest > 1000) {
-          previous.mythriltempest = Date.now();
+        if (Date.now() - previous.stalwartsoul > 1000) {
+          previous.stalwartsoul = Date.now();
           count.aoe = 1;
-          if (checkStatus("stormseye", player.ID) > 0) {
-            addStatus("stormseye", player.ID, Math.min(checkStatus("stormseye", player.ID) + 10000, duration.stormseye));
-          }
         }
         else {
           count.aoe = count.aoe + 1;
         }
-        warCombo();
+        drkCombo();
       }
 
       else {
-        warCombo();
+        drkCombo();
       }
 
       if (count.aoe >= 3
       && checkStatus("mitigation", statusGroups.targetID) < 1000) {
-        warMitigation();
+        drkMitigation();
       }
       else {
         removeIcon(nextid.rampart);
       }
 
-      warGauge(); // Check gauge after all GCD actions
+      drkMP(); // Check MP after all GCD actions
+      drkGauge(); // Check gauge after all GCD actions
     }
   }
 }
 
-function warStatus() {
+function drkStatus() {
 
-  // Target is player
+  if (statusGroups.targetID == player.ID) { // Target is self
 
-  if (statusGroups.targetID == player.ID) {
-
-    if (["Berserk", "Inner Release"].indexOf(statusGroups.statusname) > -1) {
+    if ("Delirium" == statusGroups.statusname) {
       if (statusGroups.gainsloses == "gains") {
-        addStatus("berserk", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
-        if (checkCooldown("upheaval", player.ID) < parseInt(statusGroups.duration) * 1000) {
-          addIconBlinkTimeout("upheaval", checkCooldown("upheaval", player.ID), nextid.upheaval, icon.upheaval); // Show Upheaval if up during Berserk
-        }
+        addStatus("delirium", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
       }
       else if (statusGroups.gainsloses == "loses") {
         removeStatus("berserk", statusGroups.targetID);
       }
-
-      if (statusGroups.statusname == "Inner Release") {
-        warGauge();
-      }
     }
 
-
-    else if (statusGroups.statusname == "Storm's Eye") {
-      if (statusGroups.gainsloses == "gains") {
-        addStatus("stormseye", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
-      }
-      else if (statusGroups.gainsloses == "loses") {
-        removeStatus("stormseye", statusGroups.targetID);
-      }
-    }
-
-    else if (statusGroups.statusname == "Raw Intuition") {
-      if (statusGroups.gainsloses == "gains") {
-        if (checkStatus("mitigation", statusGroups.targetID) < parseInt(statusGroups.duration) * 1000) {
-          addStatus("mitigation", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
-        }
-      }
-      else if (statusGroups.gainsloses == "loses") {
-        if (checkStatus("mitigation", statusGroups.targetID) < 0
-        && count.aoe >= 3) {
-          warMitigation();
-        }
-      }
-    }
-
-    else if (statusGroups.statusname == "Rampart") {
+    else if ("Rampart" == statusGroups.statusname) {
       if (statusGroups.gainsloses == "gains") {
         if (checkStatus("mitigation", statusGroups.targetID) < parseInt(statusGroups.duration) * 1000) {
           addStatus("mitigation", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
@@ -338,12 +269,12 @@ function warStatus() {
       else if (statusGroups.gainsloses == "loses") {
         if (checkStatus("mitigation", statusGroups.targetID) < 0 // Check for overlaps
         && count.aoe >= 3) {
-          warMitigation();
+          drkMitigation();
         }
       }
     }
 
-    else if (statusGroups.statusname == "Vengeance") {
+    else if ("Vengeance" == statusGroups.statusname) {
       if (statusGroups.gainsloses == "gains") {
         if (checkStatus("mitigation", statusGroups.targetID) < parseInt(statusGroups.duration) * 1000) {
           addStatus("mitigation", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
@@ -352,12 +283,12 @@ function warStatus() {
       else if (statusGroups.gainsloses == "loses") {
         if (checkStatus("mitigation", statusGroups.targetID) < 0
         && count.aoe >= 3) {
-          warMitigation();
+          drkMitigation();
         }
       }
     }
 
-    else if (statusGroups.statusname == "Nascent Chaos") {
+    else if ("Nascent Chaos" == statusGroups.statusname) {
       if (statusGroups.gainsloses == "gains") {
         addStatus("nascentchaos", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
         removeIcon(nextid.berserk);
@@ -366,13 +297,13 @@ function warStatus() {
         removeStatus("nascentchaos", statusGroups.targetID);
         addIconBlinkTimeout("berserk",checkCooldown("berserk", player.ID),nextid.berserk,icon.berserk);
       }
-      warGauge()
+      drkGauge()
     }
   }
 }
 
 
-function warMitigation() {
+function drkMitigation() {
 
   // Shows next mitigation cooldown
   // Ideally Vengeance > Raw Intuition > Rampart > Raw Intuition > DPS plz wake up and DPS
@@ -403,199 +334,100 @@ function warMitigation() {
   }
 }
 
-function warGauge() {
+function drkMP() {
 
-  // Clear debug
-  addText("debug2", "");
-
-  // Set Inner Beast icon - listed from highest to lowest minimum potency
-  if (checkStatus("nascentchaos", player.ID) > 2500) {
-    if (count.aoe >= 3) {
-      icon.innerbeast = icon.chaoticcyclone;
-    }
-    if (player.level >= 80) {
-      icon.innerbeast = icon.innerchaos;
-    }
-    else if (player.level >= 74) {
-      icon.innerbeast = icon.chaoticcyclone; // Use Cyclone on Single Target before 80? Not sure...
-    }
-  }
-  else if (player.level >= 60
-  && count.aoe >= 3) {
-    icon.innerbeast = icon.decimate;
-  }
-  else if (player.level >= 45
-  && count.aoe >= 3) {
-    icon.innerbeast = icon.steelcyclone;
-  }
-  else if (player.level >= 54) {
-    icon.innerbeast = icon.fellcleave;
-  }
-  else if (player.level >= 45
-  && player.level < 54
+  if (player.level >= 74
   && count.aoe >= 2) {
-    icon.innerbeast = icon.steelcyclone;
+    icon.floodofdarkness = icon.floodofshadow;
+  }
+  else if (player.level >= 74) {
+    icon.floodofdarkness = icon.edgeofshadow;
+  }
+  else if (player.level >= 40
+  && count.aoe == 1) {
+    icon.floodofdarkness = icon.edgeofdarkness;
   }
   else {
-    icon.innerbeast = "002553";
+    icon.floodofdarkness = "00000";
   }
 
-  // Set Steel Cyclone icon
-  if (checkStatus("nascentchaos", player.ID) > 2500) {
-    icon.steelcyclone = icon.chaoticcyclone;
+  if (player.level >= 70) {
+    if (player.currentMP >= 6000
+    || player.jobDetail.darkarts == 1) {
+      addIconBlink(nextid.floodofdarkness, icon.floodofdarkness);
+    }
+    else {
+      removeIcon(nextid.floodofdarkness);
+    }
   }
-  else if (player.level >= 60) {
-    icon.steelcyclone = icon.decimate;
-  }
-  else {
-    icon.steelcyclone = "002552";
-  }
-
-  if (player.level >= 70
-  && checkStatus("berserk", player.ID) > 0) { // Possibly adjust this number
-    addText("debug2", "Inner Release");
-    gauge.max = 0; // Spam during Inner Release
-  }
-  else if (player.level >= 70
-  && checkCooldown("berserk", player.ID) < 5000
-  && checkCooldown("infuriate1", player.ID) < 40000) {
-    addText("debug2", "Upcoming Inner Release");
-    gauge.max = 50; // Avoid capping during Inner Release
-  }
-  else if (player.level >= 66
-  && checkCooldown("infuriate1", player.ID) < 10000) {
-    addText("debug2", "Upcoming Enhanced Infuriate");
-    gauge.max = 50; // Avoid overcapping from Enhanced Infuriate
-  }
-  else if (player.level < 66
-  && checkCooldown("infuriate1", player.ID) < 5000) {
-    addText("debug2", "Upcoming Infuriate");
-    gauge.max = 50; // Avoid overcapping from Infuriate
-  }
-  else if (player.level >= 74
-  && checkStatus("nascentchaos", player.ID) > 2500
-  && checkStatus("nascentchaos", player.ID) < 12500) {
-    addText("debug2", "Use Nascent Chaos");
-    gauge.max = 50; // Avoid wasting Nascent Chaos
-  }
-  else if (player.level >= 50
-  && count.aoe <= 2
-  && checkStatus("stormseye", player.ID) < 15000) {
-    addText("debug2", "Waiting for Storm's Eye");
-    gauge.max = 90; // Avoid letting Storm's Eye fall off during AoE
-  }
-  else if (player.level >= 50
-  && checkStatus("stormseye", player.ID) < 5000) {
-    addText("debug2", "Waiting for Storm's Eye");
-    gauge.max = 90; // Avoid using spenders out of Storm's Eye
-  }
-  else if (player.level >= 64
-  && checkCooldown("upheaval", player.ID) < 20000) { // Revisit if too conservative
-    addText("debug2", "Build buffer for Upheaval");
-    gauge.max = 70; // Stay above 20 for Upheavals
-  }
-  else {
-    addText("debug2", "");
-    gauge.max = 50; // All other cases
-  }
-
-  // Berserk/Inner Release
-  if (checkCooldown("berserk", player.ID) < 0
-  && checkStatus("stormseye", player.ID) > 0) {
-    addIconBlink(nextid.berserk,icon.berserk);
-  }
-  else if (player.level >= 70
-  && checkCooldown("upheaval", player.ID) < 1000
-  && checkStatus("berserk", player.ID) > 0) {
-    addIconBlink(nextid.upheaval,icon.upheaval);
-  }
-  else if (player.level >= 64
-  && player.jobDetail.beast >= 20
-  && checkCooldown("upheaval", player.ID) < 1000
-  && checkCooldown("berserk", player.ID) > 25000) {
-    addIconBlink(nextid.upheaval,icon.upheaval);
-  }
-  else {
-    removeIcon(nextid.upheaval);
-  }
-
-  if (player.level >= 35
-  && player.jobDetail.beast >= gauge.max) {
-    addIconBlink(nextid.innerbeast, icon.innerbeast);
-  }
-  else {
-    removeIcon(nextid.innerbeast);
+  else if (player.level >= 30) {
+    if (player.currentMP >= 3000) {
+      addIconBlink(nextid.floodofdarkness, icon.floodofdarkness);
+    }
+    else {
+      removeIcon(nextid.floodofdarkness);
+    }
   }
 }
 
-function warCombo() {
+function drkGauge() {
 
-  removeIcon(nextid.heavyswing);
-  removeIcon(nextid.maim);
-  removeIcon(nextid.stormspath);
-
-  // Revisit this later if it is refreshing too much
-  if (player.level >= 50
-  && checkCooldown("berserk", player.ID) < 17500
-  && checkStatus("stormseye", player.ID) - Math.max(checkCooldown("berserk", player.ID), 0) < 20000) {
-    addText("debug1", "Refresh Storm's Eye for Berserk");
-    stormseyeCombo();
+  if (player.level >= 64
+  && count.aoe >= 3) {
+    icon.gaugespender = icon.quietus;
+  }
+  else if (player.level >= 62) {
+    icon.gaugespender = icon.bloodspiller;
   }
 
-  else if (player.level >= 74
-  && count.aoe >= 2
-  && checkStatus("stormseye", player.ID) > 7500) {
-    addText("debug1", "Mythril Tempest Combo");
-    mythriltempestCombo();
+  if (checkStatus("delirium", player.ID) > 0) {
+    gauge.max = 0;
   }
-
-  else if (count.aoe >= 3
-  && checkStatus("stormseye", player.ID) > 7500) {
-    addText("debug1", "Mythril Tempest Combo");
-    mythriltempestCombo();
+  else if (player.level >= 80
+  && checkCooldown("livingshadow", player.ID) < 20000) { // Is this enough?
+    gauge.max = 100; // Try to have a buffer for Living Shadow
   }
-
-  // Revisit this later if it is too conservative
-  else if (player.level >= 50
-  && checkStatus("stormseye", player.ID) < 10000) {
-    addText("debug1", "Refresh Storm's Eye");
-    stormseyeCombo();
-  }
-
   else {
-    addText("debug1", "Storm's Path Combo");
-    stormspathCombo();
+    gauge.max = 50;
+  }
+
+  if (player.level >= 80
+  && checkCooldown("livingshadow", player.ID) < 1000) {
+    addIconBlink(nextid.gaugespender, icon.livingshadow);
+  }
+  else if (player.level >= 62
+  && player.jobDetail.blood >= gauge.max) {
+    addIconBlink(nextid.gaugespender, icon.gaugespender);
+  }
+  else {
+    removeIcon(nextid.gaugespender);
   }
 }
 
-function warComboTimeout() {
+function drkCombo() {
+
+  delete toggle.combo;
+
+  removeIcon(nextid.hardslash);
+  removeIcon(nextid.syphonstrike);
+  removeIcon(nextid.souleater);
+
+  if (count.aoe >= 2) {
+    addIcon(nextid.unleash, icon.unleash);
+    if (player.level >= 74) {
+      addIcon(nextid.stalwartsoul, icon.stalwartsoul);
+    }
+  }
+  else {
+    addIcon(nextid.hardslash, icon.hardslash);
+    addIcon(nextid.syphonstrike, icon.syphonstrike);
+    if (player.level >= 26) {
+      addIcon(nextid.souleater, icon.souleater);
+    }
+  }
+}
+
+function drkComboTimeout() {
   clearTimeout(timeout.combo);
-  timeout.combo = setTimeout(warCombo, 12500);
-}
-
-function stormspathCombo() {
-  next.combo = 1;
-  addIcon(nextid.heavyswing,icon.heavyswing);
-  if (player.level >= 18) {
-    addIcon(nextid.maim,icon.maim);
-  }
-  if (player.level >= 38) {
-    addIcon(nextid.stormspath,icon.stormspath);
-  }
-}
-
-function stormseyeCombo() {
-  next.combo = 2;
-  addIcon(nextid.heavyswing,icon.heavyswing);
-  addIcon(nextid.maim,icon.maim);
-  addIcon(nextid.stormseye,icon.stormseye);
-}
-
-function mythriltempestCombo() {
-  next.combo = 3;
-  addIcon(nextid.overpower,icon.overpower);
-  removeIcon(nextid.maim);
-  if (player.level >= 40) {
-    addIcon(nextid.mythriltempest,icon.mythriltempest);
-  }
+  timeout.combo = setTimeout(drkCombo, 12500);
 }
