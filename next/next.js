@@ -371,13 +371,13 @@ function removeStatus(statusname, targetid) {
 // Icon functions
 
 function addIcon(nextid, actionicon) {
-  dom["icon" + nextid].src = "icons/" + actionicon + ".png";
+  dom["icon" + nextid].src = "icon/" + actionicon + ".png";
   dom["next" + nextid].className = "icondiv addfadein";
   dom["next" + nextid].style.display = "table-cell";
 }
 
 function addIconBlink(nextid, actionicon) {
-  dom["icon" + nextid].src = "icons/" + actionicon + ".png";
+  dom["icon" + nextid].src = "icon/" + actionicon + ".png";
   dom["next" + nextid].className = "icondiv addfadeinblink";
   dom["next" + nextid].style.display = "table-cell";
 }

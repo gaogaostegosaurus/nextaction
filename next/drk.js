@@ -274,7 +274,7 @@ function drkStatus() {
       }
     }
 
-    else if ("Vengeance" == statusGroups.statusname) {
+    else if ("Dark Wall" == statusGroups.statusname) {
       if (statusGroups.gainsloses == "gains") {
         if (checkStatus("mitigation", statusGroups.targetID) < parseInt(statusGroups.duration) * 1000) {
           addStatus("mitigation", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
@@ -287,18 +287,6 @@ function drkStatus() {
         }
       }
     }
-
-    else if ("Nascent Chaos" == statusGroups.statusname) {
-      if (statusGroups.gainsloses == "gains") {
-        addStatus("nascentchaos", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
-        removeIcon(nextid.berserk);
-      }
-      else if (statusGroups.gainsloses == "loses") {
-        removeStatus("nascentchaos", statusGroups.targetID);
-        addIconBlinkTimeout("berserk",checkCooldown("berserk", player.ID),nextid.berserk,icon.berserk);
-      }
-      drkGauge()
-    }
   }
 }
 
@@ -308,44 +296,37 @@ function drkMitigation() {
   // Shows next mitigation cooldown
   // Ideally Vengeance > Raw Intuition > Rampart > Raw Intuition > DPS plz wake up and DPS
 
-  if (player.level >= 56) {
-    if (checkCooldown("vengeance", player.ID) <= Math.min(checkCooldown("rampart", player.ID), checkCooldown("rawintuition", player.ID))) {
-      addIconBlinkTimeout("mitigation",checkCooldown("vengeance", player.ID),nextid.mitigation,icon.vengeance);
+  if (player.level >= 38) {
+    if (checkCooldown("darkwall", player.ID) <= checkCooldown("rampart", player.ID)) {
+      addIconBlinkTimeout("darkwall",checkCooldown("darkwall", player.ID),nextid.mitigation,icon.darkwall);
     }
-    else if (checkCooldown("rawintuition", player.ID) <= Math.min(checkCooldown("rampart", player.ID), checkCooldown("vengeance", player.ID))) {
-      addIconBlinkTimeout("mitigation",checkCooldown("rawintuition", player.ID),nextid.mitigation,icon.rawintuition);
-    }
-    else if (checkCooldown("rampart", player.ID) <= Math.min(checkCooldown("vengeance", player.ID), checkCooldown("rawintuition", player.ID))) {
+    else if (checkCooldown("rampart", player.ID) <= checkCooldown("darkwall", player.ID)) {
       addIconBlinkTimeout("mitigation",checkCooldown("rampart", player.ID),nextid.mitigation,icon.rampart);
     }
   }
 
-  else if (player.level >= 46) {
-    if (checkCooldown("vengeance", player.ID) <= checkCooldown("rampart", player.ID)) {
-      addIconBlinkTimeout("mitigation",checkCooldown("vengeance", player.ID),nextid.mitigation,icon.vengeance);
-    }
-    else if (checkCooldown("rampart", player.ID) <= checkCooldown("vengeance", player.ID)) {
-      addIconBlinkTimeout("mitigation",checkCooldown("rampart", player.ID),nextid.mitigation,icon.rampart);
-    }
-  }
-
-  else if (player.level >= 8) {
+  else {
     addIconBlinkTimeout("mitigation",checkCooldown("rampart", player.ID),nextid.mitigation,icon.rampart);
   }
 }
 
 function drkMP() {
 
-  if (player.level >= 74
-  && count.aoe >= 2) {
-    icon.floodofdarkness = icon.floodofshadow;
+  if (player.level >= 74) {
+    if (count.aoe >= 2) {
+      icon.floodofdarkness = icon.floodofshadow;
+    }
+    else {
+      icon.floodofdarkness = icon.edgeofshadow;
+    }
   }
-  else if (player.level >= 74) {
-    icon.floodofdarkness = icon.edgeofshadow;
-  }
-  else if (player.level >= 40
-  && count.aoe == 1) {
-    icon.floodofdarkness = icon.edgeofdarkness;
+  else if (player.level >= 40) {
+    if (count.aoe == 1) {
+      icon.floodofdarkness = icon.edgeofdarkness;
+    }
+    else {
+      icon.floodofdarkness = "00000";
+    }
   }
   else {
     icon.floodofdarkness = "00000";
@@ -360,7 +341,7 @@ function drkMP() {
       removeIcon(nextid.floodofdarkness);
     }
   }
-  else if (player.level >= 30) {
+  else if (player.level >= 30) { // No TBN yet
     if (player.currentMP >= 3000) {
       addIconBlink(nextid.floodofdarkness, icon.floodofdarkness);
     }
