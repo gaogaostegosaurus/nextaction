@@ -12,6 +12,8 @@ icon.fire3 = "000453";
 icon.blizzard3 = "000456";
 icon.thunder = "000457";
 icon.thunder3 = "000459";
+icon.manafont = "002651";
+icon.enochian = "002658";
 icon.fire4 = "002660";
 icon.blizzard4 = "002659";
 icon.despair = "002665";
@@ -35,6 +37,28 @@ icon.pitchperfect = "002611";
 icon.causticbite = "002613";
 icon.stormbite = "002614";
 icon.refulgentarrow = "002616";
+
+// DRK
+icon.hardslash = "003051";
+icon.syphonstrike = "003054";
+icon.souleater = "003055";
+icon.carveandspit = "003058";
+icon.plunge = "003061";
+icon.unleash = "003063";
+icon.abyssaldrain = "003064";
+icon.saltedearth = "003066";
+icon.bloodweapon = "003071";
+icon.shadowwall = "003075";
+icon.delirium = "003078";
+icon.quietus = "003079";
+icon.bloodspiller = "003080";
+icon.theblackestnight = "003081";
+icon.floodofdarkness = "003082";
+icon.edgeofdarkness = "003083";
+icon.stalwartsoul = "003084";
+icon.floodofshadow = "003085";
+icon.edgeofshadow = "003086";
+icon.livingshadow = "003088";
 
 // MCH
 icon.splitshot = "003001";

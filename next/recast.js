@@ -6,6 +6,11 @@ recast.peloton = 5000;
 recast.rampart = 90000;
 recast.swiftcast = 60000;
 
+// BLM
+recast.enochian = 30000;
+recast.sharpcast = 60000;
+recast.manafont = 180000;
+
 // BRD
 recast.ballad = 80000;
 recast.ragingstrikes = 80000;
@@ -15,6 +20,17 @@ recast.battlevoice = 120000;
 recast.minuet = 80000;
 recast.empyrealarrow = 15000;
 recast.sidewinder = 60000;
+
+// DRK
+recast.abyssaldrain = 60000;
+recast.bloodweapon = 60000;
+recast.carveandspit = 60000;
+recast.delirium = 90000;
+recast.floodofdarkness = 2000;
+recast.plunge = 30000;
+recast.saltedearth = 90000;
+recast.shadowwall = 120000;
+recast.theblackestnight = 15000;
 
 // MCH
 recast.barrelstabilizer = 120000;
@@ -52,7 +68,6 @@ recast.displacement = 35000;
 recast.embolden = 120000;
 recast.fleche = 25000;
 recast.manafication = 120000;
-
 
 // SAM
 recast.guren = 120000;

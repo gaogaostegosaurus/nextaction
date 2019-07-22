@@ -60,7 +60,6 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
   // DRK resources
   player.jobDetail.darkarts = player.debugJobSplit[4]; // 0 or 1
   player.jobDetail.darkside = parseInt(player.debugJobSplit[2], 16) + parseInt(player.debugJobSplit[3], 16) * 256;
-  addText("debug1", player.jobDetail.darkside);
 
   // MCH resources
   player.jobDetail.heat = parseInt(player.debugJobSplit[4], 16);
@@ -68,17 +67,22 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
   player.jobDetail.overheated = player.debugJobSplit[7]; // Just 0 or 1
 
   // Detects name/job/level change and clears elements
-  if (previous.name != player.name || previous.job != player.job || previous.level != player.level) {
+  if (previous.job != player.job || previous.level != player.level) {
+
     delete toggle.combo;
     clearElements();
 
     addText("loadmessage", "Plugin loaded for " + player.level + player.job);
 
     if (player.job == "BLM") {
+      addText("loadmessage", "Plugin loaded for " + player.level + player.job + " - WIP, assumes level 80 BLM");
       blmJobChange();
     }
     else if (player.job == "BRD") {
       brdJobChange();
+    }
+    else if (player.job == "DRK") {
+      drkJobChange();
     }
     else if (player.job == "MCH") {
       mchJobChange();
@@ -96,11 +100,11 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
       whmJobChange();
     }
 
-  }
+    previous.job = player.job;
+    previous.level = player.level;
+    console.log("Job change detected:" + previous.job);
 
-  previous.name = player.name;
-  previous.job = player.job;
-  previous.level = player.level;
+  }
 
   // This is probably only useful for jobs that need to watch things that "tick" up or down
   if (player.job == "BLM") {
@@ -234,6 +238,9 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
       else if (player.job == "BRD") {
         brdAction();
       }
+      else if (player.job == "DRK") {
+        drkAction();
+      }
       else if (player.job == "MCH") {
         mchAction();
       }
@@ -263,6 +270,9 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
       else if (player.job == "BRD") {
         brdStatus();
       }
+      else if (player.job == "DRK") {
+        drkStatus();
+      }
       else if (player.job == "MCH") {
         mchStatus(statusLog);
       }
@@ -285,13 +295,13 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
 
     else if (startGroups.sourcename == player.name) {  // Status source = player
       if (player.job == "BLM") {
-        blmStart(statusLog);
+        blmStart();
       }
     }
 
     else if (cancelGroups.sourceID == player.ID) {  // Status source = player
       if (player.job == "BLM") {
-        blmCancel(statusLog);
+        blmCancel();
       }
     }
 

@@ -1,5 +1,8 @@
 // Duration properties - list by alphabetical job then alphabetical status
 
+// DRK
+duration.delirium = 10000;
+
 // MCH
 duration.hypercharge = 10000;
 
