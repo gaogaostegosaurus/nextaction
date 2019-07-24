@@ -91,8 +91,7 @@ function rdmJobChange() {
 
   // Create cooldown notifications
 
-  if (player.level >= 6
-  && checkCooldown("corpsacorps", player.ID) < 0) {
+  if (checkCooldown("corpsacorps", player.ID) < 0) {
     addIconBlink(nextid.corpsacorps,icon.corpsacorps);
   }
   if (player.level >= 40
@@ -192,6 +191,7 @@ function rdmAction() {
     else if (["Riposte", "Enchanted Riposte"].indexOf(actionGroups.actionname) > -1) {
       if (player.level >= 35) {
         toggle.combo = Date.now();
+        rdmComboTimeout();
       }
       if (player.level >= 52) {
         count.aoe = 1;
@@ -205,8 +205,10 @@ function rdmAction() {
       }
       removeIcon(nextid.zwerchhau);
       if (player.level < 50) {
-        delete toggle.combo;
         rdmDualcast();
+      }
+      else {
+        rdmComboTimeout();
       }
     }
 
@@ -216,8 +218,10 @@ function rdmAction() {
       }
       removeIcon(nextid.redoublement);
       if (player.level < 68) {
-        delete toggle.combo;
         rdmDualcast();
+      }
+      else {
+        rdmComboTimeout();
       }
     }
 
@@ -225,8 +229,10 @@ function rdmAction() {
       count.aoe = 1;
       removeIcon(nextid.verflare);
       if (player.level < 80) {
-        delete toggle.combo;
         rdmDualcast();
+      }
+      else {
+        rdmComboTimeout();
       }
     }
 
@@ -234,15 +240,16 @@ function rdmAction() {
       count.aoe = 1;
       removeIcon(nextid.verholy);
       if (player.level < 80) {
-        delete toggle.combo;
         rdmDualcast();
+      }
+      else {
+        rdmComboTimeout();
       }
     }
 
     else if ("Scorch" == actionGroups.actionname) {
       count.aoe = 1;
       removeIcon(nextid.scorch);
-      delete toggle.combo;
       rdmDualcast();
     }
 
@@ -375,7 +382,17 @@ function rdmStatus() {
   }
 }
 
+function rdmStart() {
+  removeIcon(nextid.hardcast); // Remove hardcast icon on starting cast
+}
+
+function rdmCancel() {
+  rdmDualcast(); // Recalculates dualcast if casting canceled
+}
+
 function rdmDualcast() {
+
+  delete toggle.combo;
 
   removeIcon(nextid.hardcast);
   removeIcon(nextid.dualcast);
@@ -493,9 +510,8 @@ function rdmDualcast() {
 }
 
 function rdmComboTimeout() {
-  if (toggle.combat) {
-    rdmDualcast();
-  }
+  clearTimeout(timeout.combo);
+  timeout.combo = setTimeout(rdmDualcast, 12500);
 }
 
 function rdmDualcastValue(hardcastaction, hardcastblack, hardcastwhite, dualcastaction, dualcastblack, dualcastwhite) {
@@ -525,8 +541,7 @@ function rdmDualcastValue(hardcastaction, hardcastblack, hardcastwhite, dualcast
   next.hardcastwhiteMana = Math.min(player.jobDetail.whiteMana + hardcastwhite, 100);
 
   // Assign value to spells
-  if (player.level >= 2
-  && "Jolt" == hardcastaction) {
+  if ("Jolt" == hardcastaction) {
     if (player.level >= 62) { // Trait
       value = value + 250;
     }
@@ -581,15 +596,13 @@ function rdmDualcastValue(hardcastaction, hardcastblack, hardcastwhite, dualcast
     value = value - 1000000;
   }
 
-  if (player.level >= 4
-  && "Verthunder" == dualcastaction) {
+  if ("Verthunder" == dualcastaction) {
     value = value + 310 + 0.5 * procpotency;
     if (next.hardcastblackMana < next.hardcastwhiteMana) {
       value = value + 1;
     }
   }
-  else if (player.level >= 10
-  && "Veraero" == dualcastaction) {
+  else if ("Veraero" == dualcastaction) {
     value = value + 310 + 0.5 * procpotency;
     if (next.hardcastwhiteMana < next.hardcastblackMana) {
       value = value + 1;
