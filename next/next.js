@@ -11,7 +11,7 @@ var gauge = {};
 var buffertime = {};
 
 var timeout = {};             // For timeout variables
-var nextid = {};                  // Store document id - location on page for icons, etc.
+var nextid = {};              // Store document id - location on page for icons, etc.
 var icon = {};                // Store icon name
 var toggle = {};              // Toggley things
 var count = {};               // County things?
@@ -57,14 +57,13 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
   player.ID = e.detail.id.toString(16).toUpperCase(); // player.id.toString(16) is lowercase; using "ID" to designate uppercase lettering
   player.debugJobSplit = player.debugJob.split(" ");
 
-  // DRK resources
-  player.jobDetail.darkarts = player.debugJobSplit[4]; // 0 or 1
-  player.jobDetail.darkside = parseInt(player.debugJobSplit[2], 16) + parseInt(player.debugJobSplit[3], 16) * 256;
+  // Temp DRK resources
+  // player.jobDetail.darkarts = player.debugJobSplit[4]; // 0 or 1
+  // This hasn't been actually useful for decision making (yet)
+  // player.jobDetail.darksideTime = parseInt(player.debugJobSplit[2], 16) + parseInt(player.debugJobSplit[3], 16) * 256;
 
   // MCH resources
-  player.jobDetail.heat = parseInt(player.debugJobSplit[4], 16);
-  player.jobDetail.battery = parseInt(player.debugJobSplit[5], 16);
-  player.jobDetail.overheated = player.debugJobSplit[7]; // Just 0 or 1
+  // player.jobDetail.overheated = player.debugJobSplit[7]; // Just 0 or 1
 
   // Detects name/job/level change and clears elements
   if (previous.job != player.job || previous.level != player.level) {
@@ -75,7 +74,7 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
     addText("loadmessage", "Plugin loaded for " + player.level + player.job);
 
     if (player.job == "BLM") {
-      addText("loadmessage", "Plugin loaded for " + player.level + player.job + " - WIP, assumes level 80 BLM");
+      addText("loadmessage", "WIP job - currently assumes level 72 BLM");
       blmJobChange();
     }
     else if (player.job == "BRD") {
@@ -102,7 +101,7 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
 
     previous.job = player.job;
     previous.level = player.level;
-    console.log("Job change detected:" + previous.job);
+    console.log("Job changed to " + previous.job);
 
   }
 
@@ -297,11 +296,17 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
       if (player.job == "BLM") {
         blmStart();
       }
+      else if (player.job == "RDM") {
+        rdmStart();
+      }
     }
 
     else if (cancelGroups.sourceID == player.ID) {  // Status source = player
       if (player.job == "BLM") {
         blmCancel();
+      }
+      else if (player.job == "RDM") {
+        rdmCancel();
       }
     }
 

@@ -332,6 +332,8 @@ function drkMP() {
     icon.floodofdarkness = "00000";
   }
 
+  player.jobDetail.darkarts = player.debugJobSplit[4]; // 0 or 1
+
   if (player.level >= 70) {
     if (player.currentMP >= 6000
     || player.jobDetail.darkarts == 1) {

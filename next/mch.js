@@ -148,9 +148,8 @@ function mchJobChange() {
 }
 
 function mchPlayerChangedEvent() {
-
   nextid.heatblast = 0; // Can be null at odd times
-  if (player.jobDetail.overheated == 1) {
+  if (player.jobDetail.overheatMilliseconds > 0) {
     addIconBlink(nextid.heatblast, icon.heatblast);
   }
   else {
