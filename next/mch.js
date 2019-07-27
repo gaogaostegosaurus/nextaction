@@ -49,9 +49,11 @@ function mchJobChange() {
   // nextid.tactician = 99;
 
   previous.spreadshot = 0;
-  previous.flamethrower = 0;
   previous.ricochet = 0;
+  previous.flamethrower = 0;
   previous.autocrossbow = 0;
+  previous.drill = 0;
+  previous.bioblaster = 0;
 
   // Set up action changes from level
 
@@ -63,7 +65,7 @@ function mchJobChange() {
   }
 
   if (player.level >= 72
-  && toggle.aoe) {
+  && count.aoe >= 2) {
     icon.drill = icon.bioblaster;
   }
   else {
@@ -148,7 +150,17 @@ function mchJobChange() {
 }
 
 function mchPlayerChangedEvent() {
-  nextid.heatblast = 0; // Can be null at odd times
+
+  nextid.heatblast = 0; // Not sure if necessary but whatever
+
+  if (player.level >= 52
+  && count.aoe >= 3) {
+    icon.heatblast == icon.autocrossbow;
+  }
+  else {
+    icon.heatblast = "003030";
+  }
+
   if (player.jobDetail.overheatMilliseconds > 0) {
     addIconBlink(nextid.heatblast, icon.heatblast);
   }
@@ -164,14 +176,6 @@ function mchAction() {
     removeText("loadmessage");
 
     // Toggle AoE
-
-    if (player.level >= 52
-    && count.aoe >= 3) {
-      icon.heatblast == icon.autocrossbow;
-    }
-    else {
-      icon.heatblast = "003030";
-    }
 
     if (player.level >= 70
     && checkCooldown("flamethrower", player.ID) < 0
@@ -190,12 +194,6 @@ function mchAction() {
       icon.drill = "003043";
     }
 
-    if (["Split Shot", "Slug Shot", "Clean Shot", "Heated Split Shot",
-      "Heated Slug Shot", "Heated Clean Shot", "Hot Shot", "Heat Blast"
-    ].indexOf(actionGroups.actionname) > -1) {
-      count.aoe = 1;
-    }
-
     // These actions don't interrupt combos
 
     if (["Hot Shot", "Air Anchor"].indexOf(actionGroups.actionname) > -1) {
@@ -211,10 +209,11 @@ function mchAction() {
       mchHeat();
     }
 
-    else if (["Drill", "Bioblaster"].indexOf(actionGroups.actionname) > -1) {
+    else if ("Drill" == actionGroups.actionname) {
+      count.aoe = 1;
       if (previous.drill
       && recast.drill > Date.now() - previous.drill) {
-        recast.drill = Date.now() - previous.drill;
+        recast.drill = Date.now() - previous.drill; // Adjusts cooldown
       }
       previous.drill = Date.now();
       removeIcon(nextid.drill);
@@ -223,8 +222,28 @@ function mchAction() {
         addIconBlinkTimeout("drill", recast.drill - 1000, nextid.drill, icon.reassemble);
       }
       else {
-        addIconBlinkTimeout("drill", recast.drill, nextid.drill, icon.drill);
+        addIconBlinkTimeout("drill", recast.drill - 1000, nextid.drill, icon.drill);
       }
+      mchHeat();
+    }
+
+    else if ("Bioblaster" == actionGroups.actionname) {
+      if (Date.now() - previous.bioblaster > 1000) {
+        previous.bioblaster = Date.now();
+        count.aoe = 1;
+        // Recast adjust has to go here, otherwise Drill/Bioblaster become 0s recast due to AoE lines
+        if (previous.drill
+        && recast.drill > Date.now() - previous.drill) {
+          recast.drill = Date.now() - previous.drill;
+        }
+        previous.drill = Date.now();
+      }
+      else {
+        count.aoe = count.aoe + 1;
+      }
+      removeIcon(nextid.drill);
+      addCooldown("drill", player.ID, recast.drill);
+      addIconBlinkTimeout("drill", recast.drill - 1000, nextid.drill, icon.drill);
       mchHeat();
     }
 
@@ -361,6 +380,9 @@ function mchAction() {
 
     else if (["Split Shot", "Heated Split Shot"].indexOf(actionGroups.actionname) > -1
     && actionGroups.result.length >= 2) {
+      if (count.aoe >= 3) {
+        count.aoe == 2;
+      }
       if (!next.combo) {
        mchCombo();
       }
