@@ -211,7 +211,12 @@ function mchAction() {
 
     else if ("Drill" == actionGroups.actionname) {
       count.aoe = 1;
+<<<<<<< HEAD
       if (recast.drill > Date.now() - previous.drill) {
+=======
+      if (previous.drill
+      && recast.drill > Date.now() - previous.drill) {
+>>>>>>> de67cf6ea4a89e3f0bdc0136d4e48e401fb6270d
         recast.drill = Date.now() - previous.drill; // Adjusts cooldown
       }
       previous.drill = Date.now();
@@ -227,10 +232,19 @@ function mchAction() {
     }
 
     else if ("Bioblaster" == actionGroups.actionname) {
+<<<<<<< HEAD
       if (Date.now() - previous.drill > 1000) {
         count.aoe = 1;
         // Recast adjust has to go here, otherwise Drill/Bioblaster become 0s recast due to AoE spam
         if (recast.drill > Date.now() - previous.drill) {
+=======
+      if (Date.now() - previous.bioblaster > 1000) {
+        previous.bioblaster = Date.now();
+        count.aoe = 1;
+        // Recast adjust has to go here, otherwise Drill/Bioblaster become 0s recast due to AoE lines
+        if (previous.drill
+        && recast.drill > Date.now() - previous.drill) {
+>>>>>>> de67cf6ea4a89e3f0bdc0136d4e48e401fb6270d
           recast.drill = Date.now() - previous.drill;
         }
         previous.drill = Date.now();
