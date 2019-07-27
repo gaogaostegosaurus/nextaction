@@ -34,8 +34,8 @@ recast.theblackestnight = 15000;
 
 // MCH
 recast.barrelstabilizer = 120000;
-recast.drill = 20000;
-recast.bioblaster = recast.drill;
+recast.drill = 20000
+// recast.bioblaster = recast.drill; // Use above due to shared cooldown
 recast.flamethrower = 60000;
 recast.gaussround = 30000;
 recast.hypercharge = 10000;
