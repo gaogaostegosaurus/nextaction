@@ -86,6 +86,9 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
     else if (player.job == "MCH") {
       mchJobChange();
     }
+    else if (player.job == "NIN") {
+      ninJobChange();
+    }
     else if (player.job == "RDM") {
       rdmJobChange();
     }
@@ -246,6 +249,9 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
       else if (player.job == "MNK") {
         mnkAction(actionLog);
       }
+      else if (player.job == "NIN") {
+        ninAction(actionLog);
+      }
       else if (player.job == "RDM") {
         rdmAction();
       }
@@ -277,6 +283,9 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
       }
       else if (player.job == "MNK") {
         mnkStatus(statusLog);
+      }
+      else if (player.job == "NIN") {
+        ninStatus(statusLog);
       }
       else if (player.job == "RDM") {
         rdmStatus();
