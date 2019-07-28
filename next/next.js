@@ -74,7 +74,7 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
     addText("loadmessage", "Plugin loaded for " + player.level + player.job);
 
     if (player.job == "BLM") {
-      addText("loadmessage", "WIP job - currently assumes level 72 BLM");
+      addText("loadmessage", "WIP - currently assumes level 72 BLM");
       blmJobChange();
     }
     else if (player.job == "BRD") {
