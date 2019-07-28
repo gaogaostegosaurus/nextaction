@@ -35,16 +35,16 @@ function mchJobChange() {
   nextid.heatedslugshot = nextid.slugshot;
   nextid.cleanshot = 6;
   nextid.heatedcleanshot = nextid.cleanshot;
-  nextid.hypercharge = 10;
+  nextid.barrelstabilizer = 10;
+  nextid.hypercharge = 11;
   nextid.wildfire = nextid.hypercharge;
-  nextid.barrelstabilizer = nextid.hypercharge;
   nextid.flamethrower = nextid.hypercharge;
-  nextid.rookautoturret = 11;
+  nextid.rookautoturret = 12;
   nextid.rookoverdrive = nextid.rookautoturret;
   nextid.automatonqueen = nextid.rookautoturret;
   nextid.queenoverdrive = nextid.rookautoturret;
-  nextid.gaussround = 12;
-  nextid.ricochet = 13;
+  nextid.gaussround = 13;
+  nextid.ricochet = 14;
 
   // nextid.tactician = 99;
 
@@ -354,14 +354,17 @@ function mchAction() {
     }
 
     else if ("Hypercharge" == actionGroups.actionname) {
+      removeIcon(nextid.hypercharge);
       mchHeat();
     }
 
     else if (["Rook Autoturret", "Automaton Queen"].indexOf(actionGroups.actionname) > -1) {
+      removeIcon(nextid.rookautoturret);
       mchBattery();
     }
 
     else if ("Wildfire" == actionGroups.actionname) {
+      removeIcon(nextid.wildfire);
       addCooldown("wildfire", player.ID, recast.wildfire);
       mchHeat();
     }
@@ -369,7 +372,6 @@ function mchAction() {
     else if ("Barrel Stabilizer" == actionGroups.actionname) {
       removeIcon(nextid.barrelstabilizer);
       addCooldown("barrelstabilizer", player.ID, recast.barrelstabilizer);
-      addIconBlinkTimeout("barrelstabilizer", recast.barrelstabilizer, nextid.barrelstabilizer, icon.barrelstabilizer);
       mchHeat();
     }
 
@@ -470,10 +472,10 @@ function mchComboTimeout() { // Set between combo actions
 }
 
 function mchHeat() {
-  addText("debug1", "Heat: " + player.jobDetail.heat);
+
   if (player.jobDetail.heat >= 50
-  && (player.level < 58 || checkCooldown("drill", player.ID) > 12500)
-  && (player.level < 76 || checkCooldown("hotshot", player.ID) > 12500)) {
+  && (player.level < 58 || checkCooldown("drill", player.ID) > 9000)
+  && (player.level < 76 || checkCooldown("hotshot", player.ID) > 9000)) {
     if (player.level >= 45
     && checkCooldown("wildfire", player.ID) < 1000) {
       addIconBlink(nextid.wildfire, icon.wildfire);
@@ -482,7 +484,7 @@ function mchHeat() {
       addIconBlink(nextid.hypercharge, icon.hypercharge);
     }
   }
-  else if (player.jobDetail.heat == 100) {
+  else if (player.jobDetail.heat >= 95) {
     if (player.level >= 45
     && checkCooldown("wildfire", player.ID) < 1000) {
       addIconBlink(nextid.wildfire, icon.wildfire);
@@ -490,15 +492,15 @@ function mchHeat() {
     else {
       addIconBlink(nextid.hypercharge, icon.hypercharge);
     }
+  }
+  else if (player.level >= 66
+  && player.jobDetail.heat < 50
+  && checkCooldown("wildfire", player.ID) < 3500
+  && checkCooldown("barrelstabilizer", player.ID) < 1000) {
+    addIconBlink(nextid.barrelstabilizer, icon.barrelstabilizer);
   }
   else {
-    if (player.level >= 70
-    && checkCooldown("flamethrower", player.ID) > 0) {
-      addIconBlink(nextid.flamethrower, icon.flamethrower);
-    }
-    else {
-      removeIcon(nextid.hypercharge);
-    }
+    removeIcon(nextid.hypercharge);
   }
 }
 
