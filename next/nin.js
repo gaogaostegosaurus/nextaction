@@ -23,10 +23,10 @@ actionList.nin = [
 
 function ninJobChange() {
 
-  nextid.ninjutsu = 0;
-  nextid.mudra1 = 1;
-  nextid.mudra2 = 2;
-  nextid.mudra3 = 3;
+  nextid.tcj1 = 1;
+  nextid.tcj2 = 2;
+  nextid.tcj3 = 3;
+  nextid.ninjutsu = 3;
   nextid.spinningedge = 4;
   nextid.deathblossom = nextid.spinningedge;
   nextid.gustslash = 5;
@@ -34,12 +34,12 @@ function ninJobChange() {
   nextid.armorcrush = nextid.aeolianedge;
   nextid.shadowfang = nextid.aeolianedge;
   nextid.hakkemujinsatsu = nextid.spinningedge;
-  nextid.trickattack = 10;
-  nextid.dreamwithinadream = 11;
-  nextid.assassinate = 12;
-  nextid.hellfrogmedium = 13;
+  nextid.tenchijin = 10;
+  nextid.hellfrogmedium = 11;
   nextid.bhavacakra = nextid.hellfrogmedium;
-  nextid.tenchijin = 12;
+  nextid.trickattack = 12;
+  nextid.dreamwithinadream = 13;
+  nextid.assassinate = 14;
 
   count.aoe = 1;
   previous.deathblossom = 0;
@@ -376,17 +376,33 @@ function ninNinjutsu() { // Activate between GCDs?
 
   if (player.level >= 45
   && player.jobDetail.hutonMilliseconds == 0) {
-    addIconBlink(nextid.ninjutsu, icon.huton);
-  }
-  else if (player.level >= 45
-  && checkStatus("suiton", player.ID) < 0
-  && checkCooldown("trickattack", player.ID) < 22000) {
-    addIconBlink(nextid.ninjutsu, icon.suiton);
+    addIconBlink(nextid.ninjutsu, icon.huton); // Apply Huton if off
   }
   else if (player.level >= 45
   && player.level < 54
   && player.jobDetail.hutonMilliseconds < 23000) {
-    addIconBlink(nextid.ninjutsu, icon.huton);
+    addIconBlink(nextid.ninjutsu, icon.huton); // Apply Huton if low (and no AC yet)
+  }
+  else if (player.level >= 35
+  && count.aoe >= 3) {
+    addIconBlink(nextid.ninjutsu, icon.katon); // Probably more damage at 3 targets to do Katon than anything else...
+  }
+  else if (player.level >= 45
+  && checkStatus("suiton", player.ID) < 0
+  && checkCooldown("trickattack", player.ID) < 22000) {
+    if (player.level >= 70
+    && checkCooldown("tenchijin", player.ID) < 2000) { // Use TCJ to set up
+      if (player.level >= 35
+      && count.aoe >= 2) {
+        addIconBlink(nextid.ninjutsu, icon.katon);
+      }
+      else if (player.level >= 35) {
+        addIconBlink(nextid.ninjutsu, icon.raiton);
+      }
+    }
+    else {
+      addIconBlink(nextid.ninjutsu, icon.suiton); // Prep for normal Suiton Trick
+    }
   }
   else if (player.level >= 35
   && count.aoe >= 2) {
@@ -397,6 +413,9 @@ function ninNinjutsu() { // Activate between GCDs?
   }
   else if (player.level >= 30) {
     addIconBlink(nextid.ninjutsu, icon.fumashuriken);
+  }
+  else {
+    removeIcon(nextid.ninjutsu);
   }
 }
 
