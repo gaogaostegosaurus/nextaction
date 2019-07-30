@@ -1,18 +1,11 @@
 "use strict";
 
-var recast = {};
 var cooldowntracker = {};     // Holds timestamps for cooldowns
 var statustracker = {};       // Holds timestamps for statuses
 var cooldowntime = {};        // Holds timestamps for cooldowns
-var statustime = {};          // Holds timestamps for statuses
-var statuslength = {};        // Holds durations... probably should rename it to durations...
-var duration = {};            // OK I DID IT
-var gauge = {};
-var buffertime = {};
 
 var timeout = {};             // For timeout variables
 var nextid = {};              // Store document id - location on page for icons, etc.
-var icon = {};                // Store icon name
 var toggle = {};              // Toggley things
 var count = {};               // County things?
 var previous = {};

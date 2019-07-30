@@ -1,5 +1,7 @@
 // Duration properties - list by alphabetical job then alphabetical status
 
+var duration = {};
+
 // DRK
 duration.delirium = 10000;
 

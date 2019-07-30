@@ -294,7 +294,6 @@ function drkStatus() {
 function drkMitigation() {
 
   // Shows next mitigation cooldown
-  // Ideally Vengeance > Raw Intuition > Rampart > Raw Intuition > DPS plz wake up and DPS
 
   if (player.level >= 38) {
     if (checkCooldown("darkwall", player.ID) <= checkCooldown("rampart", player.ID)) {
@@ -325,11 +324,11 @@ function drkMP() {
       icon.floodofdarkness = icon.edgeofdarkness;
     }
     else {
-      icon.floodofdarkness = "00000";
+      icon.floodofdarkness = "003082";
     }
   }
   else {
-    icon.floodofdarkness = "00000";
+    icon.floodofdarkness = "003082";
   }
 
   player.jobDetail.darkarts = player.debugJobSplit[4]; // 0 or 1
@@ -355,6 +354,8 @@ function drkMP() {
 
 function drkGauge() {
 
+  let targetblood = 50; // Use spender at or above this number
+
   if (player.level >= 64
   && count.aoe >= 3) {
     icon.gaugespender = icon.quietus;
@@ -364,23 +365,21 @@ function drkGauge() {
   }
 
   if (checkStatus("delirium", player.ID) > 0) {
-    gauge.max = 0;
+    targetblood = 0;
   }
   else if (player.level >= 80
   && checkCooldown("livingshadow", player.ID) < 20000) { // Is this enough?
-    gauge.max = 100; // Try to have a buffer for Living Shadow
-  }
-  else {
-    gauge.max = 50;
+    targetblood = 100; // Try to have a buffer for Living Shadow
   }
 
-  if (player.level >= 80
-  && checkCooldown("livingshadow", player.ID) < 1000) {
-    addIconBlink(nextid.gaugespender, icon.livingshadow);
-  }
-  else if (player.level >= 62
-  && player.jobDetail.blood >= gauge.max) {
-    addIconBlink(nextid.gaugespender, icon.gaugespender);
+  if (player.jobDetail.blood >= targetblood) {
+    if (player.level >= 80
+    && checkCooldown("livingshadow", player.ID) < 1000) {
+      addIconBlink(nextid.gaugespender, icon.livingshadow);
+    }
+    else if (player.level >= 62) {
+      addIconBlink(nextid.gaugespender, icon.gaugespender);
+    }
   }
   else {
     removeIcon(nextid.gaugespender);

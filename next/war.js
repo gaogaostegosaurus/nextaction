@@ -415,7 +415,7 @@ function warMitigation() {
 
 function warGauge() {
 
-  // Clear debug
+  let targetbeast = 50; // Display spender icon if Beast is this value or above
 
   // Set Inner Beast icon - listed from highest to lowest minimum potency
   if (checkStatus("nascentchaos", player.ID) > 2500) {
@@ -462,41 +462,45 @@ function warGauge() {
 
   if (player.level >= 70
   && checkStatus("berserk", player.ID) > 0) { // Possibly adjust this number
-    gauge.max = 0; // Spam during Inner Release
+    targetbeast = 0; // Spam during Inner Release
   }
   else if (player.level >= 70
   && checkCooldown("berserk", player.ID) < 5000
   && checkCooldown("infuriate1", player.ID) < 40000) {
-    gauge.max = 50; // Avoid capping during Inner Release
+    targetbeast = 50; // Avoid overcapping during Inner Release
   }
   else if (player.level >= 66
   && checkCooldown("infuriate1", player.ID) < 10000) {
-    gauge.max = 50; // Avoid overcapping from Enhanced Infuriate
+    targetbeast = 50; // Avoid overcapping from Enhanced Infuriate
   }
   else if (player.level < 66
   && checkCooldown("infuriate1", player.ID) < 5000) {
-    gauge.max = 50; // Avoid overcapping from Infuriate
+    targetbeast = 50; // Avoid overcapping from Infuriate
   }
   else if (player.level >= 74
   && checkStatus("nascentchaos", player.ID) > 2500
   && checkStatus("nascentchaos", player.ID) < 12500) {
-    gauge.max = 50; // Avoid wasting Nascent Chaos
+    targetbeast = 50; // Avoid wasting Nascent Chaos
   }
   else if (player.level >= 50
-  && count.aoe <= 2
+  && count.aoe <= 3 // AoE wins at 3
   && checkStatus("stormseye", player.ID) < 15000) {
-    gauge.max = 90; // Avoid letting Storm's Eye fall off during AoE
+    targetbeast = 90; // Avoid letting Storm's Eye fall off during AoE
   }
   else if (player.level >= 50
   && checkStatus("stormseye", player.ID) < 5000) {
-    gauge.max = 90; // Avoid using spenders out of Storm's Eye
+    targetbeast = 90; // Avoid using spenders out of Storm's Eye
+  }
+  else if (player.level >= 45
+  && count.aoe >= 3) {
+    targetbeast = 50; // Use AoE
   }
   else if (player.level >= 64
   && checkCooldown("upheaval", player.ID) < 20000) { // Revisit if too conservative
-    gauge.max = 70; // Stay above 20 for Upheavals
+    targetbeast = 70; // Stay above 20 for Upheavals
   }
   else {
-    gauge.max = 50; // All other cases
+    targetbeast = 50; // All other cases
   }
 
   // Berserk/Inner Release
@@ -520,7 +524,7 @@ function warGauge() {
   }
 
   if (player.level >= 35
-  && player.jobDetail.beast >= gauge.max) {
+  && player.jobDetail.beast >= targetbeast) {
     addIconBlink(nextid.innerbeast, icon.innerbeast);
   }
   else {

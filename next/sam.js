@@ -480,13 +480,13 @@ function samKenki() {
   }
 
   // Set Kenki target
+
+  let minimumkenki = 20;
+
   if (player.level >= 70
   && checkCooldown("ikishoten", player.ID) > checkCooldown("guren", player.ID)
   && checkCooldown("guren", player.ID) < 20000) {
-    gauge.target = 70;
-  }
-  else {
-    gauge.target = 20;
+    minimumkenki = 70;
   }
 
   // Show Guren/Senei
@@ -502,13 +502,13 @@ function samKenki() {
 
   // Show Shinten/Kyuten/Seigan
   if (player.level >= 66
-  && player.jobDetail.kenki >= gauge.target + 15
+  && player.jobDetail.kenki >= minimumkenki + 15
   && checkStatus("openeyes", player.ID) > 5000
   && !toggle.aoe) {
     addIconBlink(nextid.seigan, icon.seigan);
   }
   else if (player.level >= 62
-  && player.jobDetail.kenki >= gauge.target + 25) {
+  && player.jobDetail.kenki >= minimumkenki + 25) {
     addIconBlink(nextid.shinten, icon.shinten);
   }
   else {

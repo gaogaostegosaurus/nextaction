@@ -1,5 +1,7 @@
 // Recast properties - list by alphabetical job then alphabetical action
 
+var recast = {};
+
 // Role actions
 recast.luciddreaming = 60000;
 recast.peloton = 5000;

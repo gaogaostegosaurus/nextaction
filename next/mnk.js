@@ -36,7 +36,6 @@ function mnkAction(logLine) {
     else if (logLine[3] == "Dragon Kick" && logLine[6].length >= 2) {
       removeIcon(nextid.dragonkick);
       if (toggle.stance == 3) {
-        statustime.bluntresistancedown == Date.now + 15000;
       }
       toggle.stance = 1;
     }
@@ -49,7 +48,6 @@ function mnkAction(logLine) {
       toggle.stance = 2;
     }
     else if (logLine[3] == "Twin Snakes" && logLine[6].length >= 2) {
-      statustime.twinsnakes = Date.now() + 15000;
       removeIcon(nextid.twinsnakes);
       toggle.stance = 2;
     }
@@ -61,7 +59,6 @@ function mnkAction(logLine) {
     }
 
     else if (logLine[3] == "Demolish" && logLine[6].length >= 2) {
-      statustime.demolish = Date.now() + 18000;
       removeIcon(nextid.demolish);
       toggle.stance = 3;
       mnkCombo();
@@ -77,20 +74,9 @@ function mnkAction(logLine) {
 
 function mnkStatus(logLine) {
 
-  // To anyone from anyone (non-stacking)
-
-  if (logLine[3] == "Blunt Resistance Down") {
-    if (logLine[2] == "gains") {
-      statustime.bluntresistancedown = Date.now() + parseInt(logLine[5]) * 1000;
-    }
-    else if (logLine[2] == "loses") {
-      delete statustime.bluntresistancedown;
-    }
-  }
-
   // To player from anyone
 
-  else if (logLine[1] == player.name) {
+  if (logLine[1] == player.name) {
 
     if (logLine[3] == "Twin Snakes") {
       if (logLine[2] == "gains") {

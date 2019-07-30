@@ -1,5 +1,7 @@
 // Icon properties - list by alphabetical job then alphabetical action
 
+var icon = {};
+
 // Role Actions
 icon.rampart = "000801";
 icon.luciddreaming = "000865";
