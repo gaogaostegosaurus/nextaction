@@ -505,7 +505,6 @@ function mchHeat() {
 }
 
 function mchBattery() {
-  addText("debug2", "Battery: " + player.jobDetail.battery);
   if (player.jobDetail.battery >= 50) {
     addIconBlink(nextid.rookautoturret, icon.rookautoturret);
   }

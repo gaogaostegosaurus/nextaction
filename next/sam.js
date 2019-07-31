@@ -60,7 +60,7 @@ function samAction() {
   if (actionList.sam.indexOf(actionGroups.actionname) > -1) {
 
     removeText("loadmessage");
-    // removeText("debug1");
+
     // These actions don't interrupt combos
 
     if (actionGroups.actionname == "Higanbana") {

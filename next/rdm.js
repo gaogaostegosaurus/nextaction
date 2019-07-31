@@ -423,42 +423,35 @@ function rdmDualcast() {
     if (player.level >= 70
     && player.jobDetail.blackMana > player.jobDetail.whiteMana
     && checkStatus("verstoneready", player.ID) < 7000) {
-      addText("debug1", "Start combo - Verholy (100% proc)");
       rdmHolyCombo();
     }
     else if (player.level >= 68
     && player.jobDetail.whiteMana > player.jobDetail.blackMana
     && checkStatus("verfireready", player.ID) < 7000) {
-      addText("debug1", "Start combo - Verflare (100% proc)");
       rdmFlareCombo();
     }
     else if (player.level >= 70
     && player.jobDetail.blackMana <= player.jobDetail.whiteMana
     && player.jobDetail.whiteMana + 20 <= player.jobDetail.blackMana + 30
     && checkStatus("verstoneready", player.ID) < 7000) {
-      addText("debug1", "Start combo - Verholy (20% proc)");
       rdmHolyCombo();
     }
     else if (player.level >= 68
     && player.jobDetail.whiteMana <= player.jobDetail.blackMana
     && player.jobDetail.blackMana + 20 <= player.jobDetail.whiteMana + 30
     && checkStatus("verfireready", player.ID) < 7000) {
-      addText("debug1", "Start combo - Verflare (20% proc)");
       rdmFlareCombo();
     }
     else if (player.level >= 70
     && player.jobDetail.whiteMana + 20 <= player.jobDetail.blackMana + 30) {
-      addText("debug1", "Start combo - Verholy (?)");
       rdmHolyCombo();
     }
     else if (player.level >= 68
     && player.jobDetail.blackMana + 20 <= player.jobDetail.whiteMana + 30) {
-      addText("debug1", "Start combo - Verflare (?)");
       rdmFlareCombo();
     }
     // No fancy stuff before 68
     else if (player.level < 68) {
-      addText("debug1", "Start combo");
       rdmCombo();
     }
   }
@@ -472,7 +465,6 @@ function rdmDualcast() {
         if (rdmDualcastValue(hardcast[i], hardcast[i + 1], hardcast[i + 2], dualcast[j], dualcast[j + 1], dualcast[j + 2]) > next.dualcastvalue) {
           next.dualcast = [hardcast[i], dualcast[j]];
           next.dualcastvalue = rdmDualcastValue(hardcast[i], hardcast[i + 1], hardcast[i + 2], dualcast[j], dualcast[j + 1], dualcast[j + 2]);
-          addText("debug1", next.dualcast + next.dualcastvalue);
         }
       }
     }

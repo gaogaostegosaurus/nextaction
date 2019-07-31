@@ -149,7 +149,6 @@ function blmStatus(logLine) {
       if (statusGroups.gainsloses == "gains") {
         addStatus("thundercloud", statusGroups.targetID, parseInt(logLine[6]) * 1000);
         blmCheckProcs()
-        addText("debug1", "Thundercloud");
       }
       else if (statusGroups.gainsloses == "loses") {
         removeStatus("thundercloud", statusGroups.targetID);
@@ -160,8 +159,7 @@ function blmStatus(logLine) {
     else if (statusGroups.statusname == "Firestarter") {
       if (statusGroups.gainsloses== "gains") {
         addStatus("firestarter", statusGroups.targetID, parseInt(logLine[6]) * 1000);
-        blmCheckProcs()
-        addText("debug1", "Firestarter");
+        blmCheckProcs();
       }
       else if (statusGroups.gainsloses == "loses") {
         removeStatus("firestarter", statusGroups.targetID);
@@ -176,8 +174,7 @@ function blmStatus(logLine) {
     if (statusGroups.statusname == "Thunder III") {
      if (statusGroups.gainsloses== "gains") {
        addStatus("thunder", statusGroups.targetID, parseInt(logLine[6]) * 1000);
-       blmCheckProcs()
-       addText("debug1", "Thunder III");
+       blmCheckProcs();
      }
      else if (statusGroups.gainsloses == "loses") {
        removeStatus("thunder", statusGroups.targetID);
@@ -188,7 +185,6 @@ function blmStatus(logLine) {
       if (statusGroups.gainsloses== "gains") {
         addStatus("thunder", statusGroups.targetID, parseInt(logLine[6]) * 1000);
         blmCheckProcs()
-        addText("debug1", "Thunder IV");
       }
       else if (statusGroups.gainsloses == "loses") {
         removeStatus("thunder", statusGroups.targetID);
@@ -201,34 +197,26 @@ function blmStatus(logLine) {
 
 function blmCheckProcs() {
 
-  addText("debug1", "Checking procs... MP:  " + player.currentMP);
-
   if (checkStatus("firestarter", player.ID) > 0
   && player.currentMP <= 3200
   && player.jobDetail.umbralStacks > 0) {  // Ideally, end of Astral phase?
     addIcon(nextid.firestarter, icon.fire3);
-    addText("debug2", "Use F3P");
   }
   else {
     removeIcon(nextid.firestarter);
-    addText("debug2", "Firestarter: " + checkStatus("firestarter", player.ID));
   }
 
   if (checkStatus("thundercloud", player.ID) > 0
   && (checkStatus("thundercloud", player.ID) < 5000 || checkStatus("thunder", target.ID) < 5000)) {
     addIcon(nextid.thundercloud, icon.thunder3);
-    addText("debug3", "Use T3P");
   }
   else if (checkStatus("thundercloud", player.ID) > 0
   && toggle.aoe) {
     addIcon(nextid.thundercloud, icon.thunder3);
-    addText("debug3", "Use T3P");
   }
   else {
     removeIcon(nextid.thundercloud);
-    addText("debug3", "Thundercloud: " + checkStatus("thundercloud", player.ID));
   }
-
 }
 
 function blmRotation() {

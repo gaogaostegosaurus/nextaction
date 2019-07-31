@@ -16,9 +16,7 @@ for (var x = 0; x < 30; x++) {
   dom["next" + x] = document.getElementById("next" + x);
   dom["icon" + x] = document.getElementById("icon" + x);
 }
-for (var x = 0; x < 10; x++) {
-  dom["debug" + x] = document.getElementById("debug" + x);
-}
+
 dom.loadmessage = document.getElementById("loadmessage");
 
 var player = {};
@@ -62,7 +60,7 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
   if (previous.job != player.job || previous.level != player.level) {
 
     delete toggle.combo;
-    clearElements();
+    resetEverything();
 
     addText("loadmessage", "Plugin loaded for " + player.level + player.job);
 
@@ -412,8 +410,16 @@ function removeText(textid) {
   document.getElementById(textid).style.display = "none";
 }
 
-function clearElements() {
-  for (var nextid = 0; nextid < 30; nextid++) {
+function resetEverything() {
+  let nextid = 0;
+  for (nextid = 0; nextid < 30; nextid++) {
     dom["next" + nextid].style.display = "none";
+  }
+
+  let property = "";
+  for (property in timeout) {
+    if (timeout.hasOwnProperty(property)) {
+      clearTimeout(timeout[property]);
+    }
   }
 }
