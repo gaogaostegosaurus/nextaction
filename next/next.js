@@ -5,16 +5,28 @@ var statustracker = {};       // Holds timestamps for statuses
 var cooldowntime = {};        // Holds timestamps for cooldowns
 
 var timeout = {};             // For timeout variables
+var interval = {};
+var countdowntimeout = {};            // Timer intervals
 var nextid = {};              // Store document id - location on page for icons, etc.
+var countdownid = {};
 var toggle = {};              // Toggley things
 var count = {};               // County things?
 var previous = {};
 var next = {};
 
 var dom = {};
-for (var x = 0; x < 30; x++) {
-  dom["next" + x] = document.getElementById("next" + x);
-  dom["icon" + x] = document.getElementById("icon" + x);
+for (var x = 0; x < 20; x++) {
+  dom["icondiv" + x] = document.getElementById("icondiv" + x); // Container for all parts
+  dom["iconimgdiv" + x] = document.getElementById("iconimgdiv" + x); // Wraps icon and overlay (for animation)
+  dom["iconimg" + x] = document.getElementById("iconimg" + x); // src = icon
+  dom["iconcountdown" + x] = document.getElementById("iconcountdown" + x); // Countdown - separate from img
+}
+for (var x = 0; x < 10; x++) {
+  dom["countdowndiv" + x] = document.getElementById("countdowndiv" + x); // Countdown - separate from img
+  dom["countdownimgdiv" + x] = document.getElementById("countdownimgdiv" + x); // Countdown - separate from img
+  dom["countdownimg" + x] = document.getElementById("countdownimg" + x); // Countdown - separate from img
+  dom["countdownbar" + x] = document.getElementById("countdownbar" + x); // Countdown - separate from img
+  dom["countdowntime" + x] = document.getElementById("countdowntime" + x); // Countdown - separate from img
 }
 
 dom.loadmessage = document.getElementById("loadmessage");
@@ -46,17 +58,17 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
 
   player = e.detail;
   player.ID = e.detail.id.toString(16).toUpperCase(); // player.id.toString(16) is lowercase; using "ID" to designate uppercase lettering
-  player.debugJobSplit = player.debugJob.split(" ");
+  player.debugJobSplit = player.debugJob.split(" "); // Creates 8 part array - use [0] to [7]
 
-  // Temp DRK resources
-  // player.jobDetail.darkarts = player.debugJobSplit[4]; // 0 or 1
-  // This hasn't been actually useful for decision making (yet)
-  // player.jobDetail.darksideTime = parseInt(player.debugJobSplit[2], 16) + parseInt(player.debugJobSplit[3], 16) * 256;
+  player.tempjobDetail = {};
 
-  // MCH resources
-  // player.jobDetail.overheated = player.debugJobSplit[7]; // Just 0 or 1
-
+    if (player.job == "DNC") { // Temporary
+      player.tempjobDetail.tempfourfoldfeathers = parseInt(player.debugJobSplit[0]); // 0-4
+      player.tempjobDetail.tempesprit = parseInt(player.debugJobSplit[1], 16); // 0-100
+      player.tempjobDetail.tempsteps = parseInt(player.debugJobSplit[6]); // 0-4
+    }
   // Detects name/job/level change and clears elements
+
   if (previous.job != player.job || previous.level != player.level) {
 
     delete toggle.combo;
@@ -70,6 +82,9 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
     }
     else if (player.job == "BRD") {
       brdJobChange();
+    }
+    else if (player.job == "DNC") {
+      dncJobChange();
     }
     else if (player.job == "DRK") {
       drkJobChange();
@@ -95,9 +110,10 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
 
     previous.job = player.job;
     previous.level = player.level;
-    console.log("Job changed to " + previous.job);
+    console.log("Changed to " + player.job + player.level);
 
   }
+
 
   // This is probably only useful for jobs that need to watch things that "tick" up or down
   if (player.job == "BLM") {
@@ -139,11 +155,11 @@ document.addEventListener("onInCombatChangedEvent", function(e) {
 
   if (e.detail.inGameCombat) {
     toggle.combat = Date.now();
-    document.getElementById("nextdiv").className = "fadein";
+    //document.getElementById("nextdiv").className = "combat-show";
   }
   else {
     delete toggle.combat;
-    document.getElementById("nextdiv").className = "fadeout";
+    //document.getElementById("nextdiv").className = "combat-hide";
 
 
     // Try to get rid of this section
@@ -231,6 +247,9 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
       else if (player.job == "BRD") {
         brdAction();
       }
+      else if (player.job == "DNC") {
+        dncAction();
+      }
       else if (player.job == "DRK") {
         drkAction();
       }
@@ -265,6 +284,9 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
       }
       else if (player.job == "BRD") {
         brdStatus();
+      }
+      else if (player.job == "DNC") {
+        dncStatus();
       }
       else if (player.job == "DRK") {
         drkStatus();
@@ -314,20 +336,29 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
 });
 
 
-function addCooldown(cooldownname, sourceid, recast) {
+function addCooldown(cooldownname, cooldownsourceid, cooldownrecast) {
+  if (!cooldownsourceid) {
+    cooldownsourceid = player.ID;
+  }
+  if (!cooldownrecast) {
+    cooldownrecast = recast[cooldownname];
+  }
 
   if (!cooldowntracker[cooldownname]) { // Create array if it doesn't exist yet
-    cooldowntracker[cooldownname] = [sourceid, recast + Date.now()];
+    cooldowntracker[cooldownname] = [cooldownsourceid, cooldownrecast + Date.now()];
   }
-  else if (cooldowntracker[cooldownname].indexOf(sourceid) > -1) { // Update array if source match found
-    cooldowntracker[cooldownname][cooldowntracker[cooldownname].indexOf(sourceid) + 1] = recast + Date.now();
+  else if (cooldowntracker[cooldownname].indexOf(cooldownsourceid) > -1) { // Update array if source match found
+    cooldowntracker[cooldownname][cooldowntracker[cooldownname].indexOf(cooldownsourceid) + 1] = cooldownrecast + Date.now();
   }
   else { // Push new entry into array if no matching entry
-    cooldowntracker[cooldownname].push(sourceid, recast + Date.now());
+    cooldowntracker[cooldownname].push(cooldownsourceid, cooldownrecast + Date.now());
   }
 }
 
 function checkCooldown(cooldownname, sourceid) {
+  if (!sourceid) {
+    sourceid = player.ID;
+  }
   if (!cooldowntracker[cooldownname]) {
     return -1;
   }
@@ -352,12 +383,17 @@ function addStatus(statusname, targetid, duration) {
   }
 }
 
-function checkStatus(statusname, targetid) {
-  if (!statustracker[statusname]) {
+function checkStatus(name, id) {
+
+  if (!id) {
+    id = player.ID;
+  }
+
+  if (!statustracker[name]) {
     return -1;
   }
-  else if (statustracker[statusname].indexOf(targetid) > -1) {
-    return Math.max(statustracker[statusname][statustracker[statusname].indexOf(targetid) + 1] - Date.now(), -1);
+  else if (statustracker[name].indexOf(id) > -1) {
+    return Math.max(statustracker[name][statustracker[name].indexOf(id) + 1] - Date.now(), -1);
   }
   else {
     return -1;
@@ -375,16 +411,77 @@ function removeStatus(statusname, targetid) {
 
 // Icon functions
 
+
+function addIconNew(name) {
+
+  let iconid = nextid[name];
+  let iconfilename = icon[name];
+
+  dom["iconimg" + iconid].src = "icon/" + iconfilename + ".png";
+  dom["icondiv" + iconid].className = "icondiv icon-popin";
+}
+
+function removeIconNew(name) {
+
+  let iconid = nextid[name];
+  dom["icondiv" + iconid].className = "icondiv icon-popout";
+}
+
+function addStatusNew(name, time, id) {
+
+  if (!duration) {
+    time = duration[statusname];
+  }
+  if (!id) {
+    id = player.ID;
+  }
+
+  if (!statustracker[name]) { // Create array if it doesn't exist yet
+    statustracker[name] = [id, Date.now() + time];
+  }
+  else if (statustracker[name].indexOf(id) > -1) { // Update array if target match found
+    statustracker[name][statustracker[name].indexOf(id) + 1] = Date.now() + time;
+  }
+  else { // Push new entry into array if no matching entry
+    statustracker[name].push(id, Date.now() + time);
+  }
+}
+
+function removeStatusNew(name, id) {
+
+  if (!id) {
+    id = player.ID;
+  }
+
+  if (!statustracker[name]) {
+    statustracker[name] = [];
+  }
+  else if (statustracker[name].indexOf(id) > -1) {
+    statustracker[name].splice(statustracker[name].indexOf(id), 2);
+  }
+}
+
+
+//
+
+
+
 function addIcon(nextid, actionicon) {
-  dom["icon" + nextid].src = "icon/" + actionicon + ".png";
-  dom["next" + nextid].className = "icondiv addfadein";
-  dom["next" + nextid].style.display = "table-cell";
+  dom["iconimgdiv" + nextid].className = "iconimgdiv growiconimgdiv-fadein";
+  dom["iconimg" + nextid].src = "icon/" + actionicon + ".png";
+  dom["icondiv" + nextid].style.display = "inline-flex";
 }
 
 function addIconBlink(nextid, actionicon) {
-  dom["icon" + nextid].src = "icon/" + actionicon + ".png";
-  dom["next" + nextid].className = "icondiv addfadeinblink";
-  dom["next" + nextid].style.display = "table-cell";
+  dom["iconimgdiv" + nextid].className = "iconimgdiv addicondivfadeinblink";
+  dom["iconimg" + nextid].src = "icon/" + actionicon + ".png";
+  dom["icondiv" + nextid].style.display = "inline-flex";
+}
+
+function addIconDim(nextid, actionicon) {
+  dom["iconimgdiv" + nextid].className = "iconimgdiv addicondivfadeindim";
+  dom["iconimg" + nextid].src = "icon/" + actionicon + ".png";
+  dom["icondiv" + nextid].style.display = "inline-flex";
 }
 
 function addIconTimeout(action, delay, nextid, actionicon) {
@@ -392,13 +489,88 @@ function addIconTimeout(action, delay, nextid, actionicon) {
   timeout[action] = setTimeout(addIcon, delay, nextid, actionicon);
 }
 
-function addIconBlinkTimeout(action, delay, nextid, actionicon) {
+function addIconBlinkTimeout(action, delay, nextid, actionicon, countdowntime) {
   clearTimeout(timeout[action]);
-  timeout[action] = setTimeout(addIconBlink, delay, nextid, actionicon);
+  if (!countdowntime) {
+    timeout[action] = setTimeout(addIconBlink, delay, nextid, actionicon);
+  }
+  else  {
+    clearTimeout(countdowntimeout[action]);
+    timeout[action] = setTimeout(addIconBlink, delay, nextid, actionicon);
+    timeout[action] = setTimeout(addIconBlink, delay, nextid, actionicon);
+    countdowntimeout[action] = setTimeout(addIconCountdown, delay - countdowntime, nextid, countdowntime, actionicon);
+  }
 }
 
+// function addIconCountdown(nextid, countdowntime) {
+//   let i = countdowntime;
+//   i = i - 100; // I think it "skips" the first iteration
+//   let x = setInterval(function () {
+//     if (i < 0) {
+//       clearInterval(x);
+//       dom["iconcountdown" + nextid].innerHTML = "";
+//     }
+//     else if (i < 1000) {
+//       dom["iconcountdown" + nextid].innerHTML = (i / 1000).toFixed(1) + "s";
+//     }
+//     else {
+//       dom["iconcountdown" + nextid].innerHTML = Math.ceil(i / 1000) + "s"; // This appears to best mimic what happens for XIV
+//     }
+//     i = i - 100;
+//   }, 100);
+// }
+
+function addCountdownBar(name, time, text) {
+  // function addCountdownBar(actionname, countdowntime = checkCooldown(actionname), finishtext = "READY") { // Once CEF updated
+
+  if (!time) {
+    addCooldown(name);
+    time = checkCooldown(name);
+  }
+  if (!text) {
+    text = "READY";
+  }
+
+  // Stop mixing up countdowntime and countdownbar and maybe you'd get some work done
+
+  clearInterval(interval[name]);
+
+  let id = countdownid[name];
+  let filenname = icon[name];
+  time = time - 1000;
+
+  dom["countdownimg" + id].src = "icon/" + filenname + ".png";
+
+  interval[name] = setInterval(function () {
+
+    if (time < 60000) {
+      dom["countdowndiv" + id].className = "countdowndiv countdown-popin";
+    }
+
+    if (time <= 0) {
+      dom["countdowntime" + id].innerHTML = text;
+      clearInterval(interval[name]);
+    }
+    else if (time < 1000) {
+      dom["countdowntime" + id].innerHTML = (time / 1000).toFixed(1);
+    }
+    else {
+      dom["countdowntime" + id].innerHTML = Math.ceil(time / 1000); // This appears to best mimic what happens for XIV
+    }
+    dom["countdownbar" + id].style.width = Math.min(Math.ceil(time * 2 / 1000), 400) + "px";
+    time = time - 100;
+  }, 100);
+}
+
+function removeCountdownBar(name) {
+  clearInterval(interval[name]);
+  let id = countdownid[name];
+  dom["countdowndiv" + id].className = "countdowndiv countdown-popout"; // Possibility of countdown getting fubared in this (left behind or something else), check later
+}
+
+
 function removeIcon(nextid) {
-  dom["next" + nextid].className = "icondivtest fadeoutremove";
+  dom["iconimgdiv" + nextid].className = "iconimgdiv fadeoutremoveicondiv"; // Possibility of countdown getting fubared in this (left behind or something else), check later
 }
 
 function addText(textid,message) {
@@ -410,16 +582,41 @@ function removeText(textid) {
   document.getElementById(textid).style.display = "none";
 }
 
+for (var x = 0; x < 20; x++) {
+  dom["icondiv" + x] = document.getElementById("icondiv" + x); // Container for all parts
+  dom["iconimgdiv" + x] = document.getElementById("iconimgdiv" + x); // Wraps icon and overlay (for animation)
+  dom["iconimg" + x] = document.getElementById("iconimg" + x); // src = icon
+  dom["iconcountdown" + x] = document.getElementById("iconcountdown" + x); // Countdown - separate from img
+}
+for (var x = 0; x < 10; x++) {
+  dom["countdowndiv" + x] = document.getElementById("countdowndiv" + x); // Countdown - separate from img
+  dom["countdownimgdiv" + x] = document.getElementById("countdownimgdiv" + x); // Countdown - separate from img
+  dom["countdownimg" + x] = document.getElementById("countdownimg" + x); // Countdown - separate from img
+  dom["countdownbar" + x] = document.getElementById("countdownbar" + x); // Countdown - separate from img
+  dom["countdowntime" + x] = document.getElementById("countdowntime" + x); // Countdown - separate from img
+}
+
 function resetEverything() {
-  let nextid = 0;
-  for (nextid = 0; nextid < 30; nextid++) {
-    dom["next" + nextid].style.display = "none";
+
+  let x = 0;
+
+  for (x = 0; x < 20; x++) {
+    dom["icondiv" + x].className = "icondiv";
+  }
+
+  for (x = 0; x < 10; x++) {
+    dom["countdowndiv" + x].className = "countdowndiv";
   }
 
   let property = "";
   for (property in timeout) {
     if (timeout.hasOwnProperty(property)) {
       clearTimeout(timeout[property]);
+    }
+  }
+  for (property in interval) {
+    if (interval.hasOwnProperty(property)) {
+      clearInterval(interval[property]);
     }
   }
 }
