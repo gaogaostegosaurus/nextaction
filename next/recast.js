@@ -23,6 +23,11 @@ recast.minuet = 80000;
 recast.empyrealarrow = 15000;
 recast.sidewinder = 60000;
 
+// DNC
+recast.technicalstep = 120000;
+recast.standardstep = 30000;
+recast.flourish = 60000;
+
 // DRK
 recast.abyssaldrain = 60000;
 recast.bloodweapon = 60000;

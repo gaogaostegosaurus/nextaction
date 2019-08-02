@@ -40,6 +40,30 @@ icon.causticbite = "002613";
 icon.stormbite = "002614";
 icon.refulgentarrow = "002616";
 
+// DNC
+icon.standardstep = "003454";
+icon.standardfinish = "003459";
+icon.reversecascade = "003460";
+icon.flourishingcascade = icon.reversecascade;
+icon.fandance = "003462";
+icon.risingwindmill = "003463";
+icon.flourishingwindmill = icon.risingwindmill;
+icon.fountainfall = "003464";
+icon.flourishingfountain = icon.fountainfall;
+icon.fountainfallsingletarget = icon.fountainfall;
+icon.bloodshower = "003465";
+icon.flourishingshower = icon.bloodshower;
+icon.bloodshowersingletarget = icon.bloodshower;
+icon.fandance2 = "003466";
+icon.devilment = "003471";
+icon.fandance3 = "003472";
+icon.flourishingfandance = icon.fandance3;
+icon.technicalstep = "003473";
+icon.technicalfinish = "003474";
+icon.flourish = "003475";
+icon.saberdance = "003476";
+icon.saberdance80plus = icon.saberdance;
+
 // DRK
 icon.hardslash = "003051";
 icon.syphonstrike = "003054";
