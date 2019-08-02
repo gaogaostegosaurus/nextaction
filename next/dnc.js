@@ -59,19 +59,19 @@ function dncJobChange() {
   // Show available cooldowns
 
   if (player.level >= 15) {
-    addCountdownBar("standardstep");
+    addCountdownBar("standardstep", -1);
   }
 
   if (player.level >= 62) {
-    addCountdownBar("devilment");
+    addCountdownBar("devilment", -1);
   }
 
   if (player.level >= 70) {
-    addCountdownBar("technicalstep");
+    addCountdownBar("technicalstep", -1);
   }
 
   if (player.level >= 72) {
-    addCountdownBar("flourish");
+    addCountdownBar("flourish", -1);
   }
 }
 
