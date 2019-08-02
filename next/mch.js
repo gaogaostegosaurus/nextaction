@@ -46,6 +46,12 @@ function mchJobChange() {
   nextid.gaussround = 13;
   nextid.ricochet = 14;
 
+  countdownid.reassemble = 0;
+  countdownid.drill = 1;
+  countdownid.hotshot = 2;
+  countdownid.gaussround = 3;
+  countdownid.ricochet = 4;
+
   // nextid.tactician = 99;
 
   previous.spreadshot = 0;
@@ -103,45 +109,22 @@ function mchJobChange() {
 
   // Show available cooldowns
 
-  if (player.level >= 4
-  && checkCooldown("hotshot", player.ID) < 0) {
-    addIconBlink(nextid.hotshot, icon.hotshot);
-  }
-  else {
-    removeIcon(nextid.hotshot);
+  addCountdownBar("hotshot", checkCooldown("hotshot", player.ID));
+
+  if (player.level >= 15) {
+    addCountdownBar("gaussround", checkCooldown("gaussround1", player.ID));
   }
 
-  if (player.level >= 15
-  && checkCooldown("gaussround1", player.ID) < 0) {
-    addIconBlink(nextid.gaussround, icon.gaussround);
-  }
-  else {
-    removeIcon(nextid.gaussround);
+  if (player.level >= 50) {
+    addCountdownBar("ricochet", checkCooldown("ricochet1", player.ID));
   }
 
-  if (player.level >= 50
-  && checkCooldown("ricochet1", player.ID) < 0) {
-    addIconBlink(nextid.ricochet, icon.ricochet);
-  }
-  else {
-    removeIcon(nextid.ricochet);
+  if (player.level >= 10) {
+    addCountdownBar("reassemble", checkCooldown("reassemble", player.ID));
   }
 
-  if (player.level >= 58
-  && checkCooldown("drill", player.ID) < 0
-  && checkCooldown("reassemble", player.ID) < 0) {
-    addIconBlink(nextid.reassemble, icon.reassemble);
-  }
-  else if (player.level >= 58
-  && checkCooldown("drill", player.ID) < 0) {
-    addIconBlink(nextid.drill, icon.drill);
-  }
-  else if (player.level >= 10
-  && checkCooldown("reassemble", player.ID) < 0) {
-    addIconBlink(nextid.reassemble, icon.reassemble);
-  }
-  else {
-    removeIcon(nextid.drill);
+  if (player.level >= 58) {
+    addCountdownBar("drill", checkCooldown("drill", player.ID));
   }
 
   mchHeat();
@@ -204,7 +187,7 @@ function mchAction() {
       previous.hotshot = Date.now();
       removeIcon(nextid.hotshot);
       addCooldown("hotshot", player.ID, recast.hotshot);
-      addIconBlinkTimeout("hotshot", recast.hotshot - 1000, nextid.hotshot, icon.hotshot);
+      addCountdownBar("hotshot", recast.hotshot);
       mchBattery();
       mchHeat();
     }
@@ -217,6 +200,7 @@ function mchAction() {
       previous.drill = Date.now();
       removeIcon(nextid.drill);
       addCooldown("drill", player.ID, recast.drill);
+      addCountdownBar("drill", recast.drill);
       if (checkCooldown("reassemble", player.ID) < checkCooldown("drill", player.ID)) {
         addIconBlinkTimeout("drill", recast.drill - 1000, nextid.drill, icon.reassemble);
       }

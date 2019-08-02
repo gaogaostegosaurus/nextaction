@@ -1,5 +1,9 @@
 "use strict";
 
+// To Do:
+// Set up countdown bars
+//
+
 var procpotency = 20;
 
 var hardcast = [
@@ -54,6 +58,15 @@ function rdmJobChange() {
   nextid.corpsacorps = 14;
   nextid.displacement = 15;
 
+  countdownid.manafication = 0;
+  countdownid.embolden = 1;
+  countdownid.luciddreaming = 2;
+  countdownid.swiftcast = 3;
+  countdownid.fleche = 4;
+  countdownid.contresixte = 5;
+  countdownid.corpsacorps = 6;
+  countdownid.displacement= 7;
+
   previous.contresixte = 0;
   previous.verthunder2 = 0;
   previous.veraero2 = 0;
@@ -91,25 +104,17 @@ function rdmJobChange() {
 
   // Create cooldown notifications
 
-  if (checkCooldown("corpsacorps", player.ID) < 0) {
-    addIconBlink(nextid.corpsacorps,icon.corpsacorps);
+  addCountdownBar("corpsacorps", checkCooldown("corpsacorps", player.ID));
+  if (player.level >= 40) {
+    addCountdownBar("displacement", checkCooldown("displacement", player.ID));
   }
-  if (player.level >= 40
-  && checkCooldown("displacement", player.ID) < 0) {
-    addIconBlink(nextid.displacement,icon.displacement);
+  if (player.level >= 45) {
+    addCountdownBar("fleche", checkCooldown("fleche", player.ID));
   }
-  if (player.level >= 45
-  && checkCooldown("fleche", player.ID) < 0) {
-    addIconBlink(nextid.fleche,icon.fleche);
+  if (player.level >= 56) {
+    addCountdownBar("contresixte", checkCooldown("contresixte", player.ID));
   }
-  if (player.level >= 50
-  && checkCooldown("acceleration", player.ID) < 0) {
-    addIconBlink(nextid.acceleration,icon.acceleration);
-  }
-  if (player.level >= 56
-  && checkCooldown("contresixte", player.ID) < 0) {
-    addIconBlink(nextid.contresixte,icon.contresixte);
-  }
+
 
 }
 
@@ -169,6 +174,9 @@ function rdmAction() {
       addCooldown("fleche", player.ID, recast.fleche);
       removeIcon(nextid.fleche);
       addIconBlinkTimeout("fleche",recast.fleche,nextid.fleche,icon.fleche);
+
+      addCountdownBar("fleche", recast.fleche);
+
     }
 
     // else if ("Embolden" == actionGroups.actionname) {

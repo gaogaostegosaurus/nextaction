@@ -41,6 +41,12 @@ function ninJobChange() {
   nextid.dreamwithinadream = 13;
   nextid.assassinate = 14;
 
+  countdownid.ninjutsu = 0;
+  countdownid.suiton = 1;
+  countdownid.trickattack = 2;
+  countdownid.tenchijin = 3;
+  countdownid.dreamwithinadream = 4;
+
   count.aoe = 1;
   previous.deathblossom = 0;
   previous.hakkemujinsatsu = 0;
@@ -62,16 +68,18 @@ function ninJobChange() {
   else {
     removeIcon(nextid.tenchijin);
   }
-
   ninCombo();
   ninNinjutsu();
-
 }
 
 function ninAction(logLine) {
   // console.log("Logline")
 
   if (actionList.nin.indexOf(actionGroups.actionname) > -1) {
+
+    // Everything breaks Mudra "combo" so list it first
+    // Not sure if we even need this right now...
+
     if ("Ten" == actionGroups.actionname) {
       toggle.mudra = toggle.mudra + "T";
       ninMudraCombo();
@@ -88,7 +96,6 @@ function ninAction(logLine) {
     else {
 
       delete toggle.mudra;
-      clearTimeout(timeout.mudra);
 
       if ("Hide" == actionGroups.actionname) {
         addCooldown("hide", player.ID, recast.hide);
@@ -98,14 +105,16 @@ function ninAction(logLine) {
       }
 
       else if ("Mug" == actionGroups.actionname) {
-        removeIcon(nextid.mug);
-        addCooldown("mug", player.ID, recast.mug);
+        // removeIcon(nextid.mug);
+        // addCooldown("mug", player.ID, recast.mug);
+        addCountdownBar("Mug", 0, recast.mug);
         ninNinki();
       }
 
       else if ("Trick Attack" == actionGroups.actionname) {
         removeIcon(nextid.trickattack);
         addCooldown("trickattack", player.ID, recast.trickattack);
+        addCountdownBar("Trick Attack", countdownid.trickattack, recast.trickattack);
       }
 
       else if ("Suiton" == actionGroups.actionname) {
@@ -139,17 +148,14 @@ function ninAction(logLine) {
           addCooldown("kassatsu2", player.ID, recast.kassatsu);
           addCooldown("kassatsu1", player.ID, -1);
         }
-
         else {
           removeIcon(nextid.kassatsu);
           addCooldown("kassatsu1", player.ID, checkCooldown("kassatsu2", player.ID));
           addCooldown("kassatsu2", player.ID, checkCooldown("kassatsu2", player.ID) + recast.kassatsu);
           addIconBlinkTimeout("kassatsu", checkCooldown("kassatsu1", player.ID), nextid.kassatsu, icon.kassatsu);
         }
-
         addStatus("kassatsu", player.ID, duration.kassatsu);
         clearTimeout(timeout.ninjutsu);
-        ninKassatsu();
       }
 
       else if ("Dream Within A Dream" == actionGroups.actionname) {
@@ -180,7 +186,6 @@ function ninAction(logLine) {
         addCooldown("ninjutsu", player.ID, -1);
         addStatus("tenchijin", player.ID, duration.tenchijin);
         clearTimeout(timeout.ninjutsu);
-        ninTCJ();
       }
 
       else { // Weaponskills and combos (hopefully)
@@ -244,9 +249,6 @@ function ninAction(logLine) {
       }
     }
   }
-  // Mudra first because doing anything else breaks the "combo"
-
-
 }
 
 function ninStatus() {
@@ -289,18 +291,26 @@ function ninStatus() {
     else if ("Kassatsu" == statusGroups.statusname) {
       if ("gains" == statusGroups.gainsloses) {
         addStatus("kassatsu", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
+        ninKassatsu();
       }
       else if ("loses" == statusGroups.gainsloses) {
         removeStatus("kassatsu", statusGroups.targetID);
+        addCooldown("ninjutsu", statusGroups.targetID, recast.ninjutsu);
+        clearTimeout(timeout.ninjutsu);
+        timeout.ninjutsu = setTimeout(ninNinjutsu, recast.ninjutsu - 1000);
       }
     }
 
     else if ("Ten Chi Jin" == statusGroups.statusname) {
       if ("gains" == statusGroups.gainsloses) {
         addStatus("tenchijin", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
+        ninTCJ();
       }
       else if ("loses" == statusGroups.gainsloses) {
         removeStatus("tenchijin", statusGroups.targetID);
+        addCooldown("ninjutsu", statusGroups.targetID, recast.ninjutsu);
+        clearTimeout(timeout.ninjutsu);
+        timeout.ninjutsu = setTimeout(ninNinjutsu, recast.ninjutsu - 1000);
       }
     }
   }
