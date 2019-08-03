@@ -84,12 +84,12 @@ function dncAction() {
     removeText("loadmessage");
 
     if ("Fan Dance" == actionGroups.actionname) {
-      removeIconNew("fourfoldfeathers");
+      removeIcon("fourfoldfeathers");
       dncFeathers();
     }
 
     else if ("Fan Dance II" == actionGroups.actionname) {
-      removeIconNew("fourfoldfeathers");
+      removeIcon("fourfoldfeathers");
       if (Date.now() - previous.fandance2 > 1000) {
         count.aoe = 1;
         previous.fandance2 = Date.now();
@@ -101,7 +101,7 @@ function dncAction() {
     }
 
     else if ("Fan Dance III" == actionGroups.actionname) {
-      removeIconNew("fandance3");
+      removeIcon("fandance3");
       if (Date.now() - previous.fandance3 > 1000) {
         count.aoe = 1;
         previous.fandance3 = Date.now();
@@ -118,39 +118,39 @@ function dncAction() {
     else {  // GCD Action
 
       if ("Reverse Cascade" == actionGroups.actionname) {
-        removeIconNew("reversecascade");
+        removeIcon("reversecascade");
         dncFeathers();
       }
 
       else if ("Rising Windmill" == actionGroups.actionname) {
-        removeIconNew("risingwindmill");
+        removeIcon("risingwindmill");
         dncFeathers();
       }
 
       else if ("Fountainfall" == actionGroups.actionname) {
-        removeIconNew("fountainfall");
+        removeIcon("fountainfall");
         dncFeathers();
       }
 
       else if ("Bloodshower" == actionGroups.actionname) {
-        removeIconNew("bloodshower");
+        removeIcon("bloodshower");
         dncFeathers();
       }
 
       else if ("Bloodshower" == actionGroups.actionname) {
-        removeIconNew("devilment");
+        removeIcon("devilment");
         addCountdownBar("devilment");
       }
 
       else if ("Standard Step" == actionGroups.actionname) {
-        removeIconNew("standardstep");
+        removeIcon("standardstep");
         addCountdownBar("standardstep");
       }
 
       else if (
       ["Standard Finish", "Single Standard Finish",
       "Double Standard Finish"].indexOf(actionGroups.actionname) > -1) {
-        removeIconNew("standardfinish");
+        removeIcon("standardfinish");
         if (actionGroups.targetID.startsWith("4")) {
           if (Date.now() - previous.standardfinish > 1000) {
             count.aoe = 1;
@@ -167,7 +167,7 @@ function dncAction() {
       }
 
       else if ("Technical Step" == actionGroups.actionname) {
-        removeIconNew("technicalstep");
+        removeIcon("technicalstep");
         addCountdownBar("technicalstep");
       }
 
@@ -175,7 +175,7 @@ function dncAction() {
       ["Technical Finish", "Single Technical Finish",
       "Double Technical Finish", "Triple Technical Finish",
       "Quadruple Technical Finish"].indexOf(actionGroups.actionname) > -1) {
-        removeIconNew("technicalfinish");
+        removeIcon("technicalfinish");
         if (actionGroups.targetID.startsWith("4")) {
           if (Date.now() - previous.technicalfinish > 1000) {
             count.aoe = 1;
@@ -219,13 +219,13 @@ function dncStatus() {
       if (statusGroups.gainsloses == "gains") {
         addIcon("reversecascade");
         addCountdownBar("reversecascade", parseInt(statusGroups.duration) * 1000);
-        addStatusNew("flourishingcascade", player.ID, parseInt(statusGroups.duration) * 1000);
+        addStatus("flourishingcascade", player.ID, parseInt(statusGroups.duration) * 1000);
         dncFlourishCheck();
       }
       else if (statusGroups.gainsloses == "loses") {
-        removeIconNew("reversecascade");
+        removeIcon("reversecascade");
         removeCountdownBar("reversecascade");
-        removeStatusNew("flourishingcascade");
+        removeStatus("flourishingcascade");
         dncFlourishCheck();
       }
     }
@@ -234,13 +234,13 @@ function dncStatus() {
       if (statusGroups.gainsloses == "gains") {
         addIcon("fountainfall");
         addCountdownBar("fountainfall", parseInt(statusGroups.duration) * 1000);
-        addStatusNew("flourishingfountain", parseInt(statusGroups.duration) * 1000);
+        addStatus("flourishingfountain", parseInt(statusGroups.duration) * 1000);
         dncFlourishCheck();
       }
       else if (statusGroups.gainsloses == "loses") {
-        removeIconNew("fountainfall");
+        removeIcon("fountainfall");
         removeCountdownBar("fountainfall");
-        removeStatusNew("flourishingfountain");
+        removeStatus("flourishingfountain");
         dncFlourishCheck();
       }
     }
@@ -249,13 +249,13 @@ function dncStatus() {
       if (statusGroups.gainsloses == "gains") {
         addIcon("risingwindmill");
         addCountdownBar("risingwindmill", parseInt(statusGroups.duration) * 1000);
-        addStatusNew("flourishingwindmill", parseInt(statusGroups.duration) * 1000);
+        addStatus("flourishingwindmill", parseInt(statusGroups.duration) * 1000);
         dncFlourishCheck();
       }
       else if (statusGroups.gainsloses == "loses") {
-        removeIconNew("risingwindmill");
+        removeIcon("risingwindmill");
         removeCountdownBar("risingwindmill");
-        removeStatusNew("flourishingwindmill");
+        removeStatus("flourishingwindmill");
         dncFlourishCheck();
       }
     }
@@ -264,13 +264,13 @@ function dncStatus() {
       if (statusGroups.gainsloses == "gains") {
         addIcon("bloodshower");
         addCountdownBar("bloodshower", parseInt(statusGroups.duration) * 1000);
-        addStatusNew("flourishingshower", parseInt(statusGroups.duration) * 1000);
+        addStatus("flourishingshower", parseInt(statusGroups.duration) * 1000);
         dncFlourishCheck();
       }
       else if (statusGroups.gainsloses == "loses") {
-        removeIconNew("bloodshower");
+        removeIcon("bloodshower");
         removeCountdownBar("bloodshower");
-        removeStatusNew("flourishingshower");
+        removeStatus("flourishingshower");
         dncFlourishCheck();
       }
     }
@@ -279,32 +279,32 @@ function dncStatus() {
       if (statusGroups.gainsloses == "gains") {
         addIcon("fandance3");
         addCountdownBar("fandance3", parseInt(statusGroups.duration) * 1000);
-        addStatusNew("flourishingfandance", parseInt(statusGroups.duration) * 1000);
+        addStatus("flourishingfandance", parseInt(statusGroups.duration) * 1000);
         dncFlourishCheck();
       }
       else if (statusGroups.gainsloses == "loses") {
-        removeIconNew("fandance3");
+        removeIcon("fandance3");
         removeCountdownBar("fandance3");
-        removeStatusNew("flourishingfandance");
+        removeStatus("flourishingfandance");
         dncFlourishCheck();
       }
     }
 
     else if ("Standard Step" == statusGroups.statusname) {
       if (statusGroups.gainsloses == "gains") {
-        addStatusNew("standardstep", parseInt(statusGroups.duration) * 1000);
+        addStatus("standardstep", parseInt(statusGroups.duration) * 1000);
       }
       else if (statusGroups.gainsloses == "loses") {
-        removeStatusNew("standardstep");
+        removeStatus("standardstep");
       }
     }
 
     else if ("Technical Step" == statusGroups.statusname) {
       if (statusGroups.gainsloses == "gains") {
-        addStatusNew("technicalstep", parseInt(statusGroups.duration) * 1000);
+        addStatus("technicalstep", parseInt(statusGroups.duration) * 1000);
       }
       else if (statusGroups.gainsloses == "loses") {
-        removeStatusNew("technicalstep");
+        removeStatus("technicalstep");
       }
     }
   }
@@ -340,7 +340,7 @@ function dncFeathers() {
     addIcon("fourfoldfeathers");
   }
   else {
-    removeIconNew("fourfoldfeathers");
+    removeIcon("fourfoldfeathers");
   }
 }
 
@@ -349,6 +349,6 @@ function dncEsprit() {
     addIcon("saberdance");
   }
   else {
-    removeIconNew("saberdance");
+    removeIcon("saberdance");
   }
 }
