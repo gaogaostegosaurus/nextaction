@@ -39,7 +39,7 @@ function whmJobChange() {
   }
 
   if (checkStatus("freecure", player.ID) > 0) {
-    addIconBlink(nextid.freecure,icon.cure2);
+    addIcon("freecure");
   }
   else {
     removeIcon(nextid.freecure)
@@ -48,12 +48,12 @@ function whmJobChange() {
   if (player.level >= 24
   && player.currentMP / player.maxMP < 0.8
   && checkCooldown("luciddreaming") < 0) {
-    addIconBlink(nextid.luciddreaming,icon.luciddreaming);
+    addIcon("luciddreaming");
   }
   else if (player.level >= 58
   && player.currentMP / player.maxMP < 0.8
   && checkCooldown("thinair") < 0) {
-    addIconBlink(nextid.thinair,icon.thinair);
+    addIcon("thinair");
   }
   else {
     removeIcon(nextid.luciddreaming)
@@ -61,7 +61,7 @@ function whmJobChange() {
 
   if (player.level >= 30
   && checkCooldown("presenceofmind") < 0) {
-    addIconBlink(nextid.presenceofmind,icon.presenceofmind);
+    addIcon("presenceofmind");
   }
   else {
     removeIcon(nextid.presenceofmind)
@@ -69,7 +69,7 @@ function whmJobChange() {
 
   if (player.level >= 50
   && checkCooldown("benediction") < 0) {
-    addIconBlink(nextid.benediction,icon.benediction);
+    addIcon("benediction");
   }
   else {
     removeIcon(nextid.benediction)
@@ -77,7 +77,7 @@ function whmJobChange() {
 
   if (player.level >= 52
   && checkCooldown("asylum") < 0) {
-    addIconBlink(nextid.asylum,icon.asylum);
+    addIcon("asylum");
   }
   else {
     removeIcon(nextid.asylum)
@@ -85,7 +85,7 @@ function whmJobChange() {
 
   if (player.level >= 56
   && checkCooldown("assize") < 0) {
-    addIconBlink(nextid.assize,icon.assize);
+    addIcon("assize");
   }
   else {
     removeIcon(nextid.assize)
@@ -93,7 +93,7 @@ function whmJobChange() {
 
   if (player.level >= 60
   && checkCooldown("tetragrammaton") < 0) {
-    addIconBlink(nextid.tetragrammaton,icon.tetragrammaton);
+    addIcon("tetragrammaton");
   }
   else {
     removeIcon(nextid.tetragrammaton)
@@ -101,7 +101,7 @@ function whmJobChange() {
 
   if (player.level >= 66
   && checkCooldown("divinebenison") < 0) {
-    addIconBlink(nextid.divinebenison,icon.divinebenison);
+    addIcon("divinebenison");
   }
   else {
     removeIcon(nextid.divinebenison)
@@ -114,12 +114,12 @@ function whmPlayerChangedEvent() {
   if (player.level >= 24
   && player.currentMP / player.maxMP < 0.8
   && checkCooldown("luciddreaming") < 0) {
-    addIconBlink(nextid.luciddreaming,icon.luciddreaming);
+    addIcon("luciddreaming");
   }
   else if (player.level >= 58
   && player.currentMP / player.maxMP < 0.8
   && checkCooldown("thinair") < 0) {
-    addIconBlink(nextid.thinair,icon.thinair);
+    addIcon("thinair");
   }
   else {
     removeIcon("luciddreaming");
@@ -132,7 +132,7 @@ function whmTargetChangedEvent() {
   if (player.level >= 35
   && ["PLD", "WAR", "DRK", "GNB"].indexOf(target.job) > -1
   && checkStatus("regen", target.ID) < 0) {
-    addIconBlink(nextid.regen,icon.regen);
+    addIcon("regen");
   }
   else {
     removeIcon(nextid.regen)
@@ -145,42 +145,42 @@ function whmAction() {
 
     if (actionGroups.actionname == "Lucid Dreaming") {
       removeIcon("luciddreaming");
-      addCooldown("luciddreaming");
+      addRecast("luciddreaming");
     }
 
     else if (actionGroups.actionname == "Presence Of Mind") {
       removeIcon("presenceofmind");
-      addCooldown("presenceofmind");
+      addRecast("presenceofmind");
     }
 
     else if (actionGroups.actionname == "Benediction") {
       removeIcon("benediction");
-      addCooldown("benediction");
+      addRecast("benediction");
     }
 
     else if (actionGroups.actionname == "Asylum") {
       removeIcon("asylum");
-      addCooldown("asylum");
+      addRecast("asylum");
     }
 
     else if (actionGroups.actionname == "Assize") {
       removeIcon("assize");
-      addCooldown("assize");
+      addRecast("assize");
     }
 
     else if (actionGroups.actionname == "Thin Air") {
       removeIcon("thinair");
-      addCooldown("thinair");
+      addRecast("thinair");
     }
 
     else if (actionGroups.actionname == "Tetragrammaton") {
       removeIcon("tetragrammaton");
-      addCooldown("tetragrammaton");
+      addRecast("tetragrammaton");
     }
 
     else if (actionGroups.actionname == "Divine Benison") {
       removeIcon("divinebenison");
-      addCooldown("divinebenison");
+      addRecast("divinebenison");
     }
 
     else if (actionGroups.actionname == "Regen") {

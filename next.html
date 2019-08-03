@@ -39,33 +39,30 @@
       flex: 1;
     }
 
-    .icon-row2 {
-      margin-left: 22px;
-    }
-    .icon-box {
-      padding: 2px;
+    .next-box {
+      display: block;
     }
 
-    .countdown-box {
-      padding: 8px;
+    .icon-row2 {
+      margin-left: 11px;
     }
 
     .icondiv {
       position: relative;
-      width: 0px;
-      height: 0px;
-      opacity: 0;
+      width: 44px;
+      height: 44px;
+      opacity: 1;
       display: inline-flex;
     }
 
     .iconimgdiv {
-      position: relative;
+      position: absolute;
       width: 44px;
       height: 44px;
     }
 
     .iconimg {
-      position: relative;
+      position: absolute;
       width: 40px;
       height: 40px;
       margin-left: 2px;
@@ -87,9 +84,14 @@
       transform: translate(-50%, -50%);
     }
 
+    .countdown-box {
+      padding-top: 11px;
+      padding-left: 22px;
+    }
+
     .countdowndiv {
-      height: 0px;
-      opacity: 0;
+      height: 24px;
+      opacity: 1;
       margin-left: 2px;
       display: flex;
     }
@@ -142,6 +144,18 @@
       animation: fadeout 1s forwards;
     }
 
+    /* Transition and animations here */
+
+    .next-show {
+      transition: opacity 0.2s ease 0s;
+      opacity: 0.8;
+    }
+
+    .next-hide {
+      transition: opacity 1s ease 0s;
+      opacity: 0;
+    }
+
     .icon-add {
       transition: height 0.1s ease 0s, width 0.1s ease 0s, opacity 0.1s ease 0.1s;
       height: 44px;
@@ -150,7 +164,7 @@
     }
 
     .icon-remove {
-      transition: opacity 0.1s ease 0s, height 0.1s ease 0.1s, width 0.1s ease 0.1s;
+      transition: opacity 0.1s ease 0s, height 0.5s ease 0.1s, width 0.1s ease 0.1s;
       width: 0px;
       height: 0px;
       opacity: 0;
@@ -168,116 +182,15 @@
       opacity: 0;
     }
 
-    .fadein {
-      opacity: 0;
-      animation: fadein-90 0.1s forwards;
-      animation-delay: 0s;
-    }
-
-    .fadeout {
-      animation: fadeout-90 1s forwards;
-      animation-delay: 3s;
-    }
-
-    /* Icon stuff */
-
-    .addicondivfadein {
-      width: 0;
-      opacity: 0;
-      animation: addicondiv 0.1s forwards, fadein 0.1s forwards;
-      animation-delay: 0s, 0.1s;
-    }
-
-    .growiconimgdiv-fadein {
-      animation: addicondiv 0.1s forwards, fadein 0.1s forwards;
-      animation-delay: 0s, 0.1s;
-    }
-
-    .addsmallicondivfadeindim {
-      width: 0;
-      opacity: 0;
-      animation: addsmallicondiv 0.1s forwards, fadeindim 0.1s forwards;
-      animation-delay: 0s, 0.1s;
-    }
-
-    .addicondivfadeinblink {
-      width: 0;
-      opacity: 0;
-      animation: addicondiv 0.1s forwards, fadein 0.1s forwards, blink 1s infinite;
-      animation-delay: 0s, 0.1s, 0.1s;
-    }
-
     .blink {
       animation: blink 1s infinite;
+      animation-delay: 0.2s;
     }
 
-    .fadeoutremoveicondiv {
-      animation: fadeout 0.25s forwards, removeicondiv 0.25s forwards;
-      animation-delay: 0s, 0.25s;
-    }
-
-    @keyframes fadein {
-      0% {opacity: 0;}
-      100% {opacity: 1;}
-    }
-    @keyframes fadeout {
-      0% {opacity: 1;}
-      100% {opacity: 0;}
-    }
-    @keyframes fadein-90 {
-      0% {opacity: 0;}
-      100% {opacity: 0.9;}
-    }
-    @keyframes fadeout-90 {
-      0% {opacity: 0.9;}
-      100% {opacity: 0;}
-    }
-
-    @keyframes icon-grow {
-      0% {height: 0px; width: 0px;}
-      100% {height: 44px; width: 44px;}
-    }
-
-    @keyframes countdown-grow {
-      0% {height: 0px;}
-      100% {height: 22px;}
-    }
-    @keyframes countdown-shrink {
-      0% {height: 22px;}
-      100% {height: 0px;}
-    }
-
-    @keyframes addicondiv {
-      0% {height: 0; width: 0;}
-      100% {height: 44; width: 44;}
-    }
-
-
-
-    @keyframes growiconimgdiv {
-      0% {height: 0; width: 0;}
-      100% {height: 44; width: 44;}
-    }
-    @keyframes addsmallicondiv {
-      0% {height: 0; width: 0;}
-      100% {height: 22; width: 22;}
-    }
-    @keyframes removeicondiv {
-      0% {height: 44; width: 44;}
-      100% {height: 0; width: 0;}
-    }
-    @keyframes removesmallicondiv {
-      0% {height: 22; width: 22;}
-      100% {height: 0; width: 0;}
-    }
     @keyframes blink {
-      0% {opacity: 0.5;}
-      50% {opacity: 1;}
-      100% {opacity: 0.5;}
-    }
-    @keyframes downbar {
-      0% {width: 100%;}
-      100% {width: 0%;}
+      0% {opacity: 1;}
+      50% {opacity: 0.5;}
+      100% {opacity: 1;}
     }
 
   </style>
@@ -285,37 +198,37 @@
 </head>
 
 <body>
-  <div id="nextdiv">
+  <div id="nextdiv" class="next-box">
     <div class="row">
-      <div id="icondiv0" class="icondiv"><div id="iconimgdiv0" class="iconimgdiv"><img id="iconimg0" class="iconimg" src="icon/000001.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown0" class="iconcountdowndiv"></div></div>
-      <div id="icondiv1" class="icondiv"><div id="iconimgdiv1" class="iconimgdiv"><img id="iconimg1" class="iconimg" src="icon/000001.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown1" class="iconcountdowndiv"></div></div>
-      <div id="icondiv2" class="icondiv"><div id="iconimgdiv2" class="iconimgdiv"><img id="iconimg2" class="iconimg" src="icon/000001.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown2" class="iconcountdowndiv"></div></div>
-      <div id="icondiv3" class="icondiv"><div id="iconimgdiv3" class="iconimgdiv"><img id="iconimg3" class="iconimg" src="icon/000001.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown3" class="iconcountdowndiv"></div></div>
-      <div id="icondiv4" class="icondiv"><div id="iconimgdiv4" class="iconimgdiv"><img id="iconimg4" class="iconimg" src="icon/000001.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown4" class="iconcountdowndiv"></div></div>
-      <div id="icondiv5" class="icondiv"><div id="iconimgdiv5" class="iconimgdiv"><img id="iconimg5" class="iconimg" src="icon/000001.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown5" class="iconcountdowndiv"></div></div>
-      <div id="icondiv6" class="icondiv"><div id="iconimgdiv6" class="iconimgdiv"><img id="iconimg6" class="iconimg" src="icon/000001.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown6" class="iconcountdowndiv"></div></div>
-      <div id="icondiv7" class="icondiv"><div id="iconimgdiv7" class="iconimgdiv"><img id="iconimg7" class="iconimg" src="icon/000001.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown7" class="iconcountdowndiv"></div></div>
-      <div id="icondiv8" class="icondiv"><div id="iconimgdiv8" class="iconimgdiv"><img id="iconimg8" class="iconimg" src="icon/000001.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown8" class="iconcountdowndiv"></div></div>
-      <div id="icondiv9" class="icondiv"><div id="iconimgdiv9" class="iconimgdiv"><img id="iconimg9" class="iconimg" src="icon/000001.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown9" class="iconcountdowndiv"></div></div>
+      <div id="icondiv0" class="icondiv"><div id="iconimgdiv0" class="iconimgdiv"><img id="iconimg0" class="iconimg" src="icon/066161.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown0" class="iconcountdowndiv"></div></div>
+      <div id="icondiv1" class="icondiv"><div id="iconimgdiv1" class="iconimgdiv"><img id="iconimg1" class="iconimg" src="icon/066162.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown1" class="iconcountdowndiv"></div></div>
+      <div id="icondiv2" class="icondiv"><div id="iconimgdiv2" class="iconimgdiv"><img id="iconimg2" class="iconimg" src="icon/066163.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown2" class="iconcountdowndiv"></div></div>
+      <div id="icondiv3" class="icondiv"><div id="iconimgdiv3" class="iconimgdiv"><img id="iconimg3" class="iconimg" src="icon/066164.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown3" class="iconcountdowndiv"></div></div>
+      <div id="icondiv4" class="icondiv"><div id="iconimgdiv4" class="iconimgdiv"><img id="iconimg4" class="iconimg" src="icon/066165.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown4" class="iconcountdowndiv"></div></div>
+      <div id="icondiv5" class="icondiv"><div id="iconimgdiv5" class="iconimgdiv"><img id="iconimg5" class="iconimg" src="icon/066166.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown5" class="iconcountdowndiv"></div></div>
+      <div id="icondiv6" class="icondiv"><div id="iconimgdiv6" class="iconimgdiv"><img id="iconimg6" class="iconimg" src="icon/066167.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown6" class="iconcountdowndiv"></div></div>
+      <div id="icondiv7" class="icondiv"><div id="iconimgdiv7" class="iconimgdiv"><img id="iconimg7" class="iconimg" src="icon/066168.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown7" class="iconcountdowndiv"></div></div>
+      <div id="icondiv8" class="icondiv"><div id="iconimgdiv8" class="iconimgdiv"><img id="iconimg8" class="iconimg" src="icon/066169.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown8" class="iconcountdowndiv"></div></div>
+      <div id="icondiv9" class="icondiv"><div id="iconimgdiv9" class="iconimgdiv"><img id="iconimg9" class="iconimg" src="icon/066170.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown9" class="iconcountdowndiv"></div></div>
     </div>
     <div class="row icon-row2">
-      <div id="icondiv10" class="icondiv"><div id="iconimgdiv10" class="iconimgdiv"><img id="iconimg10" class="iconimg" src="icon/000001.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown10" class="iconcountdowndiv"></div></div>
-      <div id="icondiv11" class="icondiv"><div id="iconimgdiv11" class="iconimgdiv"><img id="iconimg11" class="iconimg" src="icon/000001.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown11" class="iconcountdowndiv"></div></div>
-      <div id="icondiv12" class="icondiv"><div id="iconimgdiv12" class="iconimgdiv"><img id="iconimg12" class="iconimg" src="icon/000001.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown12" class="iconcountdowndiv"></div></div>
-      <div id="icondiv13" class="icondiv"><div id="iconimgdiv13" class="iconimgdiv"><img id="iconimg13" class="iconimg" src="icon/000001.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown13" class="iconcountdowndiv"></div></div>
-      <div id="icondiv14" class="icondiv"><div id="iconimgdiv14" class="iconimgdiv"><img id="iconimg14" class="iconimg" src="icon/000001.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown14" class="iconcountdowndiv"></div></div>
-      <div id="icondiv15" class="icondiv"><div id="iconimgdiv15" class="iconimgdiv"><img id="iconimg15" class="iconimg" src="icon/000001.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown15" class="iconcountdowndiv"></div></div>
-      <div id="icondiv16" class="icondiv"><div id="iconimgdiv16" class="iconimgdiv"><img id="iconimg16" class="iconimg" src="icon/000001.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown16" class="iconcountdowndiv"></div></div>
-      <div id="icondiv17" class="icondiv"><div id="iconimgdiv17" class="iconimgdiv"><img id="iconimg17" class="iconimg" src="icon/000001.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown17" class="iconcountdowndiv"></div></div>
-      <div id="icondiv18" class="icondiv"><div id="iconimgdiv18" class="iconimgdiv"><img id="iconimg18" class="iconimg" src="icon/000001.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown18" class="iconcountdowndiv"></div></div>
-      <div id="icondiv19" class="icondiv"><div id="iconimgdiv19" class="iconimgdiv"><img id="iconimg19" class="iconimg" src="icon/000001.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown19" class="iconcountdowndiv"></div></div>
+      <div id="icondiv10" class="icondiv"><div id="iconimgdiv10" class="iconimgdiv"><img id="iconimg10" class="iconimg" src="icon/066161.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown10" class="iconcountdowndiv"></div></div>
+      <div id="icondiv11" class="icondiv"><div id="iconimgdiv11" class="iconimgdiv"><img id="iconimg11" class="iconimg" src="icon/066162.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown11" class="iconcountdowndiv"></div></div>
+      <div id="icondiv12" class="icondiv"><div id="iconimgdiv12" class="iconimgdiv"><img id="iconimg12" class="iconimg" src="icon/066163.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown12" class="iconcountdowndiv"></div></div>
+      <div id="icondiv13" class="icondiv"><div id="iconimgdiv13" class="iconimgdiv"><img id="iconimg13" class="iconimg" src="icon/066164.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown13" class="iconcountdowndiv"></div></div>
+      <div id="icondiv14" class="icondiv"><div id="iconimgdiv14" class="iconimgdiv"><img id="iconimg14" class="iconimg" src="icon/066165.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown14" class="iconcountdowndiv"></div></div>
+      <div id="icondiv15" class="icondiv"><div id="iconimgdiv15" class="iconimgdiv"><img id="iconimg15" class="iconimg" src="icon/066166.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown15" class="iconcountdowndiv"></div></div>
+      <div id="icondiv16" class="icondiv"><div id="iconimgdiv16" class="iconimgdiv"><img id="iconimg16" class="iconimg" src="icon/066167.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown16" class="iconcountdowndiv"></div></div>
+      <div id="icondiv17" class="icondiv"><div id="iconimgdiv17" class="iconimgdiv"><img id="iconimg17" class="iconimg" src="icon/066168.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown17" class="iconcountdowndiv"></div></div>
+      <div id="icondiv18" class="icondiv"><div id="iconimgdiv18" class="iconimgdiv"><img id="iconimg18" class="iconimg" src="icon/066169.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown18" class="iconcountdowndiv"></div></div>
+      <div id="icondiv19" class="icondiv"><div id="iconimgdiv19" class="iconimgdiv"><img id="iconimg19" class="iconimg" src="icon/066170.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown19" class="iconcountdowndiv"></div></div>
     </div>
     <!-- Countdown bars here -->
     <div class="row countdown-box">
       <div class="column">
         <div id="countdowndiv0" class="countdowndiv">
           <div id="countdownimgdiv0" class="smalliconimgdiv">
-            <img id="countdownimg0" class="smalliconimg" src="icon/000001.png">
+            <img id="countdownimg0" class="smalliconimg" src="icon/066181.png">
             <img class="smalliconoverlay" src="icon/overlay.png">
           </div>
           <div id="countdownbar0" class="countdownbar"></div>
@@ -323,7 +236,7 @@
         </div>
         <div id="countdowndiv1" class="countdowndiv">
           <div id="countdownimgdiv1" class="smalliconimgdiv">
-            <img id="countdownimg1" class="smalliconimg" src="icon/000001.png">
+            <img id="countdownimg1" class="smalliconimg" src="icon/066182.png">
             <img class="smalliconoverlay" src="icon/overlay.png">
           </div>
           <div id="countdownbar1" class="countdownbar"></div>
@@ -331,7 +244,7 @@
         </div>
         <div id="countdowndiv2" class="countdowndiv">
           <div id="countdownimgdiv2" class="smalliconimgdiv">
-            <img id="countdownimg2" class="smalliconimg" src="icon/000001.png">
+            <img id="countdownimg2" class="smalliconimg" src="icon/066183.png">
             <img class="smalliconoverlay" src="icon/overlay.png">
           </div>
           <div id="countdownbar2" class="countdownbar"></div>
@@ -339,7 +252,7 @@
         </div>
         <div id="countdowndiv3" class="countdowndiv">
           <div id="countdownimgdiv3" class="smalliconimgdiv">
-            <img id="countdownimg3" class="smalliconimg" src="icon/000001.png">
+            <img id="countdownimg3" class="smalliconimg" src="icon/066184.png">
             <img class="smalliconoverlay" src="icon/overlay.png">
           </div>
           <div id="countdownbar3" class="countdownbar"></div>
@@ -347,7 +260,7 @@
         </div>
         <div id="countdowndiv4" class="countdowndiv">
           <div id="countdownimgdiv4" class="smalliconimgdiv">
-            <img id="countdownimg4" class="smalliconimg" src="icon/000001.png">
+            <img id="countdownimg4" class="smalliconimg" src="icon/066185.png">
             <img class="smalliconoverlay" src="icon/overlay.png">
           </div>
           <div id="countdownbar4" class="countdownbar"></div>
@@ -355,7 +268,7 @@
         </div>
         <div id="countdowndiv5" class="countdowndiv">
           <div id="countdownimgdiv5" class="smalliconimgdiv">
-            <img id="countdownimg5" class="smalliconimg" src="icon/000001.png">
+            <img id="countdownimg5" class="smalliconimg" src="icon/066186.png">
             <img class="smalliconoverlay" src="icon/overlay.png">
           </div>
           <div id="countdownbar5" class="countdownbar"></div>
@@ -363,7 +276,7 @@
         </div>
         <div id="countdowndiv6" class="countdowndiv">
           <div id="countdownimgdiv6" class="smalliconimgdiv">
-            <img id="countdownimg6" class="smalliconimg" src="icon/000001.png">
+            <img id="countdownimg6" class="smalliconimg" src="icon/066187.png">
             <img class="smalliconoverlay" src="icon/overlay.png">
           </div>
           <div id="countdownbar6" class="countdownbar"></div>
@@ -371,7 +284,7 @@
         </div>
         <div id="countdowndiv7" class="countdowndiv">
           <div id="countdownimgdiv7" class="smalliconimgdiv">
-            <img id="countdownimg7" class="smalliconimg" src="icon/000001.png">
+            <img id="countdownimg7" class="smalliconimg" src="icon/066188.png">
             <img class="smalliconoverlay" src="icon/overlay.png">
           </div>
           <div id="countdownbar7" class="countdownbar"></div>
@@ -379,7 +292,7 @@
         </div>
         <div id="countdowndiv8" class="countdowndiv">
           <div id="countdownimgdiv8" class="smalliconimgdiv">
-            <img id="countdownimg8" class="smalliconimg" src="icon/000001.png">
+            <img id="countdownimg8" class="smalliconimg" src="icon/066189.png">
             <img class="smalliconoverlay" src="icon/overlay.png">
           </div>
           <div id="countdownbar8" class="countdownbar"></div>
@@ -387,7 +300,7 @@
         </div>
         <div id="countdowndiv9" class="countdowndiv">
           <div id="countdownimgdiv9" class="smalliconimgdiv">
-            <img id="countdownimg9" class="smalliconimg" src="icon/000001.png">
+            <img id="countdownimg9" class="smalliconimg" src="icon/066190.png">
             <img class="smalliconoverlay" src="icon/overlay.png">
           </div>
           <div id="countdownbar9" class="countdownbar"></div>
@@ -397,7 +310,7 @@
       <div class="column">
         <div id="countdowndiv10" class="countdowndiv">
           <div id="countdownimgdiv10" class="smalliconimgdiv">
-            <img id="countdownimg10" class="smalliconimg" src="icon/000001.png">
+            <img id="countdownimg10" class="smalliconimg" src="icon/066181.png">
             <img class="smalliconoverlay" src="icon/overlay.png">
           </div>
           <div id="countdownbar10" class="countdownbar"></div>
@@ -405,7 +318,7 @@
         </div>
         <div id="countdowndiv11" class="countdowndiv">
           <div id="countdownimgdiv11" class="smalliconimgdiv">
-            <img id="countdownimg11" class="smalliconimg" src="icon/000001.png">
+            <img id="countdownimg11" class="smalliconimg" src="icon/066182.png">
             <img class="smalliconoverlay" src="icon/overlay.png">
           </div>
           <div id="countdownbar11" class="countdownbar"></div>
@@ -413,7 +326,7 @@
         </div>
         <div id="countdowndiv12" class="countdowndiv">
           <div id="countdownimgdiv12" class="smalliconimgdiv">
-            <img id="countdownimg12" class="smalliconimg" src="icon/000001.png">
+            <img id="countdownimg12" class="smalliconimg" src="icon/066183.png">
             <img class="smalliconoverlay" src="icon/overlay.png">
           </div>
           <div id="countdownbar12" class="countdownbar"></div>
@@ -421,7 +334,7 @@
         </div>
         <div id="countdowndiv13" class="countdowndiv">
           <div id="countdownimgdiv13" class="smalliconimgdiv">
-            <img id="countdownimg13" class="smalliconimg" src="icon/000001.png">
+            <img id="countdownimg13" class="smalliconimg" src="icon/066184.png">
             <img class="smalliconoverlay" src="icon/overlay.png">
           </div>
           <div id="countdownbar13" class="countdownbar"></div>
@@ -429,7 +342,7 @@
         </div>
         <div id="countdowndiv14" class="countdowndiv">
           <div id="countdownimgdiv14" class="smalliconimgdiv">
-            <img id="countdownimg14" class="smalliconimg" src="icon/000001.png">
+            <img id="countdownimg14" class="smalliconimg" src="icon/066185.png">
             <img class="smalliconoverlay" src="icon/overlay.png">
           </div>
           <div id="countdownbar14" class="countdownbar"></div>
@@ -437,7 +350,7 @@
         </div>
         <div id="countdowndiv15" class="countdowndiv">
           <div id="countdownimgdiv15" class="smalliconimgdiv">
-            <img id="countdownimg15" class="smalliconimg" src="icon/000001.png">
+            <img id="countdownimg15" class="smalliconimg" src="icon/066186.png">
             <img class="smalliconoverlay" src="icon/overlay.png">
           </div>
           <div id="countdownbar15" class="countdownbar"></div>
@@ -445,7 +358,7 @@
         </div>
         <div id="countdowndiv16" class="countdowndiv">
           <div id="countdownimgdiv16" class="smalliconimgdiv">
-            <img id="countdownimg16" class="smalliconimg" src="icon/000001.png">
+            <img id="countdownimg16" class="smalliconimg" src="icon/066187.png">
             <img class="smalliconoverlay" src="icon/overlay.png">
           </div>
           <div id="countdownbar16" class="countdownbar"></div>
@@ -453,7 +366,7 @@
         </div>
         <div id="countdowndiv17" class="countdowndiv">
           <div id="countdownimgdiv17" class="smalliconimgdiv">
-            <img id="countdownimg17" class="smalliconimg" src="icon/000001.png">
+            <img id="countdownimg17" class="smalliconimg" src="icon/066188.png">
             <img class="smalliconoverlay" src="icon/overlay.png">
           </div>
           <div id="countdownbar17" class="countdownbar"></div>
@@ -461,7 +374,7 @@
         </div>
         <div id="countdowndiv18" class="countdowndiv">
           <div id="countdownimgdiv18" class="smalliconimgdiv">
-            <img id="countdownimg18" class="smalliconimg" src="icon/000001.png">
+            <img id="countdownimg18" class="smalliconimg" src="icon/066189.png">
             <img class="smalliconoverlay" src="icon/overlay.png">
           </div>
           <div id="countdownbar18" class="countdownbar"></div>
@@ -469,7 +382,7 @@
         </div>
         <div id="countdowndiv19" class="countdowndiv">
           <div id="countdownimgdiv19" class="smalliconimgdiv">
-            <img id="countdownimg19" class="smalliconimg" src="icon/000001.png">
+            <img id="countdownimg19" class="smalliconimg" src="icon/066190.png">
             <img class="smalliconoverlay" src="icon/overlay.png">
           </div>
           <div id="countdownbar19" class="countdownbar"></div>

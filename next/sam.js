@@ -47,7 +47,7 @@ function samJobChange() {
 
   if (player.level >= 68
   && checkCooldown("ikishoten") < 0) {
-    addIconBlink(nextid.ikishoten,icon.ikishoten);
+    addIcon("ikishoten");
   }
 
   samMeikyoShisui();
@@ -105,7 +105,7 @@ function samAction() {
     }
 
     else if (["Kaeshi: Higanbana", "Kaeshi: Goken", "Kaeshi: Setsugekka"].indexOf(actionGroups.actionname) > -1) {
-      addCooldown("tsubamegaeshi");
+      addRecast("tsubamegaeshi");
       icon.tsubamegaeshi = "003180";
       clearTimeout(timeout.tsubamegaeshi);
       removeIcon(id.tsubamegaeshi1);
@@ -113,7 +113,7 @@ function samAction() {
     }
 
     else if (actionGroups.actionname == "Meikyo Shisui") {
-      addCooldown("meikyoshisui");
+      addRecast("meikyoshisui");
       addStatus("meikyoshisui");
       removeIcon(id.meikyoshisui);
       samCombo(); // Clears combo and activates next Sen generating move
@@ -140,7 +140,7 @@ function samAction() {
     }
 
     else if (actionGroups.actionname == "Ikishoten") {
-      addCooldown("ikishoten");
+      addRecast("ikishoten");
       removeIcon(id.ikishoten);
       addIconBlinkTimeout("ikishoten", recast.ikishoten, id.ikishoten, icon.ikishoten);
       samKenki();
@@ -155,7 +155,7 @@ function samAction() {
         count.aoe = count.aoe + 1;
       }
       // Senei is on same cooldown as Guren
-      addCooldown("guren");
+      addRecast("guren");
       removeIcon(id.guren);
       samKenki();
     }
@@ -381,7 +381,7 @@ function samMeikyoShisui() {
 
   if (player.level >= 50
   && checkCooldown("meikyoshisui") < 0) {
-    addIconBlink(nextid.meikyoshisui,icon.meikyoshisui);
+    addIcon("meikyoshisui");
   }
   else {
     removeIcon("meikyoshisui");
@@ -494,7 +494,7 @@ function samKenki() {
   && checkCooldown("ikishoten") > checkCooldown("guren") + 5000
   && checkCooldown("guren") < 1000
   && player.jobDetail.kenki >= 70) {
-    addIconBlink(nextid.guren, icon.guren);
+    addIcon("guren");
   }
   else {
     removeIcon("guren");
@@ -505,11 +505,11 @@ function samKenki() {
   && player.jobDetail.kenki >= minimumkenki + 15
   && checkStatus("openeyes", player.ID) > 5000
   && !toggle.aoe) {
-    addIconBlink(nextid.seigan, icon.seigan);
+    addIcon("seigan");
   }
   else if (player.level >= 62
   && player.jobDetail.kenki >= minimumkenki + 25) {
-    addIconBlink(nextid.shinten, icon.shinten);
+    addIcon("shinten");
   }
   else {
     removeIcon("shinten");
@@ -532,18 +532,18 @@ function samCombo() {
 
       if (player.jobDetail.ka == false
       && checkStatus("shifu", player.ID) < checkStatus("jinpu", player.ID)) {
-        addIconBlink(nextid.oka,icon.oka);
+        addIcon("oka");
       }
       else if (player.jobDetail.getsu == false
       && checkStatus("jinpu", player.ID) < checkStatus("shifu", player.ID)) {
-        addIconBlink(nextid.mangetsu,icon.mangetsu);
+        addIcon("mangetsu");
       }
 
       else if (player.jobDetail.getsu == false) {
-        addIconBlink(nextid.mangetsu,icon.mangetsu);
+        addIcon("mangetsu");
       }
       else if (player.jobDetail.ka == false) {
-        addIconBlink(nextid.oka,icon.oka);
+        addIcon("oka");
       }
 
       else {
@@ -580,13 +580,13 @@ function samCombo() {
     if (checkStatus("meikyoshisui", player.ID) > 0) {
 
       if (player.jobDetail.getsu == false) {
-        addIconBlink(nextid.gekko,icon.gekko);
+        addIcon("gekko");
       }
       else if (player.jobDetail.ka == false) {
-        addIconBlink(nextid.kasha,icon.kasha);
+        addIcon("kasha");
       }
       else if (player.jobDetail.setsu == false) {
-        addIconBlink(nextid.yukikaze,icon.yukikaze);
+        addIcon("yukikaze");
       }
     }
 

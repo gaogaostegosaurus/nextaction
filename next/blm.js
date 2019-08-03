@@ -128,15 +128,15 @@ function blmAction(logLine) {
 
     else if (actionGroups.actionname == "Enochian") {
       removeIcon("enochian");
-      addCooldown("enochian", recast.enochian);
+      addRecast("enochian", recast.enochian);
     }
     else if (actionGroups.actionname == "Sharpcast") {
       removeIcon("sharpcast");
-      addCooldown("sharpcast", recast.sharpcast);
+      addRecast("sharpcast", recast.sharpcast);
     }
     else if (actionGroups.actionname == "Manafont") {
       removeIcon("manafont");
-      addCooldown("manafont", recast.manafont);
+      addRecast("manafont", recast.manafont);
     }
   }
 }
@@ -268,7 +268,7 @@ function blmAstralRotation() {
       addIcon("fire");
     }
     else if (player.jobDetail.umbralMilliseconds > 0) {
-      addIconBlink(nextid.fire, icon.fire);
+      addIcon("fire");
     }
     else {
       // Start umbral?
@@ -277,15 +277,15 @@ function blmAstralRotation() {
   else {
     if (checkStatus("firestarter", player.ID) > player.jobDetail.umbralMilliseconds // Firestarter will be still up at 0
     && player.jobDetail.umbralMilliseconds > 0) {
-      addIconBlink(nextid.firestarter, icon.fire3); // Refresh Astral with Firestarter proc if available
+      addIcon("firestarter"); // Refresh Astral with Firestarter proc if available
     }
     if (player.currentMP >= 800
     && player.jobDetail.umbralMilliseconds > 3000) {
       addIcon("despair"); // Finish with Despair
     }
     if (checkCooldown("manafont") < player.jobDetail.umbralMilliseconds) { // Manafont will be up by 0
-      addIconBlink(nextid.manafont, icon.manafont); // Continue Despairing with Manafont if available
-      addIconBlink(nextid.manafontdespair, icon.despair);
+      addIcon("manafont"); // Continue Despairing with Manafont if available
+      addIcon("manafontdespair");
     }
     addIcon("blizzard3"); // End rotation
   }

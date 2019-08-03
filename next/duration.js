@@ -2,6 +2,11 @@
 
 var duration = {};
 
+// BRD
+duration.straightshotready = 10000;
+duration.venomousbite = 30000;
+duration.windbite = duration.venomousbite;
+
 // DRK
 duration.delirium = 10000;
 

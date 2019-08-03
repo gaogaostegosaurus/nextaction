@@ -150,7 +150,7 @@ function rdmAction() {
 
     // No one cares about Acceleration =(
     // else if ("Acceleration" == actionGroups.actionname) {
-    //   addCooldown("acceleration");
+    //   addRecast("acceleration");
     // }
 
     else if ("Contre Sixte" == actionGroups.actionname) {
@@ -173,7 +173,7 @@ function rdmAction() {
     }
 
     else if ("Lucid Dreaming" == actionGroups.actionname) {
-      addCooldown("luciddreaming");
+      addRecast("luciddreaming");
     }
 
     else {  // GCD
@@ -400,17 +400,17 @@ function rdmDualcast() {
   if (count.aoe >= 2
   && checkCooldown("manafication") < 0
   && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 70) {
-    addIconBlink(nextid.moulinet, icon.moulinet);
+    addIcon("moulinet");
   }
 
   else if (count.aoe >= 4
   && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 20) {
-    addIconBlink(nextid.moulinet, icon.moulinet);
+    addIcon("moulinet");
   }
 
   else if (count.aoe >= 2
   && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) > 90) {
-    addIconBlink(nextid.moulinet, icon.moulinet);
+    addIcon("moulinet");
   }
 
   else if ((player.level < 52 || count.aoe == 1)
@@ -696,13 +696,13 @@ function rdmManafication() {
 
     else if (count.aoe >= 4
     && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 50) {
-      addIconBlink(nextid.manafication,icon.manafication);
+      addIcon("manafication");
       toggle.manafication = Date.now();
     }
 
     else if (count.aoe >= 2
     && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 46) {
-      addIconBlink(nextid.manafication,icon.manafication);
+      addIcon("manafication");
       toggle.manafication = Date.now();
     }
 
@@ -712,7 +712,7 @@ function rdmManafication() {
     && player.jobDetail.whiteMana < 50
     && player.jobDetail.blackMana > player.jobDetail.whiteMana
     && checkStatus("verstoneready") < 2500) {
-      addIconBlink(nextid.manafication,icon.manafication);
+      addIcon("manafication");
       toggle.manafication = Date.now();
     }
 
@@ -722,14 +722,14 @@ function rdmManafication() {
     && player.jobDetail.blackMana < 50
     && player.jobDetail.whiteMana > player.jobDetail.blackMana
     && checkStatus("verfireready") < 2500) {
-      addIconBlink(nextid.manafication,icon.manafication);
+      addIcon("manafication");
       toggle.manafication = Date.now();
     }
 
     // Use if otherwise over 45/45
     else if (player.level >= 60
     && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 45) {
-      addIconBlink(nextid.manafication,icon.manafication);
+      addIcon("manafication");
       toggle.manafication = Date.now();
     }
 

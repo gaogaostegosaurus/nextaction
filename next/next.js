@@ -13,6 +13,8 @@ var count = {};               // County things?
 var previous = {};
 var next = {};
 
+// Set up doms
+
 var dom = {};
 for (var x = 0; x < 20; x++) {
   dom["icondiv" + x] = document.getElementById("icondiv" + x); // Container for all parts
@@ -119,11 +121,11 @@ document.addEventListener("onInCombatChangedEvent", function(e) {
 
   if (e.detail.inGameCombat) {
     toggle.combat = Date.now();
-    //document.getElementById("nextdiv").className = "combat-show";
+    document.getElementById("nextdiv").className = "next-box next-show";
   }
   else {
     delete toggle.combat;
-    //document.getElementById("nextdiv").className = "combat-hide";
+    document.getElementById("nextdiv").className = "next-box next-hide";
 
 
     // Try to get rid of this section
@@ -316,7 +318,7 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
 });
 
 
-function addCooldown(name, time, id) {
+function addRecast(name, time, id) {
 
   if (time === undefined) {
     time = recast[name];
@@ -354,7 +356,7 @@ function checkCooldown(name, id) {
 function addStatus(name, time, id) {
 
   if (time === undefined) {
-    time = duration[statusname];
+    time = duration[name];
   }
   if (id == undefined) {
     id = player.ID;
@@ -402,12 +404,17 @@ function removeStatus(name, id) {
   }
 }
 
-function addIcon(name, img) {
+function addIcon(name, img, effect) {
+
   if (img === undefined) {
     img = name;
   }
+  if (effect === undefined) {
+    effect == "";
+  }
+
   dom["iconimg" + nextid[name]].src = "icon/" + icon[img] + ".png";
-  dom["icondiv" + nextid[name]].className = "icondiv icon-add";
+  dom["icondiv" + nextid[name]].className = "icondiv icon-add " + effect;
 }
 
 function removeIcon(name) {
@@ -415,18 +422,6 @@ function removeIcon(name) {
 }
 
 // old functions, remove when replaced
-
-function addIconBlink(nextid, actionicon) {
-  //dom["iconimgdiv" + nextid].className = "iconimgdiv addicondivfadeinblink";
-  dom["iconimg" + nextid].src = "icon/" + actionicon + ".png";
-  dom["icondiv" + nextid].className = "icondiv icon-add";
-}
-
-function addIconDim(nextid, actionicon) {
-  // dom["iconimgdiv" + nextid].className = "iconimgdiv addicondivfadeindim";
-  dom["iconimg" + nextid].src = "icon/" + actionicon + ".png";
-  dom["icondiv" + nextid].className = "icondiv icon-add";
-}
 
 function addIconTimeout(action, delay, nextid, actionicon) {
   clearTimeout(timeout[action]);
@@ -436,7 +431,7 @@ function addIconTimeout(action, delay, nextid, actionicon) {
 function addIconBlinkTimeout(action, delay, nextid, actionicon, countdowntime) {
   clearTimeout(timeout[action]);
   if (!countdowntime) {
-    timeout[action] = setTimeout(addIconBlink, delay, nextid, actionicon);
+    timeout[action] = setTimeout(addIcon, delay, action);
   }
   else  {
     clearTimeout(countdowntimeout[action]);
@@ -472,7 +467,7 @@ function addCountdownBar(name, time, text) {
   // function addCountdownBar(actionname, countdowntime = checkCooldown(actionname), finishtext = "READY") { // Once CEF updated
 
   if (time === undefined) {
-    addCooldown(name); // Typically you would be adding the recast so
+    addRecast(name); // Typically you would be adding the recast so
     time = checkCooldown(name);
   }
   if (text === undefined) {

@@ -77,26 +77,26 @@ function drkAction() {
     if ("Delirium" == actionGroups.actionname) {
       removeIcon("delirium");
       addStatus("delirium", duration.delirium, actionGroups.targetID);
-      addCooldown("delirium");
+      addRecast("delirium");
       addIconBlinkTimeout("delirium", recast.delirium, nextid.delirium, icon.delirium);
       drkGauge();
     }
 
     else if (["Flood Of Darkness", "Edge Of Darkness", "Flood Of Shadow", "Edge Of Shadow"].indexOf(actionGroups.actionname) > -1) {
       removeIcon("floodofdarkness");
-      addCooldown("floodofdarkness");
+      addRecast("floodofdarkness");
       drkMP();
     }
 
     else if ("Blood Weapon" == actionGroups.actionname) {
       removeIcon("bloodweapon");
-      addCooldown("bloodweapon");
+      addRecast("bloodweapon");
       addIconBlinkTimeout("bloodweapon", recast.bloodweapon, nextid.bloodweapon, icon.bloodweapon);
     }
 
     else if ("Salted Earth" == actionGroups.actionname) {
       removeIcon("saltedearth");
-      addCooldown("carveandspit");
+      addRecast("carveandspit");
       addIconBlinkTimeout("carveandspit", recast.saltedearth, nextid.saltedearth, icon.saltedearth);
     }
 
@@ -109,47 +109,47 @@ function drkAction() {
         count.aoe = count.aoe + 1;
       }
       removeIcon("abyssaldrain");
-      addCooldown("abyssaldrain");
+      addRecast("abyssaldrain");
       addIconBlinkTimeout("abyssaldrain", recast.abyssaldrain, nextid.abyssaldrain, icon.abyssaldrain);
     }
 
     else if ("Carve And Spit" == actionGroups.actionname) {
       removeIcon("carveandspit");
-      addCooldown("carveandspit");
+      addRecast("carveandspit");
       addIconBlinkTimeout("carveandspit", recast.carveandspit, nextid.carveandspit, icon.carveandspit);
     }
 
     else if ("Plunge" == actionGroups.actionname) { // Code treats Infuriate like two different skills to juggle the charges.
       if (player.level >= 78) {
         if (checkCooldown("plunge2", player.ID) < 0) {
-          addCooldown("plunge1", player.ID, -1);
-          addCooldown("plunge2", player.ID, recast.plunge);
+          addRecast("plunge1", player.ID, -1);
+          addRecast("plunge2", player.ID, recast.plunge);
         }
         else {
           removeIcon("plunge");
-          addCooldown("plunge1", player.ID, checkCooldown("plunge2", player.ID));
-          addCooldown("plunge2", player.ID, checkCooldown("plunge2", player.ID) + recast.plunge);
+          addRecast("plunge1", player.ID, checkCooldown("plunge2", player.ID));
+          addRecast("plunge2", player.ID, checkCooldown("plunge2", player.ID) + recast.plunge);
           addIconBlinkTimeout("plunge", checkCooldown("plunge1", player.ID), nextid.plunge, icon.plunge);
         }
       }
       else {
-        addCooldown("plunge");
+        addRecast("plunge");
         addIconBlinkTimeout("plunge", recast.plunge, nextid.plunge, icon.plunge);
       }
     }
 
     else if ("The Blackest Night" == actionGroups.actionname) {
-      addCooldown("theblackestnight");
+      addRecast("theblackestnight");
       removeIcon("theblackestnight");
     }
 
     else if ("Shadow Wall" == actionGroups.actionname) {
-      addCooldown("shadowwall");
+      addRecast("shadowwall");
       removeIcon("shadowwall");
     }
 
     else if ("Rampart" == actionGroups.actionname) {
-      addCooldown("rampart");
+      addRecast("rampart");
       removeIcon("rampart");
     }
 
@@ -336,7 +336,7 @@ function drkMP() {
   if (player.level >= 70) {
     if (player.currentMP >= 6000
     || player.jobDetail.darkarts == 1) {
-      addIconBlink(nextid.floodofdarkness, icon.floodofdarkness);
+      addIcon("floodofdarkness");
     }
     else {
       removeIcon("floodofdarkness");
@@ -344,7 +344,7 @@ function drkMP() {
   }
   else if (player.level >= 30) { // No TBN yet
     if (player.currentMP >= 3000) {
-      addIconBlink(nextid.floodofdarkness, icon.floodofdarkness);
+      addIcon("floodofdarkness");
     }
     else {
       removeIcon("floodofdarkness");
@@ -375,10 +375,10 @@ function drkGauge() {
   if (player.jobDetail.blood >= targetblood) {
     if (player.level >= 80
     && checkCooldown("livingshadow") < 1000) {
-      addIconBlink(nextid.gaugespender, icon.livingshadow);
+      addIcon("gaugespender");
     }
     else if (player.level >= 62) {
-      addIconBlink(nextid.gaugespender, icon.gaugespender);
+      addIcon("gaugespender");
     }
   }
   else {
