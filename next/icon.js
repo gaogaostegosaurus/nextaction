@@ -7,7 +7,6 @@ icon.rampart = "000801";
 icon.luciddreaming = "000865";
 icon.swiftcast = "000866";
 
-
 // BLM
 icon.fire = "000451";
 icon.fire3 = "000453";
@@ -28,6 +27,7 @@ icon.heavyshot = "000358";
 icon.straightshot = "000359";
 icon.venomousbite = "000363";
 icon.windbite = "000367";
+icon.battlevoice = "002601";
 icon.ballad = "002602";
 icon.paeon = "002603";
 icon.requiem = "002604";
@@ -63,6 +63,9 @@ icon.technicalfinish = "003474";
 icon.flourish = "003475";
 icon.saberdance = "003476";
 icon.saberdance80plus = icon.saberdance;
+
+// DRG
+icon.battlelitany = "002585";
 
 // DRK
 icon.hardslash = "003051";
@@ -111,6 +114,15 @@ icon.bioblaster = "003044";
 icon.airanchor = "003045";
 icon.automatonqueen = "003501";
 
+// MNK
+icon.demolish = "000204";
+icon.bootshine = "000208";
+icon.truestrike = "000209";
+icon.snappunch = "000210";
+icon.twinsnakes = "000213";
+icon.dragonkick = "002528";
+icon.brotherhood = "002542";
+
 // NIN
 icon.spinningedge = "000601";
 icon.gustslash = "000602";
@@ -157,6 +169,7 @@ icon.displacement = "003211";
 icon.fleche = "003212";
 icon.acceleration = "003214"
 icon.contresixte = "003217";
+icon.embolden = "003218";
 icon.manafication = "003219";
 icon.jolt2 = "003220"
 icon.impact = "003222";
@@ -198,6 +211,12 @@ icon.kaeshihiganbana = "003181";
 icon.kaeshigoken = "003182";
 icon.kaeshisetsugekka = "003183";
 icon.shoha = "003184";
+
+// SCH
+icon.chainstrategem = "002815";
+
+// SMN
+icon.devotion = "002688";
 
 // WAR
 icon.overpower = "000254";
@@ -242,6 +261,18 @@ icon.divinebenison = "002635";
 icon.thinair = "002636";
 icon.plenaryindulgence = "002639";
 icon.dia = "002641";
+
+// Raid
+icon.raidbattlelitany = icon.battlelitany;
+icon.raidbattlevoice = icon.battlevoice;
+icon.raidbrotherhood = icon.brotherhood;
+icon.raidchainstrategem = icon.chainstrategem;
+icon.raiddevilment = icon.devilment;
+icon.raiddevotion = icon.devotion;
+icon.raidembolden = icon.embolden;
+icon.raidtechnicalstep = icon.technicalstep;
+icon.raidtrickattack = icon.trickattack;
+
 
 // Other
 icon.gold0 = "066181";

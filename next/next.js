@@ -21,7 +21,7 @@ for (var x = 0; x < 20; x++) {
   dom["iconimg" + x] = document.getElementById("iconimg" + x); // src = icon
   dom["iconcountdown" + x] = document.getElementById("iconcountdown" + x); // Countdown - separate from img
 }
-for (var x = 0; x < 10; x++) {
+for (var x = 0; x < 20; x++) {
   dom["countdowndiv" + x] = document.getElementById("countdowndiv" + x); // Countdown - separate from img
   dom["countdownimgdiv" + x] = document.getElementById("countdownimgdiv" + x); // Countdown - separate from img
   dom["countdownimg" + x] = document.getElementById("countdownimg" + x); // Countdown - separate from img
@@ -332,6 +332,10 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
       }
     }
 
+    else if (actionGroups.sourceID != player.ID
+    && actionGroups.sourceID.startsWith("1")) {  // Status source = other player
+      raidAction();
+    }
   }
 });
 
@@ -520,6 +524,10 @@ function addIconBlinkTimeout(action, delay, nextid, actionicon, countdowntime) {
 //   }, 100);
 // }
 
+function addRaidCountdownBar(name) {
+  addCountdownBar(name, recast[name]);
+}
+
 function addCountdownBar(name, time, text) {
   // function addCountdownBar(actionname, countdowntime = checkCooldown(actionname), finishtext = "READY") { // Once CEF updated
 
@@ -531,8 +539,6 @@ function addCountdownBar(name, time, text) {
     text = "READY";
   }
 
-  // Stop mixing up countdowntime and countdownbar and maybe you'd get some work done
-
   clearInterval(interval[name]);
 
   let id = countdownid[name];
@@ -543,7 +549,10 @@ function addCountdownBar(name, time, text) {
 
   interval[name] = setInterval(function () {
 
-    if (time < 60000) {
+    if (time > 60000) {
+      dom["countdowndiv" + id].className = "countdowndiv countdown-popout";
+    }
+    else {
       dom["countdowndiv" + id].className = "countdowndiv countdown-popin";
     }
 
@@ -553,11 +562,12 @@ function addCountdownBar(name, time, text) {
     }
     else if (time < 1000) {
       dom["countdowntime" + id].innerHTML = (time / 1000).toFixed(1);
+      dom["countdownbar" + id].style.width = Math.floor(time / 100) + "px";
     }
     else {
       dom["countdowntime" + id].innerHTML = Math.ceil(time / 1000); // This appears to best mimic what happens for XIV
+      dom["countdownbar" + id].style.width = (Math.floor((time - 1000) / 1000) + 10) + "px";
     }
-    dom["countdownbar" + id].style.width = Math.min(Math.ceil(time * 2 / 1000), 400) + "px";
     time = time - 100;
   }, 100);
 }

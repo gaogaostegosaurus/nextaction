@@ -18,7 +18,7 @@ recast.ballad = 80000;
 recast.ragingstrikes = 80000;
 recast.barrage = 80000;
 recast.paeon = 80000;
-recast.battlevoice = 120000;
+recast.battlevoice = 180000;
 recast.minuet = 80000;
 recast.empyrealarrow = 15000;
 recast.sidewinder = 60000;
@@ -39,6 +39,9 @@ recast.saltedearth = 90000;
 recast.shadowwall = 120000;
 recast.theblackestnight = 15000;
 
+// DRG
+recast.battlelitany = 180000;
+
 // MCH
 recast.barrelstabilizer = 120000;
 recast.drill = 20000
@@ -54,6 +57,9 @@ recast.rookautoturret = 6000;
 recast.automatonqueen = recast.rookautoturret;
 recast.tactician = 180000;
 recast.wildfire = 120000;
+
+// MNK
+recast.brotherhood = 90000;
 
 // NIN
 recast.hide = 20000;
@@ -83,6 +89,12 @@ recast.meikyoshisui = 60000;
 recast.senei = recast.guren;
 recast.tsubamegaeshi = 60000;
 
+// SCH
+recast.chainstrategem = 120000;
+
+// SMN
+recast.devotion = 180000;
+
 // WAR
 recast.berserk = 90000;
 recast.infuriate = 60000;
@@ -101,3 +113,14 @@ recast.plenaryindulgence = 120000;
 recast.presenceofmind = 150000;
 recast.tetragrammaton = 60000;
 recast.thinair = 120000;
+
+// Raid
+recast.raidbattlelitany = recast.battlelitany;
+recast.raidbattlevoice = recast.battlevoice;
+recast.raidbrotherhood = recast.brotherhood;
+recast.raidchainstrategem = recast.chainstrategem;
+recast.raiddevilment = recast.devilment;
+recast.raiddevotion = recast.devotion;
+recast.raidembolden = recast.embolden;
+recast.raidtechnicalstep = recast.technicalstep;
+recast.raidtrickattack = recast.trickattack;
