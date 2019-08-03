@@ -29,15 +29,6 @@
       color: #E2EBF5;
     }
 
-    .flex-box {
-      display: flex;
-      flex: 1 1 auto;
-    }
-
-    .inline-flex-box {
-      display: inline-flex;
-    }
-
     .row {
       display: flex;
     }
@@ -48,16 +39,21 @@
       flex: 1;
     }
 
-    .iconrow {
-      height: 44px;
-      justify-content: left;
-      display: flex;
+    .icon-row2 {
+      margin-left: 22px;
+    }
+    .icon-box {
+      padding: 2px;
+    }
+
+    .countdown-box {
+      padding: 8px;
     }
 
     .icondiv {
       position: relative;
-      height: 0px;
       width: 0px;
+      height: 0px;
       opacity: 0;
       display: inline-flex;
     }
@@ -146,27 +142,27 @@
       animation: fadeout 1s forwards;
     }
 
-    .icon-popin {
+    .icon-add {
       transition: height 0.1s ease 0s, width 0.1s ease 0s, opacity 0.1s ease 0.1s;
       height: 44px;
       width: 44px;
       opacity: 1;
     }
 
-    .icon-popout {
-      transition: opacity 0.1 s ease 0s, height 0.1s ease 0.1s, width 0.1s ease 0.1s;
+    .icon-remove {
+      transition: opacity 0.1s ease 0s, height 0.1s ease 0.1s, width 0.1s ease 0.1s;
       width: 0px;
       height: 0px;
       opacity: 0;
     }
 
-    .countdown-popin {
+    .countdown-add {
       transition: height 0.5s ease 0s, opacity 0.5s ease 0.5s;
       height: 24px;
       opacity: 1;
     }
 
-    .countdown-popout {
+    .countdown-remove {
       transition: opacity 0.5s ease 0s, height 0.5s ease 0.5s;
       height: 0px;
       opacity: 0;
@@ -289,7 +285,6 @@
 </head>
 
 <body>
-  <div id="loadmessage" class="textdiv">LOADING</div>
   <div id="nextdiv">
     <div class="row">
       <div id="icondiv0" class="icondiv"><div id="iconimgdiv0" class="iconimgdiv"><img id="iconimg0" class="iconimg" src="icon/000001.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown0" class="iconcountdowndiv"></div></div>
@@ -303,7 +298,7 @@
       <div id="icondiv8" class="icondiv"><div id="iconimgdiv8" class="iconimgdiv"><img id="iconimg8" class="iconimg" src="icon/000001.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown8" class="iconcountdowndiv"></div></div>
       <div id="icondiv9" class="icondiv"><div id="iconimgdiv9" class="iconimgdiv"><img id="iconimg9" class="iconimg" src="icon/000001.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown9" class="iconcountdowndiv"></div></div>
     </div>
-    <div class="row">
+    <div class="row icon-row2">
       <div id="icondiv10" class="icondiv"><div id="iconimgdiv10" class="iconimgdiv"><img id="iconimg10" class="iconimg" src="icon/000001.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown10" class="iconcountdowndiv"></div></div>
       <div id="icondiv11" class="icondiv"><div id="iconimgdiv11" class="iconimgdiv"><img id="iconimg11" class="iconimg" src="icon/000001.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown11" class="iconcountdowndiv"></div></div>
       <div id="icondiv12" class="icondiv"><div id="iconimgdiv12" class="iconimgdiv"><img id="iconimg12" class="iconimg" src="icon/000001.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown12" class="iconcountdowndiv"></div></div>
@@ -315,8 +310,8 @@
       <div id="icondiv18" class="icondiv"><div id="iconimgdiv18" class="iconimgdiv"><img id="iconimg18" class="iconimg" src="icon/000001.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown18" class="iconcountdowndiv"></div></div>
       <div id="icondiv19" class="icondiv"><div id="iconimgdiv19" class="iconimgdiv"><img id="iconimg19" class="iconimg" src="icon/000001.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown19" class="iconcountdowndiv"></div></div>
     </div>
-<!-- Countdown bars here -->
-    <div class="row">
+    <!-- Countdown bars here -->
+    <div class="row countdown-box">
       <div class="column">
         <div id="countdowndiv0" class="countdowndiv">
           <div id="countdownimgdiv0" class="smalliconimgdiv">

@@ -34,41 +34,41 @@ function raidAction() {
   if (actionList.raid.indexOf(actionGroups.actionname) > -1) {
 
     if ("Battle Litany" == actionGroups.actionname) {
-      addRaidCountdownBar("raidbattlelitany");
+      addCountdownBar("raidbattlelitany", recast.battlelitany, actionGroups.sourcenname);
     }
 
     else if ("Battle Voice" == actionGroups.actionname) {
-      addRaidCountdownBar("raidbattlevoice");
+      addCountdownBar("raidbattlevoice", recast.battlevoice, actionGroups.sourcenname);
     }
 
     else if ("Brotherhood" == actionGroups.actionname
     && ["BRD", "DNC", "DRG", "MCH", "MNK", "NIN", "SAM"].indexOf(player.job) > -1) {
-      addRaidCountdownBar("raidbrotherhood");
+      addCountdownBar("raidbrotherhood", recast.brotherhood, actionGroups.sourcenname);
     }
 
     else if ("Chain Strategem" == actionGroups.actionname) {
-      addRaidCountdownBar("raidchainstrategem");
+      addCountdownBar("raidchainstrategem", recast.chainstrategem, actionGroups.sourcenname);
     }
 
     else if ("Devilment" == actionGroups.actionname) {
-      addRaidCountdownBar("raiddevilment");
+      addCountdownBar("raiddevilment", recast.devilment, actionGroups.sourcenname);
     }
 
     else if ("Devotion" == actionGroups.actionname) {
-      addRaidCountdownBar("raiddevotion");
+      addCountdownBar("raiddevotion", recast.devotion, actionGroups.sourcenname);
     }
 
     else if ("Embolden" == actionGroups.actionname
     && ["BRD", "DNC", "DRG", "MCH", "MNK", "NIN", "SAM"].indexOf(player.job) > -1) {
-      addRaidCountdownBar("raidembolden");
+      addCountdownBar("raidembolden", recast.embolden, actionGroups.sourcenname);
     }
 
     else if ("Technical Step" == actionGroups.actionname) {
-      addRaidCountdownBar("raidtechnicalstep");
+      addCountdownBar("raidtechnicalstep", recast.technicalstep, actionGroups.sourcenname);
     }
 
     else if ("Trick Attack" == actionGroups.actionname) {
-      addRaidCountdownBar("raidtrickattack");
+      addCountdownBar("raidtrickattack", recast.trickattack, actionGroups.sourcenname);
     }
 
   }

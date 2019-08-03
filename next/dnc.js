@@ -161,8 +161,8 @@ function dncAction() {
           }
         }
         if (player.level < 70
-        && checkCooldown("devilment", player.ID) < 0) {
-          addIconNew("devilment");  // Not sure if this is best use before 70 but whatever
+        && checkCooldown("devilment") < 0) {
+          addIcon("devilment");  // Not sure if this is best use before 70 but whatever
         }
       }
 
@@ -185,8 +185,8 @@ function dncAction() {
             count.aoe = count.aoe + 1;
           }
         }
-        if (checkCooldown("devilment", player.ID) < 0) {
-          addIconNew("devilment");  // Heck not sure if this best use after 70
+        if (checkCooldown("devilment") < 0) {
+          addIcon("devilment");  // Heck not sure if this best use after 70
         }
       }
 
@@ -194,11 +194,11 @@ function dncAction() {
       "Jete", "Pirouette"].indexOf(actionGroups.actionname) > -1) {
         if (checkStatus("standardstep") > 0
         && player.tempjobDetail.tempsteps >= 2) {
-          addIconNew("standardfinish");
+          addIcon("standardfinish");
         }
         else if (checkStatus("technicalstep") > 0
         && player.tempjobDetail.tempsteps >= 4) {
-          addIconNew("technicalfinish");
+          addIcon("technicalfinish");
         }
         console.log(checkStatus("standardstep"));
       }
@@ -217,7 +217,7 @@ function dncStatus() {
 
     if ("Flourishing Cascade" == statusGroups.statusname) {
       if (statusGroups.gainsloses == "gains") {
-        addIconNew("reversecascade");
+        addIcon("reversecascade");
         addCountdownBar("reversecascade", parseInt(statusGroups.duration) * 1000);
         addStatusNew("flourishingcascade", player.ID, parseInt(statusGroups.duration) * 1000);
         dncFlourishCheck();
@@ -232,7 +232,7 @@ function dncStatus() {
 
     else if ("Flourishing Fountain" == statusGroups.statusname) {
       if (statusGroups.gainsloses == "gains") {
-        addIconNew("fountainfall");
+        addIcon("fountainfall");
         addCountdownBar("fountainfall", parseInt(statusGroups.duration) * 1000);
         addStatusNew("flourishingfountain", parseInt(statusGroups.duration) * 1000);
         dncFlourishCheck();
@@ -247,7 +247,7 @@ function dncStatus() {
 
     else if ("Flourishing Windmill" == statusGroups.statusname) {
       if (statusGroups.gainsloses == "gains") {
-        addIconNew("risingwindmill");
+        addIcon("risingwindmill");
         addCountdownBar("risingwindmill", parseInt(statusGroups.duration) * 1000);
         addStatusNew("flourishingwindmill", parseInt(statusGroups.duration) * 1000);
         dncFlourishCheck();
@@ -262,7 +262,7 @@ function dncStatus() {
 
     else if ("Flourishing Shower" == statusGroups.statusname) {
       if (statusGroups.gainsloses == "gains") {
-        addIconNew("bloodshower");
+        addIcon("bloodshower");
         addCountdownBar("bloodshower", parseInt(statusGroups.duration) * 1000);
         addStatusNew("flourishingshower", parseInt(statusGroups.duration) * 1000);
         dncFlourishCheck();
@@ -277,7 +277,7 @@ function dncStatus() {
 
     else if ("Flourishing Fan Dance" == statusGroups.statusname) {
       if (statusGroups.gainsloses == "gains") {
-        addIconNew("fandance3");
+        addIcon("fandance3");
         addCountdownBar("fandance3", parseInt(statusGroups.duration) * 1000);
         addStatusNew("flourishingfandance", parseInt(statusGroups.duration) * 1000);
         dncFlourishCheck();
@@ -318,10 +318,10 @@ function dncFlourishCheck() {
     checkStatus("flourishingwindmill", player.ID),
     checkStatus("flourishingshower", player.ID),
     checkStatus("flourishingfandance", player.ID)) < 0) {
-      addCountdownBar("flourish", checkCooldown("flourish", player.ID), "OK")
+      addCountdownBar("flourish", checkCooldown("flourish"), "OK")
     }
     else {
-      addCountdownBar("flourish", checkCooldown("flourish", player.ID), "WAIT - procs already up")
+      addCountdownBar("flourish", checkCooldown("flourish"), "WAIT")
     }
   }
 }
@@ -337,7 +337,7 @@ function dncFeathers() {
   }
 
   if (player.tempjobDetail.tempfourfoldfeathers == 4) {
-    addIconNew("fourfoldfeathers");
+    addIcon("fourfoldfeathers");
   }
   else {
     removeIconNew("fourfoldfeathers");
@@ -346,7 +346,7 @@ function dncFeathers() {
 
 function dncEsprit() {
   if (player.tempjobDetail.tempesprit >= 80) {
-    addIconNew("saberdance");
+    addIcon("saberdance");
   }
   else {
     removeIconNew("saberdance");

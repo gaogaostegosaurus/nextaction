@@ -75,28 +75,28 @@ function drkAction() {
     // These actions don't break combo
 
     if ("Delirium" == actionGroups.actionname) {
-      removeIcon(nextid.delirium);
-      addStatus("delirium", actionGroups.targetID, duration.delirium);
-      addCooldown("delirium", player.ID, recast.delirium);
+      removeIcon("delirium");
+      addStatus("delirium", duration.delirium, actionGroups.targetID);
+      addCooldown("delirium");
       addIconBlinkTimeout("delirium", recast.delirium, nextid.delirium, icon.delirium);
       drkGauge();
     }
 
     else if (["Flood Of Darkness", "Edge Of Darkness", "Flood Of Shadow", "Edge Of Shadow"].indexOf(actionGroups.actionname) > -1) {
-      removeIcon(nextid.floodofdarkness);
-      addCooldown("floodofdarkness", player.ID, recast.floodofdarkness);
+      removeIcon("floodofdarkness");
+      addCooldown("floodofdarkness");
       drkMP();
     }
 
     else if ("Blood Weapon" == actionGroups.actionname) {
-      removeIcon(nextid.bloodweapon);
-      addCooldown("bloodweapon", player.ID, recast.bloodweapon);
+      removeIcon("bloodweapon");
+      addCooldown("bloodweapon");
       addIconBlinkTimeout("bloodweapon", recast.bloodweapon, nextid.bloodweapon, icon.bloodweapon);
     }
 
     else if ("Salted Earth" == actionGroups.actionname) {
-      removeIcon(nextid.saltedearth);
-      addCooldown("carveandspit", player.ID, recast.saltedearth);
+      removeIcon("saltedearth");
+      addCooldown("carveandspit");
       addIconBlinkTimeout("carveandspit", recast.saltedearth, nextid.saltedearth, icon.saltedearth);
     }
 
@@ -108,14 +108,14 @@ function drkAction() {
       else {
         count.aoe = count.aoe + 1;
       }
-      removeIcon(nextid.abyssaldrain);
-      addCooldown("abyssaldrain", player.ID, recast.abyssaldrain);
+      removeIcon("abyssaldrain");
+      addCooldown("abyssaldrain");
       addIconBlinkTimeout("abyssaldrain", recast.abyssaldrain, nextid.abyssaldrain, icon.abyssaldrain);
     }
 
     else if ("Carve And Spit" == actionGroups.actionname) {
-      removeIcon(nextid.carveandspit);
-      addCooldown("carveandspit", player.ID, recast.carveandspit);
+      removeIcon("carveandspit");
+      addCooldown("carveandspit");
       addIconBlinkTimeout("carveandspit", recast.carveandspit, nextid.carveandspit, icon.carveandspit);
     }
 
@@ -126,37 +126,37 @@ function drkAction() {
           addCooldown("plunge2", player.ID, recast.plunge);
         }
         else {
-          removeIcon(nextid.plunge);
+          removeIcon("plunge");
           addCooldown("plunge1", player.ID, checkCooldown("plunge2", player.ID));
           addCooldown("plunge2", player.ID, checkCooldown("plunge2", player.ID) + recast.plunge);
           addIconBlinkTimeout("plunge", checkCooldown("plunge1", player.ID), nextid.plunge, icon.plunge);
         }
       }
       else {
-        addCooldown("plunge", player.ID, recast.plunge);
+        addCooldown("plunge");
         addIconBlinkTimeout("plunge", recast.plunge, nextid.plunge, icon.plunge);
       }
     }
 
     else if ("The Blackest Night" == actionGroups.actionname) {
-      addCooldown("theblackestnight", player.ID, recast.theblackestnight);
-      removeIcon(nextid.theblackestnight);
+      addCooldown("theblackestnight");
+      removeIcon("theblackestnight");
     }
 
     else if ("Shadow Wall" == actionGroups.actionname) {
-      addCooldown("shadowwall", player.ID, recast.shadowwall);
-      removeIcon(nextid.shadowwall);
+      addCooldown("shadowwall");
+      removeIcon("shadowwall");
     }
 
     else if ("Rampart" == actionGroups.actionname) {
-      addCooldown("rampart", player.ID, recast.rampart);
-      removeIcon(nextid.rampart);
+      addCooldown("rampart");
+      removeIcon("rampart");
     }
 
     else { // GCD actions
 
       if ("Bloodspiller" == actionGroups.actionname) {
-        removeIcon(nextid.bloodspiller);
+        removeIcon("bloodspiller");
       }
 
       else if ("Quietus" == actionGroups.actionname) {
@@ -167,7 +167,7 @@ function drkAction() {
         else {
           count.aoe = count.aoe + 1;
         }
-        removeIcon(nextid.quietus);
+        removeIcon("quietus");
       }
 
       // These actions affect combo
@@ -179,14 +179,14 @@ function drkAction() {
           drkCombo();
           toggle.combo = Date.now();
         }
-        removeIcon(nextid.hardslash);
+        removeIcon("hardslash");
         drkComboTimeout();
       }
 
       else if ("Syphon Strike" == actionGroups.actionname
       && actionGroups.result.length >= 8) {
-        removeIcon(nextid.hardslash);
-        removeIcon(nextid.syphonstrike);
+        removeIcon("hardslash");
+        removeIcon("syphonstrike");
         drkComboTimeout();
       }
 
@@ -208,7 +208,7 @@ function drkAction() {
           stalwartsoulCombo();
           toggle.combo = Date.now();
         }
-        removeIcon(nextid.overpower);
+        removeIcon("overpower");
         if (player.level >= 74) {
           drkComboTimeout();
         }
@@ -238,7 +238,7 @@ function drkAction() {
         drkMitigation();
       }
       else {
-        removeIcon(nextid.rampart);
+        removeIcon("rampart");
       }
 
       drkMP(); // Check MP after all GCD actions
@@ -253,7 +253,7 @@ function drkStatus() {
 
     if ("Delirium" == statusGroups.statusname) {
       if (statusGroups.gainsloses == "gains") {
-        addStatus("delirium", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
+        addStatus("delirium", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
       }
       else if (statusGroups.gainsloses == "loses") {
         removeStatus("berserk", statusGroups.targetID);
@@ -263,7 +263,7 @@ function drkStatus() {
     else if ("Rampart" == statusGroups.statusname) {
       if (statusGroups.gainsloses == "gains") {
         if (checkStatus("mitigation", statusGroups.targetID) < parseInt(statusGroups.duration) * 1000) {
-          addStatus("mitigation", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
+          addStatus("mitigation", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
         }
       }
       else if (statusGroups.gainsloses == "loses") {
@@ -277,7 +277,7 @@ function drkStatus() {
     else if ("Dark Wall" == statusGroups.statusname) {
       if (statusGroups.gainsloses == "gains") {
         if (checkStatus("mitigation", statusGroups.targetID) < parseInt(statusGroups.duration) * 1000) {
-          addStatus("mitigation", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
+          addStatus("mitigation", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
         }
       }
       else if (statusGroups.gainsloses == "loses") {
@@ -296,16 +296,16 @@ function drkMitigation() {
   // Shows next mitigation cooldown
 
   if (player.level >= 38) {
-    if (checkCooldown("darkwall", player.ID) <= checkCooldown("rampart", player.ID)) {
-      addIconBlinkTimeout("darkwall",checkCooldown("darkwall", player.ID),nextid.mitigation,icon.darkwall);
+    if (checkCooldown("darkwall") <= checkCooldown("rampart")) {
+      addIconBlinkTimeout("darkwall",checkCooldown("darkwall"),nextid.mitigation,icon.darkwall);
     }
-    else if (checkCooldown("rampart", player.ID) <= checkCooldown("darkwall", player.ID)) {
-      addIconBlinkTimeout("mitigation",checkCooldown("rampart", player.ID),nextid.mitigation,icon.rampart);
+    else if (checkCooldown("rampart") <= checkCooldown("darkwall")) {
+      addIconBlinkTimeout("mitigation",checkCooldown("rampart"),nextid.mitigation,icon.rampart);
     }
   }
 
   else {
-    addIconBlinkTimeout("mitigation",checkCooldown("rampart", player.ID),nextid.mitigation,icon.rampart);
+    addIconBlinkTimeout("mitigation",checkCooldown("rampart"),nextid.mitigation,icon.rampart);
   }
 }
 
@@ -339,7 +339,7 @@ function drkMP() {
       addIconBlink(nextid.floodofdarkness, icon.floodofdarkness);
     }
     else {
-      removeIcon(nextid.floodofdarkness);
+      removeIcon("floodofdarkness");
     }
   }
   else if (player.level >= 30) { // No TBN yet
@@ -347,7 +347,7 @@ function drkMP() {
       addIconBlink(nextid.floodofdarkness, icon.floodofdarkness);
     }
     else {
-      removeIcon(nextid.floodofdarkness);
+      removeIcon("floodofdarkness");
     }
   }
 }
@@ -368,13 +368,13 @@ function drkGauge() {
     targetblood = 0;
   }
   else if (player.level >= 80
-  && checkCooldown("livingshadow", player.ID) < 20000) { // Is this enough?
+  && checkCooldown("livingshadow") < 20000) { // Is this enough?
     targetblood = 100; // Try to have a buffer for Living Shadow
   }
 
   if (player.jobDetail.blood >= targetblood) {
     if (player.level >= 80
-    && checkCooldown("livingshadow", player.ID) < 1000) {
+    && checkCooldown("livingshadow") < 1000) {
       addIconBlink(nextid.gaugespender, icon.livingshadow);
     }
     else if (player.level >= 62) {
@@ -382,7 +382,7 @@ function drkGauge() {
     }
   }
   else {
-    removeIcon(nextid.gaugespender);
+    removeIcon("gaugespender");
   }
 }
 
@@ -390,21 +390,21 @@ function drkCombo() {
 
   delete toggle.combo;
 
-  removeIcon(nextid.hardslash);
-  removeIcon(nextid.syphonstrike);
-  removeIcon(nextid.souleater);
+  removeIcon("hardslash");
+  removeIcon("syphonstrike");
+  removeIcon("souleater");
 
   if (count.aoe >= 2) {
-    addIcon(nextid.unleash, icon.unleash);
+    addIcon("unleash");
     if (player.level >= 74) {
-      addIcon(nextid.stalwartsoul, icon.stalwartsoul);
+      addIcon("stalwartsoul");
     }
   }
   else {
-    addIcon(nextid.hardslash, icon.hardslash);
-    addIcon(nextid.syphonstrike, icon.syphonstrike);
+    addIcon("hardslash");
+    addIcon("syphonstrike");
     if (player.level >= 26) {
-      addIcon(nextid.souleater, icon.souleater);
+      addIcon("souleater");
     }
   }
 }

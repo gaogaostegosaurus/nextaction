@@ -2,21 +2,19 @@
 
 actionList.mch = [
 
-  // Toggle single target
+  // Non-GCD
+  "Reassemble", "Gauss Round", "Hypercharge", "Rook Autoturret", "Wildfire",
+  "Ricochet", "Tactician", "Barrel Stabilizer", "Flamethrower",
+  "Automaton Queen",
+  "Second Wind", "Peloton", "Head Graze",
+
+  // GCD
   "Split Shot", "Slug Shot", "Clean Shot",
   "Heated Split Shot", "Heated Slug Shot", "Heated Clean Shot",
-  "Hot Shot", "Heat Blast",
+  "Spread Shot",
+  "Hot Shot", "Air Anchor", "Drill", "Bioblaster",
+  "Heat Blast", "Auto Crossbow"
 
-  // Toggle AoE
-  "Spread Shot", "Auto Crossbow", "Flamethrower", "Bioblaster",
-
-  // Misc
-  "Reassemble", "Gauss Round", "Hypercharge", "Rook Autoturret", "Wildfire",
-  "Ricochet", "Tactician", "Drill", "Barrel Stabilizer", "Air Anchor",
-  "Automaton Queen",
-
-  // Role actions
-  "Second Wind", "Peloton", "Head Graze"
 ];
 
 function mchJobChange() {
@@ -46,11 +44,13 @@ function mchJobChange() {
   nextid.gaussround = 13;
   nextid.ricochet = 14;
 
-  countdownid.reassemble = 0;
-  countdownid.drill = 1;
-  countdownid.hotshot = 2;
-  countdownid.gaussround = 3;
-  countdownid.ricochet = 4;
+  countdownid.barrelstabilizer = 0;
+  countdownid.wildfire = 1;
+  countdownid.drill = 2;
+  countdownid.hotshot = 3;
+  countdownid.reassemble = 4;
+  countdownid.gaussround = 5;
+  countdownid.ricochet = 6;
 
   // nextid.tactician = 99;
 
@@ -109,7 +109,7 @@ function mchJobChange() {
 
   // Show available cooldowns
 
-  addCountdownBar("hotshot", checkCooldown("hotshot", player.ID));
+  addCountdownBar("hotshot", checkCooldown("hotshot"));
 
   if (player.level >= 15) {
     addCountdownBar("gaussround", checkCooldown("gaussround1", player.ID));
@@ -120,11 +120,11 @@ function mchJobChange() {
   }
 
   if (player.level >= 10) {
-    addCountdownBar("reassemble", checkCooldown("reassemble", player.ID));
+    addCountdownBar("reassemble", checkCooldown("reassemble"));
   }
 
   if (player.level >= 58) {
-    addCountdownBar("drill", checkCooldown("drill", player.ID));
+    addCountdownBar("drill", checkCooldown("drill"));
   }
 
   mchHeat();
@@ -148,7 +148,7 @@ function mchPlayerChangedEvent() {
     addIconBlink(nextid.heatblast, icon.heatblast);
   }
   else {
-    removeIcon(nextid.heatblast);
+    removeIcon("heatblast");
   }
 }
 
@@ -156,17 +156,15 @@ function mchAction() {
 
   if (actionList.mch.indexOf(actionGroups.actionname) > -1) {
 
-    removeText("loadmessage");
-
     // Toggle AoE
 
     if (player.level >= 70
-    && checkCooldown("flamethrower", player.ID) < 0
+    && checkCooldown("flamethrower") < 0
     && count.aoe >= 2) {
       addIconBlink(nextid.flamethrower, icon.flamethrower);
     }
     else {
-      removeIcon(nextid.flamethrower);
+      removeIcon("flamethrower");
     }
 
     if (player.level >= 72
@@ -185,8 +183,8 @@ function mchAction() {
         recast.hotshot = Date.now() - previous.hotshot;
       }
       previous.hotshot = Date.now();
-      removeIcon(nextid.hotshot);
-      addCooldown("hotshot", player.ID, recast.hotshot);
+      removeIcon("hotshot");
+      addCooldown("hotshot");
       addCountdownBar("hotshot", recast.hotshot);
       mchBattery();
       mchHeat();
@@ -198,10 +196,10 @@ function mchAction() {
         recast.drill = Date.now() - previous.drill; // Adjusts cooldown
       }
       previous.drill = Date.now();
-      removeIcon(nextid.drill);
-      addCooldown("drill", player.ID, recast.drill);
+      removeIcon("drill");
+      addCooldown("drill");
       addCountdownBar("drill", recast.drill);
-      if (checkCooldown("reassemble", player.ID) < checkCooldown("drill", player.ID)) {
+      if (checkCooldown("reassemble") < checkCooldown("drill")) {
         addIconBlinkTimeout("drill", recast.drill - 1000, nextid.drill, icon.reassemble);
       }
       else {
@@ -222,8 +220,8 @@ function mchAction() {
       else {
         count.aoe = count.aoe + 1;
       }
-      removeIcon(nextid.drill);
-      addCooldown("drill", player.ID, recast.drill);
+      removeIcon("drill");
+      addCooldown("drill");
       addIconBlinkTimeout("drill", recast.drill - 1000, nextid.drill, icon.drill);
       mchHeat();
     }
@@ -274,7 +272,7 @@ function mchAction() {
           addCooldown("gaussround1", player.ID, checkCooldown("gaussround2", player.ID));
           addCooldown("gaussround2", player.ID, checkCooldown("gaussround2", player.ID) + recast.gaussround);
           addCooldown("gaussround3", player.ID, checkCooldown("gaussround3", player.ID) + recast.gaussround);
-          removeIcon(nextid.gaussround);
+          removeIcon("gaussround");
           addIconBlinkTimeout("gaussround", checkCooldown("gaussround1", player.ID), nextid.gaussround, icon.gaussround);
         }
       }
@@ -285,7 +283,7 @@ function mchAction() {
         else if (checkCooldown("gaussround1", player.ID) < 0) {
           addCooldown("gaussround1", player.ID, checkCooldown("gaussround2", player.ID));
           addCooldown("gaussround2", player.ID, checkCooldown("gaussround2", player.ID) + recast.gaussround);
-          removeIcon(nextid.gaussround);
+          removeIcon("gaussround");
           addIconBlinkTimeout("gaussround", checkCooldown("gaussround1", player.ID), nextid.gaussround, icon.gaussround);
         }
       }
@@ -311,7 +309,7 @@ function mchAction() {
           addCooldown("ricochet1", player.ID, checkCooldown("ricochet2", player.ID));
           addCooldown("ricochet2", player.ID, checkCooldown("ricochet2", player.ID) + recast.ricochet);
           addCooldown("ricochet3", player.ID, checkCooldown("ricochet3", player.ID) + recast.ricochet);
-          removeIcon(nextid.ricochet);
+          removeIcon("ricochet");
           addIconBlinkTimeout("ricochet", checkCooldown("ricochet1", player.ID), nextid.ricochet, icon.ricochet);
         }
       }
@@ -322,40 +320,40 @@ function mchAction() {
         else if (checkCooldown("ricochet1", player.ID) < 0) {
           addCooldown("ricochet1", player.ID, checkCooldown("ricochet2", player.ID));
           addCooldown("ricochet2", player.ID, checkCooldown("ricochet2", player.ID) + recast.ricochet);
-          removeIcon(nextid.ricochet);
+          removeIcon("ricochet");
           addIconBlinkTimeout("ricochet", checkCooldown("ricochet1", player.ID), nextid.ricochet, icon.ricochet);
         }
       }
     }
 
     else if ("Reassemble" == actionGroups.actionname) {
-      removeIcon(nextid.reassemble);
-      addCooldown("reassemble", player.ID, recast.reassemble);
+      removeIcon("reassemble");
+      addCooldown("reassemble");
       if (player.level >= 58
-      && checkCooldown("drill", player.ID) < 0) {
-        addIcon(nextid.drill, icon.drill);
+      && checkCooldown("drill") < 0) {
+        addIcon("drill");
       }
     }
 
     else if ("Hypercharge" == actionGroups.actionname) {
-      removeIcon(nextid.hypercharge);
+      removeIcon("hypercharge");
       mchHeat();
     }
 
     else if (["Rook Autoturret", "Automaton Queen"].indexOf(actionGroups.actionname) > -1) {
-      removeIcon(nextid.rookautoturret);
+      removeIcon("rookautoturret");
       mchBattery();
     }
 
     else if ("Wildfire" == actionGroups.actionname) {
-      removeIcon(nextid.wildfire);
-      addCooldown("wildfire", player.ID, recast.wildfire);
+      removeIcon("wildfire");
+      addCooldown("wildfire");
       mchHeat();
     }
 
     else if ("Barrel Stabilizer" == actionGroups.actionname) {
-      removeIcon(nextid.barrelstabilizer);
-      addCooldown("barrelstabilizer", player.ID, recast.barrelstabilizer);
+      removeIcon("barrelstabilizer");
+      addCooldown("barrelstabilizer");
       mchHeat();
     }
 
@@ -370,14 +368,14 @@ function mchAction() {
        mchCombo();
       }
       toggle.combo = Date.now();
-      removeIcon(nextid.splitshot);
+      removeIcon("splitshot");
       mchHeat();
       mchComboTimeout();
     }
 
     else if (["Slug Shot", "Heated Slug Shot"].indexOf(actionGroups.actionname) > -1
     && actionGroups.result.length == 8) {
-      removeIcon(nextid.slugshot);
+      removeIcon("slugshot");
       mchHeat();
       if (player.level < 26) {
         mchCombo();
@@ -389,7 +387,7 @@ function mchAction() {
 
     else if (["Clean Shot", "Heated Clean Shot"].indexOf(actionGroups.actionname) > -1
     && actionGroups.result.length == 8) {
-      removeIcon(nextid.cleanshot);
+      removeIcon("cleanshot");
       mchHeat();
       mchBattery();
       mchCombo();
@@ -403,7 +401,7 @@ function mchAction() {
       else {
         count.aoe = count.aoe + 1;
       }
-      removeIcon(nextid.spreadshot);
+      removeIcon("spreadshot");
       mchHeat();
       mchCombo();
     }
@@ -424,28 +422,28 @@ function mchCombo() {
   delete next.combo;
 
   // Reset icons
-  removeIcon(nextid.splitshot);
-  removeIcon(nextid.slugshot);
-  removeIcon(nextid.cleanshot);
+  removeIcon("splitshot");
+  removeIcon("slugshot");
+  removeIcon("cleanshot");
 
   if (player.level >= 80
   && count.aoe >= 3) {
     next.combo = 2;
-    addIcon(nextid.spreadshot,icon.spreadshot);
+    addIcon("spreadshot");
   }
   else if (player.level < 80
   && count.aoe == 2) {
     next.combo = 2;
-    addIcon(nextid.spreadshot,icon.spreadshot);
+    addIcon("spreadshot");
   }
   else {
     next.combo = 1;
-    addIcon(nextid.splitshot,icon.splitshot);
+    addIcon("splitshot");
     if (player.level >= 2) {
-      addIcon(nextid.slugshot,icon.slugshot);
+      addIcon("slugshot");
     }
     if (player.level >= 26) {
-      addIcon(nextid.cleanshot,icon.cleanshot);
+      addIcon("cleanshot");
     }
   }
 }
@@ -458,10 +456,10 @@ function mchComboTimeout() { // Set between combo actions
 function mchHeat() {
 
   if (player.jobDetail.heat >= 50
-  && (player.level < 58 || checkCooldown("drill", player.ID) > 9000)
-  && (player.level < 76 || checkCooldown("hotshot", player.ID) > 9000)) {
+  && (player.level < 58 || checkCooldown("drill") > 9000)
+  && (player.level < 76 || checkCooldown("hotshot") > 9000)) {
     if (player.level >= 45
-    && checkCooldown("wildfire", player.ID) < 1000) {
+    && checkCooldown("wildfire") < 1000) {
       addIconBlink(nextid.wildfire, icon.wildfire);
     }
     else {
@@ -470,7 +468,7 @@ function mchHeat() {
   }
   else if (player.jobDetail.heat >= 95) {
     if (player.level >= 45
-    && checkCooldown("wildfire", player.ID) < 1000) {
+    && checkCooldown("wildfire") < 1000) {
       addIconBlink(nextid.wildfire, icon.wildfire);
     }
     else {
@@ -479,12 +477,12 @@ function mchHeat() {
   }
   else if (player.level >= 66
   && player.jobDetail.heat < 50
-  && checkCooldown("wildfire", player.ID) < 3500
-  && checkCooldown("barrelstabilizer", player.ID) < 1000) {
+  && checkCooldown("wildfire") < 3500
+  && checkCooldown("barrelstabilizer") < 1000) {
     addIconBlink(nextid.barrelstabilizer, icon.barrelstabilizer);
   }
   else {
-    removeIcon(nextid.hypercharge);
+    removeIcon("hypercharge");
   }
 }
 
@@ -493,6 +491,6 @@ function mchBattery() {
     addIconBlink(nextid.rookautoturret, icon.rookautoturret);
   }
   else {
-    removeIcon(nextid.rookautoturret);
+    removeIcon("rookautoturret");
   }
 }

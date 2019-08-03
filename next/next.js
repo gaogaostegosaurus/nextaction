@@ -6,7 +6,6 @@ var cooldowntime = {};        // Holds timestamps for cooldowns
 
 var timeout = {};             // For timeout variables
 var interval = {};
-var countdowntimeout = {};            // Timer intervals
 var nextid = {};              // Store document id - location on page for icons, etc.
 var countdownid = {};
 var toggle = {};              // Toggley things
@@ -317,56 +316,44 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
 });
 
 
-function addCooldown(cooldownname, cooldownsourceid, cooldownrecast) {
-  if (!cooldownsourceid) {
-    cooldownsourceid = player.ID;
+function addCooldown(name, time, id) {
+
+  if (time === undefined) {
+    time = recast[name];
   }
-  if (!cooldownrecast) {
-    cooldownrecast = recast[cooldownname];
+  if (id === undefined) {
+    id = player.ID;
   }
 
-  if (!cooldowntracker[cooldownname]) { // Create array if it doesn't exist yet
-    cooldowntracker[cooldownname] = [cooldownsourceid, cooldownrecast + Date.now()];
+  if (!cooldowntracker[name]) { // Create array if it doesn't exist yet
+    cooldowntracker[name] = [id, time + Date.now()];
   }
-  else if (cooldowntracker[cooldownname].indexOf(cooldownsourceid) > -1) { // Update array if source match found
-    cooldowntracker[cooldownname][cooldowntracker[cooldownname].indexOf(cooldownsourceid) + 1] = cooldownrecast + Date.now();
+  else if (cooldowntracker[name].indexOf(id) > -1) { // Update array if source match found
+    cooldowntracker[name][cooldowntracker[name].indexOf(id) + 1] = time + Date.now();
   }
   else { // Push new entry into array if no matching entry
-    cooldowntracker[cooldownname].push(cooldownsourceid, cooldownrecast + Date.now());
+    cooldowntracker[name].push(id, time + Date.now());
   }
 }
 
-function checkCooldown(cooldownname, sourceid) {
-  if (!sourceid) {
-    sourceid = player.ID;
+function checkCooldown(name, id) {
+  if (!id) {
+    id = player.ID;
   }
-  if (!cooldowntracker[cooldownname]) {
+  if (!cooldowntracker[name]) {
     return -1;
   }
-  else if (cooldowntracker[cooldownname].indexOf(sourceid) > -1) {
-    return Math.max(cooldowntracker[cooldownname][cooldowntracker[cooldownname].indexOf(sourceid) + 1] - Date.now(), -1);
+  else if (cooldowntracker[name].indexOf(id) > -1) {
+    return Math.max(cooldowntracker[name][cooldowntracker[name].indexOf(id) + 1] - Date.now(), -1);
   }
   else {
     return -1; // Always eturns -1 when cooldown is available
   }
 }
 
-function addStatus(statusname, targetid, duration) {
-
-  if (!statustracker[statusname]) { // Create array if it doesn't exist yet
-    statustracker[statusname] = [targetid, Date.now() + duration];
-  }
-  else if (statustracker[statusname].indexOf(targetid) > -1) { // Update array if target match found
-    statustracker[statusname][statustracker[statusname].indexOf(targetid) + 1] = Date.now() + duration;
-  }
-  else { // Push new entry into array if no matching entry
-    statustracker[statusname].push(targetid, Date.now() + duration);
-  }
-}
-
 function checkStatus(name, id) {
 
-  if (!id) {
+  if (id === undefined) {
     id = player.ID;
   }
 
@@ -381,39 +368,26 @@ function checkStatus(name, id) {
   }
 }
 
-function removeStatus(statusname, targetid) {
-  if (!statustracker[statusname]) {
-    statustracker[statusname] = [];
-  }
-  else if (statustracker[statusname].indexOf(targetid) > -1) {
-    statustracker[statusname].splice(statustracker[statusname].indexOf(targetid), 2);
-  }
-}
-
 // Icon functions
 
-
-function addIconNew(name) {
-
-  let iconid = nextid[name];
-  let iconfilename = icon[name];
-
-  dom["iconimg" + iconid].src = "icon/" + iconfilename + ".png";
-  dom["icondiv" + iconid].className = "icondiv icon-popin";
+function addIcon(name, img) {
+  if (img === undefined) {
+    img = name;
+  }
+  dom["iconimg" + nextid[name]].src = "icon/" + icon[img] + ".png";
+  dom["icondiv" + nextid[name]].className = "icondiv icon-add";
 }
 
-function removeIconNew(name) {
-
-  let iconid = nextid[name];
-  dom["icondiv" + iconid].className = "icondiv icon-popout";
+function removeIcon(name) {
+  dom["icondiv" + nextid[name]].className = "icondiv icon-remove";
 }
 
-function addStatusNew(name, time, id) {
+function addStatus(name, time, id) {
 
-  if (!duration) {
+  if (time === undefined) {
     time = duration[statusname];
   }
-  if (!id) {
+  if (id == undefined) {
     id = player.ID;
   }
 
@@ -428,9 +402,9 @@ function addStatusNew(name, time, id) {
   }
 }
 
-function removeStatusNew(name, id) {
+function removeStatus(name, id) {
 
-  if (!id) {
+  if (id === undefined) {
     id = player.ID;
   }
 
@@ -442,27 +416,16 @@ function removeStatusNew(name, id) {
   }
 }
 
-
-//
-
-
-
-function addIcon(nextid, actionicon) {
-  // dom["iconimgdiv" + nextid].className = "iconimgdiv growiconimgdiv-fadein";
-  dom["iconimg" + nextid].src = "icon/" + actionicon + ".png";
-  dom["icondiv" + nextid].className = "icondiv icon-popin";
-}
-
 function addIconBlink(nextid, actionicon) {
   //dom["iconimgdiv" + nextid].className = "iconimgdiv addicondivfadeinblink";
   dom["iconimg" + nextid].src = "icon/" + actionicon + ".png";
-  dom["icondiv" + nextid].className = "icondiv icon-popin";
+  dom["icondiv" + nextid].className = "icondiv icon-add";
 }
 
 function addIconDim(nextid, actionicon) {
   // dom["iconimgdiv" + nextid].className = "iconimgdiv addicondivfadeindim";
   dom["iconimg" + nextid].src = "icon/" + actionicon + ".png";
-  dom["icondiv" + nextid].className = "icondiv icon-popin";
+  dom["icondiv" + nextid].className = "icondiv icon-add";
 }
 
 function addIconTimeout(action, delay, nextid, actionicon) {
@@ -508,11 +471,11 @@ function addRaidCountdownBar(name) {
 function addCountdownBar(name, time, text) {
   // function addCountdownBar(actionname, countdowntime = checkCooldown(actionname), finishtext = "READY") { // Once CEF updated
 
-  if (!time) {
+  if (time === undefined) {
     addCooldown(name); // Typically you would be adding the recast so
     time = checkCooldown(name);
   }
-  if (!text) {
+  if (text === undefined) {
     text = "READY";
   }
 
@@ -527,14 +490,15 @@ function addCountdownBar(name, time, text) {
   interval[name] = setInterval(function () {
 
     if (time > 60000) {
-      dom["countdowndiv" + id].className = "countdowndiv countdown-popout";
+      dom["countdowndiv" + id].className = "countdowndiv countdown-remove";
     }
     else {
-      dom["countdowndiv" + id].className = "countdowndiv countdown-popin";
+      dom["countdowndiv" + id].className = "countdowndiv countdown-add";
     }
 
     if (time <= 0) {
       dom["countdowntime" + id].innerHTML = text;
+      dom["countdownbar" + id].style.width = "0px";
       clearInterval(interval[name]);
     }
     else if (time < 1000) {
@@ -552,13 +516,7 @@ function addCountdownBar(name, time, text) {
 function removeCountdownBar(name) {
   clearInterval(interval[name]);
   let id = countdownid[name];
-  dom["countdowndiv" + id].className = "countdowndiv countdown-popout"; // Possibility of countdown getting fubared in this (left behind or something else), check later
-}
-
-
-function removeIcon(nextid) {
-  dom["icondiv" + nextid].className = "icondiv icon-popout";
-//  dom["iconimgdiv" + nextid].className = "iconimgdiv fadeoutremoveicondiv"; // Possibility of countdown getting fubared in this (left behind or something else), check later
+  dom["countdowndiv" + id].className = "countdowndiv countdown-remove"; // Possibility of countdown getting fubared in this (left behind or something else), check later
 }
 
 function addText(textid,message) {
@@ -566,23 +524,6 @@ function addText(textid,message) {
   dom[textid].innerText = message;
 }
 
-function removeText(textid) {
-  document.getElementById(textid).style.display = "none";
-}
-
-for (var x = 0; x < 20; x++) {
-  dom["icondiv" + x] = document.getElementById("icondiv" + x); // Container for all parts
-  dom["iconimgdiv" + x] = document.getElementById("iconimgdiv" + x); // Wraps icon and overlay (for animation)
-  dom["iconimg" + x] = document.getElementById("iconimg" + x); // src = icon
-  dom["iconcountdown" + x] = document.getElementById("iconcountdown" + x); // Countdown - separate from img
-}
-for (var x = 0; x < 10; x++) {
-  dom["countdowndiv" + x] = document.getElementById("countdowndiv" + x); // Countdown - separate from img
-  dom["countdownimgdiv" + x] = document.getElementById("countdownimgdiv" + x); // Countdown - separate from img
-  dom["countdownimg" + x] = document.getElementById("countdownimg" + x); // Countdown - separate from img
-  dom["countdownbar" + x] = document.getElementById("countdownbar" + x); // Countdown - separate from img
-  dom["countdowntime" + x] = document.getElementById("countdowntime" + x); // Countdown - separate from img
-}
 
 function loadInitialState() {
 
@@ -624,10 +565,10 @@ function loadInitialState() {
 function clearUI() {
   let x = 0;
   for (x = 0; x < 20; x++) {
-    dom["icondiv" + x].className = "icondiv icon-popout";
+    dom["icondiv" + x].className = "icondiv icon-remove";
   }
   for (x = 0; x < 20; x++) {
-    dom["countdowndiv" + x].className = "countdowndiv countdown-popout";
+    dom["countdowndiv" + x].className = "countdowndiv countdown-remove";
   }
 }
 

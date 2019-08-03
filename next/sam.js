@@ -46,7 +46,7 @@ function samJobChange() {
   previous.guren = 0;
 
   if (player.level >= 68
-  && checkCooldown("ikishoten", player.ID) < 0) {
+  && checkCooldown("ikishoten") < 0) {
     addIconBlink(nextid.ikishoten,icon.ikishoten);
   }
 
@@ -64,7 +64,7 @@ function samAction() {
     // These actions don't interrupt combos
 
     if (actionGroups.actionname == "Higanbana") {
-      addStatus("higanbana", actionGroups.targetID, duration.higanbana);
+      addStatus("higanbana", duration.higanbana, actionGroups.targetID);
       if (checkStatus("meikyoshisui", player.ID) > 0) {
         samCombo(); // Consuming Sen under Meikyo will trigger a new combo
       }
@@ -105,7 +105,7 @@ function samAction() {
     }
 
     else if (["Kaeshi: Higanbana", "Kaeshi: Goken", "Kaeshi: Setsugekka"].indexOf(actionGroups.actionname) > -1) {
-      addCooldown("tsubamegaeshi", player.ID, recast.tsubamegaeshi);
+      addCooldown("tsubamegaeshi");
       icon.tsubamegaeshi = "003180";
       clearTimeout(timeout.tsubamegaeshi);
       removeIcon(id.tsubamegaeshi1);
@@ -113,14 +113,14 @@ function samAction() {
     }
 
     else if (actionGroups.actionname == "Meikyo Shisui") {
-      addCooldown("meikyoshisui", player.ID, recast.meikyoshisui);
-      addStatus("meikyoshisui", player.ID, duration.meikyoshisui);
+      addCooldown("meikyoshisui");
+      addStatus("meikyoshisui");
       removeIcon(id.meikyoshisui);
       samCombo(); // Clears combo and activates next Sen generating move
     }
 
     else if (actionGroups.actionname == "Hissatsu: Kaiten") {
-      addStatus("kaiten", player.ID, duration.kaiten);
+      addStatus("kaiten");
       samKenki();
     }
 
@@ -140,7 +140,7 @@ function samAction() {
     }
 
     else if (actionGroups.actionname == "Ikishoten") {
-      addCooldown("ikishoten", player.ID, recast.ikishoten);
+      addCooldown("ikishoten");
       removeIcon(id.ikishoten);
       addIconBlinkTimeout("ikishoten", recast.ikishoten, id.ikishoten, icon.ikishoten);
       samKenki();
@@ -155,7 +155,7 @@ function samAction() {
         count.aoe = count.aoe + 1;
       }
       // Senei is on same cooldown as Guren
-      addCooldown("guren", player.ID, recast.guren);
+      addCooldown("guren");
       removeIcon(id.guren);
       samKenki();
     }
@@ -194,7 +194,7 @@ function samAction() {
 
     else if (actionGroups.actionname == "Jinpu"
     && actionGroups.result.length >= 8) {
-      addStatus("jinpu", player.ID, duration.jinpu);
+      addStatus("jinpu");
       if (player.level < 30) {
         samCombo();
       }
@@ -208,7 +208,7 @@ function samAction() {
 
     else if (actionGroups.actionname == "Shifu"
     && actionGroups.result.length >= 8) {
-      addStatus("shifu", player.ID, duration.shifu);
+      addStatus("shifu");
       if (player.level < 40) {
         samCombo();
       }
@@ -226,7 +226,7 @@ function samAction() {
         previous.mangetsu = Date.now();
         count.aoe = 1;
         if (checkStatus("jinpu", player.ID) > 0) {
-          addStatus("jinpu", player.ID, Math.min(checkStatus("jinpu", player.ID) + 15000, duration.jinpu));
+          addStatus("jinpu", Math.min(checkStatus("jinpu", player.ID) + 15000, duration.jinpu));
         }
       }
       else {
@@ -243,7 +243,7 @@ function samAction() {
         previous.oka = Date.now();
         count.aoe = 1;
         if (checkStatus("shifu", player.ID) > 0) {
-          addStatus("shifu", player.ID, Math.min(checkStatus("shifu", player.ID) + 15000, duration.shifu));
+          addStatus("shifu", Math.min(checkStatus("shifu", player.ID) + 15000, duration.shifu));
         }
       }
       else {
@@ -298,7 +298,7 @@ function samStatus() {
 
     if (statusGroups.statusname == "Jinpu") {
       if (statusGroups.gainsloses == "gains") {
-        addStatus("jinpu", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
+        addStatus("jinpu", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
       }
       else if (statusGroups.gainsloses == "loses") {
         removeStatus("jinpu", statusGroups.targetID);
@@ -307,7 +307,7 @@ function samStatus() {
 
     else if (statusGroups.statusname == "Open Eyes") {
       if (statusGroups.gainsloses == "gains") {
-        addStatus("openeyes", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
+        addStatus("openeyes", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
       }
       else if (statusGroups.gainsloses == "loses") {
         removeStatus("openeyes", statusGroups.targetID);
@@ -316,7 +316,7 @@ function samStatus() {
 
     else if (statusGroups.statusname == "Shifu") {
       if (statusGroups.gainsloses == "gains") {
-        addStatus("shifu", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
+        addStatus("shifu", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
       }
       else if (statusGroups.gainsloses == "loses") {
         removeStatus("shifu", statusGroups.targetID);
@@ -325,7 +325,7 @@ function samStatus() {
 
     else if (statusGroups.statusname == "Meikyo Shisui") {
       if (statusGroups.gainsloses == "gains") {
-        addStatus("meikyoshisui", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
+        addStatus("meikyoshisui", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
       }
       else if (statusGroups.gainsloses == "loses") {
         removeStatus("meikyoshisui", statusGroups.targetID);
@@ -335,7 +335,7 @@ function samStatus() {
 
     else if (statusGroups.statusname == "Hissatsu: Kaiten") {
       if (statusGroups.gainsloses == "gains") {
-        addStatus("kaiten", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
+        addStatus("kaiten", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
       }
       else if (statusGroups.gainsloses == "loses") {
         removeStatus("kaiten", statusGroups.targetID);
@@ -344,7 +344,7 @@ function samStatus() {
 
     else if (statusGroups.statusname == "Meditate") {
       if (statusGroups.gainsloses == "gains") {
-        addStatus("meditate", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
+        addStatus("meditate", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
       }
       else if (statusGroups.gainsloses == "loses") {
         removeStatus("meditate", statusGroups.targetID);
@@ -359,7 +359,7 @@ function samStatus() {
 
     if (statusGroups.statusname == "Higanbana") {
       if (statusGroups.gainsloses == "gains") {
-        addStatus("higanbana", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
+        addStatus("higanbana", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
       }
       else if (statusGroups.gainsloses == "loses") {
         removeStatus("higanbana", statusGroups.targetID);
@@ -371,30 +371,30 @@ function samStatus() {
 function samMeikyoShisui() {
 
   // if (player.level >= 76
-  // && checkCooldown("tsubamegaeshi", player.ID) > 2500) {
+  // && checkCooldown("tsubamegaeshi") > 2500) {
   //   // Attempt to save Meikyo to quickly activate Tsubame-gaeshi
-  //   removeIcon(nextid.meikyoshisui);
+  //   removeIcon("meikyoshisui");
   // }
   // else
 
   // Set to use on cooldown for now
 
   if (player.level >= 50
-  && checkCooldown("meikyoshisui", player.ID) < 0) {
+  && checkCooldown("meikyoshisui") < 0) {
     addIconBlink(nextid.meikyoshisui,icon.meikyoshisui);
   }
   else {
-    removeIcon(nextid.meikyoshisui);
+    removeIcon("meikyoshisui");
   }
 }
 
 function samSen() {
 
-  removeIcon(nextid.iaijutsu1);
-  removeIcon(nextid.iaijutsu2);
+  removeIcon("iaijutsu1");
+  removeIcon("iaijutsu2");
 
-  removeIcon(nextid.tsubamegaeshi1);
-  removeIcon(nextid.tsubamegaeshi2);
+  removeIcon("tsubamegaeshi1");
+  removeIcon("tsubamegaeshi2");
 
   // Choose Iaijutsu icon
   if (player.jobDetail.getsu + player.jobDetail.ka + player.jobDetail.setsu == 1
@@ -413,13 +413,13 @@ function samSen() {
 
   // Choose Tsubame-gaeshi icon
   if (player.level >= 74
-  && checkCooldown("tsubamegaeshi", player.ID) < 5000
+  && checkCooldown("tsubamegaeshi") < 5000
   && icon.iaijutsu == icon.tenkagoken
   && check.aoe >= 3) {
     icon.tsubamegaeshi = icon.kaeshigoken;
   }
   else if (player.level >= 74
-  && checkCooldown("tsubamegaeshi", player.ID) < 5000
+  && checkCooldown("tsubamegaeshi") < 5000
   && icon.iaijutsu == icon.midaresetsugekka) {
     icon.tsubamegaeshi = icon.kaeshisetsugekka;
   }
@@ -484,20 +484,20 @@ function samKenki() {
   let minimumkenki = 20;
 
   if (player.level >= 70
-  && checkCooldown("ikishoten", player.ID) > checkCooldown("guren", player.ID)
-  && checkCooldown("guren", player.ID) < 20000) {
+  && checkCooldown("ikishoten") > checkCooldown("guren")
+  && checkCooldown("guren") < 20000) {
     minimumkenki = 70;
   }
 
   // Show Guren/Senei
   if (player.level >= 70
-  && checkCooldown("ikishoten", player.ID) > checkCooldown("guren", player.ID) + 5000
-  && checkCooldown("guren", player.ID) < 1000
+  && checkCooldown("ikishoten") > checkCooldown("guren") + 5000
+  && checkCooldown("guren") < 1000
   && player.jobDetail.kenki >= 70) {
     addIconBlink(nextid.guren, icon.guren);
   }
   else {
-    removeIcon(nextid.guren);
+    removeIcon("guren");
   }
 
   // Show Shinten/Kyuten/Seigan
@@ -512,7 +512,7 @@ function samKenki() {
     addIconBlink(nextid.shinten, icon.shinten);
   }
   else {
-    removeIcon(nextid.shinten);
+    removeIcon("shinten");
   }
 
 }
@@ -522,9 +522,9 @@ function samCombo() {
   delete toggle.combo;
 
   // Reset icons
-  removeIcon(nextid.hakaze);
-  removeIcon(nextid.jinpu);
-  removeIcon(nextid.gekko);
+  removeIcon("hakaze");
+  removeIcon("jinpu");
+  removeIcon("gekko");
 
   if (toggle.aoe) { // AoE
 
@@ -547,7 +547,7 @@ function samCombo() {
       }
 
       else {
-        addIcon(nextid.mangetsu,icon.mangetsu);
+        addIcon("mangetsu");
       }
     }
 
@@ -634,39 +634,39 @@ function samComboTimeout() {
 
 function gekkoCombo() {
   toggle.combo = 1;
-  addIcon(nextid.hakaze,icon.hakaze);
-  addIcon(nextid.jinpu,icon.jinpu);
+  addIcon("hakaze");
+  addIcon("jinpu");
   if (player.level >= 30) {
-    addIcon(nextid.gekko,icon.gekko);
+    addIcon("gekko");
   }
 }
 
 function kashaCombo() {
   toggle.combo = 2;
-  addIcon(nextid.hakaze,icon.hakaze);
-  addIcon(nextid.shifu,icon.shifu);
+  addIcon("hakaze");
+  addIcon("shifu");
   if (player.level >= 40) {
-    addIcon(nextid.kasha,icon.kasha);
+    addIcon("kasha");
   }
 }
 
 function yukikazeCombo() {
   toggle.combo = 3;
-  addIcon(nextid.hakaze,icon.hakaze);
-  removeIcon(nextid.jinpu);
-  addIcon(nextid.yukikaze,icon.yukikaze);
+  addIcon("hakaze");
+  removeIcon("jinpu");
+  addIcon("yukikaze");
 }
 
 function mangetsuCombo() {
   toggle.combo = 4;
-  addIcon(nextid.fuga,icon.fuga);
-  removeIcon(nextid.jinpu);
-  addIcon(nextid.mangetsu,icon.mangetsu);
+  addIcon("fuga");
+  removeIcon("jinpu");
+  addIcon("mangetsu");
 }
 
 function okaCombo() {
   toggle.combo = 5;
-  addIcon(nextid.fuga,icon.fuga);
-  removeIcon(nextid.jinpu);
-  addIcon(nextid.oka,icon.oka);
+  addIcon("fuga");
+  removeIcon("jinpu");
+  addIcon("oka");
 }

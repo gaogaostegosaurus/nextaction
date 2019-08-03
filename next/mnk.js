@@ -13,12 +13,7 @@ nextid.twinsnakes = nextid.truestrike;
 nextid.snappunch = "next2";
 nextid.demolish = nextid.snappunch;
 
-icon.bootshine = "000208";
-icon.dragonkick = "002528";
-icon.truestrike = "000209";
-icon.twinsnakes = "000213";
-icon.snappunch = "000210";
-icon.demolish = "000204";
+
 
 function mnkPlayerChangedEvent(e) {
 
@@ -29,37 +24,37 @@ function mnkAction(logLine) {
   if (logLine[2] == player.name) { // Check if from player
 
     if (logLine[3] == "Bootshine" && logLine[6].length >= 2) {
-      removeIcon(nextid.bootshine);
+      removeIcon("bootshine");
       toggle.stance = 1;
     }
 
     else if (logLine[3] == "Dragon Kick" && logLine[6].length >= 2) {
-      removeIcon(nextid.dragonkick);
+      removeIcon("dragonkick");
       if (toggle.stance == 3) {
       }
       toggle.stance = 1;
     }
 
     else if (logLine[3] == "True Strike" && logLine[6].length >= 2) {
-      removeIcon(nextid.truestrike);
+      removeIcon("truestrike");
       if (player.level < 6) {
         mnkCombo();
       }
       toggle.stance = 2;
     }
     else if (logLine[3] == "Twin Snakes" && logLine[6].length >= 2) {
-      removeIcon(nextid.twinsnakes);
+      removeIcon("twinsnakes");
       toggle.stance = 2;
     }
 
     else if (logLine[3] == "Snap Punch" && logLine[6].length >= 2) {
-      removeIcon(nextid.snappunch);
+      removeIcon("snappunch");
       toggle.stance = 3;
       mnkCombo();
     }
 
     else if (logLine[3] == "Demolish" && logLine[6].length >= 2) {
-      removeIcon(nextid.demolish);
+      removeIcon("demolish");
       toggle.stance = 3;
       mnkCombo();
     }
@@ -107,41 +102,41 @@ function mnkStatus(logLine) {
 function mnkCombo() {
 
   // Reset icons
-  removeIcon(nextid.bootshine);
-  removeIcon(nextid.truestrike);
-  removeIcon(nextid.snappunch);
+  removeIcon("bootshine");
+  removeIcon("truestrike");
+  removeIcon("snappunch");
 
   if (player.level >= 50
   && (!statustime.bluntresistancedown || statustime.bluntresistancedown < Date.now() + 9000)
   && toggle.stance == 3) {
-    addIcon(nextid.dragonkick,icon.dragonkick);
-    addIcon(nextid.twinsnakes,icon.twinsnakes);
+    addIcon("dragonkick");
+    addIcon("twinsnakes");
     toggle.combo = 1;
   }
   else if (player.level >= 18
   && (!statustime.twinsnakes || statustime.twinsnakes < Date.now() + 11000)) {
     if (player.level >= 50) {
-      addIcon(nextid.dragonkick,icon.dragonkick);
+      addIcon("dragonkick");
     }
     else {
-      addIcon(nextid.bootshine,icon.bootshine);
+      addIcon("bootshine");
     }
-    addIcon(nextid.twinsnakes,icon.twinsnakes);
+    addIcon("twinsnakes");
     toggle.combo = 1;
   }
   else {
-    addIcon(nextid.bootshine,icon.bootshine);
-    addIcon(nextid.truestrike,icon.truestrike);
+    addIcon("bootshine");
+    addIcon("truestrike");
     toggle.combo = 0;
   }
 
   if (player.level >= 30
   && (!statustime.demolish || statustime.demolish < Date.now() + 12000)) {
-    addIcon(nextid.demolish,icon.demolish);
+    addIcon("demolish");
     toggle.combo = toggle.combo + 4;
   }
   else {
-    addIcon(nextid.snappunch,icon.snappunch);
+    addIcon("snappunch");
     toggle.combo = toggle.combo + 2;
   }
 }

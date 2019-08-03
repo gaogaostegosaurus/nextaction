@@ -54,19 +54,19 @@ function ninJobChange() {
   previous.hellfrogmedium = 0;
 
   if (player.level >= 56
-  && checkCooldown("dreamwithinadream", player.ID) < 0) {
+  && checkCooldown("dreamwithinadream") < 0) {
     addIconBlink(nextid.dreamwithinadream, icon.dreamwithinadream);
   }
   else {
-    removeIcon(nextid.dreamwithinadream);
+    removeIcon("dreamwithinadream");
   }
 
   if (player.level >= 70
-  && checkCooldown("tenchijin", player.ID) < 0) {
+  && checkCooldown("tenchijin") < 0) {
     addIconBlink(nextid.tenchijin, icon.tenchijin);
   }
   else {
-    removeIcon(nextid.tenchijin);
+    removeIcon("tenchijin");
   }
   ninCombo();
   ninNinjutsu();
@@ -98,32 +98,32 @@ function ninAction(logLine) {
       delete toggle.mudra;
 
       if ("Hide" == actionGroups.actionname) {
-        addCooldown("hide", player.ID, recast.hide);
+        addCooldown("hide");
         addCooldown("ninjutsu", player.ID, -1);
         clearTimeout(timeout.ninjutsu);
         ninNinjutsu();
       }
 
       else if ("Mug" == actionGroups.actionname) {
-        // removeIcon(nextid.mug);
-        // addCooldown("mug", player.ID, recast.mug);
+        // removeIcon("mug");
+        // addCooldown("mug");
         addCountdownBar("Mug", 0, recast.mug);
         ninNinki();
       }
 
       else if ("Trick Attack" == actionGroups.actionname) {
-        removeIcon(nextid.trickattack);
-        addCooldown("trickattack", player.ID, recast.trickattack);
+        removeIcon("trickattack");
+        addCooldown("trickattack");
         addCountdownBar("Trick Attack", countdownid.trickattack, recast.trickattack);
       }
 
       else if ("Suiton" == actionGroups.actionname) {
         count.aoe = 1;
-        addIconBlinkTimeout("trickattack", checkCooldown("trickattack", player.ID), nextid.trickattack, icon.trickattack);
+        addIconBlinkTimeout("trickattack", checkCooldown("trickattack"), nextid.trickattack, icon.trickattack);
       }
 
       else if ("Dream Within A Dream" == actionGroups.actionname) {
-        removeIcon(nextid.dreamwithinadream);
+        removeIcon("dreamwithinadream");
         addIconBlinkTimeout("dreamwithinadream", recast.dreamwithinadream, nextid.dreamwithinadream, icon.dreamwithinadream);
       }
 
@@ -139,7 +139,7 @@ function ninAction(logLine) {
         else {
           count.aoe = count.aoe + 1;
         }
-        // removeIcon(nextid.ninjutsu);
+        // removeIcon("ninjutsu");
       }
 
       else if ("Kassatsu" == actionGroups.actionname) {
@@ -149,18 +149,18 @@ function ninAction(logLine) {
           addCooldown("kassatsu1", player.ID, -1);
         }
         else {
-          removeIcon(nextid.kassatsu);
+          removeIcon("kassatsu");
           addCooldown("kassatsu1", player.ID, checkCooldown("kassatsu2", player.ID));
           addCooldown("kassatsu2", player.ID, checkCooldown("kassatsu2", player.ID) + recast.kassatsu);
           addIconBlinkTimeout("kassatsu", checkCooldown("kassatsu1", player.ID), nextid.kassatsu, icon.kassatsu);
         }
-        addStatus("kassatsu", player.ID, duration.kassatsu);
+        addStatus("kassatsu");
         clearTimeout(timeout.ninjutsu);
       }
 
       else if ("Dream Within A Dream" == actionGroups.actionname) {
-        addCooldown("dreamwithinadream", player.ID, recast.dreamwithinadream);
-        addStatus("assassinateready", player.ID, duration.assassinateready);
+        addCooldown("dreamwithinadream");
+        addStatus("assassinateready");
         addIconBlinkTimeout("dreamwithinadream", recast.dreamwithinadream, nextid.dreamwithinadream, icon.dreamwithinadream);
       }
 
@@ -172,19 +172,19 @@ function ninAction(logLine) {
         else {
           count.aoe = count.aoe + 1;
         }
-        removeIcon(nextid.hellfrogmedium);
+        removeIcon("hellfrogmedium");
       }
 
       else if ("Bhavacakra" == actionGroups.actionname) {
         count.aoe = 1;
-        removeIcon(nextid.bhavacakra);
+        removeIcon("bhavacakra");
       }
 
       else if ("Ten Chi Jin" == actionGroups.actionname) {
-        removeIcon(nextid.tenchijin);
-        addCooldown("tenchijin", player.ID, recast.tenchijin);
+        removeIcon("tenchijin");
+        addCooldown("tenchijin");
         addCooldown("ninjutsu", player.ID, -1);
-        addStatus("tenchijin", player.ID, duration.tenchijin);
+        addStatus("tenchijin");
         clearTimeout(timeout.ninjutsu);
       }
 
@@ -195,19 +195,19 @@ function ninAction(logLine) {
           if (!next.combo) {
             ninCombo();
           }
-          removeIcon(nextid.spinningedge);
+          removeIcon("spinningedge");
         }
 
         else if ("Gust Slash" == actionGroups.actionname && actionGroups.result.length >= 8) {
-          removeIcon(nextid.spinningedge);
-          removeIcon(nextid.gustslash);
+          removeIcon("spinningedge");
+          removeIcon("gustslash");
           if (player.level < 26) {
             ninCombo();
           }
         }
 
         else if ("Shadow Fang" == actionGroups.actionname && actionGroups.result.length >= 8) {
-          addStatus("shadowfang", actionGroups.targetID, duration.shadowfang);
+          addStatus("shadowfang", duration.shadowfang, actionGroups.targetID);
           ninCombo();
         }
 
@@ -220,7 +220,7 @@ function ninAction(logLine) {
           else {
             count.aoe = count.aoe + 1;
           }
-          removeIcon(nextid.deathblossom);
+          removeIcon("deathblossom");
           if (player.level < 52) {
             ninCombo();
           }
@@ -257,11 +257,11 @@ function ninStatus() {
 
     if ("Mudra" == statusGroups.statusname) {
       if ("gains" == statusGroups.gainsloses) {
-        addStatus("mudra", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
+        addStatus("mudra", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
       }
       else if ("loses" == statusGroups.gainsloses) {
-        removeIcon(nextid.ninjutsu);
-        removeStatus("mudra", player.ID);
+        removeIcon("ninjutsu");
+        removeStatus("mudra");
         addCooldown("ninjutsu", statusGroups.targetID, recast.ninjutsu);
         clearTimeout(timeout.ninjutsu);
         timeout.ninjutsu = setTimeout(ninNinjutsu, recast.ninjutsu - 1000);
@@ -270,7 +270,7 @@ function ninStatus() {
 
     else if ("Doton" == statusGroups.statusname) {
       if ("gains" == statusGroups.gainsloses) {
-        addStatus("doton", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
+        addStatus("doton", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
       }
       else if ("loses" == statusGroups.gainsloses) {
         removeStatus("doton", statusGroups.targetID);
@@ -279,18 +279,18 @@ function ninStatus() {
 
     else if ("Suiton" == statusGroups.statusname) {
       if ("gains" == statusGroups.gainsloses) {
-        addStatus("suiton", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
+        addStatus("suiton", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
       }
       else if ("loses" == statusGroups.gainsloses) {
         clearTimeout(timeout.trickattack);
-        removeIcon(nextid.trickattack);
+        removeIcon("trickattack");
         removeStatus("suiton", statusGroups.targetID);
       }
     }
 
     else if ("Kassatsu" == statusGroups.statusname) {
       if ("gains" == statusGroups.gainsloses) {
-        addStatus("kassatsu", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
+        addStatus("kassatsu", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
         ninKassatsu();
       }
       else if ("loses" == statusGroups.gainsloses) {
@@ -303,7 +303,7 @@ function ninStatus() {
 
     else if ("Ten Chi Jin" == statusGroups.statusname) {
       if ("gains" == statusGroups.gainsloses) {
-        addStatus("tenchijin", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
+        addStatus("tenchijin", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
         ninTCJ();
       }
       else if ("loses" == statusGroups.gainsloses) {
@@ -318,7 +318,7 @@ function ninStatus() {
   else {
     if ("Shadow Fang" == statusGroups.statusname) {
       if ("gains" == statusGroups.gainsloses) {
-        addStatus("shadowfang", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
+        addStatus("shadowfang", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
       }
       else if ("loses" == statusGroups.gainsloses) {
         removeStatus("shadowfang", statusGroups.targetID);
@@ -329,9 +329,9 @@ function ninStatus() {
 
 function ninCombo() {
 
-  removeIcon(nextid.spinningedge);
-  removeIcon(nextid.gustslash);
-  removeIcon(nextid.aeolianedge);
+  removeIcon("spinningedge");
+  removeIcon("gustslash");
+  removeIcon("aeolianedge");
 
   if (player.level >= 38
   && count.aoe >= 3
@@ -357,28 +357,28 @@ function ninCombo() {
 }
 
 function ninAeolianEdgeCombo() {
-  addIcon(nextid.spinningedge, icon.spinningedge);
-  addIcon(nextid.gustslash, icon.gustslash);
+  addIcon("spinningedge");
+  addIcon("gustslash");
   if (player.level >= 26) {
-    addIcon(nextid.aeolianedge, icon.aeolianedge);
+    addIcon("aeolianedge");
   }
 }
 
 function ninShadowFangCombo() {
-  addIcon(nextid.spinningedge, icon.spinningedge);
-  addIcon(nextid.shadowfang, icon.shadowfang);
+  addIcon("spinningedge");
+  addIcon("shadowfang");
 }
 
 function ninArmorCrushCombo() {
-  addIcon(nextid.spinningedge, icon.spinningedge);
-  addIcon(nextid.gustslash, icon.gustslash);
-  addIcon(nextid.armorcrush, icon.armorcrush);
+  addIcon("spinningedge");
+  addIcon("gustslash");
+  addIcon("armorcrush");
 }
 
 function ninHakkeMujinsatsuCombo() {
-  addIcon(nextid.deathblossom, icon.deathblossom);
+  addIcon("deathblossom");
   if (player.level >= 52) {
-    addIcon(nextid.hakkemujinsatsu, icon.hakkemujinsatsu);
+    addIcon("hakkemujinsatsu");
   }
 }
 
@@ -399,9 +399,9 @@ function ninNinjutsu() { // Activate between GCDs?
   }
   else if (player.level >= 45
   && checkStatus("suiton", player.ID) < 0
-  && checkCooldown("trickattack", player.ID) < 22000) {
+  && checkCooldown("trickattack") < 22000) {
     if (player.level >= 70
-    && checkCooldown("tenchijin", player.ID) < 2000) { // Use TCJ to set up
+    && checkCooldown("tenchijin") < 2000) { // Use TCJ to set up
       if (player.level >= 35
       && count.aoe >= 2) {
         addIconBlink(nextid.ninjutsu, icon.katon);
@@ -425,14 +425,14 @@ function ninNinjutsu() { // Activate between GCDs?
     addIconBlink(nextid.ninjutsu, icon.fumashuriken);
   }
   else {
-    removeIcon(nextid.ninjutsu);
+    removeIcon("ninjutsu");
   }
 }
 
 function ninKassatsu() {
 
   if (checkStatus("suiton", player.ID) < 0
-  && checkCooldown("trickattack", player.ID) < 22000) {
+  && checkCooldown("trickattack") < 22000) {
     addIconBlink(nextid.ninjutsu, icon.suiton);
   }
   else if (count.aoe >= 2) {
@@ -448,7 +448,7 @@ function ninKassatsu() {
 
 function ninTCJ() { // Activate between GCDs?
 
-  if (checkCooldown("trickattack", player.ID) < 22000
+  if (checkCooldown("trickattack") < 22000
   && checkStatus("suiton", player.ID) < 0) {
     addIconBlink(nextid.ninjutsu, icon.suiton);
   }
@@ -500,18 +500,18 @@ function ninNinki() {
   if (player.jobDetail.ninkiAmount >= 80) {
 
     if (player.level >= 80
-    && checkCooldown("bunshin", player.ID) < 0) {
-      addIcon(nextid.bunshin,icon.bunshin);
+    && checkCooldown("bunshin") < 0) {
+      addIcon("bunshin");
     }
     else if (player.level >= 68
     && count.aoe == 1) {
-      addIcon(nextid.bhavacakra,icon.bhavacakra);
+      addIcon("bhavacakra");
     }
     else {
-      addIcon(nextid.hellfrogmedium,icon.hellfrogmedium);
+      addIcon("hellfrogmedium");
     }
   }
   else {
-    removeIcon(nextid.hellfrogmedium);
+    removeIcon("hellfrogmedium");
   }
 }
