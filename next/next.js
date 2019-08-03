@@ -351,37 +351,6 @@ function checkCooldown(name, id) {
   }
 }
 
-function checkStatus(name, id) {
-
-  if (id === undefined) {
-    id = player.ID;
-  }
-
-  if (!statustracker[name]) {
-    return -1;
-  }
-  else if (statustracker[name].indexOf(id) > -1) {
-    return Math.max(statustracker[name][statustracker[name].indexOf(id) + 1] - Date.now(), -1);
-  }
-  else {
-    return -1;
-  }
-}
-
-// Icon functions
-
-function addIcon(name, img) {
-  if (img === undefined) {
-    img = name;
-  }
-  dom["iconimg" + nextid[name]].src = "icon/" + icon[img] + ".png";
-  dom["icondiv" + nextid[name]].className = "icondiv icon-add";
-}
-
-function removeIcon(name) {
-  dom["icondiv" + nextid[name]].className = "icondiv icon-remove";
-}
-
 function addStatus(name, time, id) {
 
   if (time === undefined) {
@@ -402,6 +371,23 @@ function addStatus(name, time, id) {
   }
 }
 
+function checkStatus(name, id) {
+
+  if (id === undefined) {
+    id = player.ID;
+  }
+
+  if (!statustracker[name]) {
+    return -1;
+  }
+  else if (statustracker[name].indexOf(id) > -1) {
+    return Math.max(statustracker[name][statustracker[name].indexOf(id) + 1] - Date.now(), -1);
+  }
+  else {
+    return -1;
+  }
+}
+
 function removeStatus(name, id) {
 
   if (id === undefined) {
@@ -415,6 +401,20 @@ function removeStatus(name, id) {
     statustracker[name].splice(statustracker[name].indexOf(id), 2);
   }
 }
+
+function addIcon(name, img) {
+  if (img === undefined) {
+    img = name;
+  }
+  dom["iconimg" + nextid[name]].src = "icon/" + icon[img] + ".png";
+  dom["icondiv" + nextid[name]].className = "icondiv icon-add";
+}
+
+function removeIcon(name) {
+  dom["icondiv" + nextid[name]].className = "icondiv icon-remove";
+}
+
+// old functions, remove when replaced
 
 function addIconBlink(nextid, actionicon) {
   //dom["iconimgdiv" + nextid].className = "iconimgdiv addicondivfadeinblink";
