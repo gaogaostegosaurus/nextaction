@@ -31,6 +31,7 @@
 
     .flex-box {
       display: flex;
+      flex: 1 1 auto;
     }
 
     .inline-flex-box {
@@ -119,7 +120,7 @@
 
     .countdownbar {
       height: 10px;
-      width: 70px;
+      width: 0px;
       opacity: 0.5;
       margin-top: 5px;
       margin-left: 2px;
@@ -173,12 +174,12 @@
 
     .fadein {
       opacity: 0;
-      animation: fadein 0.1s forwards;
+      animation: fadein-90 0.1s forwards;
       animation-delay: 0s;
     }
 
     .fadeout {
-      animation: fadeout 1s forwards;
+      animation: fadeout-90 1s forwards;
       animation-delay: 3s;
     }
 
@@ -290,7 +291,7 @@
 <body>
   <div id="loadmessage" class="textdiv">LOADING</div>
   <div id="nextdiv">
-    <div class="iconrow">
+    <div class="row">
       <div id="icondiv0" class="icondiv"><div id="iconimgdiv0" class="iconimgdiv"><img id="iconimg0" class="iconimg" src="icon/000001.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown0" class="iconcountdowndiv"></div></div>
       <div id="icondiv1" class="icondiv"><div id="iconimgdiv1" class="iconimgdiv"><img id="iconimg1" class="iconimg" src="icon/000001.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown1" class="iconcountdowndiv"></div></div>
       <div id="icondiv2" class="icondiv"><div id="iconimgdiv2" class="iconimgdiv"><img id="iconimg2" class="iconimg" src="icon/000001.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown2" class="iconcountdowndiv"></div></div>
@@ -302,7 +303,7 @@
       <div id="icondiv8" class="icondiv"><div id="iconimgdiv8" class="iconimgdiv"><img id="iconimg8" class="iconimg" src="icon/000001.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown8" class="iconcountdowndiv"></div></div>
       <div id="icondiv9" class="icondiv"><div id="iconimgdiv9" class="iconimgdiv"><img id="iconimg9" class="iconimg" src="icon/000001.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown9" class="iconcountdowndiv"></div></div>
     </div>
-    <div class="iconrow">
+    <div class="row">
       <div id="icondiv10" class="icondiv"><div id="iconimgdiv10" class="iconimgdiv"><img id="iconimg10" class="iconimg" src="icon/000001.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown10" class="iconcountdowndiv"></div></div>
       <div id="icondiv11" class="icondiv"><div id="iconimgdiv11" class="iconimgdiv"><img id="iconimg11" class="iconimg" src="icon/000001.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown11" class="iconcountdowndiv"></div></div>
       <div id="icondiv12" class="icondiv"><div id="iconimgdiv12" class="iconimgdiv"><img id="iconimg12" class="iconimg" src="icon/000001.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown12" class="iconcountdowndiv"></div></div>

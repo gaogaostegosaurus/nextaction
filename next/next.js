@@ -29,8 +29,6 @@ for (var x = 0; x < 20; x++) {
   dom["countdowntime" + x] = document.getElementById("countdowntime" + x); // Countdown - separate from img
 }
 
-dom.loadmessage = document.getElementById("loadmessage");
-
 var player = {};
 var target = {};
 var actionList = {};
@@ -71,42 +69,9 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
 
   if (previous.job != player.job || previous.level != player.level) {
 
-    delete toggle.combo;
-    resetEverything();
-
-    addText("loadmessage", "Plugin loaded for " + player.level + player.job);
-
-    if (player.job == "BLM") {
-      addText("loadmessage", "WIP - currently assumes level 72 BLM");
-      blmJobChange();
-    }
-    else if (player.job == "BRD") {
-      brdJobChange();
-    }
-    else if (player.job == "DNC") {
-      dncJobChange();
-    }
-    else if (player.job == "DRK") {
-      drkJobChange();
-    }
-    else if (player.job == "MCH") {
-      mchJobChange();
-    }
-    else if (player.job == "NIN") {
-      ninJobChange();
-    }
-    else if (player.job == "RDM") {
-      rdmJobChange();
-    }
-    else if (player.job == "SAM") {
-      samJobChange();
-    }
-    else if (player.job == "WAR") {
-      warJobChange();
-    }
-    else if (player.job == "WHM") {
-      whmJobChange();
-    }
+    clearUI();
+    clearTimers();
+    loadInitialState();
 
     previous.job = player.job;
     previous.level = player.level;
@@ -168,6 +133,18 @@ document.addEventListener("onInCombatChangedEvent", function(e) {
     //   brdInCombatChangedEvent(e);
     // }
   }
+});
+
+document.addEventListener("onPartyWipe", function(e) {
+  clearUI();
+  clearTimers();
+  loadInitialState();
+});
+
+document.addEventListener("onZoneChangedEvent", function(e) {
+  clearUI();
+  clearTimers();
+  loadInitialState();
 });
 
 document.addEventListener("onLogEvent", function(e) { // Fires on log event
@@ -471,21 +448,21 @@ function removeStatusNew(name, id) {
 
 
 function addIcon(nextid, actionicon) {
-  dom["iconimgdiv" + nextid].className = "iconimgdiv growiconimgdiv-fadein";
+  // dom["iconimgdiv" + nextid].className = "iconimgdiv growiconimgdiv-fadein";
   dom["iconimg" + nextid].src = "icon/" + actionicon + ".png";
-  dom["icondiv" + nextid].style.display = "inline-flex";
+  dom["icondiv" + nextid].className = "icondiv icon-popin";
 }
 
 function addIconBlink(nextid, actionicon) {
-  dom["iconimgdiv" + nextid].className = "iconimgdiv addicondivfadeinblink";
+  //dom["iconimgdiv" + nextid].className = "iconimgdiv addicondivfadeinblink";
   dom["iconimg" + nextid].src = "icon/" + actionicon + ".png";
-  dom["icondiv" + nextid].style.display = "inline-flex";
+  dom["icondiv" + nextid].className = "icondiv icon-popin";
 }
 
 function addIconDim(nextid, actionicon) {
-  dom["iconimgdiv" + nextid].className = "iconimgdiv addicondivfadeindim";
+  // dom["iconimgdiv" + nextid].className = "iconimgdiv addicondivfadeindim";
   dom["iconimg" + nextid].src = "icon/" + actionicon + ".png";
-  dom["icondiv" + nextid].style.display = "inline-flex";
+  dom["icondiv" + nextid].className = "icondiv icon-popin";
 }
 
 function addIconTimeout(action, delay, nextid, actionicon) {
@@ -532,7 +509,7 @@ function addCountdownBar(name, time, text) {
   // function addCountdownBar(actionname, countdowntime = checkCooldown(actionname), finishtext = "READY") { // Once CEF updated
 
   if (!time) {
-    addCooldown(name);
+    addCooldown(name); // Typically you would be adding the recast so
     time = checkCooldown(name);
   }
   if (!text) {
@@ -580,7 +557,8 @@ function removeCountdownBar(name) {
 
 
 function removeIcon(nextid) {
-  dom["iconimgdiv" + nextid].className = "iconimgdiv fadeoutremoveicondiv"; // Possibility of countdown getting fubared in this (left behind or something else), check later
+  dom["icondiv" + nextid].className = "icondiv icon-popout";
+//  dom["iconimgdiv" + nextid].className = "iconimgdiv fadeoutremoveicondiv"; // Possibility of countdown getting fubared in this (left behind or something else), check later
 }
 
 function addText(textid,message) {
@@ -606,18 +584,54 @@ for (var x = 0; x < 10; x++) {
   dom["countdowntime" + x] = document.getElementById("countdowntime" + x); // Countdown - separate from img
 }
 
-function resetEverything() {
+function loadInitialState() {
 
+  delete toggle.combo;
+
+  if (player.job == "BLM") {
+    addText("loadmessage", "WIP - currently assumes level 72 BLM");
+    blmJobChange();
+  }
+  else if (player.job == "BRD") {
+    brdJobChange();
+  }
+  else if (player.job == "DNC") {
+    dncJobChange();
+  }
+  else if (player.job == "DRK") {
+    drkJobChange();
+  }
+  else if (player.job == "MCH") {
+    mchJobChange();
+  }
+  else if (player.job == "NIN") {
+    ninJobChange();
+  }
+  else if (player.job == "RDM") {
+    rdmJobChange();
+  }
+  else if (player.job == "SAM") {
+    samJobChange();
+  }
+  else if (player.job == "WAR") {
+    warJobChange();
+  }
+  else if (player.job == "WHM") {
+    whmJobChange();
+  }
+}
+
+function clearUI() {
   let x = 0;
-
   for (x = 0; x < 20; x++) {
-    dom["icondiv" + x].className = "icondiv";
+    dom["icondiv" + x].className = "icondiv icon-popout";
   }
-
-  for (x = 0; x < 10; x++) {
-    dom["countdowndiv" + x].className = "countdowndiv";
+  for (x = 0; x < 20; x++) {
+    dom["countdowndiv" + x].className = "countdowndiv countdown-popout";
   }
+}
 
+function clearTimers() {
   let property = "";
   for (property in timeout) {
     if (timeout.hasOwnProperty(property)) {

@@ -27,6 +27,7 @@ recast.sidewinder = 60000;
 recast.technicalstep = 120000;
 recast.standardstep = 30000;
 recast.flourish = 60000;
+recast.devilment = 120000;
 
 // DRK
 recast.abyssaldrain = 60000;
