@@ -190,63 +190,82 @@ function ninAction(logLine) {
 
         if ("Spinning Edge" == actionGroups.actionname
         && actionGroups.result.length >= 2) {
-          if (!next.combo) {
-            ninCombo();
+
+          if ([1, 2, 3].indexOf(next.combo) == -1) {
+            if (player.level >= 38
+            && checkStatus("shadowfang", target.ID) < 9000) {
+              ninShadowFangCombo();
+            }
+            else if (player.level >= 54
+            && player.jobDetail.hutonMilliseconds > 6000
+            && player.jobDetail.hutonMilliseconds < 46000) {
+              ninArmorCrushCombo();
+            }
+            else {
+              ninAeolianEdgeCombo();
+            }
           }
-          toggle.combo = Date.now();
           removeIcon("spinningedge");
+          toggle.combo = Date.now();
         }
 
-        else if ("Gust Slash" == actionGroups.actionname && actionGroups.result.length >= 8) {
-          if (next.combo > 2) {
-            ninCombo();
+        else if ("Gust Slash" == actionGroups.actionname
+        && actionGroups.result.length >= 8) {
+
+          if ([1, 2].indexOf(next.combo) == -1) {
+            if (player.level >= 54
+            && player.jobDetail.hutonMilliseconds > 6000
+            && player.jobDetail.hutonMilliseconds < 46000) {
+              ninArmorCrushCombo();
+            }
+            else {
+              ninAeolianEdgeCombo();
+            }
           }
           removeIcon("spinningedge");
           removeIcon("gustslash");
+
           if (player.level < 26) {
             ninCombo();
           }
         }
 
-        else if ("Shadow Fang" == actionGroups.actionname && actionGroups.result.length >= 8) {
+        else if ("Shadow Fang" == actionGroups.actionname
+        && actionGroups.result.length >= 8) {
           addStatus("shadowfang", duration.shadowfang, actionGroups.targetID);
           ninCombo();
         }
 
         else if ("Death Blossom" == actionGroups.actionname
         && actionGroups.result.length >= 2) {
-          if (next.combo != 4) {
-            ninCombo();
-          }
+
           if (Date.now() - previous.deathblossom > 1000) {
             previous.deathblossom = Date.now()
             count.aoe = 1;
+            if (next.combo != 4) {
+              ninHakkeMujinsatsuCombo();
+            }
+            removeIcon("deathblossom");
+            if (player.level < 52) {
+              ninCombo();
+            }
           }
           else {
             count.aoe = count.aoe + 1;
-          }
-          if (player.level >= 52) {
-            if (!next.combo) {
-            }
-            ninCombo();
-            toggle.combo = Date.now();
-            removeIcon("deathblossom");
-          }
-          else {
-            ninCombo();
           }
         }
 
         else if ("Hakke Mujinsatsu" == actionGroups.actionname
         && actionGroups.result.length == 8) {
+
           if (Date.now() - previous.hakkemujinsatsu > 1000) {
             previous.hakkemujinsatsu = Date.now()
             count.aoe = 1;
+            ninCombo();
           }
           else {
             count.aoe = count.aoe + 1;
           }
-          ninCombo();
         }
 
         else {
