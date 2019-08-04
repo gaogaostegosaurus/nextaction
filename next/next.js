@@ -510,7 +510,7 @@ function addCountdownBar(name, time, text) {
     }
     else {
       dom["countdowntime" + countdownid[name]].innerHTML = Math.ceil(time / 1000); // This appears to best mimic what happens for XIV
-      dom["countdownbar" + countdownid[name]].style.width = Math.min(Math.floor((time - 1000) / 1000) + 10, 80) + "px";
+      dom["countdownbar" + countdownid[name]].style.width = Math.min(Math.floor((time - 1000) / 1000) + 10, 70) + "px";
     }
     time = time - 100;
   }, 100);

@@ -186,6 +186,7 @@ function mchAction() {
       removeIcon("hotshot");
       addRecast("hotshot");
       addCountdownBar("hotshot", recast.hotshot);
+      addIconBlinkTimeout("hotshot", recast.hotshot - 1000, nextid.hotshot, icon.hotshot);
       mchBattery();
       mchHeat();
     }
@@ -198,7 +199,7 @@ function mchAction() {
       previous.drill = Date.now();
       removeIcon("drill");
       addRecast("drill");
-      addCountdownBar("drill", recast.drill);
+      addCountdownBar("drill");
       if (checkRecast("reassemble") < checkRecast("drill")) {
         addIconBlinkTimeout("drill", recast.drill - 1000, nextid.drill, icon.reassemble);
       }
