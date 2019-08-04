@@ -205,7 +205,6 @@ function dncAction() {
         && player.tempjobDetail.tempsteps >= 4) {
           addIcon("technicalfinish");
         }
-        console.log(checkStatus("standardstep"));
       }
 
       dncEsprit();
