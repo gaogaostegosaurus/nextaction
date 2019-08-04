@@ -81,7 +81,7 @@ function dncAction() {
 
   if (actionList.dnc.indexOf(actionGroups.actionname) > -1) {
 
-    removeText("loadmessage");
+    
 
     if ("Fan Dance" == actionGroups.actionname) {
       removeIcon("fourfoldfeathers");
@@ -161,7 +161,7 @@ function dncAction() {
           }
         }
         if (player.level < 70
-        && checkCooldown("devilment") < 0) {
+        && checkRecast("devilment") < 0) {
           addIcon("devilment");  // Not sure if this is best use before 70 but whatever
         }
       }
@@ -185,7 +185,7 @@ function dncAction() {
             count.aoe = count.aoe + 1;
           }
         }
-        if (checkCooldown("devilment") < 0) {
+        if (checkRecast("devilment") < 0) {
           addIcon("devilment");  // Heck not sure if this best use after 70
         }
       }
@@ -318,10 +318,10 @@ function dncFlourishCheck() {
     checkStatus("flourishingwindmill", player.ID),
     checkStatus("flourishingshower", player.ID),
     checkStatus("flourishingfandance", player.ID)) < 0) {
-      addCountdownBar("flourish", checkCooldown("flourish"), "OK")
+      addCountdownBar("flourish", checkRecast("flourish"), "OK")
     }
     else {
-      addCountdownBar("flourish", checkCooldown("flourish"), "WAIT")
+      addCountdownBar("flourish", checkRecast("flourish"), "WAIT")
     }
   }
 }

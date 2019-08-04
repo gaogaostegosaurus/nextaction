@@ -46,7 +46,7 @@ function samJobChange() {
   previous.guren = 0;
 
   if (player.level >= 68
-  && checkCooldown("ikishoten") < 0) {
+  && checkRecast("ikishoten") < 0) {
     addIcon("ikishoten");
   }
 
@@ -371,7 +371,7 @@ function samStatus() {
 function samMeikyoShisui() {
 
   // if (player.level >= 76
-  // && checkCooldown("tsubamegaeshi") > 2500) {
+  // && checkRecast("tsubamegaeshi") > 2500) {
   //   // Attempt to save Meikyo to quickly activate Tsubame-gaeshi
   //   removeIcon("meikyoshisui");
   // }
@@ -380,7 +380,7 @@ function samMeikyoShisui() {
   // Set to use on cooldown for now
 
   if (player.level >= 50
-  && checkCooldown("meikyoshisui") < 0) {
+  && checkRecast("meikyoshisui") < 0) {
     addIcon("meikyoshisui");
   }
   else {
@@ -413,13 +413,13 @@ function samSen() {
 
   // Choose Tsubame-gaeshi icon
   if (player.level >= 74
-  && checkCooldown("tsubamegaeshi") < 5000
+  && checkRecast("tsubamegaeshi") < 5000
   && icon.iaijutsu == icon.tenkagoken
   && check.aoe >= 3) {
     icon.tsubamegaeshi = icon.kaeshigoken;
   }
   else if (player.level >= 74
-  && checkCooldown("tsubamegaeshi") < 5000
+  && checkRecast("tsubamegaeshi") < 5000
   && icon.iaijutsu == icon.midaresetsugekka) {
     icon.tsubamegaeshi = icon.kaeshisetsugekka;
   }
@@ -484,15 +484,15 @@ function samKenki() {
   let minimumkenki = 20;
 
   if (player.level >= 70
-  && checkCooldown("ikishoten") > checkCooldown("guren")
-  && checkCooldown("guren") < 20000) {
+  && checkRecast("ikishoten") > checkRecast("guren")
+  && checkRecast("guren") < 20000) {
     minimumkenki = 70;
   }
 
   // Show Guren/Senei
   if (player.level >= 70
-  && checkCooldown("ikishoten") > checkCooldown("guren") + 5000
-  && checkCooldown("guren") < 1000
+  && checkRecast("ikishoten") > checkRecast("guren") + 5000
+  && checkRecast("guren") < 1000
   && player.jobDetail.kenki >= 70) {
     addIcon("guren");
   }

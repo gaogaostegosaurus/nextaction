@@ -218,7 +218,7 @@ function brdAction() {
     // addIconBlinkTimeout("ragingstrikes",recast.ragingstrikes,nextid.ragingstrikes,icon.ragingstrikes);
     // if (player.level >= 38
     // && checkStatus("straightshotready") < 0) {
-    //   addIconBlinkTimeout("barrage", checkCooldown("barrage"), nextid.barrage, icon.barrage);
+    //   addIconBlinkTimeout("barrage", checkRecast("barrage"), nextid.barrage, icon.barrage);
     // }
   }
 
@@ -262,31 +262,31 @@ function brdAction() {
     // previous.song = "ballad";
     // if (player.level >= 52) {
     //   if (count.aoe > 6) {
-    //     if (checkCooldown("paeon") <= checkCooldown("minuet")) {
-    //       addIconBlinkTimeout("paeon", Math.max(checkCooldown("paeon"), 30000), nextid.paeon, icon.paeon);
+    //     if (checkRecast("paeon") <= checkRecast("minuet")) {
+    //       addIconBlinkTimeout("paeon", Math.max(checkRecast("paeon"), 30000), nextid.paeon, icon.paeon);
     //     }
     //     else {
-    //       addIconBlinkTimeout("minuet", Math.max(checkCooldown("minuet"), 30000), nextid.minuet, icon.minuet);
+    //       addIconBlinkTimeout("minuet", Math.max(checkRecast("minuet"), 30000), nextid.minuet, icon.minuet);
     //     }
     //   }
     //   else {
-    //     if (checkCooldown("minuet") <= checkCooldown("paeon")) {
-    //       addIconBlinkTimeout("minuet", Math.max(checkCooldown("minuet"), 30000), nextid.minuet, icon.minuet);
+    //     if (checkRecast("minuet") <= checkRecast("paeon")) {
+    //       addIconBlinkTimeout("minuet", Math.max(checkRecast("minuet"), 30000), nextid.minuet, icon.minuet);
     //     }
     //     else {
-    //       addIconBlinkTimeout("paeon", Math.max(checkCooldown("paeon"), 30000), nextid.paeon, icon.paeon);
+    //       addIconBlinkTimeout("paeon", Math.max(checkRecast("paeon"), 30000), nextid.paeon, icon.paeon);
     //     }
     //   }
     // }
     // else if (player.level >= 40) {
-    //   addIconBlinkTimeout("paeon", Math.max(checkCooldown("paeon"), 30000), nextid.paeon, icon.paeon);
+    //   addIconBlinkTimeout("paeon", Math.max(checkRecast("paeon"), 30000), nextid.paeon, icon.paeon);
     // }
     // else {
-    //   addIconBlinkTimeout("ballad", checkCooldown("ballad"), nextid.ballad, icon.ballad);
+    //   addIconBlinkTimeout("ballad", checkRecast("ballad"), nextid.ballad, icon.ballad);
     // }
     if (player.level >= 68) {
-      addCountdownBar("empyrealarrow", checkCooldown("empyrealarrow"));
-      // addIconTimeout("empyrealarrow",checkCooldown("empyrealarrow"),nextid.empyrealarrow,icon.empyrealarrow);
+      addCountdownBar("empyrealarrow", checkRecast("empyrealarrow"));
+      // addIconTimeout("empyrealarrow",checkRecast("empyrealarrow"),nextid.empyrealarrow,icon.empyrealarrow);
     }
   }
 
@@ -298,32 +298,32 @@ function brdAction() {
     // previous.song = "paeon";
     // if (player.level >= 52) {
     //   if (count.aoe > 2) { // Min AP time for 3-6 targets
-    //     if (checkCooldown("ballad") <= checkCooldown("minuet")) {
-    //       addIconBlinkTimeout("ballad", Math.max(checkCooldown("ballad"), checkCooldown("minuet") - 30000, 20000), nextid.ballad, icon.ballad);
+    //     if (checkRecast("ballad") <= checkRecast("minuet")) {
+    //       addIconBlinkTimeout("ballad", Math.max(checkRecast("ballad"), checkRecast("minuet") - 30000, 20000), nextid.ballad, icon.ballad);
     //     }
     //     else {
     //       if (count.aoe > 6) { // Max AP time if many targets
-    //         addIconBlinkTimeout("minuet", Math.max(checkCooldown("minuet"), 30000), nextid.minuet, icon.minuet);
+    //         addIconBlinkTimeout("minuet", Math.max(checkRecast("minuet"), 30000), nextid.minuet, icon.minuet);
     //       }
     //       else { // Min AP time if 1-2 targets
-    //         addIconBlinkTimeout("minuet", Math.max(checkCooldown("minuet"), checkCooldown("ballad") - 30000, 20000), nextid.minuet, icon.minuet);
+    //         addIconBlinkTimeout("minuet", Math.max(checkRecast("minuet"), checkRecast("ballad") - 30000, 20000), nextid.minuet, icon.minuet);
     //       }
     //     }
     //   }
     //   else {
-    //     if (checkCooldown("minuet") <= checkCooldown("ballad")) {
-    //       addIconBlinkTimeout("minuet", Math.max(checkCooldown("minuet"), checkCooldown("ballad") - 30000, 20000), nextid.minuet, icon.minuet);
+    //     if (checkRecast("minuet") <= checkRecast("ballad")) {
+    //       addIconBlinkTimeout("minuet", Math.max(checkRecast("minuet"), checkRecast("ballad") - 30000, 20000), nextid.minuet, icon.minuet);
     //     }
     //     else {
-    //       addIconBlinkTimeout("ballad", Math.max(checkCooldown("ballad"), checkCooldown("minuet") - 30000, 20000), nextid.ballad, icon.ballad);
+    //       addIconBlinkTimeout("ballad", Math.max(checkRecast("ballad"), checkRecast("minuet") - 30000, 20000), nextid.ballad, icon.ballad);
     //     }
     //   }
     // }
     // else {
-    //   addIconBlinkTimeout("ballad", Math.max(checkCooldown("ballad"), 30000), nextid.ballad, icon.ballad);
+    //   addIconBlinkTimeout("ballad", Math.max(checkRecast("ballad"), 30000), nextid.ballad, icon.ballad);
     // }
     if (player.level >= 68) {
-      addCountdownBar("empyrealarrow", checkCooldown("empyrealarrow"));
+      addCountdownBar("empyrealarrow", checkRecast("empyrealarrow"));
     }
   }
 
@@ -333,14 +333,14 @@ function brdAction() {
     // addRecast("minuet");
     // addStatus("song", 30000);
     // previous.song = "minuet";
-    // if (checkCooldown("ballad") <= checkCooldown("paeon")) { // Mage's always beats Paeon
-    //   addIconBlinkTimeout("ballad", Math.max(checkCooldown("ballad"), 30000), nextid.ballad, icon.ballad); // Revisit for optimization at high targets?
+    // if (checkRecast("ballad") <= checkRecast("paeon")) { // Mage's always beats Paeon
+    //   addIconBlinkTimeout("ballad", Math.max(checkRecast("ballad"), 30000), nextid.ballad, icon.ballad); // Revisit for optimization at high targets?
     // }
     // else {
-    //   addIconBlinkTimeout("paeon", Math.max(checkCooldown("paeon"), 30000), nextid.paeon, icon.paeon);
+    //   addIconBlinkTimeout("paeon", Math.max(checkRecast("paeon"), 30000), nextid.paeon, icon.paeon);
     // }
     if (player.level >= 68) {
-      addCountdownBar("empyrealarrow", checkCooldown("empyrealarrow"));
+      addCountdownBar("empyrealarrow", checkRecast("empyrealarrow"));
     }
   }
 
@@ -377,7 +377,7 @@ function brdStatus() {
       else if (statusGroups.gainsloses == "loses") {
         removeStatus("straightshotready");
         removeIcon("straightshot");
-        // addIconBlinkTimeout("barrage", checkCooldown("barrage"), nextid.barrage, icon.barrage);
+        // addIconBlinkTimeout("barrage", checkRecast("barrage"), nextid.barrage, icon.barrage);
       }
     }
 

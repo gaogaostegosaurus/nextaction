@@ -283,7 +283,7 @@ function blmAstralRotation() {
     && player.jobDetail.umbralMilliseconds > 3000) {
       addIcon("despair"); // Finish with Despair
     }
-    if (checkCooldown("manafont") < player.jobDetail.umbralMilliseconds) { // Manafont will be up by 0
+    if (checkRecast("manafont") < player.jobDetail.umbralMilliseconds) { // Manafont will be up by 0
       addIcon("manafont"); // Continue Despairing with Manafont if available
       addIcon("manafontdespair");
     }

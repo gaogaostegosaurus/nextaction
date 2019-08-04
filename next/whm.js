@@ -47,12 +47,12 @@ function whmJobChange() {
 
   if (player.level >= 24
   && player.currentMP / player.maxMP < 0.8
-  && checkCooldown("luciddreaming") < 0) {
+  && checkRecast("luciddreaming") < 0) {
     addIcon("luciddreaming");
   }
   else if (player.level >= 58
   && player.currentMP / player.maxMP < 0.8
-  && checkCooldown("thinair") < 0) {
+  && checkRecast("thinair") < 0) {
     addIcon("thinair");
   }
   else {
@@ -60,7 +60,7 @@ function whmJobChange() {
   }
 
   if (player.level >= 30
-  && checkCooldown("presenceofmind") < 0) {
+  && checkRecast("presenceofmind") < 0) {
     addIcon("presenceofmind");
   }
   else {
@@ -68,7 +68,7 @@ function whmJobChange() {
   }
 
   if (player.level >= 50
-  && checkCooldown("benediction") < 0) {
+  && checkRecast("benediction") < 0) {
     addIcon("benediction");
   }
   else {
@@ -76,7 +76,7 @@ function whmJobChange() {
   }
 
   if (player.level >= 52
-  && checkCooldown("asylum") < 0) {
+  && checkRecast("asylum") < 0) {
     addIcon("asylum");
   }
   else {
@@ -84,7 +84,7 @@ function whmJobChange() {
   }
 
   if (player.level >= 56
-  && checkCooldown("assize") < 0) {
+  && checkRecast("assize") < 0) {
     addIcon("assize");
   }
   else {
@@ -92,7 +92,7 @@ function whmJobChange() {
   }
 
   if (player.level >= 60
-  && checkCooldown("tetragrammaton") < 0) {
+  && checkRecast("tetragrammaton") < 0) {
     addIcon("tetragrammaton");
   }
   else {
@@ -100,7 +100,7 @@ function whmJobChange() {
   }
 
   if (player.level >= 66
-  && checkCooldown("divinebenison") < 0) {
+  && checkRecast("divinebenison") < 0) {
     addIcon("divinebenison");
   }
   else {
@@ -113,12 +113,12 @@ function whmPlayerChangedEvent() {
   // MP recovery - Lucid and Thin Air share same spot
   if (player.level >= 24
   && player.currentMP / player.maxMP < 0.8
-  && checkCooldown("luciddreaming") < 0) {
+  && checkRecast("luciddreaming") < 0) {
     addIcon("luciddreaming");
   }
   else if (player.level >= 58
   && player.currentMP / player.maxMP < 0.8
-  && checkCooldown("thinair") < 0) {
+  && checkRecast("thinair") < 0) {
     addIcon("thinair");
   }
   else {

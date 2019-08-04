@@ -121,15 +121,15 @@ function drkAction() {
 
     else if ("Plunge" == actionGroups.actionname) { // Code treats Infuriate like two different skills to juggle the charges.
       if (player.level >= 78) {
-        if (checkCooldown("plunge2", player.ID) < 0) {
+        if (checkRecast("plunge2", player.ID) < 0) {
           addRecast("plunge1", player.ID, -1);
           addRecast("plunge2", player.ID, recast.plunge);
         }
         else {
           removeIcon("plunge");
-          addRecast("plunge1", player.ID, checkCooldown("plunge2", player.ID));
-          addRecast("plunge2", player.ID, checkCooldown("plunge2", player.ID) + recast.plunge);
-          addIconBlinkTimeout("plunge", checkCooldown("plunge1", player.ID), nextid.plunge, icon.plunge);
+          addRecast("plunge1", player.ID, checkRecast("plunge2", player.ID));
+          addRecast("plunge2", player.ID, checkRecast("plunge2", player.ID) + recast.plunge);
+          addIconBlinkTimeout("plunge", checkRecast("plunge1", player.ID), nextid.plunge, icon.plunge);
         }
       }
       else {
@@ -296,16 +296,16 @@ function drkMitigation() {
   // Shows next mitigation cooldown
 
   if (player.level >= 38) {
-    if (checkCooldown("darkwall") <= checkCooldown("rampart")) {
-      addIconBlinkTimeout("darkwall",checkCooldown("darkwall"),nextid.mitigation,icon.darkwall);
+    if (checkRecast("darkwall") <= checkRecast("rampart")) {
+      addIconBlinkTimeout("darkwall",checkRecast("darkwall"),nextid.mitigation,icon.darkwall);
     }
-    else if (checkCooldown("rampart") <= checkCooldown("darkwall")) {
-      addIconBlinkTimeout("mitigation",checkCooldown("rampart"),nextid.mitigation,icon.rampart);
+    else if (checkRecast("rampart") <= checkRecast("darkwall")) {
+      addIconBlinkTimeout("mitigation",checkRecast("rampart"),nextid.mitigation,icon.rampart);
     }
   }
 
   else {
-    addIconBlinkTimeout("mitigation",checkCooldown("rampart"),nextid.mitigation,icon.rampart);
+    addIconBlinkTimeout("mitigation",checkRecast("rampart"),nextid.mitigation,icon.rampart);
   }
 }
 
@@ -368,13 +368,13 @@ function drkGauge() {
     targetblood = 0;
   }
   else if (player.level >= 80
-  && checkCooldown("livingshadow") < 20000) { // Is this enough?
+  && checkRecast("livingshadow") < 20000) { // Is this enough?
     targetblood = 100; // Try to have a buffer for Living Shadow
   }
 
   if (player.jobDetail.blood >= targetblood) {
     if (player.level >= 80
-    && checkCooldown("livingshadow") < 1000) {
+    && checkRecast("livingshadow") < 1000) {
       addIcon("gaugespender");
     }
     else if (player.level >= 62) {

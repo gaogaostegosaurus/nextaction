@@ -327,6 +327,8 @@ function addRecast(name, time, id) {
     id = player.ID;
   }
 
+  time = time - 1000;
+
   if (!cooldowntracker[name]) { // Create array if it doesn't exist yet
     cooldowntracker[name] = [id, time + Date.now()];
   }
@@ -338,7 +340,7 @@ function addRecast(name, time, id) {
   }
 }
 
-function checkCooldown(name, id) {
+function checkRecast(name, id) {
   if (!id) {
     id = player.ID;
   }
@@ -459,54 +461,65 @@ function addIconBlinkTimeout(action, delay, nextid, actionicon, countdowntime) {
 //   }, 100);
 // }
 
-function addRaidCountdownBar(name) {
-  addCountdownBar(name, recast[name]);
-}
-
 function addCountdownBar(name, time, text) {
-  // function addCountdownBar(actionname, countdowntime = checkCooldown(actionname), finishtext = "READY") { // Once CEF updated
+// function addCountdownBar(actionname, countdowntime = checkRecast(actionname), finishtext = "READY") { Once CEF updated
 
-  if (time === undefined) {
-    addRecast(name); // Typically you would be adding the recast so
-    time = checkCooldown(name);
+  dom["countdownimg" + countdownid[name]].src = "icon/" + icon[name] + ".png";
+
+  // addCountdownBar("actionname");
+  // is the same as
+  // addRecast("actionname"); addCountdownBar("actionname", recast.actionname);
+  // Meaning, set a time parameter in order to do anything else
+
+  if (time === undefined) {  // Optional parameter
+    addRecast(name);
+    time = recast[name];
   }
-  if (text === undefined) {
+  time = time - 1000;  // Subtract 1000 to match recast function
+
+  if (text === undefined) {  // Optional parameter
     text = "READY";
   }
 
+  dom["countdowndiv" + countdownid[name]].className = "countdowndiv countdown-add";
+
   clearInterval(interval[name]);
-
-  let id = countdownid[name];
-  let filenname = icon[name];
-  time = time - 1000;
-
-  dom["countdownimg" + id].src = "icon/" + filenname + ".png";
 
   interval[name] = setInterval(function () {
 
-    if (time > 60000) {
-      dom["countdowndiv" + id].className = "countdowndiv countdown-remove";
-    }
-    else {
-      dom["countdowndiv" + id].className = "countdowndiv countdown-add";
-    }
+    // if (time > 60000) {
+    //   dom["countdowndiv" + countdownid[name]].className = "countdowndiv countdown-remove";
+    // }
+    // else {
+    //   dom["countdowndiv" + countdownid[name]].className = "countdowndiv countdown-add";
+    // }
 
     if (time <= 0) {
-      dom["countdowntime" + id].innerHTML = text;
-      dom["countdownbar" + id].style.width = "0px";
+      if (text == "remove") {
+        dom["countdowndiv" + countdownid[name]].className = "countdowndiv countdown-remove";
+      }
+      else {
+        dom["countdowntime" + countdownid[name]].innerHTML = text;
+      }
+      dom["countdownbar" + countdownid[name]].style.width = "0px";
       clearInterval(interval[name]);
     }
     else if (time < 1000) {
-      dom["countdowntime" + id].innerHTML = (time / 1000).toFixed(1);
-      dom["countdownbar" + id].style.width = Math.floor(time / 100) + "px";
+      dom["countdowntime" + countdownid[name]].innerHTML = (time / 1000).toFixed(1);
+      dom["countdownbar" + countdownid[name]].style.width = Math.floor(time / 100) + "px";
     }
     else {
-      dom["countdowntime" + id].innerHTML = Math.ceil(time / 1000); // This appears to best mimic what happens for XIV
-      dom["countdownbar" + id].style.width = (Math.floor((time - 1000) / 1000) + 10) + "px";
+      dom["countdowntime" + countdownid[name]].innerHTML = Math.ceil(time / 1000); // This appears to best mimic what happens for XIV
+      dom["countdownbar" + countdownid[name]].style.width = Math.min(Math.floor((time - 1000) / 1000) + 10, 80) + "px";
     }
     time = time - 100;
   }, 100);
 }
+
+function addRaidCountdownBar(name) {
+
+}
+
 
 function removeCountdownBar(name) {
   clearInterval(interval[name]);

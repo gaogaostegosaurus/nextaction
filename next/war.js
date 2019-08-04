@@ -76,36 +76,36 @@ function warJobChange() {
 
   if (count.aoe > 1) {
     if (player.level >= 56
-    && checkCooldown("rawintuition") < 0) {
+    && checkRecast("rawintuition") < 0) {
       addIcon("rawintuition");
     }
     else if (player.level >= 8
-    && checkCooldown("rampart") < 0) {
+    && checkRecast("rampart") < 0) {
       addIcon("rampart");
     }
     else if (player.level >= 46
-    && checkCooldown("vengeance") < 0) {
+    && checkRecast("vengeance") < 0) {
       addIcon("vengeance");
     }
   }
 
   if (player.level >= 50
-  && checkCooldown("infuriate1", player.ID) < 0) {
+  && checkRecast("infuriate1", player.ID) < 0) {
     addIcon("infuriate");
   }
 
   // Berserk is complicated
   if (player.level >= 64
-  && checkCooldown("upheaval") < 0
-  && checkCooldown("berserk") > 25000 ) {
+  && checkRecast("upheaval") < 0
+  && checkRecast("berserk") > 25000 ) {
     addIcon("upheaval"); // Show Upheaval if Berserk is far away
   }
   else if (player.level >= 74
-  && checkCooldown("infuriate1", player.ID) < 0) {
+  && checkRecast("infuriate1", player.ID) < 0) {
     removeIcon("berserk"); // Hide Berserk to prevent wasting Nascent Chaos
   }
   else if (player.level >= 6
-  && checkCooldown("berserk") < 0) {
+  && checkRecast("berserk") < 0) {
     addIcon("berserk");
   }
 
@@ -138,15 +138,15 @@ function warAction() {
     }
 
     else if ("Infuriate" == actionGroups.actionname) { // Code treats Infuriate like two different skills to juggle the charges.
-      if (checkCooldown("infuriate2", player.ID) < 0) {
+      if (checkRecast("infuriate2", player.ID) < 0) {
         addRecast("infuriate1", player.ID, -1);
         addRecast("infuriate2", player.ID, recast.infuriate);
       }
       else {
         removeIcon("infuriate");
-        addRecast("infuriate1", player.ID, checkCooldown("infuriate2", player.ID));
-        addRecast("infuriate2", player.ID, checkCooldown("infuriate2", player.ID) + recast.infuriate);
-        addIconBlinkTimeout("infuriate", checkCooldown("infuriate1", player.ID), nextid.infuriate, icon.infuriate);
+        addRecast("infuriate1", player.ID, checkRecast("infuriate2", player.ID));
+        addRecast("infuriate2", player.ID, checkRecast("infuriate2", player.ID) + recast.infuriate);
+        addIconBlinkTimeout("infuriate", checkRecast("infuriate1", player.ID), nextid.infuriate, icon.infuriate);
       }
       warGauge();
     }
@@ -174,10 +174,10 @@ function warAction() {
           count.aoe = 1; // Steel Cyclone is stronger than Inner Beast at 2+ targets
         }
         if (player.level >= 66) { // Enhanced Infuriate
-          addRecast("infuriate1", player.ID, checkCooldown("infuriate1", player.ID) - 5000);
-          addRecast("infuriate2", player.ID, checkCooldown("infuriate2", player.ID) - 5000);
+          addRecast("infuriate1", player.ID, checkRecast("infuriate1", player.ID) - 5000);
+          addRecast("infuriate2", player.ID, checkRecast("infuriate2", player.ID) - 5000);
           removeIcon("infuriate");
-          addIconBlinkTimeout("infuriate",checkCooldown("infuriate1", player.ID),nextid.infuriate,icon.infuriate);
+          addIconBlinkTimeout("infuriate",checkRecast("infuriate1", player.ID),nextid.infuriate,icon.infuriate);
         }
         removeIcon("innerbeast");
       }
@@ -187,10 +187,10 @@ function warAction() {
           count.aoe = 1;
           previous.steelcyclone = Date.now();
           if (player.level >= 66) { // Enhanced Infuriate
-            addRecast("infuriate1", player.ID, checkCooldown("infuriate1", player.ID) - 5000);
-            addRecast("infuriate2", player.ID, checkCooldown("infuriate2", player.ID) - 5000);
+            addRecast("infuriate1", player.ID, checkRecast("infuriate1", player.ID) - 5000);
+            addRecast("infuriate2", player.ID, checkRecast("infuriate2", player.ID) - 5000);
             removeIcon("infuriate");
-            addIconBlinkTimeout("infuriate",checkCooldown("infuriate1", player.ID),nextid.infuriate,icon.infuriate);
+            addIconBlinkTimeout("infuriate",checkRecast("infuriate1", player.ID),nextid.infuriate,icon.infuriate);
           }
         }
         else {
@@ -302,8 +302,8 @@ function warStatus() {
     if (["Berserk", "Inner Release"].indexOf(statusGroups.statusname) > -1) {
       if (statusGroups.gainsloses == "gains") {
         addStatus("berserk", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
-        if (checkCooldown("upheaval") < parseInt(statusGroups.duration) * 1000) {
-          addIconBlinkTimeout("upheaval", checkCooldown("upheaval"), nextid.upheaval, icon.upheaval); // Show Upheaval if up during Berserk
+        if (checkRecast("upheaval") < parseInt(statusGroups.duration) * 1000) {
+          addIconBlinkTimeout("upheaval", checkRecast("upheaval"), nextid.upheaval, icon.upheaval); // Show Upheaval if up during Berserk
         }
       }
       else if (statusGroups.gainsloses == "loses") {
@@ -374,7 +374,7 @@ function warStatus() {
       }
       else if (statusGroups.gainsloses == "loses") {
         removeStatus("nascentchaos", statusGroups.targetID);
-        addIconBlinkTimeout("berserk",checkCooldown("berserk"),nextid.berserk,icon.berserk);
+        addIconBlinkTimeout("berserk",checkRecast("berserk"),nextid.berserk,icon.berserk);
       }
       warGauge()
     }
@@ -388,28 +388,28 @@ function warMitigation() {
   // Ideally Vengeance > Raw Intuition > Rampart > Raw Intuition > DPS plz wake up and DPS
 
   if (player.level >= 56) {
-    if (checkCooldown("vengeance") <= Math.min(checkCooldown("rampart"), checkCooldown("rawintuition"))) {
-      addIconBlinkTimeout("mitigation",checkCooldown("vengeance"),nextid.mitigation,icon.vengeance);
+    if (checkRecast("vengeance") <= Math.min(checkRecast("rampart"), checkRecast("rawintuition"))) {
+      addIconBlinkTimeout("mitigation",checkRecast("vengeance"),nextid.mitigation,icon.vengeance);
     }
-    else if (checkCooldown("rawintuition") <= Math.min(checkCooldown("rampart"), checkCooldown("vengeance"))) {
-      addIconBlinkTimeout("mitigation",checkCooldown("rawintuition"),nextid.mitigation,icon.rawintuition);
+    else if (checkRecast("rawintuition") <= Math.min(checkRecast("rampart"), checkRecast("vengeance"))) {
+      addIconBlinkTimeout("mitigation",checkRecast("rawintuition"),nextid.mitigation,icon.rawintuition);
     }
-    else if (checkCooldown("rampart") <= Math.min(checkCooldown("vengeance"), checkCooldown("rawintuition"))) {
-      addIconBlinkTimeout("mitigation",checkCooldown("rampart"),nextid.mitigation,icon.rampart);
+    else if (checkRecast("rampart") <= Math.min(checkRecast("vengeance"), checkRecast("rawintuition"))) {
+      addIconBlinkTimeout("mitigation",checkRecast("rampart"),nextid.mitigation,icon.rampart);
     }
   }
 
   else if (player.level >= 46) {
-    if (checkCooldown("vengeance") <= checkCooldown("rampart")) {
-      addIconBlinkTimeout("mitigation",checkCooldown("vengeance"),nextid.mitigation,icon.vengeance);
+    if (checkRecast("vengeance") <= checkRecast("rampart")) {
+      addIconBlinkTimeout("mitigation",checkRecast("vengeance"),nextid.mitigation,icon.vengeance);
     }
-    else if (checkCooldown("rampart") <= checkCooldown("vengeance")) {
-      addIconBlinkTimeout("mitigation",checkCooldown("rampart"),nextid.mitigation,icon.rampart);
+    else if (checkRecast("rampart") <= checkRecast("vengeance")) {
+      addIconBlinkTimeout("mitigation",checkRecast("rampart"),nextid.mitigation,icon.rampart);
     }
   }
 
   else if (player.level >= 8) {
-    addIconBlinkTimeout("mitigation",checkCooldown("rampart"),nextid.mitigation,icon.rampart);
+    addIconBlinkTimeout("mitigation",checkRecast("rampart"),nextid.mitigation,icon.rampart);
   }
 }
 
@@ -465,16 +465,16 @@ function warGauge() {
     targetbeast = 0; // Spam during Inner Release
   }
   else if (player.level >= 70
-  && checkCooldown("berserk") < 5000
-  && checkCooldown("infuriate1", player.ID) < 40000) {
+  && checkRecast("berserk") < 5000
+  && checkRecast("infuriate1", player.ID) < 40000) {
     targetbeast = 50; // Avoid overcapping during Inner Release
   }
   else if (player.level >= 66
-  && checkCooldown("infuriate1", player.ID) < 10000) {
+  && checkRecast("infuriate1", player.ID) < 10000) {
     targetbeast = 50; // Avoid overcapping from Enhanced Infuriate
   }
   else if (player.level < 66
-  && checkCooldown("infuriate1", player.ID) < 5000) {
+  && checkRecast("infuriate1", player.ID) < 5000) {
     targetbeast = 50; // Avoid overcapping from Infuriate
   }
   else if (player.level >= 74
@@ -496,7 +496,7 @@ function warGauge() {
     targetbeast = 50; // Use AoE
   }
   else if (player.level >= 64
-  && checkCooldown("upheaval") < 20000) { // Revisit if too conservative
+  && checkRecast("upheaval") < 20000) { // Revisit if too conservative
     targetbeast = 70; // Stay above 20 for Upheavals
   }
   else {
@@ -504,19 +504,19 @@ function warGauge() {
   }
 
   // Berserk/Inner Release
-  if (checkCooldown("berserk") < 0
+  if (checkRecast("berserk") < 0
   && checkStatus("stormseye", player.ID) > 0) {
     addIcon("berserk");
   }
   else if (player.level >= 70
-  && checkCooldown("upheaval") < 1000
+  && checkRecast("upheaval") < 1000
   && checkStatus("berserk", player.ID) > 0) {
     addIcon("upheaval");
   }
   else if (player.level >= 64
   && player.jobDetail.beast >= 20
-  && checkCooldown("upheaval") < 1000
-  && checkCooldown("berserk") > 25000) {
+  && checkRecast("upheaval") < 1000
+  && checkRecast("berserk") > 25000) {
     addIcon("upheaval");
   }
   else {
@@ -542,8 +542,8 @@ function warCombo() {
 
   // Revisit this later if it is refreshing too much
   if (player.level >= 50
-  && checkCooldown("berserk") < 17500
-  && checkStatus("stormseye", player.ID) - Math.max(checkCooldown("berserk"), 0) < 20000) {
+  && checkRecast("berserk") < 17500
+  && checkStatus("stormseye", player.ID) - Math.max(checkRecast("berserk"), 0) < 20000) {
     stormseyeCombo();
   }
 

@@ -123,7 +123,7 @@ function rdmPlayerChangedEvent() {
   countdownid.luciddreaming = 2;
 
   if (player.currentMP / player.maxMP < 0.85) {
-    addCountdownBar("luciddreaming", checkCooldown("luciddreaming"));
+    addCountdownBar("luciddreaming", checkRecast("luciddreaming"));
   }
   else {
     removeCountdownBar("luciddreaming");
@@ -398,7 +398,7 @@ function rdmDualcast() {
   removeIcon("scorch");
 
   if (count.aoe >= 2
-  && checkCooldown("manafication") < 0
+  && checkRecast("manafication") < 0
   && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 70) {
     addIcon("moulinet");
   }
@@ -575,7 +575,7 @@ function rdmDualcastValue(hardcastaction, hardcastblack, hardcastwhite, dualcast
     }
   }
   else if (player.level >= 18
-  && checkCooldown("swiftcast") < 0
+  && checkRecast("swiftcast") < 0
   && "Swiftcast" == hardcastaction) {
     value = value + Math.max(310, 220 * count.aoe); // Not actually sure what it's worth, but this seems about right
   }
@@ -685,7 +685,7 @@ function rdmHolyCombo() {
 function rdmManafication() {
 
   if (player.level >= 60
-  && checkCooldown("manafication") < 0
+  && checkRecast("manafication") < 0
   && !toggle.combo) {
 
     // Don't use Manafication if more than 28 away from 50/50
