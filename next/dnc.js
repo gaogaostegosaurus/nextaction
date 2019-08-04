@@ -111,7 +111,7 @@ function dncAction() {
       }
     }
 
-    else if ("devilment" == actionGroups.actionname) {
+    else if ("Devilment" == actionGroups.actionname) {
       removeIcon("devilment");
       addCountdownBar("devilment");
     }
