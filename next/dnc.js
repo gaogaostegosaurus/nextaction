@@ -3,7 +3,7 @@
 actionList.dnc = [
 
   // Non-GCD
-  "Fan Dance", "Fan Dance II", "Fan Dance III", "Flourish",
+  "Fan Dance", "Fan Dance II", "Fan Dance III", "Devilment", "Flourish",
 
   // GCD
   "Cascade", "Fountain", "Windmill", "Bladeshower",
@@ -81,7 +81,7 @@ function dncAction() {
 
   if (actionList.dnc.indexOf(actionGroups.actionname) > -1) {
 
-    
+
 
     if ("Fan Dance" == actionGroups.actionname) {
       removeIcon("fourfoldfeathers");
@@ -109,6 +109,11 @@ function dncAction() {
       else {
         count.aoe = count.aoe + 1;
       }
+    }
+
+    else if ("devilment" == actionGroups.actionname) {
+      removeIcon("devilment");
+      addCountdownBar("devilment");
     }
 
     else if ("Flourish" == actionGroups.actionname) {
