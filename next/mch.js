@@ -44,13 +44,13 @@ function mchJobChange() {
   nextid.gaussround = 13;
   nextid.ricochet = 14;
 
-  countdownid.barrelstabilizer = 0;
-  countdownid.wildfire = 1;
-  countdownid.drill = 2;
-  countdownid.hotshot = 3;
-  countdownid.reassemble = 4;
-  countdownid.gaussround = 5;
-  countdownid.ricochet = 6;
+  countdownid.barrelstabilizer = 10;
+  countdownid.wildfire = 11;
+  countdownid.drill = 0;
+  countdownid.hotshot = 1;
+  countdownid.reassemble = 2;
+  countdownid.gaussround = 3;
+  countdownid.ricochet = 4;
 
   // nextid.tactician = 99;
 
@@ -109,14 +109,14 @@ function mchJobChange() {
 
   // Show available cooldowns
 
-  addCountdownBar("hotshot", checkRecast("hotshot"));
+  addCountdownBar("hotshot", checkRecast("hotshot"), "icon");
 
   if (player.level >= 15) {
-    addCountdownBar("gaussround", checkRecast("gaussround1", player.ID));
+    addCountdownBar("gaussround", checkRecast("gaussround1"));
   }
 
   if (player.level >= 50) {
-    addCountdownBar("ricochet", checkRecast("ricochet1", player.ID));
+    addCountdownBar("ricochet", checkRecast("ricochet1"));
   }
 
   if (player.level >= 10) {
@@ -124,7 +124,7 @@ function mchJobChange() {
   }
 
   if (player.level >= 58) {
-    addCountdownBar("drill", checkRecast("drill"));
+    addCountdownBar("drill", checkRecast("drill"), "icon");
   }
 
   mchHeat();
@@ -156,25 +156,6 @@ function mchAction() {
 
   if (actionList.mch.indexOf(actionGroups.actionname) > -1) {
 
-    // Toggle AoE
-
-    if (player.level >= 70
-    && checkRecast("flamethrower") < 0
-    && count.aoe >= 2) {
-      addIcon("flamethrower");
-    }
-    else {
-      removeIcon("flamethrower");
-    }
-
-    if (player.level >= 72
-    && count.aoe >= 2) {
-      icon.drill == icon.bioblaster;
-    }
-    else {
-      icon.drill = "003043";
-    }
-
     // These actions don't interrupt combos
 
     if (["Hot Shot", "Air Anchor"].indexOf(actionGroups.actionname) > -1) {
@@ -184,11 +165,9 @@ function mchAction() {
       }
       previous.hotshot = Date.now();
       removeIcon("hotshot");
-      addRecast("hotshot");
-      addCountdownBar("hotshot", recast.hotshot);
-      addIconBlinkTimeout("hotshot", recast.hotshot - 1000, nextid.hotshot, icon.hotshot);
+      addCountdownBar("hotshot", checkRecast("hotshot"), "icon");
       mchBattery();
-      mchHeat();
+      mchHeat();  // Why? Check later
     }
 
     else if ("Drill" == actionGroups.actionname) {
@@ -198,14 +177,13 @@ function mchAction() {
       }
       previous.drill = Date.now();
       removeIcon("drill");
-      addRecast("drill");
-      addCountdownBar("drill");
-      if (checkRecast("reassemble") < checkRecast("drill")) {
-        addIconBlinkTimeout("drill", recast.drill - 1000, nextid.drill, icon.reassemble);
-      }
-      else {
-        addIconBlinkTimeout("drill", recast.drill - 1000, nextid.drill, icon.drill);
-      }
+      addCountdownBar("drill", recast.drill, "icon");
+      // if (checkRecast("reassemble") < checkRecast("drill")) {
+      //   addIconBlinkTimeout("drill", recast.drill - 1000, nextid.drill, icon.reassemble);
+      // }
+      // else {
+      //   addIconBlinkTimeout("drill", recast.drill - 1000, nextid.drill, icon.drill);
+      // }
       mchHeat();
     }
 
@@ -328,8 +306,7 @@ function mchAction() {
     }
 
     else if ("Reassemble" == actionGroups.actionname) {
-      removeIcon("reassemble");
-      addRecast("reassemble");
+      addCountdownBar("reassemble");
       if (player.level >= 58
       && checkRecast("drill") < 0) {
         addIcon("drill");
@@ -410,7 +387,28 @@ function mchAction() {
     else { // Everything else finishes or breaks combo
       mchCombo();
     }
+
+    // Toggle AoE
+
+    if (player.level >= 70
+    && checkRecast("flamethrower") < 0
+    && count.aoe >= 2) {
+      addIcon("flamethrower");
+    }
+    else {
+      removeIcon("flamethrower");
+    }
+
+    if (player.level >= 72
+    && count.aoe >= 2) {
+      icon.drill == icon.bioblaster;
+    }
+    else {
+      icon.drill = "003043";
+    }
+
   }
+
 }
 
 function mchStatus() {
