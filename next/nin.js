@@ -30,18 +30,19 @@ function ninJobChange() {
   nextid.shadowfang = nextid.aeolianedge;
   nextid.hakkemujinsatsu = nextid.spinningedge;
   nextid.tenchijin = 10;
-  nextid.ninkiaction = 11;
+  nextid.kassatsu = 11;
+  nextid.ninkiaction = 12;
   // nextid.trickattack = 12;
   // nextid.dreamwithinadream = 13;
   // nextid.assassinate = 14;
 
   countdownid.shadowfang = 0;
   countdownid.ninjutsu = 1;
-  countdownid.trickattack = 2;
   countdownid.suiton = 3;
   countdownid.tenchijin = 4;
   countdownid.kassatsu = 5;
-  countdownid.dreamwithinadream = 6;
+  countdownid.trickattack = 20;
+  countdownid.dreamwithinadream = 21;
 
   count.aoe = 1;
   previous.deathblossom = 0;
@@ -54,7 +55,6 @@ function ninJobChange() {
   if (player.level >= 56) {
     addCountdownBar("dreamwithinadream", -1);
   }
-
 
   ninNinjutsu();
   ninCombo();
@@ -139,15 +139,14 @@ function ninAction(logLine) {
       else if ("Kassatsu" == actionGroups.actionname) {
         removeIcon("tenchijin");
 
-        if (checkRecast("kassatsu2", player.ID) < 0) {
+        if (checkRecast("kassatsu2") < 0) {
           addRecast("kassatsu2", recast.kassatsu);
-          addRecast("kassatsu1", player.ID, -1);
-          addCountdownBar("kassatsu", -1);
+          addRecast("kassatsu1", -1);
         }
         else {
           addRecast("kassatsu1", checkRecast("kassatsu2"));
           addRecast("kassatsu2", checkRecast("kassatsu2") + recast.kassatsu);
-          addCountdownBar("kassatsu", checkRecast("kassatsu1"));
+          addCountdownBar("kassatsu", checkRecast("kassatsu1"), "icon");
         }
         addStatus("kassatsu");
         addCountdownBar("ninjutsu", -1);
@@ -272,6 +271,11 @@ function ninAction(logLine) {
           ninCombo();
         }
 
+        // Recalculate optimal Ninjutsu after every GCD
+        if (checkRecast("ninjutsu") < 1000) {
+          ninNinjutsu();
+        }
+
         // Check Ninki after all GCD actions
         if (player.level >= 62) {
           ninNinki();
@@ -369,7 +373,13 @@ function ninCombo() {
   removeIcon("gustslash");
   removeIcon("aeolianedge");
 
-  if (player.level >= 38
+  if (player.level >= 54
+  && count.aoe <= 2
+  && player.jobDetail.hutonMilliseconds > 6000
+  && player.jobDetail.hutonMilliseconds < 46000) {
+    ninArmorCrushCombo();
+  }
+  else if (player.level >= 38
   && count.aoe <= 3
   && checkStatus("shadowfang", target.ID) < 9000) {
     ninShadowFangCombo();
@@ -378,11 +388,6 @@ function ninCombo() {
   && count.aoe >= 3
   && player.jobDetail.hutonMilliseconds > 3000) {
     ninHakkeMujinsatsuCombo();
-  }
-  else if (player.level >= 54
-  && player.jobDetail.hutonMilliseconds > 6000
-  && player.jobDetail.hutonMilliseconds < 46000) {
-    ninArmorCrushCombo();
   }
   else {
     ninAeolianEdgeCombo();
@@ -422,12 +427,22 @@ function ninHakkeMujinsatsuCombo() {
 function ninNinjutsu() {
 
   if (player.level >= 70) {
-    if (checkRecast("trickattack") < checkRecast("tenchijin") + 20000) {
+    if (checkRecast("trickattack") < checkRecast("tenchijin") + 25000) {
       addCountdownBar("tenchijin", checkRecast("tenchijin"), "SUITON");
     }
     else {
       removeCountdownBar("tenchijin");  // Maybe explore this another day
     }
+  }
+
+  if (player.level >= 76
+  && checkStatus("kassatsu") > 0) {
+    icon.katon = icon.gokamekkyaku;
+    icon.raiton = icon.hyoshoranyu;
+  }
+  else {
+    icon.katon = "002908";
+    icon.raiton = "002912";
   }
 
   if (player.level >= 45
@@ -438,7 +453,7 @@ function ninNinjutsu() {
   }
   else if (player.level >= 45
   && player.level < 54  // No AC
-  && player.jobDetail.hutonMilliseconds < 23000) {
+  && player.jobDetail.hutonMilliseconds < 25000) {
     icon.ninjutsu3 = icon.huton;
     addIcon("ninjutsu3");  // Huton if Huton is low (and no AC yet)
   }
@@ -450,7 +465,7 @@ function ninNinjutsu() {
   }
   else if (player.level >= 45
   && checkStatus("suiton", player.ID) < 0
-  && checkRecast("trickattack") < 21000
+  && checkRecast("trickattack") < 25000
   && checkRecast("tenchijin") > 1000) {
     icon.ninjutsu3 = icon.suiton;
     addIcon("ninjutsu3");
@@ -520,11 +535,11 @@ function ninNinjutsu() {
 function ninNinki() {
 
   if (player.jobDetail.ninkiAmount >= 80) {
-    if (player.level >= 80
-    && checkRecast("bunshin") < 1000) {
-      icon.ninkiaction = icon.bunshin;
-    }
-    else if (player.level >= 68
+    // if (player.level >= 80
+    // && checkRecast("bunshin") < 1000) {
+    //   icon.ninkiaction = icon.bunshin;
+    // }
+    if (player.level >= 68
     && count.aoe == 1) {
       icon.ninkiaction = icon.bhavacakra;
     }
