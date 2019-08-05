@@ -22,7 +22,7 @@ for (var x = 0; x < 20; x++) {
   dom["iconimg" + x] = document.getElementById("iconimg" + x); // src = icon
   dom["iconcountdown" + x] = document.getElementById("iconcountdown" + x); // Countdown - separate from img
 }
-for (var x = 0; x < 20; x++) {
+for (var x = 0; x < 40; x++) {
   dom["countdowndiv" + x] = document.getElementById("countdowndiv" + x); // Countdown - separate from img
   dom["countdownimgdiv" + x] = document.getElementById("countdownimgdiv" + x); // Countdown - separate from img
   dom["countdownimg" + x] = document.getElementById("countdownimg" + x); // Countdown - separate from img
@@ -327,8 +327,6 @@ function addRecast(name, time, id) {
     id = player.ID;
   }
 
-  time = time - 1000;
-
   if (!cooldowntracker[name]) { // Create array if it doesn't exist yet
     cooldowntracker[name] = [id, time + Date.now()];
   }
@@ -475,13 +473,19 @@ function addCountdownBar(name, time, text) {
     addRecast(name);
     time = recast[name];
   }
-  time = time - 1000;  // Subtract 1000 to match recast function
+  time = time - 1000;  // This appears to make it match better to what's on screen?
 
   if (text === undefined) {  // Optional parameter
     text = "READY";
   }
 
   dom["countdowndiv" + countdownid[name]].className = "countdowndiv countdown-add";
+
+  // Style bars 20 to 39 to set apart from "personal" bars
+  if (countdownid[name] >= 20) {
+    dom["countdowndiv" + countdownid[name]].style.opacity = "0.5";
+    // dom["countdownbar" + countdownid[name]].style.color = "gray";
+  }
 
   clearInterval(interval[name]);
 
@@ -494,15 +498,37 @@ function addCountdownBar(name, time, text) {
     //   dom["countdowndiv" + countdownid[name]].className = "countdowndiv countdown-add";
     // }
 
+    if (time < 5000
+    && dom["countdownbar" + countdownid[name]].style.color != "red") {
+      dom["countdownbar" + countdownid[name]].style.color = "red"
+    }
+    else if (time < 10000
+    && dom["countdownbar" + countdownid[name]].style.color != "orange") {
+      dom["countdownbar" + countdownid[name]].style.color = "orange"
+    }
+    else if (time < 30000
+    && dom["countdownbar" + countdownid[name]].style.color != "yellow") {
+      dom["countdownbar" + countdownid[name]].style.color = "yellow"
+    }
+    else {
+      dom["countdownbar" + countdownid[name]].style.color = "white"
+    }
+
     if (time <= 0) {
       if (text == "remove") {
         dom["countdowndiv" + countdownid[name]].className = "countdowndiv countdown-remove";
+      }
+      else if (text == "icon") {
+        dom["countdowndiv" + countdownid[name]].className = "countdowndiv countdown-remove";
+        dom["iconimg" + nextid[name]].src = "icon/" + icon[name] + ".png";
+        dom["icondiv" + nextid[name]].className = "icondiv icon-add";
       }
       else {
         dom["countdowntime" + countdownid[name]].innerHTML = text;
       }
       dom["countdownbar" + countdownid[name]].style.width = "0px";
       clearInterval(interval[name]);
+      // console.log("Interval should be closed now - writing log because of possible coding error");
     }
     else if (time < 1000) {
       dom["countdowntime" + countdownid[name]].innerHTML = (time / 1000).toFixed(1);
@@ -575,7 +601,7 @@ function clearUI() {
   for (x = 0; x < 20; x++) {
     dom["icondiv" + x].className = "icondiv icon-remove";
   }
-  for (x = 0; x < 20; x++) {
+  for (x = 0; x < 40; x++) {
     dom["countdowndiv" + x].className = "countdowndiv countdown-remove";
   }
 }

@@ -73,7 +73,7 @@
       position: absolute;
       width: 48px;
       height: 48px;
-      top: -1px;
+      top: 0px;
       left: -2px;
     }
 
@@ -125,7 +125,7 @@
       margin-right: 2px;
       border-radius: 4px;
       background-color: white;
-      transition: width 100ms linear, color 1s ease;
+      transition: width 100ms ease, color 5s ease;
       display: inline-flex;
     }
 
@@ -226,6 +226,8 @@
     <!-- Countdown bars here -->
     <div class="row countdown-box">
       <div class="column">
+        <!-- Ideally hold alignment unrelated things -->
+        <!-- 0-9 personal, 20-29 others -->
         <div id="countdowndiv0" class="countdowndiv">
           <div id="countdownimgdiv0" class="smalliconimgdiv">
             <img id="countdownimg0" class="smalliconimg" src="icon/066181.png">
@@ -306,8 +308,94 @@
           <div id="countdownbar9" class="countdownbar"></div>
           <div id="countdowntime9" class="countdowntime">9</div>
         </div>
+
+        <div id="countdowndiv20" class="countdowndiv">
+          <div id="countdownimgdiv20" class="smalliconimgdiv">
+            <img id="countdownimg20" class="smalliconimg" src="icon/066181.png">
+            <img class="smalliconoverlay" src="icon/overlay.png">
+          </div>
+          <div id="countdownbar20" class="countdownbar"></div>
+          <div id="countdowntime20" class="countdowntime">0</div>
+        </div>
+        <div id="countdowndiv21" class="countdowndiv">
+          <div id="countdownimgdiv21" class="smalliconimgdiv">
+            <img id="countdownimg21" class="smalliconimg" src="icon/066182.png">
+            <img class="smalliconoverlay" src="icon/overlay.png">
+          </div>
+          <div id="countdownbar21" class="countdownbar"></div>
+          <div id="countdowntime21" class="countdowntime">1</div>
+        </div>
+        <div id="countdowndiv22" class="countdowndiv">
+          <div id="countdownimgdiv22" class="smalliconimgdiv">
+            <img id="countdownimg22" class="smalliconimg" src="icon/066183.png">
+            <img class="smalliconoverlay" src="icon/overlay.png">
+          </div>
+          <div id="countdownbar22" class="countdownbar"></div>
+          <div id="countdowntime22" class="countdowntime">2</div>
+        </div>
+        <div id="countdowndiv23" class="countdowndiv">
+          <div id="countdownimgdiv23" class="smalliconimgdiv">
+            <img id="countdownimg23" class="smalliconimg" src="icon/066184.png">
+            <img class="smalliconoverlay" src="icon/overlay.png">
+          </div>
+          <div id="countdownbar23" class="countdownbar"></div>
+          <div id="countdowntime23" class="countdowntime">3</div>
+        </div>
+        <div id="countdowndiv24" class="countdowndiv">
+          <div id="countdownimgdiv24" class="smalliconimgdiv">
+            <img id="countdownimg24" class="smalliconimg" src="icon/066185.png">
+            <img class="smalliconoverlay" src="icon/overlay.png">
+          </div>
+          <div id="countdownbar24" class="countdownbar"></div>
+          <div id="countdowntime24" class="countdowntime">4</div>
+        </div>
+        <div id="countdowndiv25" class="countdowndiv">
+          <div id="countdownimgdiv25" class="smalliconimgdiv">
+            <img id="countdownimg25" class="smalliconimg" src="icon/066186.png">
+            <img class="smalliconoverlay" src="icon/overlay.png">
+          </div>
+          <div id="countdownbar25" class="countdownbar"></div>
+          <div id="countdowntime25" class="countdowntime">5</div>
+        </div>
+        <div id="countdowndiv26" class="countdowndiv">
+          <div id="countdownimgdiv26" class="smalliconimgdiv">
+            <img id="countdownimg26" class="smalliconimg" src="icon/066187.png">
+            <img class="smalliconoverlay" src="icon/overlay.png">
+          </div>
+          <div id="countdownbar26" class="countdownbar"></div>
+          <div id="countdowntime26" class="countdowntime">6</div>
+        </div>
+        <div id="countdowndiv27" class="countdowndiv">
+          <div id="countdownimgdiv27" class="smalliconimgdiv">
+            <img id="countdownimg27" class="smalliconimg" src="icon/066188.png">
+            <img class="smalliconoverlay" src="icon/overlay.png">
+          </div>
+          <div id="countdownbar27" class="countdownbar"></div>
+          <div id="countdowntime27" class="countdowntime">7</div>
+        </div>
+        <div id="countdowndiv28" class="countdowndiv">
+          <div id="countdownimgdiv28" class="smalliconimgdiv">
+            <img id="countdownimg28" class="smalliconimg" src="icon/066189.png">
+            <img class="smalliconoverlay" src="icon/overlay.png">
+          </div>
+          <div id="countdownbar28" class="countdownbar"></div>
+          <div id="countdowntime28" class="countdowntime">8</div>
+        </div>
+        <div id="countdowndiv29" class="countdowndiv">
+          <div id="countdownimgdiv29" class="smalliconimgdiv">
+            <img id="countdownimg29" class="smalliconimg" src="icon/066190.png">
+            <img class="smalliconoverlay" src="icon/overlay.png">
+          </div>
+          <div id="countdownbar29" class="countdownbar"></div>
+          <div id="countdowntime29" class="countdowntime">9</div>
+        </div>
+
+
       </div>
       <div class="column">
+        <!-- Ideally hold alignment-related things -->
+        <!-- 10-19: personal, 30-39: other players -->
+
         <div id="countdowndiv10" class="countdowndiv">
           <div id="countdownimgdiv10" class="smalliconimgdiv">
             <img id="countdownimg10" class="smalliconimg" src="icon/066181.png">
@@ -387,6 +475,87 @@
           </div>
           <div id="countdownbar19" class="countdownbar"></div>
           <div id="countdowntime19" class="countdowntime">9</div>
+        </div>
+
+        <div id="countdowndiv30" class="countdowndiv">
+          <div id="countdownimgdiv30" class="smalliconimgdiv">
+            <img id="countdownimg30" class="smalliconimg" src="icon/066181.png">
+            <img class="smalliconoverlay" src="icon/overlay.png">
+          </div>
+          <div id="countdownbar30" class="countdownbar"></div>
+          <div id="countdowntime30" class="countdowntime">0</div>
+        </div>
+        <div id="countdowndiv31" class="countdowndiv">
+          <div id="countdownimgdiv31" class="smalliconimgdiv">
+            <img id="countdownimg31" class="smalliconimg" src="icon/066182.png">
+            <img class="smalliconoverlay" src="icon/overlay.png">
+          </div>
+          <div id="countdownbar31" class="countdownbar"></div>
+          <div id="countdowntime31" class="countdowntime">1</div>
+        </div>
+        <div id="countdowndiv32" class="countdowndiv">
+          <div id="countdownimgdiv32" class="smalliconimgdiv">
+            <img id="countdownimg32" class="smalliconimg" src="icon/066183.png">
+            <img class="smalliconoverlay" src="icon/overlay.png">
+          </div>
+          <div id="countdownbar32" class="countdownbar"></div>
+          <div id="countdowntime32" class="countdowntime">2</div>
+        </div>
+        <div id="countdowndiv33" class="countdowndiv">
+          <div id="countdownimgdiv33" class="smalliconimgdiv">
+            <img id="countdownimg33" class="smalliconimg" src="icon/066184.png">
+            <img class="smalliconoverlay" src="icon/overlay.png">
+          </div>
+          <div id="countdownbar33" class="countdownbar"></div>
+          <div id="countdowntime33" class="countdowntime">3</div>
+        </div>
+        <div id="countdowndiv34" class="countdowndiv">
+          <div id="countdownimgdiv34" class="smalliconimgdiv">
+            <img id="countdownimg34" class="smalliconimg" src="icon/066185.png">
+            <img class="smalliconoverlay" src="icon/overlay.png">
+          </div>
+          <div id="countdownbar34" class="countdownbar"></div>
+          <div id="countdowntime34" class="countdowntime">4</div>
+        </div>
+        <div id="countdowndiv35" class="countdowndiv">
+          <div id="countdownimgdiv35" class="smalliconimgdiv">
+            <img id="countdownimg35" class="smalliconimg" src="icon/066186.png">
+            <img class="smalliconoverlay" src="icon/overlay.png">
+          </div>
+          <div id="countdownbar35" class="countdownbar"></div>
+          <div id="countdowntime35" class="countdowntime">5</div>
+        </div>
+        <div id="countdowndiv36" class="countdowndiv">
+          <div id="countdownimgdiv36" class="smalliconimgdiv">
+            <img id="countdownimg36" class="smalliconimg" src="icon/066187.png">
+            <img class="smalliconoverlay" src="icon/overlay.png">
+          </div>
+          <div id="countdownbar36" class="countdownbar"></div>
+          <div id="countdowntime36" class="countdowntime">6</div>
+        </div>
+        <div id="countdowndiv37" class="countdowndiv">
+          <div id="countdownimgdiv37" class="smalliconimgdiv">
+            <img id="countdownimg37" class="smalliconimg" src="icon/066188.png">
+            <img class="smalliconoverlay" src="icon/overlay.png">
+          </div>
+          <div id="countdownbar37" class="countdownbar"></div>
+          <div id="countdowntime37" class="countdowntime">7</div>
+        </div>
+        <div id="countdowndiv38" class="countdowndiv">
+          <div id="countdownimgdiv38" class="smalliconimgdiv">
+            <img id="countdownimg38" class="smalliconimg" src="icon/066189.png">
+            <img class="smalliconoverlay" src="icon/overlay.png">
+          </div>
+          <div id="countdownbar38" class="countdownbar"></div>
+          <div id="countdowntime38" class="countdowntime">8</div>
+        </div>
+        <div id="countdowndiv39" class="countdowndiv">
+          <div id="countdownimgdiv39" class="smalliconimgdiv">
+            <img id="countdownimg39" class="smalliconimg" src="icon/066190.png">
+            <img class="smalliconoverlay" src="icon/overlay.png">
+          </div>
+          <div id="countdownbar39" class="countdownbar"></div>
+          <div id="countdowntime39" class="countdowntime">9</div>
         </div>
       </div>
     </div>
