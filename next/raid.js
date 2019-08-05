@@ -17,15 +17,16 @@ actionList.raid = [
 
 ];
 
-countdownid.raidbattlelitany = 10;
-countdownid.raidbattlevoice = 11;
-countdownid.raidbrotherhood = 12;
-countdownid.raidchainstrategem = 13;
-countdownid.raiddevilment = 14;
-countdownid.raiddevotion = 15;
-countdownid.raidembolden = 16;
-countdownid.raidtechnicalstep = 17;
-countdownid.raidtrickattack = 18;
+countdownid.raidbattlelitany = 20;
+countdownid.raidbattlevoice = 21;
+countdownid.raidbrotherhood = 22;
+countdownid.raidchainstrategem = 23;
+countdownid.raiddevilment = 24;
+countdownid.raiddevotion = 25;
+countdownid.raiddragonsight = 26;
+countdownid.raidembolden = 27;
+countdownid.raidtechnicalstep = 28;
+countdownid.raidtrickattack = 29;
 
 function raidAction() {
 
@@ -41,8 +42,9 @@ function raidAction() {
       addCountdownBar("raidbattlevoice", recast.battlevoice, actionGroups.sourcenname);
     }
 
-    else if ("Brotherhood" == actionGroups.actionname
-    && ["BRD", "DNC", "DRG", "MCH", "MNK", "NIN", "SAM"].indexOf(player.job) > -1) {
+    // else if ("Brotherhood" == actionGroups.actionname
+    // && ["BRD", "DNC", "DRG", "MCH", "MNK", "NIN", "SAM"].indexOf(player.job) > -1) {
+    else if ("Brotherhood" == actionGroups.actionname) {
       addCountdownBar("raidbrotherhood", recast.brotherhood, actionGroups.sourcenname);
     }
 
@@ -58,8 +60,13 @@ function raidAction() {
       addCountdownBar("raiddevotion", recast.devotion, actionGroups.sourcenname);
     }
 
-    else if ("Embolden" == actionGroups.actionname
-    && ["BRD", "DNC", "DRG", "MCH", "MNK", "NIN", "SAM"].indexOf(player.job) > -1) {
+    else if ("Dragon Sight" == actionGroups.actionname) {
+      addCountdownBar("raiddragonsight", recast.dragonsight, actionGroups.sourcenname);
+    }
+
+    // else if ("Embolden" == actionGroups.actionname
+    // && ["BRD", "DNC", "DRG", "MCH", "MNK", "NIN", "SAM"].indexOf(player.job) > -1) {
+    else if ("Embolden" == actionGroups.actionname) {
       addCountdownBar("raidembolden", recast.embolden, actionGroups.sourcenname);
     }
 

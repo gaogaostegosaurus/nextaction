@@ -42,6 +42,7 @@ recast.theblackestnight = 15000;
 
 // DRG
 recast.battlelitany = 180000;
+recast.dragonsight = 120000;
 
 // MCH
 recast.barrelstabilizer = 120000;
