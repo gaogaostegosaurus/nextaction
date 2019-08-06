@@ -10,8 +10,9 @@ actionList.nin = [
   // GCD
   "Spinning Edge", "Gust Slash", "Shadow Fang", "Aeolian Edge", "Armor Crush",
   "Death Blossom", "Hakke Mujinsatsu", "Throwing Dagger",
-  "Ten", "Chi", "Jin", "Fuma Shuriken", "Raiton", "Katon", "Hyoton", "Huton", "Doton", "Suiton",
-  "Goka Mekkyaku", "Hyosho Ranyu",
+  "Katon", "Raiton", "Suiton", "Goka Mekkyaku", "Hyosho Ranyu",
+  // Code currently doesn't use mudra or most ninjutsu for decision-making
+  // "Ten", "Chi", "Jin", "Fuma Shuriken",  "Hyoton", "Huton", "Doton",
 
   // Role
   "True North"
@@ -38,11 +39,10 @@ function ninJobChange() {
 
   countdownid.shadowfang = 0;
   countdownid.ninjutsu = 1;
-  countdownid.suiton = 3;
-  countdownid.tenchijin = 4;
-  countdownid.kassatsu = 5;
-  countdownid.trickattack = 20;
-  countdownid.dreamwithinadream = 21;
+  countdownid.kassatsu = 2;
+  countdownid.tenchijin = 3;
+  countdownid.trickattack = 10;
+  countdownid.dreamwithinadream = 11;
 
   count.aoe = 1;
   previous.deathblossom = 0;
@@ -118,7 +118,7 @@ function ninAction(logLine) {
         addCountdownBar("trickattack");
       }
 
-      else if (["Hyoton", "Raiton", "Hyosho Ranyu"].indexOf(actionGroups.actionname) > -1) {
+      else if (["Raiton", "Hyosho Ranyu"].indexOf(actionGroups.actionname) > -1) {
         count.aoe = 1;
       }
 
@@ -133,11 +133,12 @@ function ninAction(logLine) {
       }
 
       else if ("Suiton" == actionGroups.actionname) {
-        // addCountdownBar("trickattack", checkRecast("trickattack"));
+        addStatus("suiton");
       }
 
       else if ("Kassatsu" == actionGroups.actionname) {
-        removeIcon("tenchijin");
+
+        removeIcon("kassatsu");
 
         if (checkRecast("kassatsu2") < 0) {
           addRecast("kassatsu2", recast.kassatsu);
@@ -183,6 +184,11 @@ function ninAction(logLine) {
         addCountdownBar("ninjutsu", -1);
         clearTimeout(timeout.ninjutsu);
         ninNinjutsu();
+      }
+
+      else if ("Meisui" == actionGroups.actionname) {
+        addCountdownBar("meisui");
+        ninNinki();
       }
 
       else { // Weaponskills and combos (hopefully)
@@ -320,6 +326,12 @@ function ninStatus() {
     else if ("Suiton" == statusGroups.statusname) {
       if ("gains" == statusGroups.gainsloses) {
         addStatus("suiton", parseInt(statusGroups.duration) * 1000);
+        if (checkStatus("suiton") > checkRecast("trickattack")) {
+
+        }
+        else if (checkStatus("suiton") > checkRecast("meisui")) {
+
+        }
       }
       else if ("loses" == statusGroups.gainsloses) {
         removeStatus("suiton", statusGroups.targetID);
@@ -343,10 +355,7 @@ function ninStatus() {
         addStatus("tenchijin", parseInt(statusGroups.duration) * 1000);
       }
       else if ("loses" == statusGroups.gainsloses) {
-        removeStatus("tenchijin");
-        // addRecast("ninjutsu", statusGroups.targetID, recast.ninjutsu);
-        // clearTimeout(timeout.ninjutsu);
-        // timeout.ninjutsu = setTimeout(ninNinjutsu, recast.ninjutsu - 1000);
+        ninLosesMudra()
       }
     }
   }
@@ -424,6 +433,21 @@ function ninHakkeMujinsatsuCombo() {
   }
 }
 
+function ninLosesMudra() {
+  removeIcon("ninjutsu1");
+  removeIcon("ninjutsu2");
+  removeIcon("ninjutsu3");
+  addCountdownBar("ninjutsu");
+  clearTimeout(timeout.ninjutsu);
+  timeout.ninjutsu = setTimeout(ninNinjutsu, recast.ninjutsu - 1000);
+  if (checkRecast("kassatsu1") < 0) {
+    addIcon("kassatsu");
+  }
+  if (checkRecast("tenchijin") < 0) {
+    addIcon("tenchijin");
+  }
+}
+
 function ninNinjutsu() {
 
   if (player.level >= 70) {
@@ -466,6 +490,19 @@ function ninNinjutsu() {
   else if (player.level >= 45
   && checkStatus("suiton", player.ID) < 0
   && checkRecast("trickattack") < 25000
+  && checkRecast("tenchijin") > 1000) {
+    icon.ninjutsu3 = icon.suiton;
+    addIcon("ninjutsu3");
+    if (checkStatus("tenchijin") > 0) {
+      icon.ninjutsu1 = icon.fumashuriken;
+      addIcon("ninjutsu1");
+      icon.ninjutsu2 = icon.raiton;
+      addIcon("ninjutsu2");
+    }
+  }
+  else if (player.level >= 45
+  && checkStatus("suiton", player.ID) < 0
+  && player.jobDetail.ninkiAmount < 60
   && checkRecast("tenchijin") > 1000) {
     icon.ninjutsu3 = icon.suiton;
     addIcon("ninjutsu3");
