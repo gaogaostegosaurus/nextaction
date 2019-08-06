@@ -417,6 +417,11 @@ function addIcon(name, img, effect) {
   dom["icondiv" + nextid[name]].className = "icondiv icon-add " + effect;
 }
 
+function addIconDelay(name, delay, img, effect) {
+  clearTimeout(timeout[name]);
+  timeout[name] = setTimeout(addIcon, delay, name, img, effect);
+}
+
 function removeIcon(name) {
   dom["icondiv" + nextid[name]].className = "icondiv icon-remove";
 }
