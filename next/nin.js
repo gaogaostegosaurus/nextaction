@@ -1,5 +1,7 @@
 "use strict";
 
+// To do: clearer indication of when TCJ / Mudra is active
+
 actionList.nin = [
 
   // Off GCD
@@ -34,7 +36,7 @@ function ninJobChange() {
   nextid.kassatsu = 11;
   nextid.ninkiaction = 12;
   // nextid.trickattack = 12;
-  // nextid.dreamwithinadream = 13;
+  nextid.dreamwithinadream = 13;
   // nextid.assassinate = 14;
 
   countdownid.shadowfang = 0;
@@ -50,8 +52,6 @@ function ninJobChange() {
   previous.katon = 0; // Includes Goka Mekkyaku
   previous.hellfrogmedium = 0;
 
-
-
   if (player.level >= 56) {
     addCountdownBar("dreamwithinadream", -1);
   }
@@ -61,13 +61,13 @@ function ninJobChange() {
 }
 
 function ninTargetChangedEvent() {
-  if (previous.targetID != target.ID) { // Prevent this from repeatedly being called on movement or whatever
+  if (previous.targetID != target.ID
+  && !toggle.combo) { // Prevent this from repeatedly being called on movement, target change-mid combo
 
     // If not a target then clear things out
     if (target.ID == 0 || target.ID.startsWith("1") || target.ID.startsWith("E")) {  // 0 = no target, 1... = player? E... = non-combat NPC?
       removeCountdownBar("shadowfang");
     }
-
     else {
       addCountdownBar("shadowfang", checkStatus("shadowfang", target.ID));
     }
@@ -140,17 +140,6 @@ function ninAction(logLine) {
 
         removeIcon("kassatsu");
         addStatus("kassatsu");
-
-        if (player.level >= 76) {
-          icon.katon = icon.gokamekkyaku;
-          icon.raiton = icon.hyoshoranyu;  // This isn't how it really upgrades, but  this happens in practice
-          icon.hyoton = icon.hyoshoranyu;  // Just in case for later
-        }
-        else {
-          icon.katon = "002908";
-          icon.raiton = "002912";
-          icon.hyoton = "002909";
-        }
 
         if (checkRecast("kassatsu2") < 0) {
           addRecast("kassatsu2", recast.kassatsu);
@@ -354,9 +343,17 @@ function ninStatus() {
     else if ("Kassatsu" == statusGroups.statusname) {
       if ("gains" == statusGroups.gainsloses) {
         addStatus("kassatsu", parseInt(statusGroups.duration) * 1000);
+        if (player.level >= 76) {
+          icon.katon = icon.gokamekkyaku;
+          icon.raiton = icon.hyoshoranyu;  // This isn't how it really upgrades, but  this happens in practice
+          icon.hyoton = icon.hyoshoranyu;  // Just in case for later
+        }
       }
       else if ("loses" == statusGroups.gainsloses) {
         removeStatus("kassatsu");
+        icon.katon = "002908";
+        icon.raiton = "002912";
+        icon.hyoton = "002909";
         // addRecast("ninjutsu", statusGroups.targetID, recast.ninjutsu);
         // clearTimeout(timeout.ninjutsu);
         // timeout.ninjutsu = setTimeout(ninNinjutsu, recast.ninjutsu - 1000);
@@ -475,7 +472,7 @@ function ninNinjutsu() {
   if (player.level >= 45
   && player.jobDetail.hutonMilliseconds == 0
   && checkStatus("kassatsu")
-  && checkStatus("tenchijin")) < 0) {
+  && checkStatus("tenchijin") < 0) {
     icon.ninjutsu3 = icon.huton;
     addIcon("ninjutsu3"); // Huton if down and no damage buffs
   }
