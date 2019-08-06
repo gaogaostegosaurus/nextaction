@@ -139,6 +139,18 @@ function ninAction(logLine) {
       else if ("Kassatsu" == actionGroups.actionname) {
 
         removeIcon("kassatsu");
+        addStatus("kassatsu");
+
+        if (player.level >= 76) {
+          icon.katon = icon.gokamekkyaku;
+          icon.raiton = icon.hyoshoranyu;  // This isn't how it really upgrades, but  this happens in practice
+          icon.hyoton = icon.hyoshoranyu;  // Just in case for later
+        }
+        else {
+          icon.katon = "002908";
+          icon.raiton = "002912";
+          icon.hyoton = "002909";
+        }
 
         if (checkRecast("kassatsu2") < 0) {
           addRecast("kassatsu2", recast.kassatsu);
@@ -149,14 +161,15 @@ function ninAction(logLine) {
           addRecast("kassatsu2", checkRecast("kassatsu2") + recast.kassatsu);
           addCountdownBar("kassatsu", checkRecast("kassatsu1"), "icon");
         }
-        addStatus("kassatsu");
+
         addCountdownBar("ninjutsu", -1);
         clearTimeout(timeout.ninjutsu);
         ninNinjutsu();
       }
 
       else if ("Dream Within A Dream" == actionGroups.actionname) {
-        addCountdownBar("dreamwithinadream");
+        removeIcon("dreamwithinadream");
+        addCountdownBar("dreamwithinadream", recast.dreamwithinadream, "icon");
         addStatus("assassinateready");
       }
 
@@ -459,37 +472,51 @@ function ninNinjutsu() {
     }
   }
 
-  if (player.level >= 76
-  && checkStatus("kassatsu") > 0) {
-    icon.katon = icon.gokamekkyaku;
-    icon.raiton = icon.hyoshoranyu;
-  }
-  else {
-    icon.katon = "002908";
-    icon.raiton = "002912";
-  }
-
   if (player.level >= 45
   && player.jobDetail.hutonMilliseconds == 0
-  && Math.max(checkStatus("kassatsu"), checkStatus("tenchijin")) < 0) {
+  && checkStatus("kassatsu")
+  && checkStatus("tenchijin")) < 0) {
     icon.ninjutsu3 = icon.huton;
     addIcon("ninjutsu3"); // Huton if down and no damage buffs
   }
   else if (player.level >= 45
   && player.level < 54  // No AC
-  && player.jobDetail.hutonMilliseconds < 25000) {
+  && player.jobDetail.hutonMilliseconds < 25000
+  && checkStatus("kassatsu") < 0) {
     icon.ninjutsu3 = icon.huton;
     addIcon("ninjutsu3");  // Huton if Huton is low (and no AC yet)
   }
-  else if (player.level >= 35
-  && count.aoe >= 3
-  && checkStatus("tenchijin") < 0) {
-    icon.ninjutsu3 = icon.katon;
-    addIcon("ninjutsu3"); // Probably more damage at 3 targets to do Katon than anything else...
+
+  else if (checkStatus("tenchijin") > 0) {
+    if (count.aoe >= 2) {
+      icon.ninjutsu1 = icon.fumashuriken;
+      icon.ninjutsu2 = icon.katon;
+      icon.ninjutsu3 = icon.suiton;
+    }
+    else {
+      icon.ninjutsu1 = icon.fumashuriken;
+      icon.ninjutsu2 = icon.raiton;
+      icon.ninjutsu3 = icon.suiton;
+    }
+    addIcon("ninjutsu1");
+    addIcon("ninjutsu2");
+    addIcon("ninjutsu3");
   }
+
+  else if (player.level >= 76
+  && checkStatus("kassatsu") > 0) {
+    if (count.aoe >= 2) {
+      icon.ninjutsu3 = icon.katon;
+    }
+    else {
+      icon.ninjutsu3 = icon.hyoton;
+    }
+    addIcon("ninjutsu3");
+  }
+
   else if (player.level >= 45
-  && checkStatus("suiton", player.ID) < 0
-  && checkRecast("trickattack") < 25000
+  && checkStatus("suiton") < checkRecast("trickattack")
+  && checkRecast("trickattack") < 24000
   && checkRecast("tenchijin") > 1000) {
     icon.ninjutsu3 = icon.suiton;
     addIcon("ninjutsu3");
@@ -500,6 +527,13 @@ function ninNinjutsu() {
       addIcon("ninjutsu2");
     }
   }
+
+  else if (player.level >= 35
+  && count.aoe >= 3) {
+    icon.ninjutsu3 = icon.katon;
+    addIcon("ninjutsu3"); // Probably more damage at 3 targets to do Katon than anything else...
+  }
+
   else if (player.level >= 45
   && checkStatus("suiton", player.ID) < 0
   && player.jobDetail.ninkiAmount < 60
