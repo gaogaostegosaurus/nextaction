@@ -17,16 +17,16 @@ actionList.raid = [
 
 ];
 
-countdownid.raidbattlelitany = 20;
-countdownid.raidbattlevoice = 21;
-countdownid.raidbrotherhood = 22;
-countdownid.raidchainstrategem = 23;
-countdownid.raiddevilment = 24;
-countdownid.raiddevotion = 25;
-countdownid.raiddragonsight = 26;
-countdownid.raidembolden = 27;
-countdownid.raidtechnicalstep = 28;
-countdownid.raidtrickattack = 29;
+countdownid.raidbattlelitany = 30;
+countdownid.raidbattlevoice = 31;
+countdownid.raidbrotherhood = 32;
+countdownid.raidchainstrategem = 33;
+countdownid.raiddevilment = 34;
+countdownid.raiddevotion = 35;
+countdownid.raiddragonsight = 36;
+countdownid.raidembolden = 37;
+countdownid.raidtechnicalstep = 38;
+countdownid.raidtrickattack = 39;
 
 function raidAction() {
 
