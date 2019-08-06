@@ -147,7 +147,7 @@ function blmStatus(logLine) {
 
     if (statusGroups.statusname == "Thundercloud") {
       if (statusGroups.gainsloses == "gains") {
-        addStatus("thundercloud", parseInt(logLine[6]) * 1000, statusGroups.targetID);
+        addStatus("thundercloud", parseInt(logLine[6]) * 1000);
         blmCheckProcs()
       }
       else if (statusGroups.gainsloses == "loses") {
@@ -158,7 +158,7 @@ function blmStatus(logLine) {
 
     else if (statusGroups.statusname == "Firestarter") {
       if (statusGroups.gainsloses== "gains") {
-        addStatus("firestarter", parseInt(logLine[6]) * 1000, statusGroups.targetID);
+        addStatus("firestarter", parseInt(logLine[6]) * 1000);
         blmCheckProcs();
       }
       else if (statusGroups.gainsloses == "loses") {
@@ -236,7 +236,7 @@ function blmAstralRotation() {
 
   if (player.currentMP >= 4800
   && player.jobDetail.umbralMilliseconds > 12000) {
-    addIcon("fire4_1");
+    addIcon("fire4_1", "fire4");
   }
   else {
     removeIcon("fire4_1");
@@ -244,7 +244,7 @@ function blmAstralRotation() {
 
   if (player.currentMP >= 3200
   && player.jobDetail.umbralMilliseconds > 9000) {
-    addIcon("fire4_2");
+    addIcon("fire4_2", "fire4");
   }
   else {
     removeIcon("fire4_2");
@@ -252,7 +252,7 @@ function blmAstralRotation() {
 
   if (player.currentMP >= 1600
   && player.jobDetail.umbralMilliseconds > 6000) {
-    addIcon("fire4_3");
+    addIcon("fire4_3", "fire4");
   }
   else {
     removeIcon("fire4_3");
