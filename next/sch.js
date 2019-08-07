@@ -192,7 +192,7 @@ function schStatus() {
     if (statusGroups.gainsloses == "gains") {
       addStatus("bio", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
       if (target.ID == statusGroups.targetID) {  // Might be possible to switch targets between application to target and log entry
-        addCountdownBar("bio", checkStatus("bio", target.ID));
+        addCountdownBar("bio", checkStatus("bio", target.ID), "RECAST");
       }
     }
     else if (statusGroups.gainsloses == "loses") {
