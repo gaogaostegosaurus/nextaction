@@ -160,6 +160,10 @@ function schAction() {
       addCountdownBar("indomitability");
     }
 
+    else if ("Excogitation" == actionGroups.actionname) {
+      addCountdownBar("excogitation");
+    }
+
     else if ("Deployment Tactics" == actionGroups.actionname) {
       addCountdownBar("deploymenttactics");
     }
@@ -186,7 +190,10 @@ function schStatus() {
 
   if (["Bio", "Bio II", "Biolysis"].indexOf(statusGroups.statusname) > -1) {
     if (statusGroups.gainsloses == "gains") {
-      addStatus("bio", statusGroups.targetID, parseInt(statusGroups.duration) * 1000);
+      addStatus("bio", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+      if (target.ID == statusGroups.targetID) {  // Might be possible to switch targets between application to target and log entry
+        addCountdownBar("bio", checkStatus("bio", target.ID));
+      }
     }
     else if (statusGroups.gainsloses == "loses") {
       removeStatus("bio", statusGroups.targetID);
