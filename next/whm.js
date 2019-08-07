@@ -26,6 +26,9 @@ function whmJobChange() {
   nextid.luciddreaming = 10;
   nextid.thinair = 10;
   nextid.presenceofmind = 11;
+  
+  countdownid.regen = 0;
+  countdownid.aero = 0;
 
   // Set up icons
   if (player.level >= 72) {
@@ -129,13 +132,28 @@ function whmPlayerChangedEvent() {
 function whmTargetChangedEvent() {
 
   // Ideally tries to keep Regen up on player tank characters
-  if (player.level >= 35
-  && ["PLD", "WAR", "DRK", "GNB"].indexOf(target.job) > -1
-  && checkStatus("regen", target.ID) < 0) {
-    addIcon("regen");
-  }
-  else {
-    removeIcon(nextid.regen)
+//   if (player.level >= 35
+//   && ["PLD", "WAR", "DRK", "GNB"].indexOf(target.job) > -1
+//   && checkStatus("regen", target.ID) < 0) {
+//     addIcon("regen");
+//   }
+//   else {
+//     removeIcon(nextid.regen)
+//   }
+  
+  if (previous.targetID != target.ID) {
+    
+    // 0 = no target, 1... = player? E... = non-combat NPC?
+    if (target.ID.startsWith("1")) {
+      addCountdownBar("regen", checkStatus("regen", target.ID), "icon");
+    }
+    else if (target.ID.startsWith("4")) {
+      addCountdownBar("aero", checkStatus("aero", target.ID), "icon");
+    }
+    else {  
+      removeCountdownBar("aero");
+    }
+    previous.targetID = target.ID;
   }
 }
 
@@ -185,17 +203,14 @@ function whmAction() {
 
     else if (actionGroups.actionname == "Regen") {
       removeIcon("regen");
+      addCountdownBar("aero", checkStatus("aero", target.ID), "icon");
       addStatus("regen", duration.regen, actionGroups.targetID);
     }
 
-    else if (["Aero", "Aero II"].indexOf(actionGroups.actionname) > -1) {
+    else if (["Aero", "Aero II", "Dia"].indexOf(actionGroups.actionname) > -1) {
       removeIcon("aero");
+      addCountdownBar("aero", checkStatus("aero", target.ID), "icon");
       addStatus("aero", duration.aero, actionGroups.targetID);
-    }
-
-    else if (actionGroups.actionname == "Dia") {
-      removeIcon("aero");
-      addStatus("aero", duration.dia, actionGroups.targetID);
     }
   }
 }
