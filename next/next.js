@@ -66,6 +66,10 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
       player.tempjobDetail.tempesprit = parseInt(player.debugJobSplit[1], 16); // 0-100
       player.tempjobDetail.tempsteps = parseInt(player.debugJobSplit[6]); // 0-4
     }
+    else if (player.job == "SCH") {
+      player.tempjobDetail.tempaetherflow = parseInt(player.debugJobSplit[2]); // 0-3
+      player.tempjobDetail.tempfaerie = parseInt(player.debugJobSplit[3], 16); // 0-100
+    }
   // Detects name/job/level change and clears elements
 
   if (previous.job != player.job || previous.level != player.level) {
@@ -106,6 +110,9 @@ document.addEventListener('onTargetChangedEvent', function(e) {
 
   if (player.job == "BRD") {
     brdTargetChangedEvent();
+  }
+  else if (player.job == "SCH") {
+    schTargetChangedEvent();
   }
   else if (player.job == "WHM") {
     whmTargetChangedEvent();
@@ -246,6 +253,9 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
       else if (player.job == "SAM") {
         samAction(actionLog);
       }
+      else if (player.job == "SCH") {
+        schAction();
+      }
       else if (player.job == "WAR") {
         warAction(actionLog);
       }
@@ -283,6 +293,9 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
       }
       else if (player.job == "SAM") {
         samStatus(statusLog);
+      }
+      else if (player.job == "SCH") {
+        schStatus(statusLog);
       }
       else if (player.job == "WAR") {
         warStatus(statusLog);
@@ -592,6 +605,9 @@ function loadInitialState() {
   }
   else if (player.job == "SAM") {
     samJobChange();
+  }
+  else if (player.job == "SCH") {
+    schJobChange();
   }
   else if (player.job == "WAR") {
     warJobChange();

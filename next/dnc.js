@@ -36,15 +36,15 @@ function dncJobChange() {
   nextid.fandance3 = 10;
   nextid.fourfoldfeathers = 11;
 
-  countdownid.technicalstep = 0;
-  countdownid.standardstep = 1;
-  countdownid.devilment = 2;
-  countdownid.reversecascade = 3;
-  countdownid.fountainfall = 4;
-  countdownid.risingwindmill = 5;
-  countdownid.bloodshower = 6;
-  countdownid.fandance3 = 7;
-  countdownid.flourish = 8;
+  countdownid.standardstep = 0;
+  countdownid.flourish = 1;
+  countdownid.technicalstep = 10;
+  countdownid.devilment = 11;
+  // countdownid.reversecascade = 3;
+  // countdownid.fountainfall = 4;
+  // countdownid.risingwindmill = 5;
+  // countdownid.bloodshower = 6;
+  // countdownid.fandance3 = 7;
 
   previous.fandance2 = 0;
   previous.fandance3 = 0;
@@ -222,13 +222,13 @@ function dncStatus() {
     if ("Flourishing Cascade" == statusGroups.statusname) {
       if (statusGroups.gainsloses == "gains") {
         addIcon("reversecascade");
-        addCountdownBar("reversecascade", parseInt(statusGroups.duration) * 1000);
+        // addCountdownBar("reversecascade", parseInt(statusGroups.duration) * 1000);
         addStatus("flourishingcascade", player.ID, parseInt(statusGroups.duration) * 1000);
         dncFlourishCheck();
       }
       else if (statusGroups.gainsloses == "loses") {
         removeIcon("reversecascade");
-        removeCountdownBar("reversecascade");
+        // removeCountdownBar("reversecascade");
         removeStatus("flourishingcascade");
         dncFlourishCheck();
       }
@@ -237,13 +237,13 @@ function dncStatus() {
     else if ("Flourishing Fountain" == statusGroups.statusname) {
       if (statusGroups.gainsloses == "gains") {
         addIcon("fountainfall");
-        addCountdownBar("fountainfall", parseInt(statusGroups.duration) * 1000);
+        // addCountdownBar("fountainfall", parseInt(statusGroups.duration) * 1000);
         addStatus("flourishingfountain", parseInt(statusGroups.duration) * 1000);
         dncFlourishCheck();
       }
       else if (statusGroups.gainsloses == "loses") {
         removeIcon("fountainfall");
-        removeCountdownBar("fountainfall");
+        // removeCountdownBar("fountainfall");
         removeStatus("flourishingfountain");
         dncFlourishCheck();
       }
@@ -252,13 +252,13 @@ function dncStatus() {
     else if ("Flourishing Windmill" == statusGroups.statusname) {
       if (statusGroups.gainsloses == "gains") {
         addIcon("risingwindmill");
-        addCountdownBar("risingwindmill", parseInt(statusGroups.duration) * 1000);
+        // addCountdownBar("risingwindmill", parseInt(statusGroups.duration) * 1000);
         addStatus("flourishingwindmill", parseInt(statusGroups.duration) * 1000);
         dncFlourishCheck();
       }
       else if (statusGroups.gainsloses == "loses") {
         removeIcon("risingwindmill");
-        removeCountdownBar("risingwindmill");
+        // removeCountdownBar("risingwindmill");
         removeStatus("flourishingwindmill");
         dncFlourishCheck();
       }
@@ -267,13 +267,13 @@ function dncStatus() {
     else if ("Flourishing Shower" == statusGroups.statusname) {
       if (statusGroups.gainsloses == "gains") {
         addIcon("bloodshower");
-        addCountdownBar("bloodshower", parseInt(statusGroups.duration) * 1000);
+        // addCountdownBar("bloodshower", parseInt(statusGroups.duration) * 1000);
         addStatus("flourishingshower", parseInt(statusGroups.duration) * 1000);
         dncFlourishCheck();
       }
       else if (statusGroups.gainsloses == "loses") {
         removeIcon("bloodshower");
-        removeCountdownBar("bloodshower");
+        // removeCountdownBar("bloodshower");
         removeStatus("flourishingshower");
         dncFlourishCheck();
       }
@@ -282,13 +282,13 @@ function dncStatus() {
     else if ("Flourishing Fan Dance" == statusGroups.statusname) {
       if (statusGroups.gainsloses == "gains") {
         addIcon("fandance3");
-        addCountdownBar("fandance3", parseInt(statusGroups.duration) * 1000);
+        // addCountdownBar("fandance3", parseInt(statusGroups.duration) * 1000);
         addStatus("flourishingfandance", parseInt(statusGroups.duration) * 1000);
         dncFlourishCheck();
       }
       else if (statusGroups.gainsloses == "loses") {
         removeIcon("fandance3");
-        removeCountdownBar("fandance3");
+        // removeCountdownBar("fandance3");
         removeStatus("flourishingfandance");
         dncFlourishCheck();
       }
@@ -303,6 +303,15 @@ function dncStatus() {
       }
     }
 
+    else if ("Standard Finish" == statusGroups.statusname) {
+      if (statusGroups.gainsloses == "gains") {
+        addStatus("standardfinish", parseInt(statusGroups.duration) * 1000);
+      }
+      else if (statusGroups.gainsloses == "loses") {
+        removeStatus("standardfinish");
+      }
+    }
+
     else if ("Technical Step" == statusGroups.statusname) {
       if (statusGroups.gainsloses == "gains") {
         addStatus("technicalstep", parseInt(statusGroups.duration) * 1000);
@@ -311,17 +320,38 @@ function dncStatus() {
         removeStatus("technicalstep");
       }
     }
+
+    else if ("Technical Finish" == statusGroups.statusname) {
+      if (statusGroups.gainsloses == "gains") {
+        addStatus("technicalfinish", parseInt(statusGroups.duration) * 1000);
+      }
+      else if (statusGroups.gainsloses == "loses") {
+        removeStatus("technicalfinish");
+      }
+    }
+  }
+}
+
+function dncCombo() {
+  if (count.aoe >= 2
+  && player.level >= 15) {
+    addIcon("windmill");
+    addIcon("bladeshower");
+  }
+  else {
+    addIcon("cascade");
+    addIcon("fountain");
   }
 }
 
 function dncFlourishCheck() {
   if (player.level >= 72) {
     if (Math.max(
-    checkStatus("flourishingcascade", player.ID),
-    checkStatus("flourishingfountain", player.ID),
-    checkStatus("flourishingwindmill", player.ID),
-    checkStatus("flourishingshower", player.ID),
-    checkStatus("flourishingfandance", player.ID)) < 0) {
+    checkStatus("flourishingcascade"),
+    checkStatus("flourishingfountain"),
+    checkStatus("flourishingwindmill"),
+    checkStatus("flourishingshower"),
+    checkStatus("flourishingfandance")) < 0) {
       addCountdownBar("flourish", checkRecast("flourish"), "OK")
     }
     else {

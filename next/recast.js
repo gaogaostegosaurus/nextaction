@@ -92,7 +92,18 @@ recast.senei = recast.guren;
 recast.tsubamegaeshi = 60000;
 
 // SCH
-recast.chainstrategem = 120000;
+recast.aetherflow = 60000;
+recast.chainstratagem = 120000;
+recast.deploymenttactics = 120000;
+recast.dissipation = 180000;
+recast.excogitation = 45000;
+recast.feyblessing = 60000;
+recast.feyillumination = 120000;
+recast.indomitability = 30000;
+recast.recitation = 90000;
+recast.sacredsoil = 30000;
+recast.summonseraph = 120000;
+recast.whisperingdawn = 60000;
 
 // SMN
 recast.devotion = 180000;

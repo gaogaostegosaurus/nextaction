@@ -20,7 +20,7 @@ actionList.raid = [
 countdownid.raidbattlelitany = 30;
 countdownid.raidbattlevoice = 31;
 countdownid.raidbrotherhood = 32;
-countdownid.raidchainstrategem = 33;
+countdownid.raidchainstratagem = 33;
 countdownid.raiddevilment = 34;
 countdownid.raiddevotion = 35;
 countdownid.raiddragonsight = 36;
@@ -48,7 +48,7 @@ function raidAction() {
       addCountdownBar("raidbrotherhood", recast.brotherhood, actionGroups.sourcenname);
     }
 
-    else if ("Chain Strategem" == actionGroups.actionname) {
+    else if ("Chain Stratagem" == actionGroups.actionname) {
       addCountdownBar("raidchainstrategem", recast.chainstrategem, actionGroups.sourcenname);
     }
 

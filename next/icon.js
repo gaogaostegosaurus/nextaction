@@ -212,8 +212,25 @@ icon.kaeshigoken = "003182";
 icon.kaeshisetsugekka = "003183";
 icon.shoha = "003184";
 
+// ACN
+icon.bio = "000503";
+icon.bio2 = "000504";
+icon.aetherflow = "000510";
+
 // SCH
+icon.sacredsoil = "002804";
+icon.indomitability = "002806";
+icon.deploymenttactics = "002808";
+icon.emergencytactics = "002809";
+icon.dissipation = "002810";
+icon.excogitation = "002813";
 icon.chainstrategem = "002815";
+icon.biolysis = "002820";
+icon.recitation = "002822";
+icon.summonseraph = "002850";
+icon.whisperingdawn = "002852";
+icon.feyillumination = "002853";
+icon.feyblessing = "002854";
 
 // SMN
 icon.devotion = "002688";
