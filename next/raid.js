@@ -5,7 +5,7 @@ actionList.raid = [
   // ALl
   "Battle Litany",
   "Battle Voice",
-  "Chain Strategem",
+  "Chain Stratagem",
   "Devilment",
   "Devotion",
   "Technical Step",
@@ -49,7 +49,7 @@ function raidAction() {
     }
 
     else if ("Chain Stratagem" == actionGroups.actionname) {
-      addCountdownBar("raidchainstrategem", recast.chainstrategem, actionGroups.sourcenname);
+      addCountdownBar("raidchainstratagem", recast.chainstratagem, actionGroups.sourcenname);
     }
 
     else if ("Devilment" == actionGroups.actionname) {
