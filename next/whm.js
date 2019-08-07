@@ -26,7 +26,7 @@ function whmJobChange() {
   nextid.luciddreaming = 10;
   nextid.thinair = 10;
   nextid.presenceofmind = 11;
-  
+
   countdownid.regen = 0;
   countdownid.aero = 0;
 
@@ -140,17 +140,18 @@ function whmTargetChangedEvent() {
 //   else {
 //     removeIcon(nextid.regen)
 //   }
-  
+
   if (previous.targetID != target.ID) {
-    
+
     // 0 = no target, 1... = player? E... = non-combat NPC?
-    if (target.ID.startsWith("1")) {
+    if (target.ID.startsWith("1")
+    && ["PLD", "WAR", "DRK", "GNB"].indexOf(target.job) > -1) {
       addCountdownBar("regen", checkStatus("regen", target.ID), "icon");
     }
     else if (target.ID.startsWith("4")) {
       addCountdownBar("aero", checkStatus("aero", target.ID), "icon");
     }
-    else {  
+    else {
       removeCountdownBar("aero");
     }
     previous.targetID = target.ID;
