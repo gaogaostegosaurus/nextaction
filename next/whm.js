@@ -2,14 +2,15 @@
 
 actionList.whm = [
 
-  // Role actions
-  "Lucid Dreaming",
-
   // oGCD actions
   "Presence Of Mind", "Benediction", "Asylum", "Assize", "Thin Air", "Tetragrammaton", "Divine Benison",
 
+
   // GCD actions
-  "Aero", "Regen", "Aero II", "Dia"
+  "Aero", "Regen", "Aero II", "Dia", "Afflatus Misery",
+
+  "Lucid Dreaming"
+
 ];
 
 function whmJobChange() {
@@ -18,17 +19,22 @@ function whmJobChange() {
   nextid.freecure = 0;
   nextid.regen = 1;
   nextid.aero = 2;
-  nextid.assize = 3;
-  nextid.divinebenison = 4;
-  nextid.tetragrammaton = 5;
-  nextid.benediction = 6;
-  nextid.asylum = 7;
+  nextid.afflatusmisery = 3;
   nextid.luciddreaming = 10;
-  nextid.thinair = 10;
-  nextid.presenceofmind = 11;
+  nextid.thinair = nextid.luciddreaming;
 
   countdownid.regen = 0;
   countdownid.aero = 0;
+  countdownid.assize = 1;
+  countdownid.divinebenison = 2;
+  countdownid.tetragrammaton = 3;
+  countdownid.benediction = 4;
+  countdownid.asylum = 5;
+  countdownid.presenceofmind = 6;
+  countdownid.thinair = 7;
+  countdownid.swiftcast = 8;
+  countdownid.plenaryindulgence = 10;
+  countdownid.temperance = 11;
 
   // Set up icons
   if (player.level >= 72) {
@@ -41,11 +47,11 @@ function whmJobChange() {
     icon.aero = "000401";
   }
 
-  if (checkStatus("freecure", player.ID) > 0) {
+  if (checkStatus("freecure") > 0) {
     addIcon("freecure");
   }
   else {
-    removeIcon(nextid.freecure)
+    removeIcon("freecure");
   }
 
   if (player.level >= 24
@@ -53,61 +59,48 @@ function whmJobChange() {
   && checkRecast("luciddreaming") < 0) {
     addIcon("luciddreaming");
   }
-  else if (player.level >= 58
-  && player.currentMP / player.maxMP < 0.8
-  && checkRecast("thinair") < 0) {
-    addIcon("thinair");
-  }
   else {
-    removeIcon(nextid.luciddreaming)
+    removeIcon("luciddreaming");
   }
 
-  if (player.level >= 30
-  && checkRecast("presenceofmind") < 0) {
-    addIcon("presenceofmind");
-  }
-  else {
-    removeIcon(nextid.presenceofmind)
+  if (player.level >= 30) {
+    addCountdownBar("presenceofmind", -1);
   }
 
-  if (player.level >= 50
-  && checkRecast("benediction") < 0) {
-    addIcon("benediction");
-  }
-  else {
-    removeIcon(nextid.benediction)
+  if (player.level >= 50) {
+    addCountdownBar("benediction", -1);
   }
 
-  if (player.level >= 52
-  && checkRecast("asylum") < 0) {
-    addIcon("asylum");
-  }
-  else {
-    removeIcon(nextid.asylum)
+  if (player.level >= 52) {
+    addCountdownBar("asylum", -1);
   }
 
-  if (player.level >= 56
-  && checkRecast("assize") < 0) {
-    addIcon("assize");
-  }
-  else {
-    removeIcon(nextid.assize)
+  if (player.level >= 56) {
+    addCountdownBar("assize", -1);
   }
 
-  if (player.level >= 60
-  && checkRecast("tetragrammaton") < 0) {
-    addIcon("tetragrammaton");
-  }
-  else {
-    removeIcon(nextid.tetragrammaton)
+  if (player.level >= 58) {
+    addCountdownBar("thinair", -1);
   }
 
-  if (player.level >= 66
-  && checkRecast("divinebenison") < 0) {
-    addIcon("divinebenison");
+  if (player.level >= 60) {
+    addCountdownBar("tetragrammaton", -1);
   }
-  else {
-    removeIcon(nextid.divinebenison)
+
+  if (player.level >= 66) {
+    addCountdownBar("divinebenison", -1);
+  }
+
+  if (player.level >= 70) {
+    addCountdownBar("plenaryindulgence", -1);
+  }
+
+  if (player.level >= 80) {
+    addCountdownBar("temperance", -1);
+  }
+
+  if (player.level >= 18) {
+    addCountdownBar("swiftcast", -1);
   }
 }
 
@@ -119,27 +112,12 @@ function whmPlayerChangedEvent() {
   && checkRecast("luciddreaming") < 0) {
     addIcon("luciddreaming");
   }
-  else if (player.level >= 58
-  && player.currentMP / player.maxMP < 0.8
-  && checkRecast("thinair") < 0) {
-    addIcon("thinair");
-  }
   else {
     removeIcon("luciddreaming");
   }
 }
 
 function whmTargetChangedEvent() {
-
-  // Ideally tries to keep Regen up on player tank characters
-//   if (player.level >= 35
-//   && ["PLD", "WAR", "DRK", "GNB"].indexOf(target.job) > -1
-//   && checkStatus("regen", target.ID) < 0) {
-//     addIcon("regen");
-//   }
-//   else {
-//     removeIcon(nextid.regen)
-//   }
 
   if (previous.targetID != target.ID) {
 
@@ -163,95 +141,125 @@ function whmAction() {
   if (actionList.whm.indexOf(actionGroups.actionname) > -1) {
 
     if (actionGroups.actionname == "Lucid Dreaming") {
-      removeIcon("luciddreaming");
       addRecast("luciddreaming");
+      addCountdownBar("luciddreaming");
     }
 
     else if (actionGroups.actionname == "Presence Of Mind") {
-      removeIcon("presenceofmind");
       addRecast("presenceofmind");
+      addCountdownBar("presenceofmind");
     }
 
     else if (actionGroups.actionname == "Benediction") {
-      removeIcon("benediction");
       addRecast("benediction");
+      addCountdownBar("benediction");
     }
 
     else if (actionGroups.actionname == "Asylum") {
-      removeIcon("asylum");
       addRecast("asylum");
+      addCountdownBar("asylum");
     }
 
     else if (actionGroups.actionname == "Assize") {
-      removeIcon("assize");
       addRecast("assize");
+      addCountdownBar("assize");
     }
 
     else if (actionGroups.actionname == "Thin Air") {
-      removeIcon("thinair");
       addRecast("thinair");
+      addCountdownBar("thinair");
     }
 
     else if (actionGroups.actionname == "Tetragrammaton") {
-      removeIcon("tetragrammaton");
       addRecast("tetragrammaton");
+      addCountdownBar("tetragrammaton");
     }
 
     else if (actionGroups.actionname == "Divine Benison") {
-      removeIcon("divinebenison");
       addRecast("divinebenison");
+      addCountdownBar("divinebenison");
     }
 
     else if (actionGroups.actionname == "Regen") {
       removeIcon("regen");
-      addCountdownBar("aero", checkStatus("aero", target.ID), "icon");
+      addCountdownBar("regen", checkStatus("regen", target.ID), "icon");
       addStatus("regen", duration.regen, actionGroups.targetID);
     }
 
     else if (["Aero", "Aero II", "Dia"].indexOf(actionGroups.actionname) > -1) {
       removeIcon("aero");
-      addCountdownBar("aero", checkStatus("aero", target.ID), "icon");
-      addStatus("aero", duration.aero, actionGroups.targetID);
+      if (player.level >= 72) {
+        addStatus("aero", duration.dia, actionGroups.targetID);
+      }
+      else {
+        addStatus("aero", duration.aero, actionGroups.targetID);
+      }
     }
   }
 }
 
 function whmStatus() {
 
-  if (statusGroups.targetID == player.ID) {
+  if (statusGroups.statusname == "Freecure") {
+    if (statusGroups.gainsloses == "gains") {
+      addStatus("freecure", parseInt(statusGroups.duration) * 1000);
+      addIcon("freecure");
+    }
+    else if (statusGroups.gainsloses == "loses") {
+      removeStatus("freecure");
+      removeIcon("freecure");
+    }
+  }
 
-    if (statusGroups.statusname == "Freecure") {
-      if (statusGroups.gainsloses == "gains") {
-        addStatus("freecure", parseInt(statusGroups.duration) * 1000);
-        addIcon("freecure");
+  else if (statusGroups.statusname == "Lucid Dreaming") {
+    if (statusGroups.gainsloses == "gains") {
+      addStatus("luciddreaming", parseInt(statusGroups.duration) * 1000);
+    }
+    else if (statusGroups.gainsloses == "loses") {
+      removeStatus("luciddreaming");
+    }
+  }
+
+  else if (statusGroups.statusname == "Regen") {
+    if (statusGroups.gainsloses == "gains") {
+      addStatus("regen", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+      removeIcon("regen");
+      if (target.ID == statusGroups.targetID
+      && ["PLD", "WAR", "DRK", "GNB"].indexOf(target.job) > -1) {
+        addCountdownBar("regen", checkStatus("regen", target.ID), "icon");
       }
-      else if (statusGroups.gainsloses == "loses") {
-        removeStatus("freecure");
-        removeIcon("freecure");
+    }
+    else if (statusGroups.gainsloses == "loses") {
+      removeStatus("regen", statusGroups.targetID);
+      if (target.ID == statusGroups.targetID
+      && ["PLD", "WAR", "DRK", "GNB"].indexOf(target.job) > -1) {
+        addIcon("regen");
       }
     }
   }
 
+  else if (["Aero", "Aero II", "Dia"].indexOf(statusGroups.statusname) > -1) {
+    if (statusGroups.gainsloses == "gains") {
+      addStatus("aero", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+      removeIcon("aero");
+      if (target.ID == statusGroups.targetID) {
+        addCountdownBar("aero", checkStatus("aero", target.ID), "icon");
+      }
+    }
+    else if (statusGroups.gainsloses == "loses") {
+      removeStatus("aero", statusGroups.targetID);
+      if (target.ID == statusGroups.targetID) {
+        addIcon("aero");
+      }
+    }
+  }
+}
+
+function whmBloodLily() {
+  if (player.tempjobDetail.tempbloodlily == 3) {
+    addIcon("afflatusmisery");
+  }
   else {
-
-    if (statusGroups.statusname == "Regen") {
-      if (statusGroups.gainsloses == "gains") {
-        addStatus("regen", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
-        removeIcon("regen");
-      }
-      else if (statusGroups.gainsloses == "loses") {
-        removeStatus("regen", statusGroups.targetID);
-      }
-    }
-
-    else if (["Aero", "Aero II", "Dia"].indexOf(statusGroups.statusname) > -1) {
-      if (statusGroups.gainsloses == "gains") {
-        addStatus("aero", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
-        removeIcon("aero");
-      }
-      else if (statusGroups.gainsloses == "loses") {
-        removeStatus("aero", statusGroups.targetID);
-      }
-    }
+    removeIcon("afflatusmisery");
   }
 }

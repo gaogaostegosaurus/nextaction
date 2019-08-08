@@ -278,6 +278,8 @@ icon.divinebenison = "002635";
 icon.thinair = "002636";
 icon.plenaryindulgence = "002639";
 icon.dia = "002641";
+icon.afflatusmisery = "002644";
+icon.temperance = "002645";
 
 // Raid
 icon.raidbattlelitany = icon.battlelitany;

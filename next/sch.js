@@ -121,7 +121,7 @@ function schTargetChangedEvent() {
       removeCountdownBar("bio");
     }
     else {
-      addCountdownBar("bio", checkStatus("bio", target.ID), "RECAST");
+      addCountdownBar("bio", checkStatus("bio", target.ID), "icon");
     }
     previous.targetID = target.ID;
   }
@@ -192,7 +192,7 @@ function schStatus() {
     if (statusGroups.gainsloses == "gains") {
       addStatus("bio", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
       if (target.ID == statusGroups.targetID) {  // Might be possible to switch targets between application to target and log entry
-        addCountdownBar("bio", checkStatus("bio", target.ID), "RECAST");
+        addCountdownBar("bio", checkStatus("bio", target.ID), "icon");
       }
     }
     else if (statusGroups.gainsloses == "loses") {

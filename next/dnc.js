@@ -9,11 +9,11 @@ actionList.dnc = [
   "Cascade", "Fountain", "Windmill", "Bladeshower",
   "Reverse Cascade", "Rising Windmill", "Fountainfall", "Bloodshower",
   "Emboite", "Entrechat", "Jete", "Pirouette",
-  "Standard Step",
-  "Standard Finish", "Single Standard Finish", "Double Standard Finish",
-  "Technical Step",
-  "Technical Finish", "Single Technical Finish", "Double Technical Finish",
-  "Triple Technical Finish", "Quadruple Technical Finish",
+  "Standard Step",  "Standard Finish", "Single Standard Finish",
+  "Double Standard Finish",
+  "Technical Step", "Technical Finish", "Single Technical Finish",
+  "Double Technical Finish", "Triple Technical Finish",
+  "Quadruple Technical Finish",
   "Saber Dance"
 ];
 
@@ -21,7 +21,6 @@ function dncJobChange() {
 
   nextid.technicalstep = 0;
   nextid.technicalfinish = nextid.technicalstep;
-  nextid.devilment = nextid.technicalstep;
   nextid.saberdance = 1;  // Assign 3 (after standard step) if not under technical
   nextid.standardstep = 2;
   nextid.standardfinish = nextid.standardstep;
@@ -33,8 +32,18 @@ function dncJobChange() {
   nextid.bloodshowersingletarget = 8;
   nextid.fountainfallsingletarget = 9;
 
+  nextid.ws1 = 3;
+  nextid.ws2 = 4;
+  nextid.ws3 = 5;
+  nextid.ws4 = 6;
+  nextid.ws5 = 7;
+  nextid.ws6 = 8;
+  nextid.ws7 = 9;
+
   nextid.fandance3 = 10;
   nextid.fourfoldfeathers = 11;
+  nextid.devilment = 12;
+  nextid.flourish = 13;
 
   countdownid.standardstep = 0;
   countdownid.flourish = 1;
@@ -81,8 +90,6 @@ function dncAction() {
 
   if (actionList.dnc.indexOf(actionGroups.actionname) > -1) {
 
-
-
     if ("Fan Dance" == actionGroups.actionname) {
       removeIcon("fourfoldfeathers");
       dncFeathers();
@@ -117,6 +124,7 @@ function dncAction() {
     }
 
     else if ("Flourish" == actionGroups.actionname) {
+      removeIcon("flourish");
       addCountdownBar("flourish");
     }
 
@@ -332,17 +340,23 @@ function dncStatus() {
   }
 }
 
-function dncCombo() {
-  if (count.aoe >= 2
-  && player.level >= 15) {
-    addIcon("windmill");
-    addIcon("bladeshower");
-  }
-  else {
-    addIcon("cascade");
-    addIcon("fountain");
-  }
-}
+// function dncCombo() {
+//
+//   removeIcon("cascade");
+//   removeIcon("fountain");
+//
+//   if (count.aoe >= 2
+//   && player.level >= 15) {
+//     addIcon("windmill");
+//     if (player.level >= 25) {
+//       addIcon("bladeshower");
+//     }
+//   }
+//   else {
+//     addIcon("cascade");
+//     addIcon("fountain");
+//   }
+// }
 
 function dncFlourishCheck() {
   if (player.level >= 72) {
@@ -353,8 +367,15 @@ function dncFlourishCheck() {
     checkStatus("flourishingshower"),
     checkStatus("flourishingfandance")) < 0) {
       addCountdownBar("flourish", checkRecast("flourish"), "OK")
+      if (checkRecast("flourish") < 0) {
+        addIcon("flourish");
+      }
+      else {
+        removeIcon("flourish");
+      }
     }
     else {
+      removeIcon("flourish");
       addCountdownBar("flourish", checkRecast("flourish"), "WAIT")
     }
   }

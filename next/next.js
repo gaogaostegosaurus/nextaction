@@ -70,6 +70,9 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
       player.tempjobDetail.tempaetherflow = parseInt(player.debugJobSplit[2]); // 0-3
       player.tempjobDetail.tempfaerie = parseInt(player.debugJobSplit[3], 16); // 0-100
     }
+    else if (player.job == "WHM") {
+      player.tempjobDetail.tempbloodlily = parseInt(player.debugJobSplit[5]); // 0-3
+    }
   // Detects name/job/level change and clears elements
 
   if (previous.job != player.job || previous.level != player.level) {
@@ -496,13 +499,18 @@ function addCountdownBar(name, time, text) {
   if (text === undefined) {  // Optional parameter
     text = "READY";
   }
+  if (["icon", "remove"].indexOf(text) > -1
+  && time <= 0) {
 
-  dom["countdowndiv" + countdownid[name]].className = "countdowndiv countdown-add";
+  }
+  else {
+    dom["countdowndiv" + countdownid[name]].className = "countdowndiv countdown-add";
+  }
 
   // Style bars 20 to 39 to set apart from "personal" bars
   if (countdownid[name] >= 20) {
     dom["countdowndiv" + countdownid[name]].style.opacity = "0.5";
-    // dom["countdownbar" + countdownid[name]].style.color = "gray";
+    // dom["countdownbar" + countdownid[name]].style.color = "green";
   }
 
   clearInterval(interval[name]);
