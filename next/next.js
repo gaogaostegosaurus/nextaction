@@ -499,9 +499,11 @@ function addCountdownBar(name, time, text) {
   if (text === undefined) {  // Optional parameter
     text = "READY";
   }
+
+
   if (["icon", "remove"].indexOf(text) > -1
   && time <= 0) {
-
+    dom["countdowndiv" + countdownid[name]].className = "countdowndiv countdown-remove";
   }
   else {
     dom["countdowndiv" + countdownid[name]].className = "countdowndiv countdown-add";
@@ -524,20 +526,25 @@ function addCountdownBar(name, time, text) {
     //   dom["countdowndiv" + countdownid[name]].className = "countdowndiv countdown-add";
     // }
 
-    if (time < 5000
-    && dom["countdownbar" + countdownid[name]].style.color != "red") {
-      dom["countdownbar" + countdownid[name]].style.color = "red"
+    if (time < 5000) {
+      if (dom["countdownbar" + countdownid[name]].style.backgroundColor != "red") {
+        dom["countdownbar" + countdownid[name]].style.backgroundColor = "red";
+      }
     }
-    else if (time < 10000
-    && dom["countdownbar" + countdownid[name]].style.color != "orange") {
-      dom["countdownbar" + countdownid[name]].style.color = "orange"
+    else if (time < 10000) {
+      if (dom["countdownbar" + countdownid[name]].style.backgroundColor != "orange") {
+        dom["countdownbar" + countdownid[name]].style.backgroundColor = "orange";
+      }
     }
-    else if (time < 30000
-    && dom["countdownbar" + countdownid[name]].style.color != "yellow") {
-      dom["countdownbar" + countdownid[name]].style.color = "yellow"
+    else if (time < 30000) {
+      if (dom["countdownbar" + countdownid[name]].style.backgroundColor != "yellow") {
+        dom["countdownbar" + countdownid[name]].style.backgroundColor = "yellow";
+      }
     }
     else {
-      dom["countdownbar" + countdownid[name]].style.color = "white"
+      if (dom["countdownbar" + countdownid[name]].style.backgroundColor != "white") {
+        dom["countdownbar" + countdownid[name]].style.backgroundColor = "white";
+      }
     }
 
     if (time <= 0) {

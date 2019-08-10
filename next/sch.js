@@ -173,7 +173,7 @@ function schAction() {
     }
 
     else if ("Chain Stratagem" == actionGroups.actionname) {
-      addCountdownBar("chainstratagem");
+      addCountdownBar("chainstratagem", recast.chainstratagem, "icon");
     }
 
     else if ("Recitation" == actionGroups.actionname) {
