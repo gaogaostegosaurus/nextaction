@@ -41,19 +41,27 @@ icon.stormbite = "002614";
 icon.refulgentarrow = "002616";
 
 // DNC
+icon.cascade = "003451";
+icon.fountain = "003452";
+icon.windmill = "003453";
 icon.standardstep = "003454";
+icon.emboite = "003455";
+icon.entrechat = "003456";
+icon.jete = "003457";
+icon.pirouette = "003458";
 icon.standardfinish = "003459";
 icon.reversecascade = "003460";
 icon.flourishingcascade = icon.reversecascade;
+icon.bladeshower = "003461";
 icon.fandance = "003462";
 icon.risingwindmill = "003463";
 icon.flourishingwindmill = icon.risingwindmill;
 icon.fountainfall = "003464";
 icon.flourishingfountain = icon.fountainfall;
-icon.fountainfallsingletarget = icon.fountainfall;
+// icon.fountainfallsingletarget = icon.fountainfall;
 icon.bloodshower = "003465";
 icon.flourishingshower = icon.bloodshower;
-icon.bloodshowersingletarget = icon.bloodshower;
+// icon.bloodshowersingletarget = icon.bloodshower;
 icon.fandance2 = "003466";
 icon.devilment = "003471";
 icon.fandance3 = "003472";
@@ -62,7 +70,6 @@ icon.technicalstep = "003473";
 icon.technicalfinish = "003474";
 icon.flourish = "003475";
 icon.saberdance = "003476";
-icon.saberdance80plus = icon.saberdance;
 
 // DRG
 icon.battlelitany = "002585";
