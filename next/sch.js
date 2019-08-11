@@ -96,7 +96,7 @@ function schJobChange() {
   }
 
   if (player.level >= 66) {
-    addCountdownBar("chainstratagem", -1);
+    addCountdownBar("chainstratagem", -1, "icon");
   }
 
   if (player.level >= 74) {
