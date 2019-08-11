@@ -115,6 +115,13 @@ function whmPlayerChangedEvent() {
   else {
     removeIcon("luciddreaming");
   }
+
+  if (player.tempjobDetail.bloodlily >= 3) {
+    addIcon("afflatusmisery");
+  }
+  else {
+    removeIcon("afflatusmisery");
+  }
 }
 
 function whmTargetChangedEvent() {
@@ -252,14 +259,5 @@ function whmStatus() {
         addIcon("aero");
       }
     }
-  }
-}
-
-function whmBloodLily() {
-  if (player.tempjobDetail.tempbloodlily == 3) {
-    addIcon("afflatusmisery");
-  }
-  else {
-    removeIcon("afflatusmisery");
   }
 }
