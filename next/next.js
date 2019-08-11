@@ -78,7 +78,7 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
       player.tempjobDetail.tempfaerie = parseInt(player.debugJobSplit[3], 16); // 0-100
     }
     else if (player.job == "WHM") {
-      player.tempjobDetail.tempbloodlily = parseInt(player.debugJobSplit[5]); // 0-3
+      player.tempjobDetail.bloodlily = parseInt(player.debugJobSplit[5]); // 0-3
     }
   // Detects name/job/level change and clears elements
 
