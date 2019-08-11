@@ -28,6 +28,7 @@ function schJobChange() {
 
   nextid.aetherflow = 0;
   nextid.bio = 1;
+  nextid.chainstratagem = 2;
 
   // Column 1
   countdownid.bio = 0;
@@ -96,7 +97,7 @@ function schJobChange() {
   }
 
   if (player.level >= 66) {
-    addCountdownBar("chainstratagem", -1, "icon");
+    addCountdownBar("chainstratagem", checkRecast("chainstratagem"), "icon");
   }
 
   if (player.level >= 74) {
