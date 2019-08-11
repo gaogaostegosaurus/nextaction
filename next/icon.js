@@ -128,7 +128,16 @@ icon.truestrike = "000209";
 icon.snappunch = "000210";
 icon.twinsnakes = "000213";
 icon.dragonkick = "002528";
+icon.rockbreaker = "002529";
+icon.elixirfield = "002533";
+icon.theforbiddenchakra = "002535";
+icon.riddleofearth = "002537";
+icon.riddleoffire = "002541";
 icon.brotherhood = "002542";
+icon.fourpointfury = "002544";
+icon.enlightenment = "002545";
+icon.anatman = "002546";
+icon.sixsidedstar = "002547";
 
 // NIN
 icon.spinningedge = "000601";

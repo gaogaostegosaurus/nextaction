@@ -1,100 +1,194 @@
 "use strict";
 
-actionList.mnk = ["Bootshine", "True Strike", "Snap Punch", "Twin Snakes", "Demolish", "Dragon Kick"];
+actionList.mnk = [
+
+  // oGCD
+  "Perfect Balance", "Riddle Of Fire", "Brotherhood", "The Forbidden Chakra", "Enlightenment", "Shoulder Tackle", "Elixir Field", "Tornado Kick",
+  "Riddle Of Earth",
+
+
+
+  // GCD
+  "Bootshine", "Dragon Kick",
+  "True Strike", "Twin Snakes",
+  "Snap Punch", "Demolish",
+  "Arm Of The Destroyer",
+  "Four-Point Fury",
+  "Rockbreaker",
+  "Form Shift"
+
+  // Role
+  // "True North"
+
+];
 //
 // statusList.mnk = ["Twin Snakes",
 //   "Demolish",
 //   "Blunt Resistance Down"];
 
-nextid.bootshine = "next0";
-nextid.dragonkick = nextid.bootshine;
-nextid.truestrike = "next1";
-nextid.twinsnakes = nextid.truestrike;
-nextid.snappunch = "next2";
-nextid.demolish = nextid.snappunch;
+
+function mnkJobChange() {
+
+  nextid.combo1 = 0;
+  nextid.combo2 = 1;
+  nextid.combo3 = 2;
+
+  nextid.theforbiddenchakra = 10;
+  nextid.enlightenment = 10;
+  nextid.riddleoffire = 11;
+  nextid.brotherhood = 12;
+  nextid.perfectbalance = 13;
+
+  countdownid.demolish = 0;
+  countdownid.twinsnakes = 1;
+  countdownid.perfectbalance = 2;
+  countdownid.riddleoffire = 11;
+  countdownid.brotherhood = 10;
+
+  mnkCombo();
 
 
+}
 
 function mnkPlayerChangedEvent(e) {
-
+  if (player.jobDetail.chakraStacks >= 5) {
+    addIcon("theforbiddenchakra");
+  }
+  else {
+    removeIcon("theforbiddenchakra");
+  }
 }
 
 function mnkAction(logLine) {
 
-  if (logLine[2] == player.name) { // Check if from player
+  if (actionList.mnk.indexOf(actionGroups.actionname) > -1) {
 
-    if (logLine[3] == "Bootshine" && logLine[6].length >= 2) {
-      removeIcon("bootshine");
-      toggle.stance = 1;
+    if ("Perfect Balance" == actionGroups.actionname) {
+      addCountdownBar("perfectbalance", recast.perfectbalance, "icon");
     }
 
-    else if (logLine[3] == "Dragon Kick" && logLine[6].length >= 2) {
-      removeIcon("dragonkick");
-      if (toggle.stance == 3) {
-      }
-      toggle.stance = 1;
+    else if ("Riddle Of Earth" == actionGroups.actionname) {
+      addCountdownBar("riddleofearth", recast.riddleofearth, "icon");
     }
 
-    else if (logLine[3] == "True Strike" && logLine[6].length >= 2) {
-      removeIcon("truestrike");
-      if (player.level < 6) {
-        mnkCombo();
-      }
-      toggle.stance = 2;
-    }
-    else if (logLine[3] == "Twin Snakes" && logLine[6].length >= 2) {
-      removeIcon("twinsnakes");
-      toggle.stance = 2;
+    else if ("Riddle Of Fire" == actionGroups.actionname) {
+      addCountdownBar("riddleoffire", recast.riddleoffire, "icon");
     }
 
-    else if (logLine[3] == "Snap Punch" && logLine[6].length >= 2) {
-      removeIcon("snappunch");
-      toggle.stance = 3;
-      mnkCombo();
-    }
-
-    else if (logLine[3] == "Demolish" && logLine[6].length >= 2) {
-      removeIcon("demolish");
-      toggle.stance = 3;
-      mnkCombo();
+    else if ("Brotherhood" == actionGroups.actionname) {
+      addCountdownBar("brotherhood", recast.brotherhood, "icon");
     }
 
     else {
-      mnkCombo();
+
+      if ("Bootshine" == actionGroups.actionname) {
+      }
+
+      else if ("Dragon Kick" == actionGroups.actionname) {
+      }
+
+      else if ("True Strike" == actionGroups.actionname) {
+      }
+
+      else if ("Twin Snakes" == actionGroups.actionname) {
+        addStatus("twinsnakes");
+      }
+
+      else if ("Snap Punch" == actionGroups.actionname) {
+        mnkCombo();
+      }
+
+      else if ("Demolish" == actionGroups.actionname) {
+        addStatus("demolish", duration.demolish, actionGroups.targetID);
+        mnkCombo();
+      }
+
+      else if ("Form Shift" == actionGroups.actionname) {
+      }
+
     }
 
-    previous.action = logLine[3];
   }
+
 }
 
 function mnkStatus(logLine) {
 
-  // To player from anyone
-
-  if (logLine[1] == player.name) {
-
-    if (logLine[3] == "Twin Snakes") {
-      if (logLine[2] == "gains") {
-        statustime.twinsnakes = Date.now() + parseInt(logLine[5]) * 1000;
-      }
-      else if (logLine[2] == "loses") {
-        delete statustime.twinsnakes;
-      }
+  if (statusGroups.statusname == "Opo-Opo Form") {
+    if (statusGroups.gainsloses == "gains") {
+      addStatus("opoopoform", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+      mnkCombo();
+      mnkComboTimeout();
+    }
+    else if (statusGroups.gainsloses == "loses") {
+      removeStatus("opoopoform", statusGroups.targetID);
     }
   }
 
-  // To NOT player from player
+  else if (statusGroups.statusname == "Raptor Form") {
+    if (statusGroups.gainsloses == "gains") {
+      addStatus("raptorform", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+      removeIcon("combo1");
+      mnkComboTimeout();
+    }
+    else if (statusGroups.gainsloses == "loses") {
+      removeStatus("raptorform", statusGroups.targetID);
+    }
+  }
 
-  else if (logLine[1] != player.name
-  && logLine[4] == player.name) {
+  else if (statusGroups.statusname == "Coeurl Form") {
+    if (statusGroups.gainsloses == "gains") {
+      addStatus("coeurlform", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+      removeIcon("combo2");
+      mnkComboTimeout();
+    }
+    else if (statusGroups.gainsloses == "loses") {
+      removeStatus("coeurlform", statusGroups.targetID);
+    }
+  }
 
-    if (logLine[3] == "Demolish") {
-      if (logLine[2] == "gains") {
-        statustime.demolish = Date.now() + parseInt(logLine[5]) * 1000;
-      }
-      else if (logLine[2] == "loses") {
-        delete statustime.demolish;
-      }
+  else if (statusGroups.statusname == "Twin Snakes") {
+    if (statusGroups.gainsloses == "gains") {
+      addStatus("twinsnakes", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+    }
+    else if (statusGroups.gainsloses == "loses") {
+      removeStatus("twinsnakes", statusGroups.targetID);
+    }
+  }
+
+  else if (statusGroups.statusname == "Demolish") {
+    if (statusGroups.gainsloses == "gains") {
+      addStatus("demolish", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+    }
+    else if (statusGroups.gainsloses == "loses") {
+      removeStatus("demolish", statusGroups.targetID);
+    }
+  }
+
+  else if (statusGroups.statusname == "Leaden Fist") {
+    if (statusGroups.gainsloses == "gains") {
+      addStatus("leadenfist", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+    }
+    else if (statusGroups.gainsloses == "loses") {
+      removeStatus("leadenfist", statusGroups.targetID);
+    }
+  }
+
+  else if (statusGroups.statusname == "Perfect Balance") {
+    if (statusGroups.gainsloses == "gains") {
+      addStatus("perfectbalance", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+    }
+    else if (statusGroups.gainsloses == "loses") {
+      removeStatus("perfectbalance", statusGroups.targetID);
+    }
+  }
+
+  else if (statusGroups.statusname == "Riddle Of Fire") {
+    if (statusGroups.gainsloses == "gains") {
+      addStatus("riddleoffire", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+    }
+    else if (statusGroups.gainsloses == "loses") {
+      removeStatus("riddleoffire", statusGroups.targetID);
     }
   }
 }
@@ -102,41 +196,45 @@ function mnkStatus(logLine) {
 function mnkCombo() {
 
   // Reset icons
-  removeIcon("bootshine");
-  removeIcon("truestrike");
-  removeIcon("snappunch");
+  removeIcon("combo1");
+  removeIcon("combo2");
+  removeIcon("combo3");
+
+  if (checkStatus("perfectbalance") > 0) {
+
+  }
 
   if (player.level >= 50
-  && (!statustime.bluntresistancedown || statustime.bluntresistancedown < Date.now() + 9000)
-  && toggle.stance == 3) {
-    addIcon("dragonkick");
-    addIcon("twinsnakes");
-    toggle.combo = 1;
-  }
-  else if (player.level >= 18
-  && (!statustime.twinsnakes || statustime.twinsnakes < Date.now() + 11000)) {
-    if (player.level >= 50) {
-      addIcon("dragonkick");
-    }
-    else {
-      addIcon("bootshine");
-    }
-    addIcon("twinsnakes");
-    toggle.combo = 1;
+  && checkStatus("leadenfist") < 0) {
+    icon.combo1 = icon.dragonkick;
   }
   else {
-    addIcon("bootshine");
-    addIcon("truestrike");
-    toggle.combo = 0;
+    icon.combo1 = icon.bootshine;
+  }
+
+  if (player.level >= 18
+  && checkStatus("twinsnakes") < 12000) {
+    icon.combo2 = icon.twinsnakes;
+  }
+  else {
+    icon.combo2 = icon.truestrike;
   }
 
   if (player.level >= 30
-  && (!statustime.demolish || statustime.demolish < Date.now() + 12000)) {
-    addIcon("demolish");
-    toggle.combo = toggle.combo + 4;
+  && checkStatus("demolish", target.ID) < 12000) {
+    icon.combo3 = icon.demolish;
   }
   else {
-    addIcon("snappunch");
-    toggle.combo = toggle.combo + 2;
+    icon.combo3 = icon.snappunch;
   }
+
+  addIcon("combo1");
+  addIcon("combo2");
+  addIcon("combo3");
+
+}
+
+function mnkComboTimeout() {
+  clearTimeout(timeout.combo);
+  timeout.combo = setTimeout(mnkCombo, 12500);
 }

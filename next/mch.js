@@ -2,6 +2,7 @@
 
 actionList.mch = [
 
+
   // Non-GCD
   "Reassemble", "Gauss Round", "Hypercharge", "Rook Autoturret", "Wildfire",
   "Ricochet", "Tactician", "Barrel Stabilizer", "Flamethrower",
@@ -54,6 +55,7 @@ function mchJobChange() {
 
   // nextid.tactician = 99;
 
+  previous.hotshot = 0;
   previous.spreadshot = 0;
   previous.ricochet = 0;
   previous.flamethrower = 0;
@@ -159,13 +161,12 @@ function mchAction() {
     // These actions don't interrupt combos
 
     if (["Hot Shot", "Air Anchor"].indexOf(actionGroups.actionname) > -1) {
-      if (previous.hotshot
-      && recast.hotshot > Date.now() - previous.hotshot) {
+      removeIcon("hotshot");
+      if (recast.hotshot > Date.now() - previous.hotshot) {
         recast.hotshot = Date.now() - previous.hotshot;
       }
       previous.hotshot = Date.now();
-      removeIcon("hotshot");
-      addCountdownBar("hotshot", checkRecast("hotshot"), "icon");
+      addCountdownBar("hotshot", recast.hotshot, "icon");
       mchBattery();
       mchHeat();  // Why? Check later
     }

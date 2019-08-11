@@ -23,20 +23,19 @@ function dncJobChange() {
 
   dncPriority();
 
-  nextid.fandance3 = 10;
-  nextid.fourfoldfeathers = 11;
-  nextid.devilment = 12;
-  nextid.flourish = 13;
+  nextid.step1 = 10;
+  nextid.step2 = 11;
+  nextid.step3 = 12;
+  nextid.step4 = 14;
+  nextid.fandance3 = 15;
+  nextid.fourfoldfeathers = 16;
+  nextid.devilment = 17;
+  nextid.flourish = 18;
 
   countdownid.standardstep = 0;
   countdownid.flourish = 1;
   countdownid.technicalstep = 10;
   countdownid.devilment = 11;
-  // countdownid.reversecascade = 3;
-  // countdownid.fountainfall = 4;
-  // countdownid.risingwindmill = 5;
-  // countdownid.bloodshower = 6;
-  // countdownid.fandance3 = 7;
 
   previous.fandance2 = 0;
   previous.fandance3 = 0;
@@ -51,7 +50,7 @@ function dncJobChange() {
   // Show available cooldowns
 
   if (player.level >= 15) {
-    addCountdownBar("standardstep", -1);
+    addCountdownBar("standardstep", -1, "icon");
   }
 
   if (player.level >= 62) {
@@ -59,7 +58,7 @@ function dncJobChange() {
   }
 
   if (player.level >= 70) {
-    addCountdownBar("technicalstep", -1);
+    addCountdownBar("technicalstep", -1, "icon");
   }
 
   if (player.level >= 72) {
@@ -132,7 +131,7 @@ function dncAction() {
         removeIcon("windmill");
         if (next.combo != 2
         && player.level >= 25) {
-          addIcon("Bladeshower");
+          addIcon("bladeshower");
         }
       }
 
@@ -142,34 +141,53 @@ function dncAction() {
       }
 
       else if ("Reverse Cascade" == actionGroups.actionname) {
-        removeIcon("reversecascade");
+        //removeIcon("reversecascade");
         dncFeathers();
       }
 
       else if ("Rising Windmill" == actionGroups.actionname) {
-        removeIcon("risingwindmill");
+        //removeIcon("risingwindmill");
         dncFeathers();
       }
 
       else if ("Fountainfall" == actionGroups.actionname) {
-        removeIcon("fountainfall");
+        //removeIcon("fountainfall");
         dncFeathers();
       }
 
       else if ("Bloodshower" == actionGroups.actionname) {
-        removeIcon("bloodshower");
+        //removeIcon("bloodshower");
         dncFeathers();
       }
 
       else if ("Standard Step" == actionGroups.actionname) {
         removeIcon("standardstep");
-        addCountdownBar("standardstep");
+        addCountdownBar("standardstep", recast.standardstep, "icon");
+        let step = 1;
+        for (step = 1; step <= 2; step++) {
+          console.log(player.tempjobDetail["step" + step]);
+          if (player.tempjobDetail["step" + step] == 1) {
+            icon["step" + step] = icon.emboite;
+          }
+          else if (player.tempjobDetail["step" + step] == 2) {
+            icon["step" + step] = icon.entrechat;
+          }
+          else if (player.tempjobDetail["step" + step] == 3) {
+            icon["step" + step] = icon.jete;
+          }
+          else if (player.tempjobDetail["step" + step] == 4) {
+            icon["step" + step] = icon.pirouette;
+          }
+          addIcon("step" + step);
+        }
       }
 
       else if (
       ["Standard Finish", "Single Standard Finish",
       "Double Standard Finish"].indexOf(actionGroups.actionname) > -1) {
         removeIcon("standardfinish");
+        removeIcon("step1");
+        removeIcon("step2");
         if (actionGroups.targetID.startsWith("4")) {
           if (Date.now() - previous.standardfinish > 1000) {
             count.aoe = 1;
@@ -187,7 +205,7 @@ function dncAction() {
 
       else if ("Technical Step" == actionGroups.actionname) {
         removeIcon("technicalstep");
-        addCountdownBar("technicalstep");
+        addCountdownBar("technicalstep", recast.technicalstep, "icon");
       }
 
       else if (
@@ -195,6 +213,10 @@ function dncAction() {
       "Double Technical Finish", "Triple Technical Finish",
       "Quadruple Technical Finish"].indexOf(actionGroups.actionname) > -1) {
         removeIcon("technicalfinish");
+        removeIcon("step1");
+        removeIcon("step2");
+        removeIcon("step3");
+        removeIcon("step4");
         if (actionGroups.targetID.startsWith("4")) {
           if (Date.now() - previous.technicalfinish > 1000) {
             count.aoe = 1;
@@ -211,12 +233,26 @@ function dncAction() {
 
       else if (["Emboite", "Entrechat",
       "Jete", "Pirouette"].indexOf(actionGroups.actionname) > -1) {
+
+        if (player.tempjobDetail.steps >= 1) {
+          removeIcon("step1");
+        }
+        if (player.tempjobDetail.steps >= 2) {
+          removeIcon("step2");
+        }
+        if (player.tempjobDetail.steps >= 3) {
+          removeIcon("step3");
+        }
+        if (player.tempjobDetail.steps >= 4) {
+          removeIcon("step4");
+        }
+
         if (checkStatus("standardstep") > 0
-        && player.tempjobDetail.tempsteps >= 2) {
+        && player.tempjobDetail.steps >= 2) {
           addIcon("standardfinish");
         }
         else if (checkStatus("technicalstep") > 0
-        && player.tempjobDetail.tempsteps >= 4) {
+        && player.tempjobDetail.steps >= 4) {
           addIcon("technicalfinish");
         }
       }
@@ -407,6 +443,12 @@ function dncFeathers() {
 }
 
 function dncEsprit() {
+  if (checkStatus("technicalfinish") > 0) {
+    maxEsprit = 50;
+  }
+  else {
+    maxEsprit = 80;
+  }
   if (player.tempjobDetail.tempesprit >= maxEsprit) {
     addIcon("saberdance");
   }
@@ -422,20 +464,16 @@ function dncPriority() {
     nextid.technicalstep = 0;
     nextid.saberdance = 1;
     nextid.technicalfinish = nextid.technicalstep;
-    if (checkStatus("standardfinish") < 5000 || count.aoe <= 5) {
-      nextid.standardstep = 2;
-    }
-    else {
-      nextid.standardstep = 9;
-    }
+    nextid.standardstep = 2;
     nextid.standardfinish = nextid.standardstep;
     nextid.bloodshower = 3;
     nextid.risingwindmill = 4;
-    nextid.windmill = 5;
+    nextid.fountainfall = 5;
+    nextid.reversecascade = 6;
+    nextid.windmill = 8;
     nextid.cascade = nextid.windmill;
-    nextid.bladeshower = 6;
+    nextid.bladeshower = 9;
     nextid.fountain = nextid.bladeshower;
-    maxEsprit = 50;
   }
 
   else {
@@ -445,18 +483,22 @@ function dncPriority() {
     nextid.standardfinish = nextid.standardstep;
     nextid.saberdance = 2;
     nextid.fountainfall = 3;
-    nextid.bloodshower = 4;
-    nextid.reversecascade = 5;
+    nextid.reversecascade = 4;
+    nextid.bloodshower = 5;
     nextid.risingwindmill = 6;
-    nextid.cascade = 7;
+    nextid.cascade = 8;
     nextid.windmill = nextid.cascade;
-    nextid.fountain = 8;
+    nextid.fountain = 9;
     nextid.bladeshower = nextid.fountain;
-    if (checkStatus("technicalfinish") > 0) {
-      maxEsprit = 50;
-    }
-    else {
-      maxEsprit = 80;
-    }
+  }
+
+  if (checkStatus("standardfinish") > 5000 && count.aoe >= 5) {
+    removeIcon("standardstep");
+    removeCountdownBar("standardstep");
+  }
+
+  if (count.aoe >= 3) {
+    removeIcon("fountainfall");
+    removeIcon("reversecascade");
   }
 }

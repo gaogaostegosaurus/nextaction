@@ -13,6 +13,13 @@ duration.delirium = 10000;
 // MCH
 duration.hypercharge = 10000;
 
+// MNK
+duration.twinsnakes = 15000;
+duration.demolish = 18000;
+duration.leadenfist = 30000;
+duration.perfectbalance = 10000;
+duration.riddleoffire = 20000;
+
 // NIN
 duration.shadowfang = 24000;
 duration.mudra = 5000;

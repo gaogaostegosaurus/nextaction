@@ -1,5 +1,8 @@
 "use strict";
 
+// Use https://quisquous.github.io/cactbot/ui/test/test.html to figure out random values
+
+
 var cooldowntracker = {};     // Holds timestamps for cooldowns
 var statustracker = {};       // Holds timestamps for statuses
 var cooldowntime = {};        // Holds timestamps for cooldowns
@@ -64,7 +67,11 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
     if (player.job == "DNC") { // Temporary
       player.tempjobDetail.tempfourfoldfeathers = parseInt(player.debugJobSplit[0]); // 0-4
       player.tempjobDetail.tempesprit = parseInt(player.debugJobSplit[1], 16); // 0-100
-      player.tempjobDetail.tempsteps = parseInt(player.debugJobSplit[6]); // 0-4
+      player.tempjobDetail.step1 = parseInt(player.debugJobSplit[2]); // 1 is  Emboite, 2 is Entrechat, 3 is Jete, 4 is Pirouette
+      player.tempjobDetail.step2 = parseInt(player.debugJobSplit[3]);
+      player.tempjobDetail.step3 = parseInt(player.debugJobSplit[4]);
+      player.tempjobDetail.step4 = parseInt(player.debugJobSplit[5]);
+      player.tempjobDetail.steps = parseInt(player.debugJobSplit[6]); // 0-4
     }
     else if (player.job == "SCH") {
       player.tempjobDetail.tempaetherflow = parseInt(player.debugJobSplit[2]); // 0-3
@@ -97,6 +104,9 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
   }
   else if (player.job == "MCH") {
     mchPlayerChangedEvent();
+  }
+  else if (player.job == "MNK") {
+    mnkPlayerChangedEvent();
   }
   else if (player.job == "RDM") {
     rdmPlayerChangedEvent();
@@ -499,6 +509,9 @@ function addCountdownBar(name, time, text) {
   if (text === undefined) {  // Optional parameter
     text = "READY";
   }
+  else if (text == "icon") {
+    removeIcon(name);  // If point is to display icon at end of countdown, remove it first
+  }
 
 
   if (["icon", "remove"].indexOf(text) > -1
@@ -611,6 +624,9 @@ function loadInitialState() {
   }
   else if (player.job == "MCH") {
     mchJobChange();
+  }
+  else if (player.job == "MNK") {
+    mnkJobChange();
   }
   else if (player.job == "NIN") {
     ninJobChange();
