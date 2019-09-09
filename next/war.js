@@ -117,7 +117,6 @@ function warAction() {
 
   if (actionList.war.indexOf(actionGroups.actionname) > -1) {
 
-    removeText("loadmessage");
 
     // These actions don't break combo
 

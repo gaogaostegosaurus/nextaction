@@ -13,6 +13,7 @@ var nextid = {};              // Store document id - location on page for icons,
 var countdownid = {};
 var toggle = {};              // Toggley things
 var count = {};               // County things?
+var potency = {};
 var previous = {};
 var next = {};
 
@@ -72,6 +73,9 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
       player.tempjobDetail.step3 = parseInt(player.debugJobSplit[4]);
       player.tempjobDetail.step4 = parseInt(player.debugJobSplit[5]);
       player.tempjobDetail.steps = parseInt(player.debugJobSplit[6]); // 0-4
+    }
+    else if (player.job == "GNB") {
+      player.tempjobDetail.cartridge = parseInt(player.debugJobSplit[0]); // 0-2
     }
     else if (player.job == "SCH") {
       player.tempjobDetail.tempaetherflow = parseInt(player.debugJobSplit[2]); // 0-3
@@ -251,6 +255,9 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
       else if (player.job == "DRK") {
         drkAction();
       }
+      else if (player.job == "GNB") {
+        gnbAction();
+      }
       else if (player.job == "MCH") {
         mchAction();
       }
@@ -259,6 +266,9 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
       }
       else if (player.job == "NIN") {
         ninAction(actionLog);
+      }
+      else if (player.job == "PLD") {
+        pldAction();
       }
       else if (player.job == "RDM") {
         rdmAction();
@@ -292,6 +302,9 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
       else if (player.job == "DRK") {
         drkStatus();
       }
+      else if (player.job == "GNB") {
+        gnbStatus();
+      }
       else if (player.job == "MCH") {
         mchStatus(statusLog);
       }
@@ -300,6 +313,9 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
       }
       else if (player.job == "NIN") {
         ninStatus(statusLog);
+      }
+      else if (player.job == "PLD") {
+        pldStatus();
       }
       else if (player.job == "RDM") {
         rdmStatus();
@@ -365,7 +381,7 @@ function addRecast(name, time, id) {
 }
 
 function checkRecast(name, id) {
-  if (!id) {
+  if (id === undefined) {
     id = player.ID;
   }
   if (!cooldowntracker[name]) {
@@ -599,10 +615,10 @@ function removeCountdownBar(name) {
   dom["countdowndiv" + id].className = "countdowndiv countdown-remove"; // Possibility of countdown getting fubared in this (left behind or something else), check later
 }
 
-function addText(textid,message) {
-  dom[textid].style.display = "table-row";
-  dom[textid].innerText = message;
-}
+// function addText(textid,message) {
+//   dom[textid].style.display = "table-row";
+//   dom[textid].innerText = message;
+// }
 
 
 function loadInitialState() {
@@ -610,7 +626,6 @@ function loadInitialState() {
   delete toggle.combo;
 
   if (player.job == "BLM") {
-    addText("loadmessage", "WIP - currently assumes level 72 BLM");
     blmJobChange();
   }
   else if (player.job == "BRD") {
@@ -622,6 +637,9 @@ function loadInitialState() {
   else if (player.job == "DRK") {
     drkJobChange();
   }
+  else if (player.job == "GNB") {
+    gnbJobChange();
+  }
   else if (player.job == "MCH") {
     mchJobChange();
   }
@@ -630,6 +648,9 @@ function loadInitialState() {
   }
   else if (player.job == "NIN") {
     ninJobChange();
+  }
+  else if (player.job == "PLD") {
+    pldJobChange();
   }
   else if (player.job == "RDM") {
     rdmJobChange();

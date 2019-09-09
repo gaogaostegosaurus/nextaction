@@ -59,7 +59,6 @@ function samAction() {
 
   if (actionList.sam.indexOf(actionGroups.actionname) > -1) {
 
-    removeText("loadmessage");
 
     // These actions don't interrupt combos
 

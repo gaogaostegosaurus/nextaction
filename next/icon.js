@@ -4,6 +4,14 @@ var icon = {};
 
 // Role Actions
 icon.rampart = "000801";
+icon.lowblow = "000802";
+icon.provoke = "000803";
+icon.reprisal = "000806";
+icon.interject = "000808";
+icon.shirk = "000810";
+icon.secondwind = "000821";
+icon.armslength = "000822";
+icon.bloodbath = "000823";
 icon.luciddreaming = "000865";
 icon.swiftcast = "000866";
 
@@ -96,6 +104,37 @@ icon.floodofshadow = "003085";
 icon.edgeofshadow = "003086";
 icon.livingshadow = "003088";
 
+// GNB
+icon.keenedge = "003401";
+icon.nomercy = "003402";
+icon.brutalshell = "003403";
+icon.camouflage = "003404";
+icon.demonslice = "003405";
+icon.royalguard = "003406";
+icon.lightningshot = "003407";
+icon.dangerzone = "003408";
+icon.solidbarrel = "003409";
+icon.gnashingfang = "003410";
+icon.savageclaw = "003411";
+icon.nebula = "003412";
+icon.demonslaughter = "003413";
+icon.wickedtalon = "003414";
+icon.aurora = "003415";
+icon.superbolide = "003416";
+icon.sonicbreak = "003417";
+icon.roughdivide = "003418";
+icon.continuation = "003419";
+icon.jugularrip = "003420";
+icon.abdomentear = "003421";
+icon.eyegouge = "003422";
+icon.bowshock = "003423";
+icon.heartoflight = "003424";
+icon.heartofstone = "003425";
+icon.burststrike = "003426";
+icon.fatedcircle = "003427";
+icon.bloodfest = "003428";
+icon.blastingzone = "003429";
+
 // MCH
 icon.splitshot = "003001";
 icon.slugshot = "003002";
@@ -123,10 +162,13 @@ icon.automatonqueen = "003501";
 
 // MNK
 icon.demolish = "000204";
+icon.fistsoffire = "000205";
 icon.bootshine = "000208";
 icon.truestrike = "000209";
 icon.snappunch = "000210";
 icon.twinsnakes = "000213";
+icon.armofthedestroyer = "000215";
+icon.perfectbalance = "000217";
 icon.dragonkick = "002528";
 icon.rockbreaker = "002529";
 icon.elixirfield = "002533";
@@ -172,6 +214,51 @@ icon.meisui = "002924";
 icon.gokamekkyaku = "002925";
 icon.hyoshoranyu = "002926";
 icon.bunshin = "002927";
+
+// PLD
+icon.sentinel = "000151";
+icon.shieldbash = "000154";
+icon.rageofhalone = "000155";
+icon.riotblade = "000156";
+icon.fastblade = "000158";
+icon.circleofscorn = "000161";
+icon.shieldlob = "000164";
+icon.fightorflight = "000166";
+icon.cover = "002501";
+icon.hallowedground = "002502";
+icon.spiritswithin = "002503";
+icon.ironwill = "002505";
+icon.goringblade = "002506";
+icon.royalauthority = "002507";
+icon.divineveil = "002508";
+icon.clemency = "002509";
+icon.sheltron = "002510";
+icon.totaleclipse = "002511";
+icon.intervention = "002512";
+icon.requiescat = "002513";
+icon.holyspirit = "002514";
+icon.holyspirit1 = icon.holyspirit;
+icon.holyspirit2 = icon.holyspirit;
+icon.holyspirit3 = icon.holyspirit;
+icon.holyspirit4 = icon.holyspirit;
+icon.holyspirit5 = icon.holyspirit;
+icon.passageofarms = "002515";
+icon.prominence = "002516";
+icon.holycircle = "002517";
+icon.holycircle1 = icon.holycircle;
+icon.holycircle2 = icon.holycircle;
+icon.holycircle3 = icon.holycircle;
+icon.holycircle4 = icon.holycircle;
+icon.holycircle5 = icon.holycircle;
+icon.confiteor = "002518";
+icon.atonement = "002519";
+icon.atonement1 = icon.atonement;
+icon.atonement2 = icon.atonement;
+icon.atonement3 = icon.atonement;
+icon.intervene = "002520";
+icon.intervene1 = icon.intervene;
+icon.intervene2 = icon.intervene;
+
 
 // RDM
 icon.jolt = "003202";

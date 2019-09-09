@@ -29,9 +29,10 @@ actionList.mnk = [
 
 function mnkJobChange() {
 
-  nextid.combo1 = 0;
-  nextid.combo2 = 1;
-  nextid.combo3 = 2;
+  nextid.fistsoffire = 0;
+  nextid.combo1 = 1;
+  nextid.combo2 = 2;
+  nextid.combo3 = 3;
 
   nextid.theforbiddenchakra = 10;
   nextid.enlightenment = 10;
@@ -45,8 +46,19 @@ function mnkJobChange() {
   countdownid.riddleoffire = 11;
   countdownid.brotherhood = 10;
 
-  mnkCombo();
+  if (player.level >= 50) {
+    addCountdownBar("perfectbalance", checkRecast("perfectbalance"), "icon");
+  }
 
+  if (player.level >= 68) {
+    addCountdownBar("riddleoffire", checkRecast("riddleoffire"), "icon");
+  }
+
+  if (player.level >= 70) {
+    addCountdownBar("brotherhood", checkRecast("brotherhood"), "icon");
+  }
+
+  mnkCombo();
 
 }
 
@@ -165,6 +177,37 @@ function mnkStatus(logLine) {
     }
   }
 
+  else if (statusGroups.statusname == "Fists Of Earth") {
+    if (statusGroups.gainsloses == "gains") {
+      addStatus("fistsofearth", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+      addIcon("fistsoffire");
+    }
+    else if (statusGroups.gainsloses == "loses") {
+      removeStatus("fistsofearth", statusGroups.targetID);
+    }
+  }
+
+  else if (statusGroups.statusname == "Fists Of Wind") {
+    if (statusGroups.gainsloses == "gains") {
+      addStatus("fistsofwind", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+      addIcon("fistsoffire");
+    }
+    else if (statusGroups.gainsloses == "loses") {
+      removeStatus("fistsofwind", statusGroups.targetID);
+    }
+  }
+
+  else if (statusGroups.statusname == "Fists Of Fire") {
+    if (statusGroups.gainsloses == "gains") {
+      addStatus("fistsoffire", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+      removeIcon("fistsoffire");
+    }
+    else if (statusGroups.gainsloses == "loses") {
+      removeStatus("fistsoffire", statusGroups.targetID);
+      addIcon("fistsoffire");
+    }
+  }
+
   else if (statusGroups.statusname == "Leaden Fist") {
     if (statusGroups.gainsloses == "gains") {
       addStatus("leadenfist", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
@@ -194,17 +237,40 @@ function mnkStatus(logLine) {
 }
 
 function mnkCombo() {
-
+  //
+  // if (checkStatus("perfectbalance") > 0) {
+  //   if
+  // }
+  //
+  // else {
+  //
+  // }
   // Reset icons
   removeIcon("combo1");
   removeIcon("combo2");
   removeIcon("combo3");
 
-  if (checkStatus("perfectbalance") > 0) {
-
+  if (checkStatus("leadenfist") > 0) {
+    potency.bootshine = 300 * 2;
+  }
+  else {
+    potency.bootshine = 150 * 2;
   }
 
-  if (player.level >= 50
+  if (checkStatus("opoopoform") > 0) {
+    potency.armofthedestroyer = 110;
+  }
+  else {
+    potency.armofthedestroyer = 80;
+  }
+
+  potency.dragonkick = 200;
+
+    if (player.level >= 26
+  && potency.armofthedestroyer * count.aoe > Math.max(potency.bootshine, potency.dragonkick)) {
+    icon.combo1 = icon.armofthedestroyer;
+  }
+  else if (player.level >= 50
   && checkStatus("leadenfist") < 0) {
     icon.combo1 = icon.dragonkick;
   }
@@ -216,14 +282,23 @@ function mnkCombo() {
   && checkStatus("twinsnakes") < 12000) {
     icon.combo2 = icon.twinsnakes;
   }
+  else if (player.level >= 45
+  && count.aoe >= 2) {
+    icon.combo2 = icon.fourpointfury;
+  }
   else {
     icon.combo2 = icon.truestrike;
   }
 
   if (player.level >= 30
+  && count.aoe >= 2) {
+    icon.combo3 = icon.rockbreaker;
+  }
+  else if (player.level >= 30
   && checkStatus("demolish", target.ID) < 12000) {
     icon.combo3 = icon.demolish;
   }
+
   else {
     icon.combo3 = icon.snappunch;
   }

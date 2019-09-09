@@ -166,6 +166,7 @@ function mchAction() {
         recast.hotshot = Date.now() - previous.hotshot;
       }
       previous.hotshot = Date.now();
+      addRecast("hotshot");
       addCountdownBar("hotshot", recast.hotshot, "icon");
       mchBattery();
       mchHeat();  // Why? Check later
@@ -177,7 +178,8 @@ function mchAction() {
         recast.drill = Date.now() - previous.drill; // Adjusts cooldown
       }
       previous.drill = Date.now();
-      removeIcon("drill");
+      addRecast("drill");
+      //removeIcon("drill");
       addCountdownBar("drill", recast.drill, "icon");
       // if (checkRecast("reassemble") < checkRecast("drill")) {
       //   addIconBlinkTimeout("drill", recast.drill - 1000, nextid.drill, icon.reassemble);
@@ -454,34 +456,22 @@ function mchComboTimeout() { // Set between combo actions
 }
 
 function mchHeat() {
-
+  console.log("  Heat:" + player.jobDetail.heat + "  Drill:" + checkRecast("drill") + "  Hotshot:" +  checkRecast("hotshot"));
   if (player.jobDetail.heat >= 50
   && (player.level < 58 || checkRecast("drill") > 9000)
-  && (player.level < 76 || checkRecast("hotshot") > 9000)) {
-    if (player.level >= 45
-    && checkRecast("wildfire") < 1000) {
-      addIcon("wildfire");
-    }
-    else {
-      addIcon("hypercharge");
-    }
-  }
-  else if (player.jobDetail.heat >= 95) {
-    if (player.level >= 45
-    && checkRecast("wildfire") < 1000) {
-      addIcon("wildfire");
-    }
-    else {
-      addIcon("hypercharge");
-    }
-  }
-  else if (player.level >= 66
-  && player.jobDetail.heat < 50
-  && checkRecast("wildfire") < 3500
-  && checkRecast("barrelstabilizer") < 1000) {
-    addIcon("barrelstabilizer");
+  && (player.level < 76 || checkRecast("hotshot") > 9000)) {  
+    addIcon("hypercharge");
+    // if (player.level >= 45
+    // && checkRecast("wildfire") < 1000) {
+    //   addIcon("wildfire");
+    // }
+    // else {
+    //   addIcon("hypercharge");
+    // }
+    console.log("Go");
   }
   else {
+    console.log("No go");
     removeIcon("hypercharge");
   }
 }

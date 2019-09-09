@@ -44,6 +44,12 @@ recast.theblackestnight = 15000;
 recast.battlelitany = 180000;
 recast.dragonsight = 120000;
 
+// GNB
+recast.gnashingfang = 30000;
+recast.nomercy = 60000;
+recast.roughdivide = 30000;
+recast.sonicbreak = 60000;
+
 // MCH
 recast.barrelstabilizer = 120000;
 recast.drill = 20000

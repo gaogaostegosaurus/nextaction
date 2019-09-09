@@ -10,6 +10,9 @@ duration.windbite = duration.venomousbite;
 // DRK
 duration.delirium = 10000;
 
+// GNB
+duration.nomercy = 20000;
+
 // MCH
 duration.hypercharge = 10000;
 
@@ -29,6 +32,19 @@ duration.kassatsu = 15000;
 duration.assassinateready = 10000;
 duration.tenchijin = 10000;
 duration.bunshin = 15000;
+
+// PLD
+duration.fightorflight = 25000;
+duration.ironwill = 999999;
+duration.sheltron = 6000;
+duration.sentinel = 10000;
+// duration.cover = 12000;
+// duration.circleofscorn = 15000;
+duration.hallowedground = 10000;
+duration.goringblade = 21000;
+// duration.divineveil = 30000;
+duration.requiescat = 12000;
+duration.swordoath = 15000;
 
 // SAM
 duration.jinpu = 40000;

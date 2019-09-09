@@ -29,8 +29,6 @@ actionList.drk = [
 
 function drkJobChange() {
 
-  console.log("Loading initial values");
-
   nextid.mitigation = 0;
   nextid.rampart = nextid.mitigation;
   nextid.shadowwall = nextid.mitigation;
@@ -51,14 +49,20 @@ function drkJobChange() {
   nextid.carveandspit = 13;
   nextid.plunge = 14;
 
+  countdownid.delirium = 0;
+
   previous.unleash = 0;
   previous.stalwartsoul = 0;
   previous.floodofdarkness = 0;
   previous.quietus = 0;
   previous.abyssaldrain = 0;
 
+    if (player.level >= 68) {
+      addCountdownBar("delirium", checkRecast("delirium"), "icon");
+    }
   drkCombo();
   drkGauge();
+
 
 }
 
@@ -70,15 +74,13 @@ function drkAction() {
 
   if (actionList.drk.indexOf(actionGroups.actionname) > -1) {
 
-    removeText("loadmessage");
-
     // These actions don't break combo
 
     if ("Delirium" == actionGroups.actionname) {
       removeIcon("delirium");
-      addStatus("delirium", duration.delirium, actionGroups.targetID);
+      addStatus("delirium");
       addRecast("delirium");
-      addIconBlinkTimeout("delirium", recast.delirium, nextid.delirium, icon.delirium);
+      addCountdownBar("delirium", recast.delirium, "icon");
       drkGauge();
     }
 
@@ -108,9 +110,9 @@ function drkAction() {
       else {
         count.aoe = count.aoe + 1;
       }
-      removeIcon("abyssaldrain");
-      addRecast("abyssaldrain");
-      addIconBlinkTimeout("abyssaldrain", recast.abyssaldrain, nextid.abyssaldrain, icon.abyssaldrain);
+      //removeIcon("abyssaldrain");
+      //addRecast("abyssaldrain");
+      //addIconBlinkTimeout("abyssaldrain", recast.abyssaldrain, nextid.abyssaldrain, icon.abyssaldrain);
     }
 
     else if ("Carve And Spit" == actionGroups.actionname) {
@@ -123,7 +125,7 @@ function drkAction() {
       if (player.level >= 78) {
         if (checkRecast("plunge2", player.ID) < 0) {
           addRecast("plunge1", player.ID, -1);
-          addRecast("plunge2", player.ID, recast.plunge);
+          addRecast("plunge2");
         }
         else {
           removeIcon("plunge");
@@ -176,7 +178,7 @@ function drkAction() {
       && actionGroups.result.length >= 2) {
         count.aoe = 1;
         if (next.combo != 1) {
-          drkCombo();
+          drkSouleaterCombo();
           toggle.combo = Date.now();
         }
         removeIcon("hardslash");
@@ -185,9 +187,14 @@ function drkAction() {
 
       else if ("Syphon Strike" == actionGroups.actionname
       && actionGroups.result.length >= 8) {
-        removeIcon("hardslash");
-        removeIcon("syphonstrike");
-        drkComboTimeout();
+        if (player.level < 26) {
+          drkCombo();
+        }
+        else {
+          removeIcon("hardslash");
+          removeIcon("syphonstrike");
+          drkComboTimeout();
+        }
       }
 
       else if ("Souleater" == actionGroups.actionname
@@ -197,23 +204,26 @@ function drkAction() {
 
       else if ("Unleash" == actionGroups.actionname
       && actionGroups.result.length >= 2) {
+
         if (Date.now() - previous.unleash > 1000) {
           previous.unleash = Date.now();
           count.aoe = 1;
+          removeIcon("unleash");
+
+          if (next.combo != 2) {
+            drkStalwartSoulCombo();
+          }
+
+          if (player.level < 72) {
+            drkCombo();
+          }
+          else {
+            toggle.combo = Date.now();
+            drkComboTimeout();
+          }
         }
         else {
           count.aoe = count.aoe + 1;
-        }
-        if (next.combo != 2) {
-          stalwartsoulCombo();
-          toggle.combo = Date.now();
-        }
-        removeIcon("overpower");
-        if (player.level >= 74) {
-          drkComboTimeout();
-        }
-        else {
-          drkCombo();
         }
       }
 
@@ -222,11 +232,11 @@ function drkAction() {
         if (Date.now() - previous.stalwartsoul > 1000) {
           previous.stalwartsoul = Date.now();
           count.aoe = 1;
+          drkCombo();
         }
         else {
           count.aoe = count.aoe + 1;
         }
-        drkCombo();
       }
 
       else {
@@ -256,7 +266,7 @@ function drkStatus() {
         addStatus("delirium", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
       }
       else if (statusGroups.gainsloses == "loses") {
-        removeStatus("berserk", statusGroups.targetID);
+        removeStatus("delirium");
       }
     }
 
@@ -311,6 +321,8 @@ function drkMitigation() {
 
 function drkMP() {
 
+  player.tempjobDetail.darkarts = player.debugJobSplit[4]; // 0 or 1
+
   if (player.level >= 74) {
     if (count.aoe >= 2) {
       icon.floodofdarkness = icon.floodofshadow;
@@ -319,23 +331,17 @@ function drkMP() {
       icon.floodofdarkness = icon.edgeofshadow;
     }
   }
-  else if (player.level >= 40) {
-    if (count.aoe == 1) {
-      icon.floodofdarkness = icon.edgeofdarkness;
-    }
-    else {
-      icon.floodofdarkness = "003082";
-    }
+  else if (player.level >= 40
+  && count.aoe == 1) {
+    icon.floodofdarkness = icon.edgeofdarkness;
   }
   else {
     icon.floodofdarkness = "003082";
   }
 
-  player.jobDetail.darkarts = player.debugJobSplit[4]; // 0 or 1
-
   if (player.level >= 70) {
     if (player.currentMP >= 6000
-    || player.jobDetail.darkarts == 1) {
+    || player.tempjobDetail.darkarts == 1) {
       addIcon("floodofdarkness");
     }
     else {
@@ -360,7 +366,7 @@ function drkGauge() {
   && count.aoe >= 3) {
     icon.gaugespender = icon.quietus;
   }
-  else if (player.level >= 62) {
+  else {
     icon.gaugespender = icon.bloodspiller;
   }
 
@@ -389,23 +395,34 @@ function drkGauge() {
 function drkCombo() {
 
   delete toggle.combo;
+  delete next.combo;
 
   removeIcon("hardslash");
   removeIcon("syphonstrike");
   removeIcon("souleater");
 
   if (count.aoe >= 2) {
-    addIcon("unleash");
-    if (player.level >= 74) {
-      addIcon("stalwartsoul");
-    }
+    drkStalwartSoulCombo();
   }
   else {
-    addIcon("hardslash");
-    addIcon("syphonstrike");
-    if (player.level >= 26) {
-      addIcon("souleater");
-    }
+    drkSouleaterCombo();
+  }
+}
+
+function drkSouleaterCombo() {
+  next.combo = 1;
+  addIcon("hardslash");
+  addIcon("syphonstrike");
+  if (player.level >= 26) {
+    addIcon("souleater");
+  }
+}
+
+function drkStalwartSoulCombo() {
+  next.combo = 2;
+  addIcon("unleash");
+  if (player.level >= 74) {
+    addIcon("stalwartsoul");
   }
 }
 

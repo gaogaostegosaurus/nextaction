@@ -104,7 +104,6 @@ function blmAction(logLine) {
 
   if (actionList.blm.indexOf(actionGroups.actionname) > -1) {
 
-    removeText("loadmessage");
 
     if (["Fire II", "Thunder IV", "Freeze", "Flare", "Foul"].indexOf(actionGroups.actionname) > -1) {
       toggle.aoe = Date.now()
