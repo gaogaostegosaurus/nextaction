@@ -66,14 +66,17 @@ function blmJobChange() {
     // Astral
     nextid.fire4 = 3;
     nextid.flare = nextid.fire4;
+    nextid.firespam = nextid.fire4;
     nextid.firestarter = 4;
     nextid.despair = 5;
     nextid.blizzard4 = 5;
+    nextid.blizzard = nextid.blizzard4;
     nextid.manafontinstant = 6;
     nextid.manafontdespair = 7;
     nextid.fire = 9;
-    nextid.blizzard3 = 9;
-    nextid.freeze = 9;
+    nextid.blizzard3 = nextid.fire;
+    nextid.freeze = nextid.fire;
+    nextid.transpose = nextid.fire;
 
     // Umbral
     nextid.blizzard4 = 8;
