@@ -29,306 +29,543 @@ var sightCooldown = 0; // Dragon Sight
 var spineshatterCooldown = 0;
 var surgeCooldown = 0; // Life Surge
 
-var drgActionList = "True Thrust|Vorpal Thrust|Impulse Drive|Heavy Thrust|Piercing Talon|Full Thrust|Disembowel|Chaos Thrust|Fang And Claw|Wheeling Thrust|Sonic Thrust";
-var drgCooldownList = "Life Surge|Blood For Blood|Jump|Spineshatter Dive|Dragonfire Dive|Battle Litany|Blood Of The Dragon|Geirskogul|Dragon Sight|Nastrond";
-var drgSelfStatusList = "Heavy Thrust|Sharper Fang And Claw|Enhanced Wheeling Thrust|Dive Ready";
-var drgTargetStatusList = "Chaos Thrust";
+actionList.drg = [
 
-function drgPlayerChangedEvent(e) {
+  // Off-GCD
+  "Life Surge", "Lance Charge", "Jump", "Spineshatter Dive", "Battle Litany",
+  "Blood Of The Dragon", "Dragon Sight", "Mirage Dive", "High Jump",
+  // AoE
+  "Dragonfire Dive", "Geirskogul", "Nastrond", "Stardiver",
 
-  if (player.jobDetail.bloodMilliseconds == 0 && player.jobDetail.lifeMilliseconds == 0 && player.level >= 54 && dragonCooldown - Date.now() < 0) {
-    removeIcon("next4");
-    removeIcon("next5");
-    addIcon("next10","002581");
-  }
+  // GCD
+  "True Thrust", "Vorpal Thrust", "Piercing Talon", "Disembowel", "Full Thrust",
+  "Chaos Thrust", "Fang And Claw", "Wheeling Thrust", "Raiden Thrust",
+  // AoE
+  "Doom Spike", "Sonic Thrust", "Coerthan Torment"//,
 
-  else if ((player.jobDetail.bloodMilliseconds > 0 || player.jobDetail.lifeMilliseconds > 0) && player.level >= 54) {
+  // Role
+  // "Second Wind", "Leg Sweep", "Bloodbath", "Feint", "Arm\'s Length",
+  // "True North"
+];
 
-    removeIcon("next10","002581");
+function drgJobChange() {
 
-    clearTimeout(jumpTimeout);
-    clearTimeout(spineshatterTimeout);
+  nextid.combo1 = 0;
+  nextid.combo2 = nextid.combo1 + 1;
+  nextid.combo3 = nextid.combo1 + 2;
+  nextid.combo4 = nextid.combo1 + 3;
+  nextid.combo5 = nextid.combo1 + 4;
 
-    if ((player.level >= 68 && jumpCooldown - Date.now() < 0 && diveStatus - Date.now() < 0) || (player.level < 68 && jumpCooldown - Date.now() < 0)) {
-      addIcon("next11","002576");
-    }
-    else {
-      removeIcon("next11");
-    }
+  nextid.truethrust = nextid.combo1;
+  nextid.raidenthrust = nextid.combo1;
+  nextid.doomspike = nextid.combo1;
 
-    if ((player.level >= 68 && spineshatterCooldown - Date.now() < 0 && diveStatus - Date.now() < 0)  || (player.level < 68 && spineshatterCooldown - Date.now() < 0)) {
-      addIcon("next12","002580");
-    }
-    else {
-      removeIcon("next12");
-    }
+  nextid.vorpalthrust = nextid.combo2;
+  nextid.disembowel = nextid.combo2;
+  nextid.sonicthrust = nextid.combo2;
 
-    if (diveStatus - Date.now() > 0 && player.jobDetail.eyesAmount < 3) {
-      addIcon("next13","002588");
-    }
-    else {
-      removeIcon("next13");
-    }
+  nextid.fullthrust = nextid.combo3;
+  nextid.chaosthrust = nextid.combo3;
+  nextid.coerthantorment = nextid.combo3;
 
-    if (geirskogulCooldown - Date.now() < 0 && player.jobDetail.bloodMilliseconds > 0 && player.jobDetail.eyesAmount < 3) {
-      addIcon("next14","002583");
-    }
-    else if (geirskogulCooldown - Date.now() < 0 && player.jobDetail.bloodMilliseconds > 24000 && player.jobDetail.eyesAmount == 3) {
-      addIcon("next14","002583");
-    }
-    else if (nastrondCooldown - Date.now() < 0 && player.jobDetail.lifeMilliseconds > 0) {
-      addIcon("next14","002589");
-    }
-    else {
-      removeIcon("next14");
-    }
+  nextid.bloodofthedragon = 10;
+  nextid.dragonsight = 11;
+  nextid.stardiver = 12;
+  nextid.geirskogul = 13;
+  nextid.nastrond = nextid.geirskogul;
+  nextid.lifesurge = 14;
+  nextid.lancecharge = 15;
+  nextid.jump = 16;
+  nextid.miragedive = nextid.jump;
+  nextid.spineshatterdive = nextid.jump + 1;
+  nextid.dragonfiredive = nextid.jump + 2;
 
+  nextid.battlelitany = 19;
+
+  if (player.level >= 74) {
+    icon.jump = icon.highjump;
   }
   else {
-    removeIcon("next10","002581");
+    icon.jump = "002576";
+  }
+
+  if (player.level >= 30) {
+    addCountdownBar("jump", checkRecast("jump"));
+  }
+
+  if (player.level >= 54
+  && Math.max(player.jobDetail.bloodMilliseconds, player.jobDetail.lifeMilliseconds) < 500) {
+    addCountdownBar("bloodofthedragon", checkRecast("bloodofthedragon"), "icon");
   }
 
 }
 
-function drgLogEvent(e,i) {
 
-  actionLine.drg = e.detail.logs[i].match(RegExp(' [\\dA-F]{2}:[\\dA-F]{8}:' + player.name + ':[\\dA-F]{2,8}:(' + drgActionList + '):','i'));
-  cooldownLine.drg = e.detail.logs[i].match(RegExp(' [\\dA-F]{2}:[\\dA-F]{8}:' + player.name + ':[\\dA-F]{2,8}:(' + drgCooldownList + '):','i'));
+function drgPlayerChangedEvent() {
 
-  selfGainsStatusLine = e.detail.logs[i].match(RegExp(' [\\dA-F]{2}:(' + player.name + ') gains the effect of (' + drgSelfStatusList + ') from (' + player.name + ') for (.*) Seconds\\.'));
-  selfLosesStatusLine = e.detail.logs[i].match(RegExp(' [\\dA-F]{2}:(' + player.name + ') loses the effect of (' + drgSelfStatusList + ') from (' + player.name + ')\\.'));
-  targetGainsStatusLine = e.detail.logs[i].match(RegExp(' [\\dA-F]{2}:(.*) gains the effect of (' + drgTargetStatusList + ') from (' + player.name + ') for (.*) Seconds\\.'));
-  targetLosesStatusLine = e.detail.logs[i].match(RegExp(' [\\dA-F]{2}:(.*) loses the effect of (' + drgTargetStatusList + ') from (' + player.name + ')\\.'));
+  if (player.level >= 54
+  && Math.max(player.jobDetail.bloodMilliseconds, player.jobDetail.lifeMilliseconds) < 500) {
 
-  if (actionLine.drg) {
-
-    if (actionLine.drg[1] == "True Thrust") {
-      fullCombo();
-      removeIcon("next0");
-      removeIcon("next1");
+    if (checkRecast("bloodofthedragon") < 500) {
+      removeIcon("jump");
+      removeIcon("spineshatterdive");
     }
 
-    else if (actionLine.drg[1] == "Impulse Drive") {
-      chaosCombo();
-      removeIcon("next0");
-      removeIcon("next1");
-    }
-
-    else if (actionLine.drg[1] == "Vorpal Thrust" && previous.action == "True Thrust" && player.level >= 26) { // Check to see if mid-combo first
-      removeIcon("next2");
-    }
-
-    else if (actionLine.drg[1] == "Disembowel" && previous.action == "Impulse Drive" && player.level >= 50) {
-      removeIcon("next2");
-    }
-
-    else if (actionLine.drg[1] == "Full Thrust" && previous.action == "Vorpal Thrust" && player.level >= 56 && (player.jobDetail.bloodMilliseconds > 0 || player.jobDetail.lifeMilliseconds > 0)) {
-      removeIcon("next3");
-      removeIcon("next11"); // Life Surge
-    }
-
-    else if (actionLine.drg[1] == "Chaos Thrust" && previous.action == "Disembowel" && player.level >= 58 && (player.jobDetail.bloodMilliseconds > 0 || player.jobDetail.lifeMilliseconds > 0)) {
-      removeIcon("next3");
-    }
-
-    else if (actionLine.drg[1] == "Fang And Claw" && previous.action == "Full Thrust" && player.level >= 64 && (player.jobDetail.bloodMilliseconds > 0 || player.jobDetail.lifeMilliseconds > 0)) {
-      removeIcon("next4");
-    }
-
-    else if (actionLine.drg[1] == "Wheeling Thrust" && previous.action == "Chaos Thrust" && player.level >= 64 && (player.jobDetail.bloodMilliseconds > 0 || player.jobDetail.lifeMilliseconds > 0)) {
-      removeIcon("next4");
-    }
-
-    else { // Combo breakerrrrr
-      delete toggle.combo;
-      drgCombo();
-    }
-    previous.action = actionLine.drg[1];
+    removeIcon("fangandclaw");
+    removeIcon("wheelingthrust");
+    removeIcon("geirskogul");
+    removeIcon("stardiver");
+    addCountdownBar("bloodofthedragon", checkRecast("bloodofthedragon"), "icon");
   }
 
-  if (cooldownLine.drg) {
-
-    if (cooldownLine.drg[1] == "Life Surge") {
-      surgeCooldown = Date.now() + 50 * 1000;
-    }
-
-    else if (cooldownLine.drg[1] == "Blood For Blood") {
-      bloodCooldown = Date.now() + 80 * 1000;
-    }
-
-    else if (cooldownLine.drg[1] == "Jump") {
-      jumpCooldown = Date.now() + 30 * 1000;
-      if (player.jobDetail.bloodMilliseconds == 0) {
-        removeIcon("next11");
-        //clearTimeout(jumpTimeout);
-        //jumpTimeout = setTimeout(addIcon, 30 * 1000 - 1000, "next11", "002576");
-      }
-    }
-
-    else if (cooldownLine.drg[1] == "Spineshatter Dive") {
-      spineshatterCooldown = Date.now() + 60 * 1000;
-      if (player.jobDetail.bloodMilliseconds == 0) {
-        removeIcon("next12");
-        //addicon
-        //clearTimeout(spineshatterTimeout);
-        //spineshatterTimeout = setTimeout(addIcon, 60 * 1000 - 1000, "next12", "002580");
-      }
-    }
-
-    else if (cooldownLine.drg[1] == "Dragonfire Dive") {
-      dragonfireCooldown = Date.now() + 120 * 1000;
-      removeIcon("next15");
-      //clearTimeout(dragonfireTimeout);
-      //dragonfireTimeout = setTimeout(addIcon, 120 * 1000 - 1000, "next13", "002578");
-    }
-
-    else if (cooldownLine.drg[1] == "Battle Litany") {
-      litanyCooldown = Date.now() + 180 * 1000;
-    }
-
-    else if (cooldownLine.drg[1] == "Blood Of The Dragon") {
-      dragonCooldown = Date.now() + 30 * 1000;
-      if (toggle.combo == 1 && previous.action != "Full Thrust" && player.level >= 56) {
-        addIcon("next4","002582");
-        if (player.level >= 64) {
-          addIcon("next5","002584");
-        }
-      }
-      else if (toggle.combo == 2 && previous.action != "Chaos Thrust" && player.level >= 58) {
-        addIcon("next4","002584");
-        if (player.level >= 64) {
-          addIcon("next5","002582");
-        }
-      }
-    }
-
-    else if (cooldownLine.drg[1] == "Dragon Sight") {
-      sightCooldown = Date.now() + 180 * 1000;
-    }
-
-    else if (cooldownLine.drg[1] == "Geirskogul") {
-      geirskogulCooldown = Date.now() + 30 * 1000;
-    }
-
-    else if (cooldownLine.drg[1] == "Nastrond") {
-      nastrondCooldown = Date.now() + 10 * 1000;
-    }
-
-  }
-
-  if (selfGainsStatusLine) {
-
-    if (selfGainsStatusLine[2] == "Heavy Thrust") {
-      heavyStatus = Date.now() + parseInt(selfGainsStatusLine[4] * 1000);
-    }
-
-    else if (selfGainsStatusLine[2] == "Dive Ready") {
-      diveStatus =  Date.now() + parseInt(selfGainsStatusLine[4] * 1000);
-    }
-  }
-
-  if (selfLosesStatusLine) {
-
-    if (selfLosesStatusLine[2] == "Heavy Thrust") {
-      heavyStatus = 0;
-    }
-
-    else if (selfLosesStatusLine[2] == "Dive Ready") {
-      removeIcon("next14");
-      diveStatus = 0;
-    }
-  }
-
-  if (targetGainsStatusLine) {
-
-    if (targetGainsStatusLine[2] == "Chaos Thrust") {
-      chaosStatus = Date.now() + parseInt(targetGainsStatusLine[4]) * 1000;
-    }
-  }
-
-  if (targetLosesStatusLine) {
-
-    if (targetLosesStatusLine[2] == "Chaos Thrust") {
-      chaosStatus = 0;
-    }
-  }
 }
 
-function drgCombo() {  // Leaves out step 1 because Spenders can't and don't need to see previous action
-  if (heavyStatus - Date.now() < 12500 && player.level >= 10 && actionLine.drg[1] != "Heavy Thrust") {
-    addIcon("next0","000311");
-  }
-  else {
-    removeIcon("next0");
-  }
 
-  if (piercingStatus - Date.now() < 15000 && player.level >= 38 && actionLine.drg[1] != "Disembowel" && previous.action != "Impulse Drive") {
-    chaosCombo();
-  }
+function drgAction() {
 
-  else if (chaosStatus - Date.now() < 15000 && player.level >= 50 && actionLine.drg[1] != "Chaos Thrust" && previous.action != "Disembowel" ) {
-    chaosCombo();
-  }
+  if (actionList.drg.indexOf(actionGroups.actionname) > -1) {
 
-  else {
-    fullCombo();
-  }
-}
+    // Non-GCD
 
-function fullCombo() {
-  toggle.combo = 1;
-  if (player.level >= 18 && surgeCooldown - Date.now() < 0) {
-    addIcon("next11","000304");
-  }
-  addIcon("next1","000310");
-  if (player.level >= 4) {
-    addIcon("next2","000312");
-    if (player.level >= 26) {
-      addIcon("next3","000314");
-      if (player.level >= 56 && (player.jobDetail.bloodMilliseconds > 0 || player.jobDetail.lifeMilliseconds > 0)) {
-        addIcon("next4","002582");
-        if (player.level >= 64) {
-          addIcon("next5","002584");
-        }
+    if ("Life Surge" == actionGroups.actionname) {
+      addRecast("lifesurge");
+    }
+
+    else if ("Lance Charge" == actionGroups.actionname) {
+      addRecast("lancecharge");
+    }
+
+    else if (["Jump", "High Jump"].indexOf(actionGroups.actionname)) {
+      addRecast("jump");
+    }
+
+    else if ("Elusive Jump" == actionGroups.actionname) {
+      addRecast("elusivejump");
+    }
+
+    else if ("Sentinel" == actionGroups.actionname) {
+      addRecast("sentinel");
+    }
+
+    else if ("Cover" == actionGroups.actionname) {
+      addRecast("cover");
+    }
+
+    else if ("Divine Veil" == actionGroups.actionname) {
+      addRecast("divineveil");
+    }
+
+    else if ("Intervention" == actionGroups.actionname) {
+      addRecast("intervention");
+    }
+
+    else if ("Requiescat" == actionGroups.actionname) {
+      removeIcon("requiescat");
+      addStatus("requiescat");
+      addRecast("requiescat");
+      addCountdownBar("requiescat");
+
+      pldRequiescatMP();
+    }
+
+    else if ("Passage Of Arms" == actionGroups.actionname) {
+      addRecast("passageofarms");
+    }
+
+    else if ("Intervene" == actionGroups.actionname) {
+      if (checkRecast("intervene2") < 0) {
+        addRecast("intervene1", -1);
+        addRecast("intervene2");
       }
       else {
-        removeIcon("next4");
-        removeIcon("next5");
+        addRecast("intervene1", checkRecast("intervene2"));
+        addRecast("intervene2", checkRecast("intervene2") + recast.intervene);
       }
     }
-    else {
-      removeIcon("next3");
+
+    else if ("Circle Of Scorn" == actionGroups.actionname) {
+      if (Date.now() - previous.circleofscorn > 1000) {
+        previous.circleofscorn = Date.now();
+        count.aoe = 1;
+        addRecast("circleofscorn");
+      }
+      else {
+        count.aoe = count.aoe + 1;
+      }
     }
-  }
-  else {
-    removeIcon("next2");
+
+    // GCD actions - affect combos
+
+    // else if ("Bloodspiller" == actionGroups.actionname) {
+    //   removeIcon("bloodspiller");
+    // }
+
+    // GCD actions - affect combos, catch all)
+
+    else {
+
+      if ("Fast Blade" == actionGroups.actionname
+      && actionGroups.result.length > 1) {
+        if (next.combo > 2) {
+          pldSingleTargetCombo();
+          toggle.combo = Date.now();
+        }
+        removeIcon("fastblade");
+        pldComboTimeout();
+      }
+
+      else if ("Riot Blade" == actionGroups.actionname
+      && actionGroups.result.length > 6) {
+        if (player.level < 26) {
+          pldCombo();
+        }
+        else {
+          removeIcon("fastblade");
+          removeIcon("riotblade");
+          pldComboTimeout();
+        }
+      }
+
+      else if ("Goring Blade" == actionGroups.actionname
+      && actionGroups.result.length > 6) {
+        addStatus("goringblade", duration.goringblade, actionGroups.targetID);
+        pldCombo();
+      }
+
+      else if ("Royal Authority" == actionGroups.actionname
+      && player.level >= 76
+      && actionGroups.result.length > 6) {
+        removeIcon("royalauthority");
+        count.atonement = 3;
+        addIcon("atonement1");
+        addIcon("atonement2");
+        addIcon("atonement3");
+        pldGoringBladeCombo();
+      }
+
+      else if ("Atonement" == actionGroups.actionname
+      && actionGroups.result.length > 1) {
+        count.atonement = count.atonement - 1;
+        if (count.atonement == 2) {
+          removeIcon("atonement1");
+        }
+        else if (count.atonement == 1) {
+          removeIcon("atonement2");
+        }
+        if (count.atonement == 0) {
+          removeIcon("atonement3");
+        }
+      }
+
+      else if ("Total Eclipse" == actionGroups.actionname
+      && actionGroups.result.length > 1) {
+
+        if (Date.now() - previous.totaleclipse > 1000) {
+          previous.totaleclipse = Date.now();
+          count.aoe = 1;
+          if (next.combo < 3) {
+            pldAreaOfEffectCombo();
+          }
+          removeIcon("totaleclipse");
+          if (player.level < 40) {
+            pldCombo();
+          }
+          else {
+            toggle.combo = Date.now();
+            pldComboTimeout();
+          }
+        }
+        else {
+          count.aoe = count.aoe + 1;
+          pldCombo();
+        }
+      }
+
+      else if ("Prominence" == actionGroups.actionname
+      && actionGroups.result.length > 6) {
+
+        if (Date.now() - previous.prominence > 1000) {
+          previous.prominence = Date.now();
+          count.aoe = 1;
+        }
+        else {
+          count.aoe = count.aoe + 1;
+        }
+        pldCombo();
+      }
+
+      else if ("Holy Spirit" == actionGroups.actionname
+      && actionGroups.result.length > 1) {
+        pldRequiescatMP();
+      }
+
+      else if ("Holy Circle" == actionGroups.actionname
+      && actionGroups.result.length > 1) {
+        if (Date.now() - previous.holycircle > 1000) {
+          previous.holycircle = Date.now();
+          count.aoe = 1;
+        }
+        else {
+          count.aoe = count.aoe + 1;
+        }
+        pldRequiescatMP();
+      }
+
+      else if ("Confiteor" == actionGroups.actionname
+      && actionGroups.result.length > 1) {
+        if (Date.now() - previous.confiteor > 1000) {
+          previous.confiteor = Date.now();
+          count.aoe = 1;
+        }
+        else {
+          count.aoe = count.aoe + 1;
+        }
+        pldRequiescatMP()
+      }
+
+      else {
+        pldCombo();
+      }
+    }
   }
 }
 
 
-function chaosCombo() {
-  toggle.combo = 2;
-  addIcon("next1","000313");
-  if (player.level >= 38) {
-    addIcon("next2","000317");
-    if (player.level >= 50) {
-      addIcon("next3","000308");
-      if (player.level >= 58 && (player.jobDetail.bloodMilliseconds > 0 || player.jobDetail.lifeMilliseconds > 0)) {
-        addIcon("next4","002584");
-        if (player.level >= 64) {
-          addIcon("next5","002582");
-        }
+function drgStatus() {
+
+  if (statusGroups.targetID == player.ID) { // Target is self
+
+    if ("Life Surge" == statusGroups.statusname) {
+      if (statusGroups.gainsloses == "gains") {
+        addStatus("lifesurge", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
       }
-      else {
-        removeIcon("next4");
-        removeIcon("next5");
+      else if (statusGroups.gainsloses == "loses") {
+        removeStatus("lifesurge");
       }
     }
-    else {
-      removeIcon("next3");
+
+    else if ("Lance Charge" == statusGroups.statusname) {
+      if (statusGroups.gainsloses == "gains") {
+        addStatus("lancecharge", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+      }
+      else if (statusGroups.gainsloses == "loses") {
+        removeStatus("lancecharge");
+      }
     }
+
+    else if ("Disembowel" == statusGroups.statusname) {
+      if (statusGroups.gainsloses == "gains") {
+        addStatus("disembowel", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+      }
+      else if (statusGroups.gainsloses == "loses") {
+        removeStatus("disembowel");
+      }
+    }
+
+    else if ("Battle Litany" == statusGroups.statusname) {
+      if (statusGroups.gainsloses == "gains") {
+        addStatus("battlelitany", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+      }
+      else if (statusGroups.gainsloses == "loses") {
+        removeStatus("battlelitany");
+      }
+    }
+
+    else if ("Sharper Fang And Claw" == statusGroups.statusname) {
+      if (statusGroups.gainsloses == "gains") {
+        addStatus("sharperfangandclaw", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+      }
+      else if (statusGroups.gainsloses == "loses") {
+        removeIcon("fangandclaw");
+        removeStatus("sharperfangandclaw");
+      }
+    }
+
+    else if ("Enhanced Wheeling Thrust" == statusGroups.statusname) {
+      if (statusGroups.gainsloses == "gains") {
+        addStatus("enhancedwheelingthrust", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+      }
+      else if (statusGroups.gainsloses == "loses") {
+        removeIcon("wheelingthrust");
+        removeStatus("enhancedwheelingthrust");
+      }
+    }
+
+    else if ("Right Eye" == statusGroups.statusname) {
+      if (statusGroups.gainsloses == "gains") {
+        addStatus("righteye", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+      }
+      else if (statusGroups.gainsloses == "loses") {
+        removeStatus("righteye");
+      }
+    }
+
+    else if ("Dive Ready" == statusGroups.statusname) {
+      if (statusGroups.gainsloses == "gains") {
+        addStatus("diveready", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+        addIcon("miragedive");
+      }
+      else if (statusGroups.gainsloses == "loses") {
+        removeStatus("diveready");
+        removeIcon("miragedive");
+      }
+    }
+
+    else if ("Raiden Thrust Ready" == statusGroups.statusname) {
+      if (statusGroups.gainsloses == "gains") {
+        addStatus("raidenthrustready", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+      }
+      else if (statusGroups.gainsloses == "loses") {
+        removeStatus("raidenthrustready");
+      }
+    }
+
+  }
+
+  else { // Target is not self
+
+    if ("Chaos Thrust" == statusGroups.statusname) {
+      if (statusGroups.gainsloses == "gains") {
+        addStatus("chaosthrust", parseInt(statusGroups.duration) * 1000, statusGroups.targetID)
+      }
+      else if (statusGroups.gainsloses == "loses") {
+        removeStatus("swordoath", statusGroups.targetID);
+      }
+    }
+
+  }
+}
+
+
+function drgCombo() {
+
+  delete toggle.combo;
+  delete next.combo;
+
+  removeIcon("combo1");
+  removeIcon("combo2");
+  removeIcon("combo3");
+  removeIcon("combo4");
+  removeIcon("combo5");
+
+  if (count.aoe >= 3) {
+    drgAreaOfEffectCombo();
   }
   else {
-    removeIcon("next2");
+    drgSingleTargetCombo();
   }
+}
+
+
+function drgSingleTargetCombo() {
+  if (player.level >= 64
+  && checkStatus("chaosthrust", target.ID) < 8 * 2500) {
+    drgChaosThrustCombo();
+  }
+  else if (player.level >= 56
+  && checkStatus("chaosthrust", target.ID) < 7 * 2500) {
+    drgChaosThrustCombo();
+  }
+  else if (player.level >= 50
+  && checkStatus("chaosthrust", target.ID) < 6 * 2500) {
+    drgChaosThrustCombo();
+  }
+  else if (player.level >= 64
+  && checkStatus("disembowel", player.ID) < 7 * 2500) {
+    drgChaosThrustCombo();
+  }
+  else if (player.level >= 56
+  && checkStatus("disembowel", player.ID) < 6 * 2500) {
+    drgChaosThrustCombo();
+  }
+  else if (player.level >= 26
+  && checkStatus("disembowel", player.ID) < 5 * 2500) {
+    drgChaosThrustCombo();
+  }
+  else if (player.level >= 18
+  && checkStatus("disembowel", player.ID) < 4 * 2500) {
+    drgChaosThrustCombo();
+  }
+  else {
+    drgFullThrustCombo();
+  }
+}
+
+
+function drgAreaOfEffectCombo() {
+  if (player.level >= 72
+  && checkStatus("disembowel", player.ID) < 5 * 2500) {
+    drgDisembowelCombo();
+  }
+  else if (player.level >= 62
+  && checkStatus("disembowel", player.ID) < 4 * 2500) {
+    drgDisembowelCombo();
+  }
+  else if (player.level >= 40
+  && checkStatus("disembowel", player.ID) < 3 * 2500) {
+    drgDisembowelCombo();
+  }
+  else {
+    drgCoerthanTormentCombo();
+  }
+}
+
+
+function drgFullThrustCombo() {
+  next.combo = 1;
+  addIcon("truethrust");
+  addIcon("vorpalthrust");
+  if (player.level >= 26) {
+    addIcon("fullthrust");
+  }
+  if (player.level >= 56) {
+    nextid.combo4 = nextid.fangandclaw;
+    addIcon("fangandclaw");
+  }
+  if (player.level >= 64) {
+    nextid.combo5 = nextid.wheelingthrust;
+    addIcon("wheelingthrust");
+  }
+}
+
+
+function drgChaosThrustCombo() {
+  next.combo = 2;
+  addIcon("truethrust");
+  addIcon("disembowel");
+  if (player.level >= 50) {
+    addIcon("chaosthrust");
+  }
+  if (player.level >= 58) {
+    nextid.combo4 = nextid.fangandclaw;
+    addIcon("wheelingthrust");
+  }
+  if (player.level >= 64) {
+    nextid.combo5 = nextid.wheelingthrust;
+    addIcon("fangandclaw");
+  }
+}
+
+function drgCoerthanTormentCombo() {
+  next.combo = 11;
+  addIcon("doomspike");
+  if (player.level >= 62) {
+    addIcon("sonicthrust");
+  }
+  if (player.level >= 72) {
+    addIcon("coerthantorment");
+  }
+}
+
+
+function drgDisembowelCombo() {
+  next.combo = 12;
+  addIcon("truethrust");
+  addIcon("disembowel");
+}
+
+
+function drgComboTimeout() {
+  clearTimeout(timeout.combo);
+  timeout.combo = setTimeout(drgCombo, 12500);
 }

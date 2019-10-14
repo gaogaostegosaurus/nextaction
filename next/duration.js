@@ -2,6 +2,12 @@
 
 var duration = {};
 
+// BLM
+duration.thunder = 18000;
+duration.thunder2 = 12000;
+duration.thunder3 = 24000;
+duration.thunder4 = 18000;
+
 // BRD
 duration.straightshotready = 10000;
 duration.venomousbite = 30000;

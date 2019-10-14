@@ -1,8 +1,10 @@
 "use strict";
 
 var procpotency = 20;
+var manabreakpoint = 5; // If you lose this much mana fixing your procs, you have not gained potency.
+                        // See https://docs.google.com/spreadsheets/d/143xU_4FYgPBUldSKJQpA30A2i98SVwqFwJ4tsihGbao/edit#gid=1083939279&range=A59
 
-var hardcast = [
+var hardcast = [  // Array with Hardcast spells and mana values
   "Jolt", 3, 3,
   "Verfire", 9, 0,
   "Verstone", 0, 9,
@@ -10,14 +12,13 @@ var hardcast = [
   "Veraero II", 0, 7,
   "Swiftcast", 0, 0
   ];
-var hardcastarraylength = hardcast.length;
-var dualcast = [
+var dualcast = [  // Array with longer cast time spells and mana values
   "Verthunder", 11, 0,
   "Veraero", 0, 11,
   "Scatter", 3, 3
 ];
-var dualcastarraylength = dualcast.length;
-var i;
+
+var i;  // For loops
 var j;
 
 actionList.rdm = [
@@ -25,36 +26,51 @@ actionList.rdm = [
   // Off-GCD
   "Corps-A-Corps", "Displacement", "Fleche", "Contre Sixte", "Acceleration", "Manafication", "Engagement",
 
+  // Role
+  "Swiftcast", "Lucid Dreaming",
+
   // GCD
   "Jolt", "Verfire", "Verstone", "Jolt II", "Verthunder", "Veraero",
   "Verthunder II", "Veraero II", "Impact", "Scatter",
   "Riposte", "Zwerchhau", "Redoublement", "Moulinet", "Reprise",
   "Enchanted Riposte", "Enchanted Zwerchhau", "Enchanted Redoublement", "Enchanted Moulinet", "Enchanted Reprise",
-  "Verflare", "Verholy", "Scorch",
+  "Verflare", "Verholy", "Scorch"
 
-  // Role
-  "Swiftcast", "Lucid Dreaming"
 ];
 
 function rdmJobChange() {
 
   // Set up UI
-  nextid.manafication = 0;
-  nextid.riposte = 1;
-  nextid.moulinet = nextid.riposte;
-  nextid.zwerchhau = 2;
-  nextid.redoublement = 3;
-  nextid.verflare = 4;
+
+  nextid.combo1 = 0;
+  nextid.combo2 = nextid.combo1 + 1;
+  nextid.combo3 = nextid.combo1 + 2;
+  nextid.combo4 = nextid.combo1 + 3;
+  nextid.combo5 = nextid.combo1 + 4;
+
+  nextid.riposte = nextid.combo1;
+  nextid.moulinet1 = nextid.combo1;
+  nextid.moulinet = nextid.moulinet1;
+
+  nextid.zwerchhau = nextid.combo2;
+  nextid.moulinet2 = nextid.combo2;
+
+  nextid.redoublement = nextid.combo3;
+
+  nextid.verflare = nextid.combo4;
   nextid.verholy = nextid.verflare;
-  nextid.scorch = 5;
+
+  nextid.scorch = nextid.combo5;
+
   nextid.hardcast = 6;
   nextid.dualcast = 7;
   nextid.luciddreaming = 10;
-  nextid.fleche = 11;
-  nextid.contresixte = 12;
-  nextid.acceleration = 13;
-  nextid.corpsacorps = 14;
-  nextid.displacement = 15;
+  nextid.manafication = 11;
+  nextid.fleche = 12;
+  nextid.contresixte = nextid.fleche + 1;
+  nextid.corpsacorps = nextid.fleche + 2;
+  nextid.displacement = nextid.fleche + 3;
+  nextid.acceleration = nextid.fleche + 4;
 
   countdownid.manafication = 0;
   countdownid.embolden = 1;
@@ -71,13 +87,16 @@ function rdmJobChange() {
   previous.scatter = 0;
   previous.moulinet = 0;
 
+
   // Set up icons
+
   if (player.level >= 62) {
     icon.jolt = icon.jolt2;
   }
   else {
     icon.jolt = "003202";
   }
+
   if (player.level >= 66) {
     icon.scatter = icon.impact;
   }
@@ -100,33 +119,44 @@ function rdmJobChange() {
     recast.contresixte = 45000;
   }
 
+
   // Create cooldown notifications
 
-  addCountdownBar("corpsacorps", -1);
+  addCountdownBar("corpsacorps", checkRecast("corpsacorps"), "icon");
+
   if (player.level >= 40) {
-    addCountdownBar("displacement", -1);
-  }
-  if (player.level >= 45) {
-    addCountdownBar("fleche", -1);
-  }
-  if (player.level >= 56) {
-    addCountdownBar("contresixte", -1);
+    addCountdownBar("displacement", checkRecast("displacement"), "icon");
   }
 
+  if (player.level >= 45) {
+    addCountdownBar("fleche", checkRecast("fleche"), "icon");
+  }
+
+  if (player.level >= 56) {
+    addCountdownBar("contresixte", checkRecast("contresixte"), "icon");
+  }
+
+  if (player.level >= 60) {
+    addCountdownBar("manafication", checkRecast("manafication"));
+  }
+
+  toggle.rdmSetup = 1;
 
 }
 
 function rdmPlayerChangedEvent() {
 
-  // Prevent race conditions?
-  nextid.luciddreaming = 10;
-  countdownid.luciddreaming = 2;
+  if (toggle.rdmSetup) { // Not sure if there is a race condition but this should prevent it
 
-  if (player.currentMP / player.maxMP < 0.85) {
-    addCountdownBar("luciddreaming", checkRecast("luciddreaming"));
-  }
-  else {
-    removeCountdownBar("luciddreaming");
+    if (player.currentMP / player.maxMP < 0.85) {
+      addCountdownBar("luciddreaming", checkRecast("luciddreaming"), "icon");
+    }
+
+    else {
+      removeIcon("luciddreaming");
+      removeCountdownBar("luciddreaming");
+    }
+
   }
 }
 
@@ -137,15 +167,18 @@ function rdmAction() {
     // Off GCD
 
     if ("Corps-A-Corps" == actionGroups.actionname) {
-      addCountdownBar("corpsacorps");
+      addCountdownBar("corpsacorps", recast.corpsacorps, "icon");
+      removeIcon("corpsacorps");
     }
 
     else if (["Displacement", "Engagement"].indexOf(actionGroups.actionname) > -1) {
-      addCountdownBar("displacement");
+      addCountdownBar("displacement", recast.displacement, "icon");
+      removeIcon("displacement");
     }
 
     else if ("Fleche" == actionGroups.actionname) {
-      addCountdownBar("fleche");
+      addCountdownBar("fleche", recast.fleche, "icon");
+      removeIcon("fleche");
     }
 
     // No one cares about Acceleration =(
@@ -154,7 +187,7 @@ function rdmAction() {
     // }
 
     else if ("Contre Sixte" == actionGroups.actionname) {
-      addCountdownBar("contresixte");
+      addCountdownBar("contresixte", recast.contresixte, "icon");
       if (Date.now() - previous.contresixte > 1000) {
         previous.contresixte = Date.now();
         count.aoe = 1;
@@ -162,6 +195,7 @@ function rdmAction() {
       else {
         count.aoe = count.aoe + 1;
       }
+      removeIcon("contresixte");
     }
 
     else if ("Embolden" == actionGroups.actionname) {
@@ -181,6 +215,8 @@ function rdmAction() {
       if (["Riposte", "Enchanted Riposte"].indexOf(actionGroups.actionname) > -1) {
         if (player.level >= 35) {
           toggle.combo = Date.now();
+          removeIcon("hardcast");
+          removeIcon("dualcast");
           rdmComboTimeout();
         }
         if (player.level >= 52) {
@@ -245,7 +281,6 @@ function rdmAction() {
 
       else { // Interrupt combo
 
-
         if ("Verfire" == actionGroups.actionname) {
           removeStatus("verfireready");
         }
@@ -302,8 +337,8 @@ function rdmAction() {
 
         else if ("Manafication" == actionGroups.actionname) {
           addCountdownBar("manafication");
-          addCountdownBar("corpsacorps", -1);
-          addCountdownBar("displacement", -1);
+          addCountdownBar("corpsacorps", -1, "icon");
+          addCountdownBar("displacement", -1, "icon");
           removeIcon("manafication");
           rdmDualcast();
         }
@@ -397,14 +432,18 @@ function rdmDualcast() {
   removeIcon("verflare");
   removeIcon("scorch");
 
-  if (count.aoe >= 2
-  && checkRecast("manafication") < 0
+  if (checkRecast("manafication") < 2500
   && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 70) {
     addIcon("moulinet");
   }
 
+  // else if (checkRecast("manafication") < 2500
+  // && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 55) {
+  //   addIcon("reprise");
+  // }
+
   else if (count.aoe >= 4
-  && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 20) {
+  && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 70) {
     addIcon("moulinet");
   }
 
@@ -455,8 +494,8 @@ function rdmDualcast() {
     next.dualcast = [];
     next.dualcastvalue = 0;
     rdmManafication(); // Check Manafication state
-    for (i = 0; i < hardcastarraylength; i = i + 3) {
-      for (j = 0; j < dualcastarraylength; j = j + 3) {
+    for (i = 0; i < hardcast.length; i = i + 3) {
+      for (j = 0; j < dualcast.length; j = j + 3) {
         if (rdmDualcastValue(hardcast[i], hardcast[i + 1], hardcast[i + 2], dualcast[j], dualcast[j + 1], dualcast[j + 2]) > next.dualcastvalue) {
           next.dualcast = [hardcast[i], dualcast[j]];
           next.dualcastvalue = rdmDualcastValue(hardcast[i], hardcast[i + 1], hardcast[i + 2], dualcast[j], dualcast[j + 1], dualcast[j + 2]);
@@ -667,16 +706,32 @@ function rdmCombo() {
 }
 
 function rdmFlareCombo() {
-  rdmCombo();
-  addIcon("verflare");
+  addIcon("riposte");
+  if (player.level >= 35) {
+    addIcon("zwerchhau");
+  }
+  if (player.level >= 50) {
+    addIcon("redoublement");
+  }
+  if (player.level >= 68) {
+    addIcon("verflare");
+  }
   if (player.level >= 80) {
     addIcon("scorch");
   }
 }
 
 function rdmHolyCombo() {
-  rdmCombo();
-  addIcon("verholy");
+  addIcon("riposte");
+  if (player.level >= 35) {
+    addIcon("zwerchhau");
+  }
+  if (player.level >= 50) {
+    addIcon("redoublement");
+  }
+  if (player.level >= 70) {
+    addIcon("verholy");
+  }
   if (player.level >= 80) {
     addIcon("scorch");
   }

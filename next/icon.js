@@ -18,13 +18,17 @@ icon.swiftcast = "000866";
 // BLM
 icon.fire = "000451";
 icon.fire3 = "000453";
+icon.firestarter = icon.fire3;
 icon.blizzard3 = "000456";
 icon.thunder = "000457";
+icon.thundercloud = icon.thunder;
 icon.thunder3 = "000459";
+icon.thunder2 = "000468";
 icon.manafont = "002651";
 icon.enochian = "002658";
-icon.fire4 = "002660";
 icon.blizzard4 = "002659";
+icon.fire4 = "002660";
+icon.thunder4 = "002662";
 icon.despair = "002665";
 icon.xenoglossy = "002667";
 
@@ -80,7 +84,32 @@ icon.flourish = "003475";
 icon.saberdance = "003476";
 
 // DRG
+icon.lifesurge = "000304";
+icon.doomspike = "000306";
+icon.chaosthrust = "000308";
+icon.lancecharge = "000309";
+icon.truethrust = "000310";
+icon.vorpalthrust = "000311";
+icon.fullthrust = "000314";
+icon.piercingtalon = "000315";
+icon.disembowel = "000317";
+icon.jump = "002576";
+icon.elusivejump = "002577";
+icon.dragonfiredive = "002578";
+icon.spineshatterdive = "002580";
+icon.bloodofthedragon = "002581";
+icon.fangandclaw = "002582";
+icon.geirskogul = "002583";
+icon.wheelingthrust = "002584";
 icon.battlelitany = "002585";
+icon.sonicthrust = "002586";
+icon.dragonsight = "002587";
+icon.miragedive = "002588";
+icon.nastrond = "002589";
+icon.coerthantorment = "002590";
+icon.highjump = "002591";
+icon.raidenthrust = "002592";
+icon.stardiver = "002593";
 
 // DRK
 icon.hardslash = "003051";

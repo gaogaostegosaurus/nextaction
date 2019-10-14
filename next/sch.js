@@ -26,9 +26,9 @@ actionList.sch = [
 
 function schJobChange() {
 
-  nextid.aetherflow = 0;
-  nextid.bio = 1;
-  nextid.chainstratagem = 2;
+  nextid.bio = 0;
+  nextid.aetherflow = 10;
+  nextid.chainstratagem = 11;
 
   // Column 1
   countdownid.bio = 0;

@@ -4,9 +4,6 @@
 
 actionList.pld = [
 
-  // Role actions
-  "Rampart", "Arm\'s Length",
-
   // Non-GCD actions
   "Fight Or Flight", "Spirits Within", "Sheltron", "Sentinel", "Cover",
   "Divine Veil", "Intervention", "Requiescat", "Passage Of Arms",
@@ -16,12 +13,14 @@ actionList.pld = [
   // GCD actions
   "Fast Blade", "Riot Blade", "Rage Of Halone", "Goring Blade",
   "Royal Authority", "Atonement", "Holy Spirit",
-  "Total Eclipse", "Prominence", "Holy Circle", "Confiteor"
+  "Total Eclipse", "Prominence", "Holy Circle", "Confiteor",
   // Total Eclipse => Prominence: 3 or more
   // Holy Circle: 2 or more
 
-];
+  // Role actions
+  "Rampart", "Arm\'s Length"
 
+];
 
 function pldJobChange() {
 

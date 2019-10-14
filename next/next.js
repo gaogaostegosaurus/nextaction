@@ -6,6 +6,7 @@
 var cooldowntracker = {};     // Holds timestamps for cooldowns
 var statustracker = {};       // Holds timestamps for statuses
 var cooldowntime = {};        // Holds timestamps for cooldowns
+var bufferTime = 0;
 
 var timeout = {};             // For timeout variables
 var interval = {};
@@ -125,7 +126,10 @@ document.addEventListener('onTargetChangedEvent', function(e) {
   target = e.detail;
   target.ID = e.detail.id.toString(16).toUpperCase(); // See player.ID above
 
-  if (player.job == "BRD") {
+  if (player.job == "BLM") {
+    blmTargetChangedEvent();
+  }
+  else if (player.job == "BRD") {
     brdTargetChangedEvent();
   }
   else if (player.job == "SCH") {
@@ -243,8 +247,9 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
     //
 
     if (actionGroups.sourceID == player.ID) {  // Status source = player
+
       if (player.job == "BLM") {
-        blmAction(actionLog);
+        blmAction();
       }
       else if (player.job == "BRD") {
         brdAction();
@@ -291,7 +296,7 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
 
     else if (statusGroups.sourcename == player.name) {  // Status source = player
       if (player.job == "BLM") {
-        blmStatus(statusLog);
+        blmStatus();
       }
       else if (player.job == "BRD") {
         brdStatus();
@@ -306,13 +311,13 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
         gnbStatus();
       }
       else if (player.job == "MCH") {
-        mchStatus(statusLog);
+        mchStatus();
       }
       else if (player.job == "MNK") {
-        mnkStatus(statusLog);
+        mnkStatus();
       }
       else if (player.job == "NIN") {
-        ninStatus(statusLog);
+        ninStatus();
       }
       else if (player.job == "PLD") {
         pldStatus();
@@ -321,13 +326,13 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
         rdmStatus();
       }
       else if (player.job == "SAM") {
-        samStatus(statusLog);
+        samStatus();
       }
       else if (player.job == "SCH") {
-        schStatus(statusLog);
+        schStatus();
       }
       else if (player.job == "WAR") {
-        warStatus(statusLog);
+        warStatus();
       }
       else if (player.job == "WHM") {
         whmStatus();
@@ -336,7 +341,7 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
 
     else if (startGroups.sourcename == player.name) {  // Status source = player
       if (player.job == "BLM") {
-        blmStart();
+        blmStartsUsing();
       }
       else if (player.job == "RDM") {
         rdmStart();
@@ -345,7 +350,7 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
 
     else if (cancelGroups.sourceID == player.ID) {  // Status source = player
       if (player.job == "BLM") {
-        blmCancel();
+        blmCancelled();
       }
       else if (player.job == "RDM") {
         rdmCancel();
