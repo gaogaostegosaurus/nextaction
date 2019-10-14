@@ -512,7 +512,7 @@ function blmAstralRotation(currentMP, umbralMilliseconds) {
   && toggle.aoe) {
     removeIcon("thunder");  // No AoE Thunder
   }
-  else if (umbralMilliseconds > 3000 + bufferTime) {
+  else if (umbralMilliseconds < 3000 + bufferTime) {
     removeIcon("thunder");
   }
   else if (checkStatus("thundercloud") > 0
@@ -583,19 +583,17 @@ function blmAstralRotation(currentMP, umbralMilliseconds) {
 function blmUmbralRotation(currentMP, umbralMilliseconds) {
 
   // Thunder
-  if (player.level >= 28
-  && checkStatus("thundercloud") > 0
-  && checkStatus("thundercloud") <= bufferTime) {
-    addIcon("thunder");
-  }
-  else if (player.level >= 28
-  && checkStatus("thundercloud") > 0
-  && checkStatus("thunder", target.ID) <= 0) {
-    addIcon("thunder");
-  }
-  else if (player.level < 26
+  if (player.level < 26
   && toggle.aoe) {
     removeIcon("thunder");
+  }
+  else if (checkStatus("thundercloud") > 0
+  && checkStatus("thundercloud") < bufferTime) {
+    addIcon("thunder");
+  }
+  else if (checkStatus("thundercloud") > 0
+  && checkStatus("thunder", target.ID) <= 0) {
+    addIcon("thunder");
   }
   else if (toggle.thunder != 2) {
     removeIcon("thunder");
@@ -633,7 +631,7 @@ function blmUmbralRotation(currentMP, umbralMilliseconds) {
   if (player.level < 34) {
     removeIcon("fire3");
   }
-  else if (toggle.fire3 == 2) {
+  else if (toggle.fire3 != 2) {
     removeIcon("fire3");
   }
   else if (player.currentMP == 10000) {
