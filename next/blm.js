@@ -53,64 +53,14 @@ function blmJobChange() {
     minimumMP = 0;  // Transpose probably
   }
 
-<<<<<<< HEAD
-  if (player.level >= 60) {
-
-    // Any phase
-    nextid.enochian = 0;
-    nextid.thunder = 1;
-    nextid.thunder2 = nextid.thunder;
-    nextid.thundercloud = nextid.thunder;
-    nextid.foul = 2;
-    nextid.xenoglossy = nextid.foul;
-
-    // Astral
-    nextid.fire4 = 3;
-    nextid.flare = nextid.fire4;
-    nextid.firespam = nextid.fire4;
-    nextid.firestarter = 4;
-    nextid.despair = 5;
-    nextid.blizzard4 = 5;
-    nextid.blizzard = nextid.blizzard4;
-    nextid.manafontinstant = 6;
-    nextid.manafontdespair = 7;
-    nextid.fire = 9;
-    nextid.blizzard3 = nextid.fire;
-    nextid.freeze = nextid.fire;
-    nextid.transpose = nextid.fire;
-
-    // Umbral
-    nextid.blizzard4 = 8;
-    nextid.fire3 = 9;
-    nextid.coldflare = nextid.fire3;
-  }
-
-  else if (player.level >= 40) {
-    nextid.thunder = 0;
-    nextid.fire = 1;
-    nextid.blizzard = 1;
-    nextid.fire3 = 9;
-    nextid.blizzard3 = 9;
-  }
-
-  else {
-    nextid.thunder = 0;
-    nextid.fire_1 = 2;
-    nextid.fire = nextid.fire_1;
-    nextid.fire_2 = 3;
-    nextid.fire_3 = 4;
-    nextid.fire3 = 5;
-    nextid.blizzard = nextid.fire_1;
-  }
-=======
   // Any phase
   nextid.enochian = 0;  // ENOCHAAAAAAN
   nextid.thunder = 1;  // Appears when necessary at front of rotation
   nextid.thunder2 = nextid.thunder;  // See above
   nextid.thundercloud = nextid.thunder;  // See above above
-  nextid.foul = 2;  
+  nextid.foul = 2;
   nextid.xenoglossy = nextid.foul;
-  
+
   // Astral
   nextid.fire4 = 3;
   nextid.flare = nextid.fire4;
@@ -128,7 +78,6 @@ function blmJobChange() {
   nextid.blizzard4 = 8;
   nextid.fire3 = 9;
   nextid.coldflare = nextid.fire3;
->>>>>>> 0c7b543680052baa4264445a8a536caa893d6802
 
   // oGCD
   nextid.leylines = 11;
@@ -149,7 +98,7 @@ function blmJobChange() {
     icon.thunder = "000457";
     duration.thunder = 18000;
   }
-  
+
   if (player.level >= 64) {
     icon.thunder2 = icon.thunder4;
     duration.thunder2 = duration.thunder4;
@@ -187,7 +136,7 @@ function blmJobChange() {
   toggle.flare = 2;
   toggle.foul = 2;
 
-  bufferTime = 3000;
+  bufferTime = 3000;  // Adjust to liking? Probably should be a tad lower.
 
   blmRotation();
 
@@ -195,7 +144,8 @@ function blmJobChange() {
 
 function blmPlayerChangedEvent() {
 
-  if (!toggle.transition) { // Halts updates so that next predicted icons will be drawn
+  if (!toggle.transition) {
+    // Halts updates when casting a stance transition so that the next stance's icons will be drawn instead
     blmRotation();
     // Triggers on MP, movement, timer countdown, etc.
     // Seems NOT EFFICIENT, but oh well.
@@ -234,7 +184,7 @@ function blmTargetChangedEvent() {
 
 function blmAction() {
 
-  delete toggle.transition; // If action occured then no longer transitioning, probably
+  delete toggle.transition;  // If action occured then no longer transitioning... probably
 
   // console.log("Umbral Stacks: " + player.jobDetail.umbralStacks);
   // console.log("Umbral Hearts: " + player.jobDetail.umbralHearts);
@@ -249,15 +199,28 @@ function blmAction() {
       delete toggle.aoe;
     }
 
+    // Certain spells set or unset certain toggles
+
     if ("Fire" == actionGroups.actionname) {
       if (player.level >= 60) {
-        toggle.fire = 0;
+        toggle.fire = 0;  // Only need one after 60
       }
       toggle.fire4 = 2;
     }
 
+    else if ("Fire II" == actionGroups.actionname) {
+      if (Date.now() - previous.fire2 > 1000) {
+        previous.fire2 = Date.now();
+        count.aoe = 1;
+      }
+      else {
+        count.aoe = count.aoe + 1;
+      }
+    }
+
     else if ("Fire III" == actionGroups.actionname) {
       toggle.fire3 = 0;
+
       toggle.blizzard3 = 2;
       toggle.fire = 2;
       toggle.fire4 = 2;
@@ -289,16 +252,6 @@ function blmAction() {
         count.aoe = count.aoe + 1;
       }
       addStatus("thunder2", duration.thunder2, actionGroups.targetID);
-    }
-
-    else if ("Fire II" == actionGroups.actionname) {
-      if (Date.now() - previous.fire2 > 1000) {
-        previous.fire2 = Date.now();
-        count.aoe = 1;
-      }
-      else {
-        count.aoe = count.aoe + 1;
-      }
     }
 
     else if ("Flare" == actionGroups.actionname) {
@@ -542,7 +495,7 @@ function blmRotation() {
 }
 
 function blmAstralRotation(currentMP, umbralMilliseconds) {
-  
+
   // Instant for Manafont
   if (player.level < 30
   || checkRecast("manafont") >= 0
@@ -565,14 +518,14 @@ function blmAstralRotation(currentMP, umbralMilliseconds) {
     addIcon("swiftcastdespair", "triplecast");
     // Use Triplecast on at least first Despair
   }
-  
+
   else if (checkStatus("thundercloud") > 0) {
   }
   else {
     removeIcon("manafont");
     removeIcon("manafontinstant");
   }
-  
+
   // Thunder
   if (player.level < 26
   && toggle.aoe) {
@@ -620,7 +573,7 @@ function blmAstralRotation(currentMP, umbralMilliseconds) {
   else {
     removeIcon("firestarter");
   }
-  
+
   if (player.level < 72 || currentMP < 800) {
     removeIcon("despair");
   }
