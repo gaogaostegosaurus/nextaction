@@ -323,7 +323,7 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
         pldStatus();
       }
       else if (player.job == "RDM") {
-        rdmStatus();
+        rdmEffect();
       }
       else if (player.job == "SAM") {
         samStatus();
@@ -344,7 +344,7 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
         blmStartsUsing();
       }
       else if (player.job == "RDM") {
-        rdmStart();
+        rdmStartsUsing();
       }
     }
 
@@ -353,7 +353,7 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
         blmCancelled();
       }
       else if (player.job == "RDM") {
-        rdmCancel();
+        rdmCancelled();
       }
     }
 
