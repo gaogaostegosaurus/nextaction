@@ -53,6 +53,7 @@ function blmJobChange() {
     minimumMP = 0;  // Transpose probably
   }
 
+<<<<<<< HEAD
   if (player.level >= 60) {
 
     // Any phase
@@ -101,6 +102,33 @@ function blmJobChange() {
     nextid.fire3 = 5;
     nextid.blizzard = nextid.fire_1;
   }
+=======
+  // Any phase
+  nextid.enochian = 0;  // ENOCHAAAAAAN
+  nextid.thunder = 1;  // Appears when necessary at front of rotation
+  nextid.thunder2 = nextid.thunder;  // See above
+  nextid.thundercloud = nextid.thunder;  // See above above
+  nextid.foul = 2;  
+  nextid.xenoglossy = nextid.foul;
+  
+  // Astral
+  nextid.fire4 = 3;
+  nextid.flare = nextid.fire4;
+  nextid.swiftcastdespair = 4;
+  nextid.despair = 5;
+  nextid.firestarter = 6;
+  nextid.manafontinstant = nextid.firestarter;
+  nextid.manafontdespair = 8;
+  nextid.blizzard4 = 8;
+  nextid.fire = 9;
+  nextid.blizzard3 = 9;
+  nextid.freeze = 9;
+
+  // Umbral
+  nextid.blizzard4 = 8;
+  nextid.fire3 = 9;
+  nextid.coldflare = nextid.fire3;
+>>>>>>> 0c7b543680052baa4264445a8a536caa893d6802
 
   // oGCD
   nextid.leylines = 11;
@@ -121,6 +149,7 @@ function blmJobChange() {
     icon.thunder = "000457";
     duration.thunder = 18000;
   }
+  
   if (player.level >= 64) {
     icon.thunder2 = icon.thunder4;
     duration.thunder2 = duration.thunder4;
@@ -145,10 +174,14 @@ function blmJobChange() {
   toggle.blizzard4 = 2;
 
   toggle.fire = 2;
+  toggle.fire2 = 2;
   toggle.fire3 = 2;
   toggle.fire4 = 2;
 
   toggle.thunder = 2;
+  toggle.thunder2 = 2;
+  toggle.thunder3 = 2;
+  toggle.thunder4 = 2;
 
   toggle.freeze = 2;
   toggle.flare = 2;
@@ -509,7 +542,37 @@ function blmRotation() {
 }
 
 function blmAstralRotation(currentMP, umbralMilliseconds) {
-
+  
+  // Instant for Manafont
+  if (player.level < 30
+  || checkRecast("manafont") >= 0
+  || currentMP >= 4 * 1600 + minimumMP) {
+    // No manafont = hide instant icon
+    // Wait for final set of 3 Fire IV to decide
+    removeIcon("manafont");
+    removeIcon("manafontinstant");
+  }
+  else if (player.jobDetail.asdf) {
+    removeIcon("xenoglossy");
+    addIcon("manafontinstant", "xenoglossy");  // Prioritize use with Xenoglossy
+  }
+  else if (checkStatus("swiftcast") > 0) {
+    addIcon("swiftcastdespair", "swiftcast");
+    // Use Swiftcast on Despair
+  }
+  else if (checkStatus("triplecast") > 0
+  && currentMP < 3 * 1600 + minimumMP) {
+    addIcon("swiftcastdespair", "triplecast");
+    // Use Triplecast on at least first Despair
+  }
+  
+  else if (checkStatus("thundercloud") > 0) {
+  }
+  else {
+    removeIcon("manafont");
+    removeIcon("manafontinstant");
+  }
+  
   // Thunder
   if (player.level < 26
   && toggle.aoe) {
@@ -557,9 +620,11 @@ function blmAstralRotation(currentMP, umbralMilliseconds) {
   else {
     removeIcon("firestarter");
   }
-
-  if (player.level >= 72
-  && currentMP >= 800
+  
+  if (player.level < 72 || currentMP < 800) {
+    removeIcon("despair");
+  }
+  else if (currentMP <= 1600 * 3 + minimumMP
   && umbralMilliseconds > bufferTime
   && toggle.despair == 2) {
     addIcon("despair"); // Finish with Despair
