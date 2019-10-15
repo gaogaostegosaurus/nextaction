@@ -1,13 +1,15 @@
 "use strict";
 
+// https://docs.google.com/spreadsheets/d/143xU_4FYgPBUldSKJQpA30A2i98SVwqFwJ4tsihGbao/edit#gid=1083939279&range=A59
 var rdmProcPotency = 20;
+var rdmSingleTargetManaPotency = 9.24;
+var rdmMultiTargetManaPotency = 2.43;
 
 // "If you lose this much mana fixing your procs, you have not gained potency."
-// See https://docs.google.com/spreadsheets/d/143xU_4FYgPBUldSKJQpA30A2i98SVwqFwJ4tsihGbao/edit#gid=1083939279&range=A59
 var rdmManaBreakpoint = 5;
 
 // Arrays with spells and mana values
-// Potencies left out because easier to do within function - trait changes and such
+// Potencies left out because easier to do within function due to trait changes and such
 var hardcast = [
   "Jolt", 3, 3,
   "Verfire", 9, 0,
@@ -21,7 +23,6 @@ var dualcast = [
   "Veraero", 0, 11,
   "Scatter", 3, 3
 ];
-
 
 var i;  // For loops
 var j;
@@ -608,10 +609,12 @@ function rdmNext() {
   && count.targets >= 2) {
     addIcon("moulinet"); // Moulinet whenever with no Manafication
   }
+  
   else if (player.level >= 68
   && Math.max(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 70) {
     rdmFixProcs(); // Attempt to fix procs before starting combos
   }
+  
   else if (player.level < 68
   && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 80) {
     rdmCombo(); // Go time
@@ -625,9 +628,9 @@ function rdmNext() {
     rdmCombo(); // Go time
   }
 
-  // Not enough mana
+  // Not enough mana, check Dualcast options
   else {
-    // Remove icons, check Dualcast options
+    rdmDualcast();
   }
 
 }
