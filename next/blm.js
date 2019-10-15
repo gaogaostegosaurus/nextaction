@@ -1,6 +1,6 @@
 "use strict";
 
-// LEVELING ROTATIONS from
+// LEVELING ROTATIONS
 
 // Single-Target
 // Sub-40: {F1 spam} Transpose T1 {B1 until max MP} Transpose
