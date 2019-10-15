@@ -799,7 +799,7 @@ function rdmComboTimeout() {
 function rdmDualcastValue(hardcastaction, hardcastblack, hardcastwhite, dualcastaction, dualcastblack, dualcastwhite) {
 
   // Calculate manapotency using latest values... probably
-  let manapotency = Math.max(9.24, 2.43 * count.targets);
+  let manapotency = Math.max(rdmSingleTargetManaPotency, rdmMultiTargetManaPotency * count.targets);
 
   // Calculate initial value based on current mana potency
   let value = (hardcastblack + dualcastblack + hardcastwhite + dualcastwhite) * manapotency;
@@ -952,7 +952,6 @@ function rdmDualcastValue(hardcastaction, hardcastblack, hardcastwhite, dualcast
 }
 
 function rdmCombo() {
-
   addIcon("riposte");
   if (player.level >= 35) {
     addIcon("zwerchhau");
