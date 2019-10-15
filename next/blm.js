@@ -313,6 +313,10 @@ function blmStartsUsing() {
     toggle.blizzard = 1;
   }
 
+  else if ("Blizzard II" == startGroups.actionname) {
+    toggle.blizzard3 = 1;
+  }
+
   else if ("Blizzard III" == startGroups.actionname) {
     toggle.blizzard3 = 1;
     toggle.transition = -3;
