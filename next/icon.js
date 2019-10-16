@@ -25,16 +25,16 @@ icon.thundercloud = icon.thunder;
 icon.thunder3 = "000459";
 icon.thunder2 = "000468";
 icon.manafont = "002651";
+icon.leylines = "002656";
+icon.sharpcast = "002657";
 icon.enochian = "002658";
 icon.blizzard4 = "002659";
 icon.fire4 = "002660";
 icon.thunder4 = "002662";
+icon.triplecast = "002663";
+icon.foul = "002664";
 icon.despair = "002665";
-icon.foul = "002667";
 icon.xenoglossy = "002667";
-icon.triplecast = "000001";
-icon.sharpcast = "000001";
-icon.leylines = "000001";
 
 // BRD
 icon.ragingstrikes = "000352";
