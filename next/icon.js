@@ -30,7 +30,11 @@ icon.blizzard4 = "002659";
 icon.fire4 = "002660";
 icon.thunder4 = "002662";
 icon.despair = "002665";
+icon.foul = "002667";
 icon.xenoglossy = "002667";
+icon.triplecast = "000001";
+icon.sharpcast = "000001";
+icon.leylines = "000001";
 
 // BRD
 icon.ragingstrikes = "000352";

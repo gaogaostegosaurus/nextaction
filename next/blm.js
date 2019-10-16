@@ -27,8 +27,12 @@ var fire4castTime = 2800;
 var fire4MP = 0;
 var castMP = 0;
 var castTime = 0;
-var minimumMP = 200;
+var blmMinimumMP = 200;
+var blmRotationBufferTime = 3000;
+var blmProcBufferTime = 5000;
 var umbralMilliseconds = 0;
+var blmCasting = "";
+var blmFillerInstant = "";
 
 actionList.blm = [
   "Blizzard", "Blizzard II", "Blizzard III", "Blizzard IV",
@@ -39,51 +43,53 @@ actionList.blm = [
   "Enochian", "Ley Lines", "Sharpcast", "Manafont",
   "Swiftcast", "Lucid Dreaming"
 ];
+nextid.fire4 = 3;
 
 function blmJobChange() {
 
   // Minimum Astral Phase MP
   if (player.level >= 72) {
-    minimumMP = 800;  // Despair + Blizzard IV
+    blmMinimumMP = 800;  // Despair + Blizzard IV
   }
   else if (player.level >= 40) {
-    minimumMP = 200;  // Blizzard IV
+    blmMinimumMP = 200;  // Blizzard IV
   }
   else {
-    minimumMP = 0;  // Transpose probably
+    blmMinimumMP = 0;  // Transpose probably
   }
 
   // Any phase
   nextid.enochian = 0;  // ENOCHAAAAAAN
-  nextid.thunder = 1;  // Appears when necessary at front of rotation
-  nextid.thunder2 = nextid.thunder;  // See above
-  nextid.thundercloud = nextid.thunder;  // See above above
-  nextid.foul = 2;
-  nextid.xenoglossy = nextid.foul;
+  nextid.filler = 10;
+  nextid.thunder = nextid.filler;  // Appears when necessary at front of rotation
+  nextid.thunder2 = nextid.filler;  // See above
+  nextid.thundercloud = nextid.filler;  // See above above
+  nextid.foul = nextid.filler;
+  nextid.xenoglossy = nextid.filler;
+  nextid.weave = 11;
 
   // Astral
-  nextid.fire4 = 3;
-  nextid.flare = nextid.fire4;
-  nextid.swiftcastdespair = 4;
-  nextid.despair = 5;
-  nextid.firestarter = 6;
-  nextid.manafontinstant = nextid.firestarter;
-  nextid.manafontdespair = 8;
-  nextid.blizzard4 = 8;
-  nextid.fire = 9;
-  nextid.blizzard3 = 9;
-  nextid.freeze = 9;
+  nextid.firespam1 = 12;
+  nextid.firespam2 = nextid.firespam1 + 1;
+  nextid.firespam3 = nextid.firespam1 + 2;
+  nextid.despairinstant = 15;
+  nextid.instant = 16;
+  nextid.manafont = 17;
+  nextid.despair = 18;
+  nextid.fire = 19;
+  nextid.blizzard3 = 19;
+  nextid.freeze = 19;
 
   // Umbral
-  nextid.blizzard4 = 8;
-  nextid.fire3 = 9;
+  nextid.blizzard4 = 18;
+  nextid.fire3 = 19;
   nextid.coldflare = nextid.fire3;
 
   // oGCD
-  nextid.leylines = 11;
-  nextid.sharpcast = 12;
-  nextid.triplecast = 13;
-  nextid.swiftcast = 14;
+  nextid.leylines = 21;
+  nextid.sharpcast = 22;
+  nextid.triplecast = 23;
+  nextid.swiftcast = 24;
 
   countdownid.thunder = 0;
   countdownid.thundercloud = 1;
@@ -107,6 +113,13 @@ function blmJobChange() {
     icon.thunder2 = "000468";
     duration.thunder2 = 12000;
   }
+
+  if (player.level >= 74) {
+    recast.sharpcast = 30000;
+  }
+  else {
+    recast.sharpcast = 60000;
+  }
   icon.thundercloud = icon.thunder;
 
   // AoE Helpers
@@ -117,41 +130,18 @@ function blmJobChange() {
   previous.fire4 = 0;
   previous.foul = 0;
 
-  // "Starts Using" toggles
-  toggle.blizzard = 2;
-  toggle.blizzard3 = 2;
-  toggle.blizzard4 = 2;
+  count.targets = 1;
 
-  toggle.fire = 2;
-  toggle.fire2 = 2;
-  toggle.fire3 = 2;
-  toggle.fire4 = 2;
+  blmRotationBufferTime = 3000;  // Adjust to liking? Probably should be a tad lower.
 
-  toggle.thunder = 2;
-  toggle.thunder2 = 2;
-  toggle.thunder3 = 2;
-  toggle.thunder4 = 2;
-
-  toggle.freeze = 2;
-  toggle.flare = 2;
-  toggle.foul = 2;
-
-  bufferTime = 3000;  // Adjust to liking? Probably should be a tad lower.
-
-  blmRotation();
+  blmNext();
 
 }
 
 function blmPlayerChangedEvent() {
 
-  if (!toggle.transition) {
-    // Halts updates when casting a stance transition so that the next stance's icons will be drawn instead
-    blmRotation();
-    // Triggers on MP, movement, timer countdown, etc.
-    // Seems NOT EFFICIENT, but oh well.
-  }
+  blmNext();
 
-  // Identifies server ticks for Umbral to Astral timing
   if (previous.currentMP < player.currentMP) {
     // console.log(Date.now() - previous.serverTick);
     previous.serverTick = Date.now();
@@ -167,7 +157,7 @@ function blmTargetChangedEvent() {
     // console.log("Target changed: " + target.ID);
 
     if (target.ID.startsWith("4")) {
-      addCountdownBar("thunder", checkStatus("thunder", target.ID), "remove");
+      addCountdownBar("thunder", checkStatus("thunder", target.ID), "removeCountdownBar");
     }
     else {
       removeCountdownBar("thunder");
@@ -176,15 +166,20 @@ function blmTargetChangedEvent() {
     previous.targetID = target.ID;
 
     if (!toggle.transition) { // To prevent accidental update
-      blmRotation();
+      blmNext();
     }
   }
 
 }
 
+function blmStartsUsing() {
+  blmCasting = startGroups.actionname;
+  blmNext();
+}
+
 function blmAction() {
 
-  delete toggle.transition;  // If action occured then no longer transitioning... probably
+  blmCasting = "";
 
   // console.log("Umbral Stacks: " + player.jobDetail.umbralStacks);
   // console.log("Umbral Hearts: " + player.jobDetail.umbralHearts);
@@ -202,10 +197,6 @@ function blmAction() {
     // Certain spells set or unset certain toggles
 
     if ("Fire" == actionGroups.actionname) {
-      if (player.level >= 60) {
-        toggle.fire = 0;  // Only need one after 60
-      }
-      toggle.fire4 = 2;
     }
 
     else if ("Fire II" == actionGroups.actionname) {
@@ -221,20 +212,17 @@ function blmAction() {
     else if ("Fire III" == actionGroups.actionname) {
       toggle.fire3 = 0;
 
-      toggle.blizzard3 = 2;
-      toggle.fire = 2;
-      toggle.fire4 = 2;
     }
 
     else if ("Blizzard III" == actionGroups.actionname) {
       toggle.blizzard3 = 0;
       toggle.blizzard4 = 2;
       toggle.fire3 = 2;
-      toggle.fire4 = 2;
+      // toggle.fire4 = 2;
     }
 
     else if ("Fire IV" == actionGroups.actionname) {
-      // Nothing
+      toggle.fire4 = 0;
     }
 
     else if (["Thunder", "Thunder III"].indexOf(actionGroups.actionname) > -1) {
@@ -289,11 +277,12 @@ function blmAction() {
     // oGCDs
 
     else if ("Enochian" == actionGroups.actionname) {
+      removeIcon("enochian");
       addRecast("enochian", recast.enochian);
     }
 
     else if ("Sharpcast" == actionGroups.actionname) {
-      removeIcon("sharpcast");
+      removeIcon("weave");
       addRecast("sharpcast", recast.sharpcast);
     }
 
@@ -302,111 +291,14 @@ function blmAction() {
       addRecast("manafont", recast.manafont);
     }
 
-    blmRotation();
+    blmNext();
 
   }
-}
-
-function blmStartsUsing() {
-
-  if ("Blizzard" == startGroups.actionname) {
-    toggle.blizzard = 1;
-  }
-
-  else if ("Blizzard II" == startGroups.actionname) {
-    toggle.blizzard3 = 1;
-  }
-
-  else if ("Blizzard III" == startGroups.actionname) {
-    toggle.blizzard3 = 1;
-    toggle.transition = -3;
-  }
-
-  else if ("Blizzard IV" == startGroups.actionname) {
-    toggle.blizzard4 = 1;
-  }
-
-  else if ("Fire" == startGroups.actionname) {
-    toggle.fire = 1;
-    if (player.jobDetail.umbralStacks > 0) {
-      toggle.fire4 = 2;
-      toggle.transition = 3;
-    }
-  }
-
-  else if ("Fire III" == startGroups.actionname) {
-    toggle.fire3 = 1;
-    toggle.transition = 3;
-  }
-
-  else if ("Fire IV" == startGroups.actionname) {
-    if (player.jobDetail.umbralMilliseconds < 3000 * 2 + bufferTime
-    || player.currentMP < 1600 * 2 + minimumMP) {
-      toggle.fire4 = 1;
-    }
-    else {
-      toggle.fire4 = 2;
-    }
-  }
-
-  else if (["Thunder", "Thunder II", "Thunder III", "Thunder IV"].indexOf(startGroups.actionname) > -1) {
-    toggle.thunder = 1;
-  }
-
-  blmRotation();
-
 }
 
 function blmCancelled() {
-
-  delete toggle.transition;
-
-  if ("Blizzard" == cancelGroups.actionname) {
-    toggle.blizzard = 2;
-  }
-
-  else if ("Blizzard III" == cancelGroups.actionname) {
-    toggle.blizzard3 = 2;
-  }
-
-  else if ("Blizzard IV" == cancelGroups.actionname) {
-    toggle.blizzard4 = 2;
-  }
-
-  else if ("Fire" == cancelGroups.actionname) {
-
-    toggle.fire = 2;
-
-    if (player.jobDetail.umbralMilliseconds >= 3000 + bufferTime
-    && player.currentMP >= 1600 + minimumMP) {
-      toggle.fire4 = 2;
-    }
-    else {
-      toggle.fire4 = 0;
-    }
-  }
-
-  else if ("Fire III" == cancelGroups.actionname) {
-    toggle.fire3 = 2;
-  }
-
-
-  else if ("Fire IV" == cancelGroups.actionname) {
-    if (player.jobDetail.umbralMilliseconds >= 3000 + bufferTime
-    && player.currentMP >= 1600 + minimumMP) {
-      toggle.fire4 = 2;
-    }
-    else {
-      toggle.fire4 = 0;
-    }
-  }
-
-  else if (["Thunder", "Thunder II", "Thunder III", "Thunder IV"].indexOf(cancelGroups.actionname) > -1) {
-    toggle.thunder = 2;
-  }
-
-  blmRotation();
-
+  blmCasting = "";
+  blmNext();
 }
 
 function blmStatus() {
@@ -416,22 +308,31 @@ function blmStatus() {
     if (statusGroups.statusname == "Thundercloud") {
       if (statusGroups.gainsloses == "gains") {
         addStatus("thundercloud", parseInt(statusGroups.duration) * 1000);
-        addCountdownBar("thundercloud", checkStatus("thundercloud"), "remove");
+        addCountdownBar("thundercloud", checkStatus("thundercloud"), "removeCountdownBar");
       }
       else if (statusGroups.gainsloses == "loses") {
+        if (blmFillerInstant == "Thundercloud") {
+          blmFillerInstant = "";
+        }
         removeStatus("thundercloud", statusGroups.targetID);
-        removeIcon("thundercloud");
       }
     }
 
     else if (statusGroups.statusname == "Firestarter") {
       if (statusGroups.gainsloses == "gains") {
         addStatus("firestarter", parseInt(statusGroups.duration) * 1000);
-        addCountdownBar("firestarter", checkStatus("firestarter"), "remove");
+        addCountdownBar("firestarter", checkStatus("firestarter"), "removeCountdownBar");
       }
       else if (statusGroups.gainsloses == "loses") {
+        if (blmFillerInstant == "Firestarter") {
+          blmFillerInstant = "";
+          removeIcon("filler");
+        }
+        else {
+          removeIcon("instant");
+        }
         removeStatus("firestarter", statusGroups.targetID);
-        removeIcon("firestarter");
+        // removeIcon("firestarter");
       }
     }
 
@@ -444,7 +345,7 @@ function blmStatus() {
     if (["Thunder", "Thunder II", "Thunder III", "Thunder IV"].indexOf(statusGroups.statusname) > -1) {
       if (statusGroups.gainsloses == "gains") {
         addStatus("thunder", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
-        addCountdownBar("thunder", checkStatus("thunder", statusGroups.targetID), "remove");
+        addCountdownBar("thunder", checkStatus("thunder", statusGroups.targetID), "removeCountdownBar");
       }
       else if (statusGroups.gainsloses == "loses") {
         removeStatus("thunder", statusGroups.targetID);
@@ -452,196 +353,217 @@ function blmStatus() {
     }
 
   }
-
 }
 
-function blmRotation() {
+function blmNext() {
 
-  if (!player.jobDetail.enochian
-  && player.jobDetail.umbralStacks != 0
-  && checkRecast("enochian") <= 0) {
-    addIcon("enochian");
+  // Astral to Umbral to Astral
+  if (blmCasting == "Fire III") {
+    removeIcon("fire3");
+    blmAstralRotation(player.currentMP, 15000);
   }
-  else {
-    removeIcon("enochian");
+  else if (blmCasting == "Fire"
+  && player.level >= 60
+  && player.jobDetail.enochian) {
+    blmAstralRotation(player.currentMP, 15000);
   }
-
-  if (player.level < 40) {
-    blmRotation1040();
+  else if (blmCasting == "Blizzard III") {
+    removeIcon("blizzard3");
+    blmUmbralRotation(player.currentMP, 15000);
   }
-
-  else if (player.level < 60) {
-    blmRotation4059();
+  else if (player.jobDetail.umbralStacks < 0) { // In Umbral
+    blmUmbralRotation(player.currentMP, player.jobDetail.umbralMilliseconds);
   }
-
-  else {
-
-    // 60-71: B3 B4 T3 F3 F4x3 F1 F4x3 repeat
-    // Add Foul at 70
-    // Add Despair at end at 72
-    // Add Xeno at 80
-
-    if (toggle.transition < 0) {
-      blmUmbralRotation(player.currentMP, 15000);
-    }
-    else if (toggle.transition > 0) {
-      blmAstralRotation(player.currentMP, 15000);
-    }
-    else if (player.jobDetail.umbralStacks < 0) { // In Umbral
-      blmUmbralRotation(player.currentMP, player.jobDetail.umbralMilliseconds);
-    }
-    else { // Starting out or in Astral
-      blmAstralRotation(player.currentMP, player.jobDetail.umbralMilliseconds);
-    }
-
+  else { // Starting out or in Astral
+    blmAstralRotation(player.currentMP, player.jobDetail.umbralMilliseconds);
   }
 
 }
 
-function blmAstralRotation(currentMP, umbralMilliseconds) {
+// Astral Fire
+function blmAstralRotation(currentMP, blmAstralTime) {
 
-  // Instant for Manafont
-  if (player.level < 30
-  || checkRecast("manafont") >= 0
-  || currentMP >= 4 * 1600 + minimumMP) {
-    // No manafont = hide instant icon
-    // Wait for final set of 3 Fire IV to decide
-    removeIcon("manafont");
-    removeIcon("manafontinstant");
-  }
-  else if (player.jobDetail.asdf) {
-    removeIcon("xenoglossy");
-    addIcon("manafontinstant", "xenoglossy");  // Prioritize use with Xenoglossy
-  }
-  else if (checkStatus("swiftcast") > 0) {
-    addIcon("swiftcastdespair", "swiftcast");
-    // Use Swiftcast on Despair
-  }
-  else if (checkStatus("triplecast") > 0
-  && currentMP < 3 * 1600 + minimumMP) {
-    addIcon("swiftcastdespair", "triplecast");
-    // Use Triplecast on at least first Despair
-  }
+  blmEnochian(blmAstralTime);
 
-  else if (checkStatus("thundercloud") > 0) {
+  // Calculate how many Fire/Fire IV to display
+  count.firespam = Math.min(
+    (currentMP + player.jobDetail.umbralHearts * 800 - blmMinimumMP) / 1600,
+    (blmAstralTime - blmRotationBufferTime) / 2800
+  )
+
+  // Create leading instant/weave
+  if (player.level >= 72
+  && checkRecast("triplecast") < 1000
+  && count.firespam >= 2) {
+    blmWeave(blmAstralTime, "triplecast");
+  }
+  else if (player.level >= 66
+  && checkRecast("triplecast") < 1000
+  && count.firespam >= 3) {
+    blmWeave(blmAstralTime, "triplecast");
+  }
+  else if (player.level >= 54
+  && checkRecast("sharpcast") < 1000) {
+    blmWeave(blmAstralTime, "sharpcast");
+  }
+  else if (player.level >= 52
+  && checkRecast("leylines") < 1000) {
+    blmWeave(blmAstralTime, "leylines");
   }
   else {
-    removeIcon("manafont");
-    removeIcon("manafontinstant");
+    removeIcon("weave");
+    blmThunder(blmAstralTime);
   }
 
-  // Thunder
-  if (player.level < 26
-  && toggle.aoe) {
-    removeIcon("thunder");  // No AoE Thunder
+  // Place instants if Manafont is available
+  if (player.level >= 30
+  && checkRecast("manafont") < blmAstralTime - blmRotationBufferTime) {
+
+    // Recently used Triplecast, hopefully competently
+    if (checkRecast("triplecast") > 45000) {
+      addIcon("manafont");
+    }
+
+    // Xenoglossy available
+    else if (player.level >= 80
+    && player.jobDetail.foulCount == 2
+    && blmAstralTime > blmRotationBufferTime) {
+      addIcon("instant", "xenoglossy");
+      addIcon("manafont");
+    }
+    else if (player.level >= 80
+    && player.jobDetail.foulCount == 1
+    && blmAstralTime > blmRotationBufferTime
+    && blmFillerInstant != "Xenoglossy") {
+      addIcon("instant", "xenoglossy");
+      addIcon("manafont");
+    }
+
+    // Firestarter available
+    else if (checkStatus("firestarter") >= blmAstralTime
+    && blmFillerInstant != "Firestarter") {
+      addIcon("instant", "firestarter");
+      addIcon("manafont");
+    }
+
+    // No opportunities
+    else {
+      removeIcon("manafont");
+    }
   }
-  else if (umbralMilliseconds < 3000 + bufferTime) {
-    removeIcon("thunder");
+
+  // Place Firestarter anyway
+  else {
+    if (checkStatus("firestarter") >= blmAstralTime
+    && blmFillerInstant != "Firestarter") {
+      addIcon("instant", "firestarter");
+    }
   }
-  else if (checkStatus("thundercloud") > 0
-  && checkStatus("thundercloud") <= bufferTime) {
-    addIcon("thunder");  // Proc about to drop
-  }
-  else if (checkStatus("thundercloud") > 0
-  && checkStatus("thunder", target.ID) <= 0) {
-    addIcon("thunder");  // DoT about to drop with proc available
-  }
-  else if (toggle.thunder != 2) {
-    removeIcon("thunder");
-  }
-  else if (checkStatus("thunder", target.ID) <= bufferTime
-  && (currentMP - player.jobDetail.umbralHearts * 800) % 1600 >= 800 + 200) {
-    addIcon("thunder");
+
+  // Fire Fire Fire
+  if (count.firespam >= 3) {
+    if (player.level >= 60
+    && player.jobDetail.enochian) {
+      addIcon("firespam1", "fire4");
+    }
+    else if (player.level < 60) {
+      addIcon("firespam1", "fire");
+    }
   }
   else {
-    removeIcon("thunder");
+    removeIcon("firespam1");
   }
 
-  // Fire IV
+  if (count.firespam >= 2) {
+    if (player.level >= 60
+    && player.jobDetail.enochian) {
+      addIcon("firespam2", "fire4");
+    }
+    else if (player.level < 60) {
+      addIcon("firespam2", "fire");
+    }
+  }
+  else {
+    removeIcon("firespam2");
+  }
+
+  if (count.firespam >= 1) {
+    if (player.level >= 60
+    && player.jobDetail.enochian) {
+      if (blmCasting == "Fire IV"
+      && count.firespam < 1.3) {
+        removeIcon("firespam3");
+      }
+      else {
+        addIcon("firespam3", "fire4");
+      }
+    }
+    else if (player.level < 60) {
+      if (blmCasting == "Fire"
+      && count.firespam < 1.3) {
+        removeIcon("firespam3");
+      }
+      else {
+        addIcon("firespam3", "fire");
+      }
+    }
+  }
+  else {
+    removeIcon("firespam3");
+  }
+
+  if (player.level >= 72
+  && currentMP - count.firespam * 1600 >= blmMinimumMP
+  && currentMP - count.firespam * 1600 < 1600 + blmMinimumMP) {
+    addIcon("despair");
+  }
+  else {
+    removeIcon("despair");
+  }
+
+  // Transition
   if (player.level >= 60
-  && currentMP >= 1600 * 1 + minimumMP
-  && umbralMilliseconds > 3000 * 1 + bufferTime
-  && toggle.fire4 == 2) {
-    addIcon("fire4");
+  && blmCasting == "Fire"
+  && (currentMP + player.jobDetail.umbralHearts * 800 - 1600 - blmMinimumMP) / 1600 < (blmAstralTime - blmRotationBufferTime) / 2800) {
+    addIcon("blizzard3");
   }
-  else {
-    removeIcon("fire4");
+  else if (blmCasting == "Blizzard III") {
+    removeIcon("blizzard3");
   }
-
-  // Firestarter
-  if (checkStatus("firestarter", player.ID) >= umbralMilliseconds // Firestarter will be still up at 0
-  && umbralMilliseconds > 0) {
-    addIcon("firestarter"); // Refresh Astral with Firestarter proc if available
-    bufferTime = 0;
-  }
-  else {
-    removeIcon("firestarter");
-  }
-
-  if (player.level < 72 || currentMP < 800) {
-    removeIcon("despair");
-  }
-  else if (currentMP <= 1600 * 3 + minimumMP
-  && umbralMilliseconds > bufferTime
-  && toggle.despair == 2) {
-    addIcon("despair"); // Finish with Despair
-  }
-  else {
-    removeIcon("despair");
-  }
-
-  // if (checkRecast("manafont") < umbralMilliseconds) { // Manafont will be up by 0
-  //   addIcon("manafont"); // Continue Despairing with Manafont if available
-  //   addIcon("manafontdespair");
-  // }
-
-  if (umbralMilliseconds > bufferTime
-  && player.currentMP >= 1600 + minimumMP
-  && toggle.fire == 2) {
+  else if (player.level >= 60
+  && blmAstralTime > blmRotationBufferTime
+  && (currentMP + player.jobDetail.umbralHearts * 800 - 1600 - blmMinimumMP) / 1600 >= (blmAstralTime - blmRotationBufferTime) / 2800) {
     addIcon("fire");
   }
-  else if (toggle.blizzard3 == 2) {
-    addIcon("blizzard3"); // Ends rotation - no need to "remove"
+  else {
+    addIcon("blizzard3");
   }
+
 }
 
-function blmUmbralRotation(currentMP, umbralMilliseconds) {
+// Umbral Ice
+function blmUmbralRotation(currentMP, blmUmbralTime) {
 
-  // Thunder
-  if (player.level < 26
-  && toggle.aoe) {
-    removeIcon("thunder");
-  }
-  else if (checkStatus("thundercloud") > 0
-  && checkStatus("thundercloud") < bufferTime) {
-    addIcon("thunder");
-  }
-  else if (checkStatus("thundercloud") > 0
-  && checkStatus("thunder", target.ID) <= 0) {
-    addIcon("thunder");
-  }
-  else if (toggle.thunder != 2) {
-    removeIcon("thunder");
-  }
-  else if (checkStatus("thunder", target.ID) <= bufferTime) {
-    addIcon("thunder");
-  }
-  else {
-    removeIcon("thunder");
-  }
+  blmEnochian(blmUmbralTime);
+  blmThunder(blmUmbralTime);
+
+  removeIcon("firespam1");
+  removeIcon("firespam2");
+  removeIcon("firespam3");
+
+  blmThunder(blmUmbralTime);
 
   // Blizzard IV
-
   if (player.level < 58) {
     removeIcon("blizzard4");
   }
-  else if (toggle.blizzard4 != 2) {
+  else if (blmCasting == "Blizzard IV") {
     removeIcon("blizzard4");
   }
   else if (player.jobDetail.umbralHearts == 3) {
     removeIcon("blizzard4");
   }
-  else if (player.jobDetail.enochian > 0) {
+  else if (player.jobDetail.enochian) {
     addIcon("blizzard4");
   }
   else if (checkRecast("enochian") < 0) {
@@ -651,75 +573,132 @@ function blmUmbralRotation(currentMP, umbralMilliseconds) {
     removeIcon("blizzard4");
   }
 
-  // Fire 3
-
+  // Fire III
   if (player.level < 34) {
+    addIcon("Transpose")
+  }
+  else if (blmCasting == "Fire III") {
     removeIcon("fire3");
   }
-  else if (toggle.fire3 != 2) {
-    removeIcon("fire3");
-  }
+
+  // Full MP
   else if (player.currentMP == 10000) {
     addIcon("fire3");
   }
+
+  // Upcoming MP Tick
   else if (player.jobDetail.umbralStacks >= 3
   && player.currentMP >= 3800
-  && Date.now() - previous.serverTick < 2000) { // Might need adjustment later
+  && Date.now() - previous.serverTick > 1500) { // Might need adjustment
     addIcon("fire3");
   }
   else if (player.jobDetail.umbralStacks >= 2
   && player.currentMP >= 5300
-  && Date.now() - previous.serverTick < 2000) {
+  && Date.now() - previous.serverTick > 1500) {
     addIcon("fire3");
   }
   else if (player.jobDetail.umbralStacks >= 1
   && player.currentMP >= 6800
-  && Date.now() - previous.serverTick < 2000) {
+  && Date.now() - previous.serverTick > 1500) {
     addIcon("fire3");
   }
+
+}
+
+// Enochian
+function blmEnochian(rotationTime) {
+  if (!player.jobDetail.enochian
+  && checkRecast("enochian") <= 0
+  && rotationTime > blmRotationBufferTime) {
+    addIcon("enochian");
+  }
   else {
-    removeIcon("fire3");
+    removeIcon("enochian");
+  }
+}
+
+// Looks for instants for weaving
+function blmWeave(rotationTime, weaveAction) {
+
+  if (player.level >= 80
+  && player.jobDetail.foulCount > 0
+  && rotationTime > 2500 + blmRotationBufferTime) {
+    blmFillerInstant = "Xenoglossy";
+    addIcon("filler", "xenoglossy");
+  }
+  else if (checkStatus("firestarter") >= 1000) {
+    blmFillerInstant = "Firestarter";
+    addIcon("filler", "firestarter");
+  }
+  else if (checkStatus("thundercloud") >= rotationTime + blmRotationBufferTime) {
+    blmFillerInstant = "Thundercloud";
+    addIcon("filler", "thunder");
+  }
+}
+
+// Thunder (for Umbral Ice)
+function blmThunder(rotationTime) {
+
+  // Thundercloud
+  if (player.level < 26
+  && count.targets > 2) {
+    removeIcon("thunder");
+  }
+  else if (checkStatus("thundercloud") > 0
+  && count.targets >= 3
+  && rotationTime > 2500 + blmRotationBufferTime) {
+    addIcon("thunder");
+  }
+  else if (checkStatus("thundercloud") > 0
+  && checkStatus("thundercloud") < blmProcBufferTime
+  && rotationTime > 2500 + blmRotationBufferTime) {
+    addIcon("thunder");
+  }
+  else if (checkStatus("thundercloud") > 0
+  && checkStatus("thunder", target.ID) <= 0
+  && rotationTime > 2500 + blmRotationBufferTime) {
+    addIcon("thunder");
   }
 
-}
+  // Currently casting
+  else if (["Thunder", "Thunder II", "Thunder III", "Thunder IV"].indexOf(blmCasting) > -1) {
+    removeIcon("thunder");
+  }
 
-function blmAoECombo1834() {
-  // 18-34:
-  // {F2 spam} Transpose {B2 until max MP} Transpose repeat
-  // Keep up T2 dot
-  // Thundercloud procs on T2/T4 as you get them
-}
+  // AoE
+  else if (player.level >= 64
+  && count.targets >= 3
+  && player.currentMP >= 800
+  && checkStatus("thunder", target.ID) <= 2500
+  && rotationTime > 2500 + blmRotationBufferTime) {
+    addIcon("thunder");
+    }
+  else if (player.level < 64
+  && count.targets >= 3
+  && player.currentMP >= 400
+  && checkStatus("thunder", target.ID) <= 2500
+  && rotationTime > 2500 + blmRotationBufferTime) {
+    addIcon("thunder");
+  }
 
-function blmAoECombo3549() {
-  // 35-49: Spam Freeze
-  // Keep up T2 dot
-  // Thundercloud procs on T2/T4 as you get them
-}
+  // Single Target
+  else if (player.level >= 45
+  && count.targets == 1
+  && player.currentMP >= 400
+  && checkStatus("thunder", target.ID) <= 2500
+  && rotationTime > 2500 + blmRotationBufferTime) {
+    addIcon("thunder");
+  }
+  else if (player.level < 45
+  && count.targets == 1
+  && player.currentMP >= 200
+  && checkStatus("thunder", target.ID) <= 2500
+  && rotationTime > 2500 + blmRotationBufferTime) {
+    addIcon("thunder");
+  }
 
-function blmAoECombo5059() {
-  // 50-59:
-  // Freeze T2 F3 F2 F2 Flare Transpose repeat
-  // Thundercloud procs on T2/T4 as you get them
-  // Swift/Triple Flares
-  // Manafont for an extra Flare
-}
-
-function blmAoECombo6067() {
-  // 60-67:
-  // Freeze T2 F3 {F4 2-3 times} Flare Transpose repeat
-  // Save 800 MP for Flare
-  // Use 50-59 AOE Rotation at 5+ enemies
-  // Thundercloud procs on T2/T4 as you get them
-  // Swift/Triple Flares
-  // Manafont for an extra Flare
-}
-
-function blmAoECombo() {
-  // 68-71:
-  // Freeze T4 F3 Flare Flare Transpose repeat
-  // Thundercloud procs on T2/T4 as you get them
-  // Foul after Transpose or Freeze
-  // Swift/Triple Flares
-  // Manafont for an extra Flare
-  // Remove Transpose at 72
+  // Nah
+  else {
+    removeIcon("thunder");
+  }
 }
