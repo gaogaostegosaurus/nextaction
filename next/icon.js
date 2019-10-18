@@ -33,6 +33,7 @@ icon.manafont = "002651";
 icon.flare = "002652";
 icon.coldflare = icon.flare;
 icon.freeze = "002653";
+icon.freezetransition = icon.freeze;
 icon.freezespam = icon.freeze;
 icon.leylines = "002656";
 icon.sharpcast = "002657";
