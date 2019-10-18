@@ -73,7 +73,7 @@ function schJobChange() {
   }
 
   if (player.level >= 45) {
-    addCountdownBar("aetherflow", -1, "icon");
+    addCountdownBar("aetherflow", -1, "addIcon");
   }
 
   if (player.level >= 50) {
@@ -97,7 +97,7 @@ function schJobChange() {
   }
 
   if (player.level >= 66) {
-    addCountdownBar("chainstratagem", checkRecast("chainstratagem"), "icon");
+    addCountdownBar("chainstratagem", checkRecast("chainstratagem"), "addIcon");
   }
 
   if (player.level >= 74) {
@@ -122,7 +122,7 @@ function schTargetChangedEvent() {
       removeCountdownBar("bio");
     }
     else {
-      addCountdownBar("bio", checkStatus("bio", target.ID), "icon");
+      addCountdownBar("bio", checkStatus("bio", target.ID), "addIcon");
     }
     previous.targetID = target.ID;
   }
@@ -150,7 +150,7 @@ function schAction() {
 
     else if ("Aetherflow" == actionGroups.actionname) {
       removeIcon("aetherflow");
-      addCountdownBar("aetherflow", recast.aetherflow, "icon");
+      addCountdownBar("aetherflow", recast.aetherflow, "addIcon");
     }
 
     else if ("Sacred Soil" == actionGroups.actionname) {
@@ -174,7 +174,7 @@ function schAction() {
     }
 
     else if ("Chain Stratagem" == actionGroups.actionname) {
-      addCountdownBar("chainstratagem", recast.chainstratagem, "icon");
+      addCountdownBar("chainstratagem", recast.chainstratagem, "addIcon");
     }
 
     else if ("Recitation" == actionGroups.actionname) {
@@ -193,7 +193,7 @@ function schStatus() {
     if (statusGroups.gainsloses == "gains") {
       addStatus("bio", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
       if (target.ID == statusGroups.targetID) {  // Might be possible to switch targets between application to target and log entry
-        addCountdownBar("bio", checkStatus("bio", target.ID), "icon");
+        addCountdownBar("bio", checkStatus("bio", target.ID), "addIcon");
       }
     }
     else if (statusGroups.gainsloses == "loses") {

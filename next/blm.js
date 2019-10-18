@@ -469,7 +469,7 @@ function blmAstralRotation(currentMP, blmAstralTime, blmAstralStacks) {
 
   // Calculate Fire spam count
   count.firespam = Math.min(
-    (currentMP + player.jobDetail.umbralHearts * 800 - blmMinimumAstralMP) / blmFireMP,  // "how much MP for fire spam spells"
+    (currentMP + player.jobDetail.umbralHearts * (blmFireMP / 2) - blmMinimumAstralMP) / blmFireMP,  // "how much MP for fire spam spells"
     (blmAstralTime - blmRotationBufferTime) / blmFireTime // how much time for fire spam spells
   )
 
