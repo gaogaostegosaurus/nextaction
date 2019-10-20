@@ -2,11 +2,17 @@
 
 var duration = {};
 
+// Role
+duration.swiftcast = 10000;
+
+
 // BLM
+duration.sharpcast = 15000;
 duration.thunder = 18000;
 duration.thunder2 = 12000;
 duration.thunder3 = 24000;
 duration.thunder4 = 18000;
+duration.triplecast = 15000;
 
 // BRD
 duration.straightshotready = 10000;

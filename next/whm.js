@@ -145,61 +145,61 @@ function whmTargetChangedEvent() {
 
 function whmAction() {
 
-  if (actionList.whm.indexOf(actionGroups.actionname) > -1) {
+  if (actionList.whm.indexOf(actionLog.groups.actionName) > -1) {
 
-    if (actionGroups.actionname == "Lucid Dreaming") {
+    if (actionLog.groups.actionName == "Lucid Dreaming") {
       addRecast("luciddreaming");
       addCountdownBar("luciddreaming");
     }
 
-    else if (actionGroups.actionname == "Presence Of Mind") {
+    else if (actionLog.groups.actionName == "Presence Of Mind") {
       addRecast("presenceofmind");
       addCountdownBar("presenceofmind");
     }
 
-    else if (actionGroups.actionname == "Benediction") {
+    else if (actionLog.groups.actionName == "Benediction") {
       addRecast("benediction");
       addCountdownBar("benediction");
     }
 
-    else if (actionGroups.actionname == "Asylum") {
+    else if (actionLog.groups.actionName == "Asylum") {
       addRecast("asylum");
       addCountdownBar("asylum");
     }
 
-    else if (actionGroups.actionname == "Assize") {
+    else if (actionLog.groups.actionName == "Assize") {
       addRecast("assize");
       addCountdownBar("assize");
     }
 
-    else if (actionGroups.actionname == "Thin Air") {
+    else if (actionLog.groups.actionName == "Thin Air") {
       addRecast("thinair");
       addCountdownBar("thinair");
     }
 
-    else if (actionGroups.actionname == "Tetragrammaton") {
+    else if (actionLog.groups.actionName == "Tetragrammaton") {
       addRecast("tetragrammaton");
       addCountdownBar("tetragrammaton");
     }
 
-    else if (actionGroups.actionname == "Divine Benison") {
+    else if (actionLog.groups.actionName == "Divine Benison") {
       addRecast("divinebenison");
       addCountdownBar("divinebenison");
     }
 
-    else if (actionGroups.actionname == "Regen") {
+    else if (actionLog.groups.actionName == "Regen") {
       removeIcon("regen");
       addCountdownBar("regen", checkStatus("regen", target.ID), "icon");
-      addStatus("regen", duration.regen, actionGroups.targetID);
+      addStatus("regen", duration.regen, actionLog.groups.targetID);
     }
 
-    else if (["Aero", "Aero II", "Dia"].indexOf(actionGroups.actionname) > -1) {
+    else if (["Aero", "Aero II", "Dia"].indexOf(actionLog.groups.actionName) > -1) {
       removeIcon("aero");
       if (player.level >= 72) {
-        addStatus("aero", duration.dia, actionGroups.targetID);
+        addStatus("aero", duration.dia, actionLog.groups.targetID);
       }
       else {
-        addStatus("aero", duration.aero, actionGroups.targetID);
+        addStatus("aero", duration.aero, actionLog.groups.targetID);
       }
     }
   }
@@ -207,55 +207,55 @@ function whmAction() {
 
 function whmStatus() {
 
-  if (statusGroups.statusname == "Freecure") {
-    if (statusGroups.gainsloses == "gains") {
-      addStatus("freecure", parseInt(statusGroups.duration) * 1000);
+  if (effectLog.groups.effectName == "Freecure") {
+    if (effectLog.groups.gainsLoses == "gains") {
+      addStatus("freecure", parseInt(effectLog.groups.effectDuration) * 1000);
       addIcon("freecure");
     }
-    else if (statusGroups.gainsloses == "loses") {
+    else if (effectLog.groups.gainsLoses == "loses") {
       removeStatus("freecure");
       removeIcon("freecure");
     }
   }
 
-  else if (statusGroups.statusname == "Lucid Dreaming") {
-    if (statusGroups.gainsloses == "gains") {
-      addStatus("luciddreaming", parseInt(statusGroups.duration) * 1000);
+  else if (effectLog.groups.effectName == "Lucid Dreaming") {
+    if (effectLog.groups.gainsLoses == "gains") {
+      addStatus("luciddreaming", parseInt(effectLog.groups.effectDuration) * 1000);
     }
-    else if (statusGroups.gainsloses == "loses") {
+    else if (effectLog.groups.gainsLoses == "loses") {
       removeStatus("luciddreaming");
     }
   }
 
-  else if (statusGroups.statusname == "Regen") {
-    if (statusGroups.gainsloses == "gains") {
-      addStatus("regen", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+  else if (effectLog.groups.effectName == "Regen") {
+    if (effectLog.groups.gainsLoses == "gains") {
+      addStatus("regen", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
       removeIcon("regen");
-      if (target.ID == statusGroups.targetID
+      if (target.ID == effectLog.groups.targetID
       && ["PLD", "WAR", "DRK", "GNB"].indexOf(target.job) > -1) {
         addCountdownBar("regen", checkStatus("regen", target.ID), "icon");
       }
     }
-    else if (statusGroups.gainsloses == "loses") {
-      removeStatus("regen", statusGroups.targetID);
-      if (target.ID == statusGroups.targetID
+    else if (effectLog.groups.gainsLoses == "loses") {
+      removeStatus("regen", effectLog.groups.targetID);
+      if (target.ID == effectLog.groups.targetID
       && ["PLD", "WAR", "DRK", "GNB"].indexOf(target.job) > -1) {
         addIcon("regen");
       }
     }
   }
 
-  else if (["Aero", "Aero II", "Dia"].indexOf(statusGroups.statusname) > -1) {
-    if (statusGroups.gainsloses == "gains") {
-      addStatus("aero", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+  else if (["Aero", "Aero II", "Dia"].indexOf(effectLog.groups.effectName) > -1) {
+    if (effectLog.groups.gainsLoses == "gains") {
+      addStatus("aero", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
       removeIcon("aero");
-      if (target.ID == statusGroups.targetID) {
+      if (target.ID == effectLog.groups.targetID) {
         addCountdownBar("aero", checkStatus("aero", target.ID), "icon");
       }
     }
-    else if (statusGroups.gainsloses == "loses") {
-      removeStatus("aero", statusGroups.targetID);
-      if (target.ID == statusGroups.targetID) {
+    else if (effectLog.groups.gainsLoses == "loses") {
+      removeStatus("aero", effectLog.groups.targetID);
+      if (target.ID == effectLog.groups.targetID) {
         addIcon("aero");
       }
     }

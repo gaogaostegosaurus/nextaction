@@ -72,11 +72,11 @@ function drkPlayerChangedEvent() {
 
 function drkAction() {
 
-  if (actionList.drk.indexOf(actionGroups.actionname) > -1) {
+  if (actionList.drk.indexOf(actionLog.groups.actionName) > -1) {
 
     // These actions don't break combo
 
-    if ("Delirium" == actionGroups.actionname) {
+    if ("Delirium" == actionLog.groups.actionName) {
       removeIcon("delirium");
       addStatus("delirium");
       addRecast("delirium");
@@ -84,25 +84,25 @@ function drkAction() {
       drkGauge();
     }
 
-    else if (["Flood Of Darkness", "Edge Of Darkness", "Flood Of Shadow", "Edge Of Shadow"].indexOf(actionGroups.actionname) > -1) {
+    else if (["Flood Of Darkness", "Edge Of Darkness", "Flood Of Shadow", "Edge Of Shadow"].indexOf(actionLog.groups.actionName) > -1) {
       removeIcon("floodofdarkness");
       addRecast("floodofdarkness");
       drkMP();
     }
 
-    else if ("Blood Weapon" == actionGroups.actionname) {
+    else if ("Blood Weapon" == actionLog.groups.actionName) {
       removeIcon("bloodweapon");
       addRecast("bloodweapon");
       addIconBlinkTimeout("bloodweapon", recast.bloodweapon, nextid.bloodweapon, icon.bloodweapon);
     }
 
-    else if ("Salted Earth" == actionGroups.actionname) {
+    else if ("Salted Earth" == actionLog.groups.actionName) {
       removeIcon("saltedearth");
       addRecast("carveandspit");
       addIconBlinkTimeout("carveandspit", recast.saltedearth, nextid.saltedearth, icon.saltedearth);
     }
 
-    else if ("Abyssal Drain" == actionGroups.actionname) {
+    else if ("Abyssal Drain" == actionLog.groups.actionName) {
       if (Date.now() - previous.abyssaldrain > 1000) {
         previous.abyssaldrain = Date.now();
         count.aoe = 1;
@@ -115,13 +115,13 @@ function drkAction() {
       //addIconBlinkTimeout("abyssaldrain", recast.abyssaldrain, nextid.abyssaldrain, icon.abyssaldrain);
     }
 
-    else if ("Carve And Spit" == actionGroups.actionname) {
+    else if ("Carve And Spit" == actionLog.groups.actionName) {
       removeIcon("carveandspit");
       addRecast("carveandspit");
       addIconBlinkTimeout("carveandspit", recast.carveandspit, nextid.carveandspit, icon.carveandspit);
     }
 
-    else if ("Plunge" == actionGroups.actionname) { // Code treats Infuriate like two different skills to juggle the charges.
+    else if ("Plunge" == actionLog.groups.actionName) { // Code treats Infuriate like two different skills to juggle the charges.
       if (player.level >= 78) {
         if (checkRecast("plunge2", player.ID) < 0) {
           addRecast("plunge1", player.ID, -1);
@@ -140,28 +140,28 @@ function drkAction() {
       }
     }
 
-    else if ("The Blackest Night" == actionGroups.actionname) {
+    else if ("The Blackest Night" == actionLog.groups.actionName) {
       addRecast("theblackestnight");
       removeIcon("theblackestnight");
     }
 
-    else if ("Shadow Wall" == actionGroups.actionname) {
+    else if ("Shadow Wall" == actionLog.groups.actionName) {
       addRecast("shadowwall");
       removeIcon("shadowwall");
     }
 
-    else if ("Rampart" == actionGroups.actionname) {
+    else if ("Rampart" == actionLog.groups.actionName) {
       addRecast("rampart");
       removeIcon("rampart");
     }
 
     else { // GCD actions
 
-      if ("Bloodspiller" == actionGroups.actionname) {
+      if ("Bloodspiller" == actionLog.groups.actionName) {
         removeIcon("bloodspiller");
       }
 
-      else if ("Quietus" == actionGroups.actionname) {
+      else if ("Quietus" == actionLog.groups.actionName) {
         if (Date.now() - previous.quietus > 1000) {
           previous.quietus = Date.now();
           count.aoe = 1;
@@ -174,8 +174,8 @@ function drkAction() {
 
       // These actions affect combo
 
-      else if ("Hard Slash" == actionGroups.actionname
-      && actionGroups.result.length >= 2) {
+      else if ("Hard Slash" == actionLog.groups.actionName
+      && actionLog.groups.result.length >= 2) {
         count.aoe = 1;
         if (next.combo != 1) {
           drkSouleaterCombo();
@@ -185,8 +185,8 @@ function drkAction() {
         drkComboTimeout();
       }
 
-      else if ("Syphon Strike" == actionGroups.actionname
-      && actionGroups.result.length >= 8) {
+      else if ("Syphon Strike" == actionLog.groups.actionName
+      && actionLog.groups.result.length >= 8) {
         if (player.level < 26) {
           drkCombo();
         }
@@ -197,13 +197,13 @@ function drkAction() {
         }
       }
 
-      else if ("Souleater" == actionGroups.actionname
-      && actionGroups.result.length >= 8) {
+      else if ("Souleater" == actionLog.groups.actionName
+      && actionLog.groups.result.length >= 8) {
         drkCombo();
       }
 
-      else if ("Unleash" == actionGroups.actionname
-      && actionGroups.result.length >= 2) {
+      else if ("Unleash" == actionLog.groups.actionName
+      && actionLog.groups.result.length >= 2) {
 
         if (Date.now() - previous.unleash > 1000) {
           previous.unleash = Date.now();
@@ -227,8 +227,8 @@ function drkAction() {
         }
       }
 
-      else if ("Stalwart Soul" == actionGroups.actionname
-      && actionGroups.result.length >= 8) {
+      else if ("Stalwart Soul" == actionLog.groups.actionName
+      && actionLog.groups.result.length >= 8) {
         if (Date.now() - previous.stalwartsoul > 1000) {
           previous.stalwartsoul = Date.now();
           count.aoe = 1;
@@ -244,7 +244,7 @@ function drkAction() {
       }
 
       if (count.aoe >= 3
-      && checkStatus("mitigation", statusGroups.targetID) < 1000) {
+      && checkStatus("mitigation", effectLog.groups.targetID) < 1000) {
         drkMitigation();
       }
       else {
@@ -259,39 +259,39 @@ function drkAction() {
 
 function drkStatus() {
 
-  if (statusGroups.targetID == player.ID) { // Target is self
+  if (effectLog.groups.targetID == player.ID) { // Target is self
 
-    if ("Delirium" == statusGroups.statusname) {
-      if (statusGroups.gainsloses == "gains") {
-        addStatus("delirium", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+    if ("Delirium" == effectLog.groups.effectName) {
+      if (effectLog.groups.gainsLoses == "gains") {
+        addStatus("delirium", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
       }
-      else if (statusGroups.gainsloses == "loses") {
+      else if (effectLog.groups.gainsLoses == "loses") {
         removeStatus("delirium");
       }
     }
 
-    else if ("Rampart" == statusGroups.statusname) {
-      if (statusGroups.gainsloses == "gains") {
-        if (checkStatus("mitigation", statusGroups.targetID) < parseInt(statusGroups.duration) * 1000) {
-          addStatus("mitigation", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+    else if ("Rampart" == effectLog.groups.effectName) {
+      if (effectLog.groups.gainsLoses == "gains") {
+        if (checkStatus("mitigation", effectLog.groups.targetID) < parseInt(effectLog.groups.effectDuration) * 1000) {
+          addStatus("mitigation", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
         }
       }
-      else if (statusGroups.gainsloses == "loses") {
-        if (checkStatus("mitigation", statusGroups.targetID) < 0 // Check for overlaps
+      else if (effectLog.groups.gainsLoses == "loses") {
+        if (checkStatus("mitigation", effectLog.groups.targetID) < 0 // Check for overlaps
         && count.aoe >= 3) {
           drkMitigation();
         }
       }
     }
 
-    else if ("Dark Wall" == statusGroups.statusname) {
-      if (statusGroups.gainsloses == "gains") {
-        if (checkStatus("mitigation", statusGroups.targetID) < parseInt(statusGroups.duration) * 1000) {
-          addStatus("mitigation", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+    else if ("Dark Wall" == effectLog.groups.effectName) {
+      if (effectLog.groups.gainsLoses == "gains") {
+        if (checkStatus("mitigation", effectLog.groups.targetID) < parseInt(effectLog.groups.effectDuration) * 1000) {
+          addStatus("mitigation", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
         }
       }
-      else if (statusGroups.gainsloses == "loses") {
-        if (checkStatus("mitigation", statusGroups.targetID) < 0
+      else if (effectLog.groups.gainsLoses == "loses") {
+        if (checkStatus("mitigation", effectLog.groups.targetID) < 0
         && count.aoe >= 3) {
           drkMitigation();
         }

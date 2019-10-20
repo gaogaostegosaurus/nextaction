@@ -73,49 +73,49 @@ function mnkPlayerChangedEvent(e) {
 
 function mnkAction(logLine) {
 
-  if (actionList.mnk.indexOf(actionGroups.actionname) > -1) {
+  if (actionList.mnk.indexOf(actionLog.groups.actionName) > -1) {
 
-    if ("Perfect Balance" == actionGroups.actionname) {
+    if ("Perfect Balance" == actionLog.groups.actionName) {
       addCountdownBar("perfectbalance", recast.perfectbalance, "icon");
     }
 
-    else if ("Riddle Of Earth" == actionGroups.actionname) {
+    else if ("Riddle Of Earth" == actionLog.groups.actionName) {
       addCountdownBar("riddleofearth", recast.riddleofearth, "icon");
     }
 
-    else if ("Riddle Of Fire" == actionGroups.actionname) {
+    else if ("Riddle Of Fire" == actionLog.groups.actionName) {
       addCountdownBar("riddleoffire", recast.riddleoffire, "icon");
     }
 
-    else if ("Brotherhood" == actionGroups.actionname) {
+    else if ("Brotherhood" == actionLog.groups.actionName) {
       addCountdownBar("brotherhood", recast.brotherhood, "icon");
     }
 
     else {
 
-      if ("Bootshine" == actionGroups.actionname) {
+      if ("Bootshine" == actionLog.groups.actionName) {
       }
 
-      else if ("Dragon Kick" == actionGroups.actionname) {
+      else if ("Dragon Kick" == actionLog.groups.actionName) {
       }
 
-      else if ("True Strike" == actionGroups.actionname) {
+      else if ("True Strike" == actionLog.groups.actionName) {
       }
 
-      else if ("Twin Snakes" == actionGroups.actionname) {
+      else if ("Twin Snakes" == actionLog.groups.actionName) {
         addStatus("twinsnakes");
       }
 
-      else if ("Snap Punch" == actionGroups.actionname) {
+      else if ("Snap Punch" == actionLog.groups.actionName) {
         mnkCombo();
       }
 
-      else if ("Demolish" == actionGroups.actionname) {
-        addStatus("demolish", duration.demolish, actionGroups.targetID);
+      else if ("Demolish" == actionLog.groups.actionName) {
+        addStatus("demolish", duration.demolish, actionLog.groups.targetID);
         mnkCombo();
       }
 
-      else if ("Form Shift" == actionGroups.actionname) {
+      else if ("Form Shift" == actionLog.groups.actionName) {
       }
 
     }
@@ -126,112 +126,112 @@ function mnkAction(logLine) {
 
 function mnkStatus(logLine) {
 
-  if (statusGroups.statusname == "Opo-Opo Form") {
-    if (statusGroups.gainsloses == "gains") {
-      addStatus("opoopoform", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+  if (effectLog.groups.effectName == "Opo-Opo Form") {
+    if (effectLog.groups.gainsLoses == "gains") {
+      addStatus("opoopoform", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
       mnkCombo();
       mnkComboTimeout();
     }
-    else if (statusGroups.gainsloses == "loses") {
-      removeStatus("opoopoform", statusGroups.targetID);
+    else if (effectLog.groups.gainsLoses == "loses") {
+      removeStatus("opoopoform", effectLog.groups.targetID);
     }
   }
 
-  else if (statusGroups.statusname == "Raptor Form") {
-    if (statusGroups.gainsloses == "gains") {
-      addStatus("raptorform", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+  else if (effectLog.groups.effectName == "Raptor Form") {
+    if (effectLog.groups.gainsLoses == "gains") {
+      addStatus("raptorform", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
       removeIcon("combo1");
       mnkComboTimeout();
     }
-    else if (statusGroups.gainsloses == "loses") {
-      removeStatus("raptorform", statusGroups.targetID);
+    else if (effectLog.groups.gainsLoses == "loses") {
+      removeStatus("raptorform", effectLog.groups.targetID);
     }
   }
 
-  else if (statusGroups.statusname == "Coeurl Form") {
-    if (statusGroups.gainsloses == "gains") {
-      addStatus("coeurlform", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+  else if (effectLog.groups.effectName == "Coeurl Form") {
+    if (effectLog.groups.gainsLoses == "gains") {
+      addStatus("coeurlform", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
       removeIcon("combo2");
       mnkComboTimeout();
     }
-    else if (statusGroups.gainsloses == "loses") {
-      removeStatus("coeurlform", statusGroups.targetID);
+    else if (effectLog.groups.gainsLoses == "loses") {
+      removeStatus("coeurlform", effectLog.groups.targetID);
     }
   }
 
-  else if (statusGroups.statusname == "Twin Snakes") {
-    if (statusGroups.gainsloses == "gains") {
-      addStatus("twinsnakes", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+  else if (effectLog.groups.effectName == "Twin Snakes") {
+    if (effectLog.groups.gainsLoses == "gains") {
+      addStatus("twinsnakes", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
     }
-    else if (statusGroups.gainsloses == "loses") {
-      removeStatus("twinsnakes", statusGroups.targetID);
-    }
-  }
-
-  else if (statusGroups.statusname == "Demolish") {
-    if (statusGroups.gainsloses == "gains") {
-      addStatus("demolish", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
-    }
-    else if (statusGroups.gainsloses == "loses") {
-      removeStatus("demolish", statusGroups.targetID);
+    else if (effectLog.groups.gainsLoses == "loses") {
+      removeStatus("twinsnakes", effectLog.groups.targetID);
     }
   }
 
-  else if (statusGroups.statusname == "Fists Of Earth") {
-    if (statusGroups.gainsloses == "gains") {
-      addStatus("fistsofearth", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+  else if (effectLog.groups.effectName == "Demolish") {
+    if (effectLog.groups.gainsLoses == "gains") {
+      addStatus("demolish", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
+    }
+    else if (effectLog.groups.gainsLoses == "loses") {
+      removeStatus("demolish", effectLog.groups.targetID);
+    }
+  }
+
+  else if (effectLog.groups.effectName == "Fists Of Earth") {
+    if (effectLog.groups.gainsLoses == "gains") {
+      addStatus("fistsofearth", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
       addIcon("fistsoffire");
     }
-    else if (statusGroups.gainsloses == "loses") {
-      removeStatus("fistsofearth", statusGroups.targetID);
+    else if (effectLog.groups.gainsLoses == "loses") {
+      removeStatus("fistsofearth", effectLog.groups.targetID);
     }
   }
 
-  else if (statusGroups.statusname == "Fists Of Wind") {
-    if (statusGroups.gainsloses == "gains") {
-      addStatus("fistsofwind", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+  else if (effectLog.groups.effectName == "Fists Of Wind") {
+    if (effectLog.groups.gainsLoses == "gains") {
+      addStatus("fistsofwind", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
       addIcon("fistsoffire");
     }
-    else if (statusGroups.gainsloses == "loses") {
-      removeStatus("fistsofwind", statusGroups.targetID);
+    else if (effectLog.groups.gainsLoses == "loses") {
+      removeStatus("fistsofwind", effectLog.groups.targetID);
     }
   }
 
-  else if (statusGroups.statusname == "Fists Of Fire") {
-    if (statusGroups.gainsloses == "gains") {
-      addStatus("fistsoffire", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+  else if (effectLog.groups.effectName == "Fists Of Fire") {
+    if (effectLog.groups.gainsLoses == "gains") {
+      addStatus("fistsoffire", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
       removeIcon("fistsoffire");
     }
-    else if (statusGroups.gainsloses == "loses") {
-      removeStatus("fistsoffire", statusGroups.targetID);
+    else if (effectLog.groups.gainsLoses == "loses") {
+      removeStatus("fistsoffire", effectLog.groups.targetID);
       addIcon("fistsoffire");
     }
   }
 
-  else if (statusGroups.statusname == "Leaden Fist") {
-    if (statusGroups.gainsloses == "gains") {
-      addStatus("leadenfist", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+  else if (effectLog.groups.effectName == "Leaden Fist") {
+    if (effectLog.groups.gainsLoses == "gains") {
+      addStatus("leadenfist", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
     }
-    else if (statusGroups.gainsloses == "loses") {
-      removeStatus("leadenfist", statusGroups.targetID);
-    }
-  }
-
-  else if (statusGroups.statusname == "Perfect Balance") {
-    if (statusGroups.gainsloses == "gains") {
-      addStatus("perfectbalance", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
-    }
-    else if (statusGroups.gainsloses == "loses") {
-      removeStatus("perfectbalance", statusGroups.targetID);
+    else if (effectLog.groups.gainsLoses == "loses") {
+      removeStatus("leadenfist", effectLog.groups.targetID);
     }
   }
 
-  else if (statusGroups.statusname == "Riddle Of Fire") {
-    if (statusGroups.gainsloses == "gains") {
-      addStatus("riddleoffire", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+  else if (effectLog.groups.effectName == "Perfect Balance") {
+    if (effectLog.groups.gainsLoses == "gains") {
+      addStatus("perfectbalance", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
     }
-    else if (statusGroups.gainsloses == "loses") {
-      removeStatus("riddleoffire", statusGroups.targetID);
+    else if (effectLog.groups.gainsLoses == "loses") {
+      removeStatus("perfectbalance", effectLog.groups.targetID);
+    }
+  }
+
+  else if (effectLog.groups.effectName == "Riddle Of Fire") {
+    if (effectLog.groups.gainsLoses == "gains") {
+      addStatus("riddleoffire", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
+    }
+    else if (effectLog.groups.gainsLoses == "loses") {
+      removeStatus("riddleoffire", effectLog.groups.targetID);
     }
   }
 }

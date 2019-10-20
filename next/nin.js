@@ -79,20 +79,20 @@ function ninAction(logLine) {
 
   // console.log("Logline")
 
-  if (actionList.nin.indexOf(actionGroups.actionname) > -1) {
+  if (actionList.nin.indexOf(actionLog.groups.actionName) > -1) {
 
     // Everything breaks Mudra "combo" so list it first
     // Not sure what to do with this
 
-    if ("Ten" == actionGroups.actionname) {
+    if ("Ten" == actionLog.groups.actionName) {
       // toggle.mudra = toggle.mudra + "T";
       // ninMudraCombo();
     }
-    else if ("Chi" == actionGroups.actionname) {
+    else if ("Chi" == actionLog.groups.actionName) {
       // toggle.mudra = toggle.mudra + "C";
       // ninMudraCombo();
     }
-    else if ("Jin" == actionGroups.actionname) {
+    else if ("Jin" == actionLog.groups.actionName) {
       // toggle.mudra = toggle.mudra + "J";
       // ninMudraCombo();
     }
@@ -101,7 +101,7 @@ function ninAction(logLine) {
 
       delete toggle.mudra;
 
-      if ("Hide" == actionGroups.actionname) {
+      if ("Hide" == actionLog.groups.actionName) {
         removeIcon("tenchijin");
         addRecast("hide");
         addRecast("ninjutsu", -1);
@@ -110,19 +110,19 @@ function ninAction(logLine) {
         ninNinjutsu();
       }
 
-      else if ("Mug" == actionGroups.actionname) {
+      else if ("Mug" == actionLog.groups.actionName) {
         ninNinki();
       }
 
-      else if ("Trick Attack" == actionGroups.actionname) {
+      else if ("Trick Attack" == actionLog.groups.actionName) {
         addCountdownBar("trickattack");
       }
 
-      else if (["Raiton", "Hyosho Ranyu"].indexOf(actionGroups.actionname) > -1) {
+      else if (["Raiton", "Hyosho Ranyu"].indexOf(actionLog.groups.actionName) > -1) {
         count.aoe = 1;
       }
 
-      else if (["Katon", "Goka Mekkyaku"].indexOf(actionGroups.actionname) > -1) {
+      else if (["Katon", "Goka Mekkyaku"].indexOf(actionLog.groups.actionName) > -1) {
         if (Date.now() - previous.katon > 1000) {
           previous.katon = Date.now()
           count.aoe = 1;
@@ -132,11 +132,11 @@ function ninAction(logLine) {
         }
       }
 
-      else if ("Suiton" == actionGroups.actionname) {
+      else if ("Suiton" == actionLog.groups.actionName) {
         addStatus("suiton");
       }
 
-      else if ("Kassatsu" == actionGroups.actionname) {
+      else if ("Kassatsu" == actionLog.groups.actionName) {
 
         removeIcon("kassatsu");
         addStatus("kassatsu");
@@ -156,13 +156,13 @@ function ninAction(logLine) {
         ninNinjutsu();
       }
 
-      else if ("Dream Within A Dream" == actionGroups.actionname) {
+      else if ("Dream Within A Dream" == actionLog.groups.actionName) {
         removeIcon("dreamwithinadream");
         addCountdownBar("dreamwithinadream", recast.dreamwithinadream, "icon");
         addStatus("assassinateready");
       }
 
-      else if ("Hellfrog Medium" == actionGroups.actionname) {
+      else if ("Hellfrog Medium" == actionLog.groups.actionName) {
         if (Date.now() - previous.hellfrogmedium > 1000) {
           previous.hellfrogmedium = Date.now()
           count.aoe = 1;
@@ -173,12 +173,12 @@ function ninAction(logLine) {
         ninNinki();
       }
 
-      else if ("Bhavacakra" == actionGroups.actionname) {
+      else if ("Bhavacakra" == actionLog.groups.actionName) {
         count.aoe = 1;
         ninNinki();
       }
 
-      else if ("Ten Chi Jin" == actionGroups.actionname) {
+      else if ("Ten Chi Jin" == actionLog.groups.actionName) {
         removeIcon("tenchijin");
         addStatus("tenchijin");
         addCountdownBar("tenchijin");
@@ -188,15 +188,15 @@ function ninAction(logLine) {
         ninNinjutsu();
       }
 
-      else if ("Meisui" == actionGroups.actionname) {
+      else if ("Meisui" == actionLog.groups.actionName) {
         addCountdownBar("meisui");
         ninNinki();
       }
 
       else { // Weaponskills and combos (hopefully)
 
-        if ("Spinning Edge" == actionGroups.actionname
-        && actionGroups.result.length >= 2) {
+        if ("Spinning Edge" == actionLog.groups.actionName
+        && actionLog.groups.result.length >= 2) {
 
           if ([1, 2, 3].indexOf(next.combo) == -1) {
             if (player.level >= 38
@@ -216,8 +216,8 @@ function ninAction(logLine) {
           toggle.combo = Date.now();
         }
 
-        else if ("Gust Slash" == actionGroups.actionname
-        && actionGroups.result.length >= 8) {
+        else if ("Gust Slash" == actionLog.groups.actionName
+        && actionLog.groups.result.length >= 8) {
 
           if ([1, 2].indexOf(next.combo) == -1) {
             if (player.level >= 54
@@ -237,14 +237,14 @@ function ninAction(logLine) {
           }
         }
 
-        else if ("Shadow Fang" == actionGroups.actionname
-        && actionGroups.result.length >= 8) {
-          addStatus("shadowfang", duration.shadowfang, actionGroups.targetID);
+        else if ("Shadow Fang" == actionLog.groups.actionName
+        && actionLog.groups.result.length >= 8) {
+          addStatus("shadowfang", duration.shadowfang, actionLog.groups.targetID);
           ninCombo();
         }
 
-        else if ("Death Blossom" == actionGroups.actionname
-        && actionGroups.result.length >= 2) {
+        else if ("Death Blossom" == actionLog.groups.actionName
+        && actionLog.groups.result.length >= 2) {
 
           if (Date.now() - previous.deathblossom > 1000) {
             previous.deathblossom = Date.now()
@@ -262,8 +262,8 @@ function ninAction(logLine) {
           }
         }
 
-        else if ("Hakke Mujinsatsu" == actionGroups.actionname
-        && actionGroups.result.length == 8) {
+        else if ("Hakke Mujinsatsu" == actionLog.groups.actionName
+        && actionLog.groups.result.length == 8) {
 
           if (Date.now() - previous.hakkemujinsatsu > 1000) {
             previous.hakkemujinsatsu = Date.now()
@@ -295,13 +295,13 @@ function ninAction(logLine) {
 
 function ninStatus() {
 
-  if (statusGroups.targetID == player.ID) {
+  if (effectLog.groups.targetID == player.ID) {
 
-    if ("Mudra" == statusGroups.statusname) {
-      if ("gains" == statusGroups.gainsloses) {
+    if ("Mudra" == effectLog.groups.effectName) {
+      if ("gains" == effectLog.groups.gainsLoses) {
         removeCountdownBar("ninjutsu");
       }
-      else if ("loses" == statusGroups.gainsloses) {
+      else if ("loses" == effectLog.groups.gainsLoses) {
         removeIcon("ninjutsu1");
         removeIcon("ninjutsu2");
         removeIcon("ninjutsu3");
@@ -316,18 +316,18 @@ function ninStatus() {
       }
     }
 
-    // else if ("Doton" == statusGroups.statusname) {
-    //   if ("gains" == statusGroups.gainsloses) {
-    //     addStatus("doton", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+    // else if ("Doton" == effectLog.groups.effectName) {
+    //   if ("gains" == effectLog.groups.gainsLoses) {
+    //     addStatus("doton", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
     //   }
-    //   else if ("loses" == statusGroups.gainsloses) {
-    //     removeStatus("doton", statusGroups.targetID);
+    //   else if ("loses" == effectLog.groups.gainsLoses) {
+    //     removeStatus("doton", effectLog.groups.targetID);
     //   }
     // }
 
-    else if ("Suiton" == statusGroups.statusname) {
-      if ("gains" == statusGroups.gainsloses) {
-        addStatus("suiton", parseInt(statusGroups.duration) * 1000);
+    else if ("Suiton" == effectLog.groups.effectName) {
+      if ("gains" == effectLog.groups.gainsLoses) {
+        addStatus("suiton", parseInt(effectLog.groups.effectDuration) * 1000);
         if (checkStatus("suiton") > checkRecast("trickattack")) {
 
         }
@@ -335,51 +335,51 @@ function ninStatus() {
 
         }
       }
-      else if ("loses" == statusGroups.gainsloses) {
-        removeStatus("suiton", statusGroups.targetID);
+      else if ("loses" == effectLog.groups.gainsLoses) {
+        removeStatus("suiton", effectLog.groups.targetID);
       }
     }
 
-    else if ("Kassatsu" == statusGroups.statusname) {
-      if ("gains" == statusGroups.gainsloses) {
-        addStatus("kassatsu", parseInt(statusGroups.duration) * 1000);
+    else if ("Kassatsu" == effectLog.groups.effectName) {
+      if ("gains" == effectLog.groups.gainsLoses) {
+        addStatus("kassatsu", parseInt(effectLog.groups.effectDuration) * 1000);
         if (player.level >= 76) {
           icon.katon = icon.gokamekkyaku;
           icon.raiton = icon.hyoshoranyu;  // This isn't how it really upgrades, but  this happens in practice
           icon.hyoton = icon.hyoshoranyu;  // Just in case for later
         }
       }
-      else if ("loses" == statusGroups.gainsloses) {
+      else if ("loses" == effectLog.groups.gainsLoses) {
         removeStatus("kassatsu");
         icon.katon = "002908";
         icon.raiton = "002912";
         icon.hyoton = "002909";
-        // addRecast("ninjutsu", statusGroups.targetID, recast.ninjutsu);
+        // addRecast("ninjutsu", effectLog.groups.targetID, recast.ninjutsu);
         // clearTimeout(timeout.ninjutsu);
         // timeout.ninjutsu = setTimeout(ninNinjutsu, recast.ninjutsu - 1000);
       }
     }
 
-    else if ("Ten Chi Jin" == statusGroups.statusname) {
-      if ("gains" == statusGroups.gainsloses) {
-        addStatus("tenchijin", parseInt(statusGroups.duration) * 1000);
+    else if ("Ten Chi Jin" == effectLog.groups.effectName) {
+      if ("gains" == effectLog.groups.gainsLoses) {
+        addStatus("tenchijin", parseInt(effectLog.groups.effectDuration) * 1000);
       }
-      else if ("loses" == statusGroups.gainsloses) {
+      else if ("loses" == effectLog.groups.gainsLoses) {
         ninLosesMudra()
       }
     }
   }
 
   else {
-    if ("Shadow Fang" == statusGroups.statusname) {
-      if ("gains" == statusGroups.gainsloses) {
-        addStatus("shadowfang", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
-        if (target.ID == statusGroups.targetID) {  // Might be possible to switch targets between application to target and log entry
+    if ("Shadow Fang" == effectLog.groups.effectName) {
+      if ("gains" == effectLog.groups.gainsLoses) {
+        addStatus("shadowfang", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
+        if (target.ID == effectLog.groups.targetID) {  // Might be possible to switch targets between application to target and log entry
           addCountdownBar("shadowfang", checkStatus("shadowfang", target.ID));
         }
       }
-      else if ("loses" == statusGroups.gainsloses) {
-        removeStatus("shadowfang", statusGroups.targetID);
+      else if ("loses" == effectLog.groups.gainsLoses) {
+        removeStatus("shadowfang", effectLog.groups.targetID);
       }
     }
   }

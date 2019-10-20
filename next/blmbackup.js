@@ -190,25 +190,25 @@ function blmAction() {
   // console.log("Umbral Hearts: " + player.jobDetail.umbralHearts);
   // console.log("Enochian: " + player.jobDetail.enochian);
 
-  if (actionList.blm.indexOf(actionGroups.actionname) > -1) {
+  if (actionList.blm.indexOf(actionLog.groups.actionName) > -1) {
 
-    if (["Fire II", "Thunder IV", "Freeze", "Flare", "Foul"].indexOf(actionGroups.actionname) > -1) {
+    if (["Fire II", "Thunder IV", "Freeze", "Flare", "Foul"].indexOf(actionLog.groups.actionName) > -1) {
       toggle.aoe = Date.now()
     }
-    else if (["Blizzard", "Blizzard III", "Blizzard IV", "Fire", "Fire IV", "Thunder III"].indexOf(actionGroups.actionname) > -1) {
+    else if (["Blizzard", "Blizzard III", "Blizzard IV", "Fire", "Fire IV", "Thunder III"].indexOf(actionLog.groups.actionName) > -1) {
       delete toggle.aoe;
     }
 
     // Certain spells set or unset certain toggles
 
-    if ("Fire" == actionGroups.actionname) {
+    if ("Fire" == actionLog.groups.actionName) {
       if (player.level >= 60) {
         toggle.fire = 0;  // Only need one after 60
       }
       toggle.fire4 = 2;
     }
 
-    else if ("Fire II" == actionGroups.actionname) {
+    else if ("Fire II" == actionLog.groups.actionName) {
       if (Date.now() - previous.fire2 > 1000) {
         previous.fire2 = Date.now();
         count.aoe = 1;
@@ -218,7 +218,7 @@ function blmAction() {
       }
     }
 
-    else if ("Fire III" == actionGroups.actionname) {
+    else if ("Fire III" == actionLog.groups.actionName) {
       toggle.fire3 = 0;
 
       toggle.blizzard3 = 2;
@@ -226,23 +226,23 @@ function blmAction() {
       toggle.fire4 = 2;
     }
 
-    else if ("Blizzard III" == actionGroups.actionname) {
+    else if ("Blizzard III" == actionLog.groups.actionName) {
       toggle.blizzard3 = 0;
       toggle.blizzard4 = 2;
       toggle.fire3 = 2;
       toggle.fire4 = 2;
     }
 
-    else if ("Fire IV" == actionGroups.actionname) {
+    else if ("Fire IV" == actionLog.groups.actionName) {
       // Nothing
     }
 
-    else if (["Thunder", "Thunder III"].indexOf(actionGroups.actionname) > -1) {
+    else if (["Thunder", "Thunder III"].indexOf(actionLog.groups.actionName) > -1) {
       toggle.thunder = 0;
-      addStatus("thunder", duration.thunder, actionGroups.targetID);
+      addStatus("thunder", duration.thunder, actionLog.groups.targetID);
     }
 
-    else if (["Thunder II", "Thunder IV"].indexOf(actionGroups.actionname) > -1) {
+    else if (["Thunder II", "Thunder IV"].indexOf(actionLog.groups.actionName) > -1) {
       toggle.thunder2 = 0;
       if (Date.now() - previous.thunder2 > 1000) {
         previous.thunder2 = Date.now();
@@ -251,10 +251,10 @@ function blmAction() {
       else {
         count.aoe = count.aoe + 1;
       }
-      addStatus("thunder2", duration.thunder2, actionGroups.targetID);
+      addStatus("thunder2", duration.thunder2, actionLog.groups.targetID);
     }
 
-    else if ("Flare" == actionGroups.actionname) {
+    else if ("Flare" == actionLog.groups.actionName) {
       if (Date.now() - previous.flare > 1000) {
         previous.flare = Date.now();
         count.aoe = 1;
@@ -264,7 +264,7 @@ function blmAction() {
       }
     }
 
-    else if ("Foul" == actionGroups.actionname) {
+    else if ("Foul" == actionLog.groups.actionName) {
       toggle.foul = 0;
       if (Date.now() - previous.foul > 1000) {
         previous.foul = Date.now();
@@ -275,7 +275,7 @@ function blmAction() {
       }
     }
 
-    else if ("Freeze" == actionGroups.actionname) {
+    else if ("Freeze" == actionLog.groups.actionName) {
       toggle.freeze = 0;
       if (Date.now() - previous.freeze > 1000) {
         previous.freeze = Date.now();
@@ -288,16 +288,16 @@ function blmAction() {
 
     // oGCDs
 
-    else if ("Enochian" == actionGroups.actionname) {
+    else if ("Enochian" == actionLog.groups.actionName) {
       addRecast("enochian", recast.enochian);
     }
 
-    else if ("Sharpcast" == actionGroups.actionname) {
+    else if ("Sharpcast" == actionLog.groups.actionName) {
       removeIcon("sharpcast");
       addRecast("sharpcast", recast.sharpcast);
     }
 
-    else if ("Manafont" == actionGroups.actionname) {
+    else if ("Manafont" == actionLog.groups.actionName) {
       removeIcon("manafont");
       addRecast("manafont", recast.manafont);
     }
@@ -309,24 +309,24 @@ function blmAction() {
 
 function blmStartsUsing() {
 
-  if ("Blizzard" == startGroups.actionname) {
+  if ("Blizzard" == startsLog.groups.actionName) {
     toggle.blizzard = 1;
   }
 
-  else if ("Blizzard II" == startGroups.actionname) {
+  else if ("Blizzard II" == startsLog.groups.actionName) {
     toggle.blizzard3 = 1;
   }
 
-  else if ("Blizzard III" == startGroups.actionname) {
+  else if ("Blizzard III" == startsLog.groups.actionName) {
     toggle.blizzard3 = 1;
     toggle.transition = -3;
   }
 
-  else if ("Blizzard IV" == startGroups.actionname) {
+  else if ("Blizzard IV" == startsLog.groups.actionName) {
     toggle.blizzard4 = 1;
   }
 
-  else if ("Fire" == startGroups.actionname) {
+  else if ("Fire" == startsLog.groups.actionName) {
     toggle.fire = 1;
     if (player.jobDetail.umbralStacks > 0) {
       toggle.fire4 = 2;
@@ -334,12 +334,12 @@ function blmStartsUsing() {
     }
   }
 
-  else if ("Fire III" == startGroups.actionname) {
+  else if ("Fire III" == startsLog.groups.actionName) {
     toggle.fire3 = 1;
     toggle.transition = 3;
   }
 
-  else if ("Fire IV" == startGroups.actionname) {
+  else if ("Fire IV" == startsLog.groups.actionName) {
     if (player.jobDetail.umbralMilliseconds < 3000 * 2 + bufferTime
     || player.currentMP < 1600 * 2 + minimumMP) {
       toggle.fire4 = 1;
@@ -349,7 +349,7 @@ function blmStartsUsing() {
     }
   }
 
-  else if (["Thunder", "Thunder II", "Thunder III", "Thunder IV"].indexOf(startGroups.actionname) > -1) {
+  else if (["Thunder", "Thunder II", "Thunder III", "Thunder IV"].indexOf(startsLog.groups.actionName) > -1) {
     toggle.thunder = 1;
   }
 
@@ -361,19 +361,19 @@ function blmCancelled() {
 
   delete toggle.transition;
 
-  if ("Blizzard" == cancelGroups.actionname) {
+  if ("Blizzard" == cancelledLog.groups.actionName) {
     toggle.blizzard = 2;
   }
 
-  else if ("Blizzard III" == cancelGroups.actionname) {
+  else if ("Blizzard III" == cancelledLog.groups.actionName) {
     toggle.blizzard3 = 2;
   }
 
-  else if ("Blizzard IV" == cancelGroups.actionname) {
+  else if ("Blizzard IV" == cancelledLog.groups.actionName) {
     toggle.blizzard4 = 2;
   }
 
-  else if ("Fire" == cancelGroups.actionname) {
+  else if ("Fire" == cancelledLog.groups.actionName) {
 
     toggle.fire = 2;
 
@@ -386,12 +386,12 @@ function blmCancelled() {
     }
   }
 
-  else if ("Fire III" == cancelGroups.actionname) {
+  else if ("Fire III" == cancelledLog.groups.actionName) {
     toggle.fire3 = 2;
   }
 
 
-  else if ("Fire IV" == cancelGroups.actionname) {
+  else if ("Fire IV" == cancelledLog.groups.actionName) {
     if (player.jobDetail.umbralMilliseconds >= 3000 + bufferTime
     && player.currentMP >= 1600 + minimumMP) {
       toggle.fire4 = 2;
@@ -401,7 +401,7 @@ function blmCancelled() {
     }
   }
 
-  else if (["Thunder", "Thunder II", "Thunder III", "Thunder IV"].indexOf(cancelGroups.actionname) > -1) {
+  else if (["Thunder", "Thunder II", "Thunder III", "Thunder IV"].indexOf(cancelledLog.groups.actionName) > -1) {
     toggle.thunder = 2;
   }
 
@@ -411,26 +411,26 @@ function blmCancelled() {
 
 function blmStatus() {
 
-  if (statusGroups.targetID == player.ID) {
+  if (effectLog.groups.targetID == player.ID) {
 
-    if (statusGroups.statusname == "Thundercloud") {
-      if (statusGroups.gainsloses == "gains") {
-        addStatus("thundercloud", parseInt(statusGroups.duration) * 1000);
+    if (effectLog.groups.effectName == "Thundercloud") {
+      if (effectLog.groups.gainsLoses == "gains") {
+        addStatus("thundercloud", parseInt(effectLog.groups.effectDuration) * 1000);
         addCountdownBar("thundercloud", checkStatus("thundercloud"), "remove");
       }
-      else if (statusGroups.gainsloses == "loses") {
-        removeStatus("thundercloud", statusGroups.targetID);
+      else if (effectLog.groups.gainsLoses == "loses") {
+        removeStatus("thundercloud", effectLog.groups.targetID);
         removeIcon("thundercloud");
       }
     }
 
-    else if (statusGroups.statusname == "Firestarter") {
-      if (statusGroups.gainsloses == "gains") {
-        addStatus("firestarter", parseInt(statusGroups.duration) * 1000);
+    else if (effectLog.groups.effectName == "Firestarter") {
+      if (effectLog.groups.gainsLoses == "gains") {
+        addStatus("firestarter", parseInt(effectLog.groups.effectDuration) * 1000);
         addCountdownBar("firestarter", checkStatus("firestarter"), "remove");
       }
-      else if (statusGroups.gainsloses == "loses") {
-        removeStatus("firestarter", statusGroups.targetID);
+      else if (effectLog.groups.gainsLoses == "loses") {
+        removeStatus("firestarter", effectLog.groups.targetID);
         removeIcon("firestarter");
       }
     }
@@ -439,15 +439,15 @@ function blmStatus() {
 
   else {
 
-    // console.log(statusGroups.targetID + statusGroups.gainsloses + statusGroups.statusname);
+    // console.log(effectLog.groups.targetID + effectLog.groups.gainsLoses + effectLog.groups.effectName);
 
-    if (["Thunder", "Thunder II", "Thunder III", "Thunder IV"].indexOf(statusGroups.statusname) > -1) {
-      if (statusGroups.gainsloses == "gains") {
-        addStatus("thunder", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
-        addCountdownBar("thunder", checkStatus("thunder", statusGroups.targetID), "remove");
+    if (["Thunder", "Thunder II", "Thunder III", "Thunder IV"].indexOf(effectLog.groups.effectName) > -1) {
+      if (effectLog.groups.gainsLoses == "gains") {
+        addStatus("thunder", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
+        addCountdownBar("thunder", checkStatus("thunder", effectLog.groups.targetID), "remove");
       }
-      else if (statusGroups.gainsloses == "loses") {
-        removeStatus("thunder", statusGroups.targetID);
+      else if (effectLog.groups.gainsLoses == "loses") {
+        removeStatus("thunder", effectLog.groups.targetID);
       }
     }
 

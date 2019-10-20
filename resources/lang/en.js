@@ -21,7 +21,14 @@ class CactbotLanguageEn extends CactbotLanguage {
       Medicated: 'Medicated', // tbc
       BattleLitany: 'Battle Litany', // 0x312
       Embolden: 'Embolden', // 0x4d7
-      Balance: 'The Balance', // 0x53a
+      Arrow: 'The Arrow', // 0x75c
+      Balance: 'The Balance', // 0x75a
+      Bole: 'The Bole', // 0x75b
+      Ewer: 'The Ewer', // 0x75e
+      Spear: 'The Spear', // 0x75d
+      Spire: 'The Spire', // 0x75f
+      LadyOfCrowns: 'Lady Of Crowns', // 0x755
+      LordOfCrowns: 'Lord Of Crowns', // 0x754
       Hypercharge: 'Hypercharge', // 0x2b0
       LeftEye: 'Left Eye', // 0x4a0
       RightEye: 'Right Eye', // 0x49f
@@ -30,12 +37,21 @@ class CactbotLanguageEn extends CactbotLanguage {
       FoeRequiem: 'Foe Requiem', // up 0x8b, down 0x8c
       LeadenFist: 'Leaden Fist',
       StormsEye: 'Storm\'s Eye',
+      Devilment: 'Devilment',
+      StandardFinish: 'Standard Finish',
+      TechnicalFinish: 'Technical Finish',
+      Thundercloud: 'Thundercloud',
+      Firestarter: 'Firestarter',
 
       Petrification: 'Petrification',
       BeyondDeath: 'Beyond Death',
       Burns: 'Burns',
       Sludge: 'Sludge',
       Doom: 'Doom',
+      StoneCurse: 'Stone Curse',
+      Imp: 'Imp',
+      Toad: 'Toad',
+      FoolsTumble: 'Fool\'s Tumble', // 0x183
 
       // UWU
       Windburn: 'Windburn',

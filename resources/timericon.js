@@ -2,7 +2,7 @@
 
 class TimerIcon extends HTMLElement {
   static get observedAttributes() {
-    return ['icon', 'name', 'zoom', 'duration', 'onhide', 'width', 'height', 'bordercolor', 'bordersize', 'text'];
+    return ['icon', 'name', 'zoom', 'duration', 'onhide', 'width', 'height', 'bordercolor', 'bordersize', 'text', 'textcolor'];
   }
 
   // All visual dimensions are scaled by this.
@@ -98,6 +98,13 @@ class TimerIcon extends HTMLElement {
     return this.getAttribute('text');
   }
 
+  set textcolor(p) {
+    this.setAttribute('textcolor', p);
+  }
+  get textcolor() {
+    return this.getAttribute('textcolor');
+  }
+
   // This would be used with window.customElements.
   constructor() {
     super();
@@ -125,7 +132,6 @@ class TimerIcon extends HTMLElement {
         .text {
           position: absolute;
           font-family: arial;
-          color: white;
           text-shadow: -1px 0 3px black, 0 1px 3px black, 1px 0 3px black, 0 -1px 3px black;
           will-change: content;
         }
@@ -162,7 +168,7 @@ class TimerIcon extends HTMLElement {
     // Constants.
     this.kBackgroundOpacity = 0.8;
     this.kOuterBorderSize = 1;
-    this.kAnimateMS = 100;
+    this.kAnimateMs = 100;
 
     // Default values.
     this._value = 0;
@@ -177,6 +183,7 @@ class TimerIcon extends HTMLElement {
     this._icon = '';
     this._zoom = 20;
     this._text = 'remain';
+    this._textcolor = 'white';
     this._color_border_size = 2;
 
     if (this.duration != null) this._duration = Math.max(parseFloat(this.duration), 0);
@@ -190,6 +197,7 @@ class TimerIcon extends HTMLElement {
     if (this.icon != null) this._icon = this.icon;
     if (this.zoom != null) this._zoom = Math.max(parseInt(this.zoom), 0);
     if (this.text != null) this._text = this.text;
+    if (this.textcolor != null) this._textcolor = this.textcolor;
 
     this._connected = true;
     this.layout();
@@ -226,6 +234,8 @@ class TimerIcon extends HTMLElement {
       this.layout();
     } else if (name == 'text') {
       this._text = newValue;
+    } else if (name == 'textcolor') {
+      this._textcolor = newValue;
     }
 
 
@@ -278,6 +288,7 @@ class TimerIcon extends HTMLElement {
     textStyle.fontSize = text_height;
     textStyle.textAlign = 'center';
     textStyle.fontWeight = 'bold';
+    textStyle.color = this._textcolor;
   }
 
   draw() {
@@ -301,7 +312,10 @@ class TimerIcon extends HTMLElement {
   }
 
   reset() {
-    if (!this._connected) return;
+    if (!this._connected)
+      return;
+
+    this.startTimeMs = +new Date();
 
     this.rootElement.style.display = 'block';
     clearTimeout(this._hide_timer);
@@ -314,6 +328,7 @@ class TimerIcon extends HTMLElement {
   }
 
   advance() {
+    this._value = this._duration + (this.startTimeMs - new Date()) / 1000;
     if (this._value <= 0) {
       this._value = 0;
       if (this._hideafter >= 0) {
@@ -328,9 +343,8 @@ class TimerIcon extends HTMLElement {
       }
     } else {
       this._timer = setTimeout(() => {
-        this._value = this._value - (this.kAnimateMS / 1000);
         this.advance();
-      }, this.kAnimateMS);
+      }, this.kAnimateMs);
     }
     this.draw();
   }

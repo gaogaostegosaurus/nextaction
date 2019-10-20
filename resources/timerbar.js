@@ -2,7 +2,7 @@
 
 class TimerBar extends HTMLElement {
   static get observedAttributes() {
-    return ['duration', 'value', 'elapsed', 'hideafter', 'lefttext', 'centertext', 'righttext', 'width', 'height', 'bg', 'fg', 'style', 'toward'];
+    return ['duration', 'value', 'elapsed', 'hideafter', 'lefttext', 'centertext', 'righttext', 'width', 'height', 'bg', 'fg', 'style', 'toward', 'loop'];
   }
 
   // Background color.
@@ -120,6 +120,17 @@ class TimerBar extends HTMLElement {
     return this.getAttribute('centertext');
   }
 
+  // If this attribute is present, the timer will loop forever.
+  set loop(l) {
+    if (l)
+      this.setAttribute('loop', '');
+    else
+      this.removeAttribute('loop');
+  }
+  get loop() {
+    return this.hasAttribute('loop');
+  }
+
   // This would be used with window.customElements.
   constructor() {
     super();
@@ -154,6 +165,7 @@ class TimerBar extends HTMLElement {
     this._center_text = '';
     this._right_text = '';
     this._hideafter = -1;
+    this._loop = false;
 
     root.innerHTML = `
       <style>
@@ -205,6 +217,54 @@ class TimerBar extends HTMLElement {
           position: relative;
           text-align: right;
           padding: 0px 0.4em 0px 0.4em;
+        }
+
+        :host-context(.skin-lippe) .timerbar-root {
+          border: none;
+        }
+
+        :host-context(.skin-lippe) .timerbar-bg {
+          height: 5px !important;
+          border-radius: 1px;
+          background-color: #312008 !important;
+          border: 1px solid #AA6E03 !important;
+          box-shadow: 0 0 8px 0 #AA6E03;
+          opacity: 1.0;
+          z-index: 0;
+        }
+
+        :host-context(.skin-lippe) .timerbar-fg {
+          height: 5px !important;
+          top: 0px;
+          left: 0px;
+          background-color: rgba(255, 255, 255, 1) !important;
+          box-shadow: 0 0 2px 0 rgba(255, 255, 255, 1) !important;
+          text-align: center;
+          margin: 1px;
+          z-index: 1;
+          opacity: 1.0;
+        }
+
+        :host-context(.skin-lippe) .text {
+          text-shadow:
+            0 0 3px #AA6E03,
+            0 1px 3px #AA6E03,
+            0 -1px 3px #AA6E03;
+        }
+
+        :host-context(.skin-lippe) .text-container {
+          top: 0px;
+          z-index: 2;
+        }
+
+        :host-context(.just-a-number) .timerbar-root {
+          border: none;
+        }
+        :host-context(.just-a-number) .timerbar-bg {
+          display: none;
+        }
+        :host-context(.just-a-number) .timerbar-fg {
+          display: none;
         }
       </style>
       <div id="root" class="timerbar-root">
@@ -287,6 +347,8 @@ class TimerBar extends HTMLElement {
         else
           this.show();
       }
+    } else if (name == 'loop') {
+      this._loop = newValue != null;
     }
 
     if (this._connected)
@@ -367,6 +429,17 @@ class TimerBar extends HTMLElement {
     }
   }
 
+  // Apply all styles from an object where keys are CSS properties
+  applyStyles(styles) {
+    const s = Object.keys(styles).map((k) => {
+      return `${k}:${styles[k]};`;
+    }).join('');
+
+    this.shadowRoot.getElementById('lefttext').style.cssText += s;
+    this.shadowRoot.getElementById('centertext').style.cssText += s;
+    this.shadowRoot.getElementById('righttext').style.cssText += s;
+  }
+
   setvalue(remainSec) {
     let elapsedSec = Math.max(0, this._duration - remainSec);
     this._start = new Date() - (elapsedSec * 1000);
@@ -383,6 +456,13 @@ class TimerBar extends HTMLElement {
   advance() {
     let elapsedSec = (new Date() - this._start) / 1000;
     if (elapsedSec >= this._duration) {
+      // Timer completed
+      if (this._loop && this._duration > 0) {
+        // Sets the remaining time to include any extra elapsed seconds past the duration
+        this.setvalue(this._duration + (this._duration - elapsedSec) % this._duration);
+        return;
+      }
+
       // Sets the attribute to 0 so users can see the counter is done, and
       // if they set the same duration again it will count.
       this._duration = 0;
@@ -394,6 +474,7 @@ class TimerBar extends HTMLElement {
       window.cancelAnimationFrame(this._animationFrame);
       this._animationFrame = null;
     } else {
+      // Timer not completed, request another animation frame
       this._animationFrame = window.requestAnimationFrame(this.advance.bind(this));
     }
 

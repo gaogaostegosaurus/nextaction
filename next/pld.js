@@ -130,49 +130,49 @@ function pldCastCancel() {
 
 function pldAction() {
 
-  if (actionList.pld.indexOf(actionGroups.actionname) > -1) {
+  if (actionList.pld.indexOf(actionLog.groups.actionName) > -1) {
 
     // Role actions
 
-    if ("Rampart" == actionGroups.actionname) {
+    if ("Rampart" == actionLog.groups.actionName) {
       addRecast("rampart");
       removeIcon("rampart");
     }
 
     // PLD non-GCD
 
-    else if ("Fight Or Flight" == actionGroups.actionname) {
+    else if ("Fight Or Flight" == actionLog.groups.actionName) {
       removeIcon("fightorflight");
       addStatus("fightorflight");
       addRecast("fightorflight");
       addCountdownBar("fightorflight");
     }
 
-    else if ("Spirits Within" == actionGroups.actionname) {
+    else if ("Spirits Within" == actionLog.groups.actionName) {
       addRecast("spiritswithin");
     }
 
-    else if ("Sheltron" == actionGroups.actionname) {
+    else if ("Sheltron" == actionLog.groups.actionName) {
       addRecast("sheltron");
     }
 
-    else if ("Sentinel" == actionGroups.actionname) {
+    else if ("Sentinel" == actionLog.groups.actionName) {
       addRecast("sentinel");
     }
 
-    else if ("Cover" == actionGroups.actionname) {
+    else if ("Cover" == actionLog.groups.actionName) {
       addRecast("cover");
     }
 
-    else if ("Divine Veil" == actionGroups.actionname) {
+    else if ("Divine Veil" == actionLog.groups.actionName) {
       addRecast("divineveil");
     }
 
-    else if ("Intervention" == actionGroups.actionname) {
+    else if ("Intervention" == actionLog.groups.actionName) {
       addRecast("intervention");
     }
 
-    else if ("Requiescat" == actionGroups.actionname) {
+    else if ("Requiescat" == actionLog.groups.actionName) {
       removeIcon("requiescat");
       addStatus("requiescat");
       addRecast("requiescat");
@@ -181,11 +181,11 @@ function pldAction() {
       pldRequiescatMP();
     }
 
-    else if ("Passage Of Arms" == actionGroups.actionname) {
+    else if ("Passage Of Arms" == actionLog.groups.actionName) {
       addRecast("passageofarms");
     }
 
-    else if ("Intervene" == actionGroups.actionname) {
+    else if ("Intervene" == actionLog.groups.actionName) {
       if (checkRecast("intervene2") < 0) {
         addRecast("intervene1", -1);
         addRecast("intervene2");
@@ -196,7 +196,7 @@ function pldAction() {
       }
     }
 
-    else if ("Circle Of Scorn" == actionGroups.actionname) {
+    else if ("Circle Of Scorn" == actionLog.groups.actionName) {
       if (Date.now() - previous.circleofscorn > 1000) {
         previous.circleofscorn = Date.now();
         count.aoe = 1;
@@ -209,7 +209,7 @@ function pldAction() {
 
     // GCD actions - affect combos
 
-    // else if ("Bloodspiller" == actionGroups.actionname) {
+    // else if ("Bloodspiller" == actionLog.groups.actionName) {
     //   removeIcon("bloodspiller");
     // }
 
@@ -217,8 +217,8 @@ function pldAction() {
 
     else {
 
-      if ("Fast Blade" == actionGroups.actionname
-      && actionGroups.result.length > 1) {
+      if ("Fast Blade" == actionLog.groups.actionName
+      && actionLog.groups.result.length > 1) {
         if (next.combo > 2) {
           pldSingleTargetCombo();
           toggle.combo = Date.now();
@@ -227,8 +227,8 @@ function pldAction() {
         pldComboTimeout();
       }
 
-      else if ("Riot Blade" == actionGroups.actionname
-      && actionGroups.result.length > 6) {
+      else if ("Riot Blade" == actionLog.groups.actionName
+      && actionLog.groups.result.length > 6) {
         if (player.level < 26) {
           pldCombo();
         }
@@ -239,15 +239,15 @@ function pldAction() {
         }
       }
 
-      else if ("Goring Blade" == actionGroups.actionname
-      && actionGroups.result.length > 6) {
-        addStatus("goringblade", duration.goringblade, actionGroups.targetID);
+      else if ("Goring Blade" == actionLog.groups.actionName
+      && actionLog.groups.result.length > 6) {
+        addStatus("goringblade", duration.goringblade, actionLog.groups.targetID);
         pldCombo();
       }
 
-      else if ("Royal Authority" == actionGroups.actionname
+      else if ("Royal Authority" == actionLog.groups.actionName
       && player.level >= 76
-      && actionGroups.result.length > 6) {
+      && actionLog.groups.result.length > 6) {
         removeIcon("royalauthority");
         count.atonement = 3;
         addIcon("atonement1");
@@ -256,8 +256,8 @@ function pldAction() {
         pldGoringBladeCombo();
       }
 
-      else if ("Atonement" == actionGroups.actionname
-      && actionGroups.result.length > 1) {
+      else if ("Atonement" == actionLog.groups.actionName
+      && actionLog.groups.result.length > 1) {
         count.atonement = count.atonement - 1;
         if (count.atonement == 2) {
           removeIcon("atonement1");
@@ -270,8 +270,8 @@ function pldAction() {
         }
       }
 
-      else if ("Total Eclipse" == actionGroups.actionname
-      && actionGroups.result.length > 1) {
+      else if ("Total Eclipse" == actionLog.groups.actionName
+      && actionLog.groups.result.length > 1) {
 
         if (Date.now() - previous.totaleclipse > 1000) {
           previous.totaleclipse = Date.now();
@@ -294,8 +294,8 @@ function pldAction() {
         }
       }
 
-      else if ("Prominence" == actionGroups.actionname
-      && actionGroups.result.length > 6) {
+      else if ("Prominence" == actionLog.groups.actionName
+      && actionLog.groups.result.length > 6) {
 
         if (Date.now() - previous.prominence > 1000) {
           previous.prominence = Date.now();
@@ -307,13 +307,13 @@ function pldAction() {
         pldCombo();
       }
 
-      else if ("Holy Spirit" == actionGroups.actionname
-      && actionGroups.result.length > 1) {
+      else if ("Holy Spirit" == actionLog.groups.actionName
+      && actionLog.groups.result.length > 1) {
         pldRequiescatMP();
       }
 
-      else if ("Holy Circle" == actionGroups.actionname
-      && actionGroups.result.length > 1) {
+      else if ("Holy Circle" == actionLog.groups.actionName
+      && actionLog.groups.result.length > 1) {
         if (Date.now() - previous.holycircle > 1000) {
           previous.holycircle = Date.now();
           count.aoe = 1;
@@ -324,8 +324,8 @@ function pldAction() {
         pldRequiescatMP();
       }
 
-      else if ("Confiteor" == actionGroups.actionname
-      && actionGroups.result.length > 1) {
+      else if ("Confiteor" == actionLog.groups.actionName
+      && actionLog.groups.result.length > 1) {
         if (Date.now() - previous.confiteor > 1000) {
           previous.confiteor = Date.now();
           count.aoe = 1;
@@ -345,50 +345,50 @@ function pldAction() {
 
 function pldStatus() {
 
-  if (statusGroups.targetID == player.ID) { // Target is self
+  if (effectLog.groups.targetID == player.ID) { // Target is self
 
-    if ("Rampart" == statusGroups.statusname) {
-      if (statusGroups.gainsloses == "gains") {
-        if (checkStatus("mitigation", statusGroups.targetID) < parseInt(statusGroups.duration) * 1000) {
-          addStatus("mitigation", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+    if ("Rampart" == effectLog.groups.effectName) {
+      if (effectLog.groups.gainsLoses == "gains") {
+        if (checkStatus("mitigation", effectLog.groups.targetID) < parseInt(effectLog.groups.effectDuration) * 1000) {
+          addStatus("mitigation", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
         }
       }
-      else if (statusGroups.gainsloses == "loses") {
-        if (checkStatus("mitigation", statusGroups.targetID) < 0 // Check for overlaps
+      else if (effectLog.groups.gainsLoses == "loses") {
+        if (checkStatus("mitigation", effectLog.groups.targetID) < 0 // Check for overlaps
         && count.aoe >= 3) {
           drkMitigation();
         }
       }
     }
 
-    else if ("Iron Will" == statusGroups.statusname) {
-      if (statusGroups.gainsloses == "gains") {
+    else if ("Iron Will" == effectLog.groups.effectName) {
+      if (effectLog.groups.gainsLoses == "gains") {
         removeIcon("ironwill");
       }
-      else if (statusGroups.gainsloses == "loses") {
+      else if (effectLog.groups.gainsLoses == "loses") {
         addIcon("ironwill");
       }
     }
 
-    else if ("Sentinel" == statusGroups.statusname) {
-      if (statusGroups.gainsloses == "gains") {
-        if (checkStatus("mitigation", statusGroups.targetID) < parseInt(statusGroups.duration) * 1000) {
-          addStatus("mitigation", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+    else if ("Sentinel" == effectLog.groups.effectName) {
+      if (effectLog.groups.gainsLoses == "gains") {
+        if (checkStatus("mitigation", effectLog.groups.targetID) < parseInt(effectLog.groups.effectDuration) * 1000) {
+          addStatus("mitigation", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
         }
       }
-      else if (statusGroups.gainsloses == "loses") {
-        if (checkStatus("mitigation", statusGroups.targetID) < 0
+      else if (effectLog.groups.gainsLoses == "loses") {
+        if (checkStatus("mitigation", effectLog.groups.targetID) < 0
         && count.aoe >= 3) {
           drkMitigation();
         }
       }
     }
 
-    else if ("Requiescat" == statusGroups.statusname) {
-      if (statusGroups.gainsloses == "gains") {
-        addStatus("requiescat", parseInt(statusGroups.duration) * 1000, statusGroups.targetID)
+    else if ("Requiescat" == effectLog.groups.effectName) {
+      if (effectLog.groups.gainsLoses == "gains") {
+        addStatus("requiescat", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID)
       }
-      else if (statusGroups.gainsloses == "loses") {
+      else if (effectLog.groups.gainsLoses == "loses") {
         removeStatus("requiescat");
         removeIcon("holyspirit1");
         removeIcon("holyspirit2");
@@ -399,11 +399,11 @@ function pldStatus() {
       }
     }
 
-    else if ("Sword Oath" == statusGroups.statusname) {
-      if (statusGroups.gainsloses == "gains") {
-        addStatus("swordoath", parseInt(statusGroups.duration) * 1000, statusGroups.targetID)
+    else if ("Sword Oath" == effectLog.groups.effectName) {
+      if (effectLog.groups.gainsLoses == "gains") {
+        addStatus("swordoath", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID)
       }
-      else if (statusGroups.gainsloses == "loses") {
+      else if (effectLog.groups.gainsLoses == "loses") {
         removeIcon("atonement1");
         removeIcon("atonement2");
         removeIcon("atonement3");

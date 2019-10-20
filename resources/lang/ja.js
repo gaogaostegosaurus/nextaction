@@ -21,7 +21,14 @@ class CactbotLanguageJa extends CactbotLanguage {
       Medicated: '強化薬', // tbc
       BattleLitany: 'バトルリタニー', // 0x312
       Embolden: 'エンボルデン', // 0x4d7
-      Balance: 'アーゼマの均衡', // 0x53a
+      Arrow: 'オシュオンの矢', // 0x75c
+      Balance: 'アーゼマの均衡', // 0x75a
+      Bole: '世界樹の幹', // 0x75b
+      Ewer: 'サリャクの水瓶', // 0x75e
+      Spear: 'ハルオーネの槍', // 0x75d
+      Spire: 'ビエルゴの塔', // 0x75f
+      LadyOfCrowns: 'クラウンレディ', // 0x755
+      LordOfCrowns: 'クラウンロード', // 0x754
       Hypercharge: 'ハイパーチャージ', // 0x2b0
       LeftEye: '竜の左眼', // 0x4a0
       RightEye: '竜の右眼', // 0x49f
@@ -29,12 +36,21 @@ class CactbotLanguageJa extends CactbotLanguage {
       Devotion: 'エギの加護', // 0x4bd
       FoeRequiem: '魔人のレクイエム', // up 0x8b, down 0x8c
       LeadenFist: '連撃効果アップ',
+      Devilment: '攻めのタンゴ',
+      TechnicalFinish: 'テクニカルフィニッシュ',
+      StandardFinish: 'スタンダードフィニッシュ',
+      Thundercloud: 'サンダー系魔法効果アップ',
+      Firestarter: 'ファイガ効果アップ',
 
       Petrification: '石化',
       BeyondDeath: '死の超越',
       Burns: '火傷',
       Sludge: '汚泥',
       Doom: '死の宣告',
+      StoneCurse: '石化の呪い',
+      Imp: 'カッパ',
+      Toad: 'トード',
+      FoolsTumble: '墜落幻覚', // 0x183
 
       // UWU
       Windburn: '裂傷',

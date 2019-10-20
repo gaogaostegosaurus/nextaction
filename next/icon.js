@@ -17,12 +17,11 @@ icon.swiftcast = "000866";
 
 // BLM
 icon.fire = "000451";
+icon.fire2 = "000452";
 icon.fire3 = "000453";
 icon.firestarter = icon.fire3;
 icon.blizzard = "000454";
-icon.blizzardspam = icon.blizzard;
 icon.blizzard2 = "000455";
-icon.blizzard2spam = icon.blizzard2;
 icon.blizzard3 = "000456";
 icon.thunder = "000457";
 icon.thundercloud = icon.thunder;
@@ -33,8 +32,7 @@ icon.manafont = "002651";
 icon.flare = "002652";
 icon.coldflare = icon.flare;
 icon.freeze = "002653";
-icon.freezetransition = icon.freeze;
-icon.freezespam = icon.freeze;
+icon.freezeUmbral3 = icon.freeze;
 icon.leylines = "002656";
 icon.sharpcast = "002657";
 icon.enochian = "002658";

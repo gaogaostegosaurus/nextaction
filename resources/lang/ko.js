@@ -21,7 +21,14 @@ class CactbotLanguageKo extends CactbotLanguage {
       Medicated: '강화약', // tbc
       BattleLitany: '전투 기도', // 0x312
       Embolden: '성원', // 0x4d7
-      Balance: '아제마의 균형', // 0x53a
+      Arrow: 'FIXME', // 0x75c
+      Balance: '아제마의 균형', // 0x75a
+      Bole: 'FIXME', // 0x75b
+      Ewer: 'FIXME', // 0x75e
+      Spear: 'FIXME', // 0x75d
+      Spire: 'FIXME', // 0x75f
+      LadyOfCrowns: 'FIXME', // 0x755
+      LordOfCrowns: 'FIXME', // 0x754
       Hypercharge: '과충전', // 0x2b0
       LeftEye: '용의 왼쪽 눈', // 0x4a0
       RightEye: '용의 오른쪽 눈', // 0x49f
@@ -29,13 +36,21 @@ class CactbotLanguageKo extends CactbotLanguage {
       Devotion: '에기의 가호', // 0x4bd
       FoeRequiem: '마인의 진혼곡', // up 0x8b, down 0x8c
       LeadenFist: 'FIXME',
+      Devilment: 'FIXME',
+      TechnicalFinish: 'FIXME',
+      StandardFinish: 'FIXME',
+      Thundercloud: 'FIXME',
+      Firestarter: 'FIXME',
 
-      // TODO: add ids
       Petrification: '석화',
       BeyondDeath: '죽음의 초월',
       Burns: '화상',
       Sludge: '진흙탕',
       Doom: '죽음의 선고',
+      StoneCurse: 'FIXME',
+      Imp: 'FIXME',
+      Toad: 'FIXME',
+      FoolsTumble: 'FIXME', // 0x183
 
       // UWU
       Windburn: '열상',

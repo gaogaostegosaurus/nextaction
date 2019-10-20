@@ -133,55 +133,55 @@ function schAction() {
 
   // Set up icon changes from combat here
 
-  if (actionList.sch.indexOf(actionGroups.actionname) > -1) {
+  if (actionList.sch.indexOf(actionLog.groups.actionName) > -1) {
 
-    if (["Bio", "Bio II", "Biolysis"].indexOf(actionGroups.actionname) > -1) {
+    if (["Bio", "Bio II", "Biolysis"].indexOf(actionLog.groups.actionName) > -1) {
       removeIcon("bio");
-      addStatus("bio", 30000, actionGroups.targetID);
+      addStatus("bio", 30000, actionLog.groups.targetID);
     }
 
-    else if ("Whispering Dawn" == actionGroups.actionname) {
+    else if ("Whispering Dawn" == actionLog.groups.actionName) {
       addCountdownBar("whisperingdawn");
     }
 
-    else if ("Fey Illumination" == actionGroups.actionname) {
+    else if ("Fey Illumination" == actionLog.groups.actionName) {
       addCountdownBar("feyillumination");
     }
 
-    else if ("Aetherflow" == actionGroups.actionname) {
+    else if ("Aetherflow" == actionLog.groups.actionName) {
       removeIcon("aetherflow");
       addCountdownBar("aetherflow", recast.aetherflow, "addIcon");
     }
 
-    else if ("Sacred Soil" == actionGroups.actionname) {
+    else if ("Sacred Soil" == actionLog.groups.actionName) {
       addCountdownBar("sacredsoil");
     }
 
-    else if ("Indomitability" == actionGroups.actionname) {
+    else if ("Indomitability" == actionLog.groups.actionName) {
       addCountdownBar("indomitability");
     }
 
-    else if ("Excogitation" == actionGroups.actionname) {
+    else if ("Excogitation" == actionLog.groups.actionName) {
       addCountdownBar("excogitation");
     }
 
-    else if ("Deployment Tactics" == actionGroups.actionname) {
+    else if ("Deployment Tactics" == actionLog.groups.actionName) {
       addCountdownBar("deploymenttactics");
     }
 
-    else if ("Dissipation" == actionGroups.actionname) {
+    else if ("Dissipation" == actionLog.groups.actionName) {
       addCountdownBar("dissipation");
     }
 
-    else if ("Chain Stratagem" == actionGroups.actionname) {
+    else if ("Chain Stratagem" == actionLog.groups.actionName) {
       addCountdownBar("chainstratagem", recast.chainstratagem, "addIcon");
     }
 
-    else if ("Recitation" == actionGroups.actionname) {
+    else if ("Recitation" == actionLog.groups.actionName) {
       addCountdownBar("recitation");
     }
 
-    else if ("Summon Seraph" == actionGroups.actionname) {
+    else if ("Summon Seraph" == actionLog.groups.actionName) {
       addCountdownBar("summonseraph");
     }
   }
@@ -189,15 +189,15 @@ function schAction() {
 
 function schStatus() {
 
-  if (["Bio", "Bio II", "Biolysis"].indexOf(statusGroups.statusname) > -1) {
-    if (statusGroups.gainsloses == "gains") {
-      addStatus("bio", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
-      if (target.ID == statusGroups.targetID) {  // Might be possible to switch targets between application to target and log entry
+  if (["Bio", "Bio II", "Biolysis"].indexOf(effectLog.groups.effectName) > -1) {
+    if (effectLog.groups.gainsLoses == "gains") {
+      addStatus("bio", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
+      if (target.ID == effectLog.groups.targetID) {  // Might be possible to switch targets between application to target and log entry
         addCountdownBar("bio", checkStatus("bio", target.ID), "addIcon");
       }
     }
-    else if (statusGroups.gainsloses == "loses") {
-      removeStatus("bio", statusGroups.targetID);
+    else if (effectLog.groups.gainsLoses == "loses") {
+      removeStatus("bio", effectLog.groups.targetID);
     }
   }
 }

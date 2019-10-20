@@ -4,7 +4,7 @@
 
 
 var cooldowntracker = {};     // Holds timestamps for cooldowns
-var statustracker = {};       // Holds timestamps for statuses
+var effectTracker = {};       // Holds timestamps for statuses
 var cooldowntime = {};        // Holds timestamps for cooldowns
 var bufferTime = 0;
 var countdownIntervalTime = 100;
@@ -18,6 +18,10 @@ var count = {};               // County things?
 var potency = {};
 var previous = {};
 var next = {};
+
+var totalTargets = 1;
+var countedTargets = 1;
+var countTargetsTime = 100;    // Determines how many things multi-line attack hits
 
 // Set up doms
 
@@ -40,95 +44,33 @@ var player = {};
 var target = {};
 var actionList = {};
 
-var actionRegExp = new RegExp(' 1[56]:([\\dA-F]{8}):([ -~]+?):[\\dA-F]{1,4}:([ -~]+?):([\\dA-F]{8}):([ -~]+?):([\\dA-F]{1,8}):');
+var actionRegExp = new RegExp(' (?<logType>1[56]):(?<sourceID>[\\dA-F]{8}):(?<sourceName>[ -~]+?):(?<actionID>[\\dA-F]{1,4}):(?<actionName>[ -~]+?):(?<targetID>[\\dA-F]{8}):(?<targetName>[ -~]+?):(?<result>[\\dA-F]{1,8}):');
 var actionLog;
-var actionGroups = {};
 
-var effectRegExp = new RegExp(' 1[AE]:([\\dA-F]{8}):([ -~]+?) (gains|loses) the effect of ([ -~]+?) from ([ -~]+?)(?: for )?(\\d*\\.\\d*)?(?: Seconds)?\\.');
-var statusLog;
-var statusGroups = {};
+var effectRegExp = new RegExp(' (?<logType>1[AE]):(?<targetID>[\\dA-F]{8}):(?<targetName>[ -~]+?) (?<gainsLoses>gains|loses) the effect of (?<effectName>[ -~]+?) from (?<sourceName>[ -~]+?)(?: for )?(?<effectDuration>\\d*\\.\\d*)?(?: Seconds)?\\.');
+var effectLog;
 
-var startsusingRegExp =  new RegExp(' 14:[\\dA-F]{1,4}:([ -~]+?) starts using ([ -~]+?) on ([ -~]+?)\\.');
-var startLog;
-var startGroups = {};
+var startsRegExp =  new RegExp(' 14:(?<actionID>[\\dA-F]{1,4}):(?<sourceName>[ -~]+?) starts using (?<actionName>[ -~]+?) on (?<targetName>[ -~]+?)\\.');
+var startsLog;
 
-var cancelledRegExp = new RegExp(' 17:([\\dA-F]{8}):([ -~]+?):[\\dA-F]{1,4}:([ -~]+?):Cancelled:');
-var cancelLog;
-var cancelGroups = {};
+var cancelledRegExp = new RegExp(' 17:(?<sourceID>[\\dA-F]{8}):(?<sourceName>[ -~]+?):(?<actionID>[\\dA-F]{1,4}):(?<actionName>[ -~]+?):Cancelled:');
+var cancelledLog;
 
 // Note to self: using new RegExp() here because strings not supported otherwise - don't know if I will put them in later but keeping it like this for now.
 
-document.addEventListener("onLogEvent", function(e) { // Fires on log event
+addOverlayListener("onLogEvent", function(e) { // Fires on log event
 
   let l = e.detail.logs.length;
 
   for (let i = 0; i < l; i++) {
-
     // Replaces named regex groups until CEF updated
 
-    actionGroups.sourceID = "";
-    actionGroups.sourcename = "";
-    actionGroups.actionname = "";
-    actionGroups.targetID = "";
-    actionGroups.targetname = "";
-    actionGroups.result = "";
-
-    statusGroups.targetID = "";
-    statusGroups.targetname = "";
-    statusGroups.gainsloses = "";
-    statusGroups.statusname = "";
-    //statusGroups.sourceID = "";  // Maybe someday
-    statusGroups.sourcename = "";
-    statusGroups.duration = "";
-
-    // startGroups.sourceID = "";
-    startGroups.sourcename = "";
-    startGroups.actionname = "";
-    // startGroups.targetID = "";
-    startGroups.targetname = "";
-
-    cancelGroups.sourceID = "";
-    cancelGroups.sourcename = "";
-    cancelGroups.actionname = "";
-
     actionLog = e.detail.logs[i].match(actionRegExp);
-    statusLog = e.detail.logs[i].match(effectRegExp);
-    startLog  = e.detail.logs[i].match(startsusingRegExp);
-    cancelLog = e.detail.logs[i].match(cancelledRegExp);
+    effectLog = e.detail.logs[i].match(effectRegExp);
+    startsLog = e.detail.logs[i].match(startsRegExp);
+    cancelledLog = e.detail.logs[i].match(cancelledRegExp);
 
-    if (actionLog) {
-      actionGroups.sourceID = actionLog[1];
-      actionGroups.sourcename = actionLog[2];
-      actionGroups.actionname = actionLog[3];
-      actionGroups.targetID = actionLog[4];
-      actionGroups.targetname = actionLog[5];
-      actionGroups.result = actionLog[6];
-    }
-
-    else if (statusLog) {
-      statusGroups.targetID = statusLog[1];
-      statusGroups.targetname = statusLog[2];
-      statusGroups.gainsloses = statusLog[3];
-      statusGroups.statusname = statusLog[4];
-      statusGroups.sourcename = statusLog[5];
-      statusGroups.duration = statusLog[6];
-    }
-
-    else if (startLog) {
-      startGroups.sourcename = startLog[1];
-      startGroups.actionname = startLog[2];
-      startGroups.targetname = startLog[3];
-    }
-
-    else if (cancelLog) {
-      cancelGroups.sourceID = cancelLog[1];
-      cancelGroups.sourcename = cancelLog[2];
-      cancelGroups.actionname = cancelLog[3];
-    }
-
-    //
-
-    if (actionGroups.sourceID == player.ID) {  // Status source = player
+    if (actionLog && actionLog.groups.sourceID == player.ID) {  // Status source = player
 
       if (player.job == "BLM") {
         blmAction();
@@ -175,8 +117,7 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
     }
 
     // Checks for status
-
-    else if (statusGroups.sourcename == player.name) {  // Status source = player
+    else if (effectLog && effectLog.groups.sourceName == player.name) {  // Status source = player
       if (player.job == "BLM") {
         blmStatus();
       }
@@ -221,7 +162,7 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
       }
     }
 
-    else if (startGroups.sourcename == player.name) {  // Status source = player
+    else if (startsLog && startsLog.groups.sourceName == player.name) {  // Status source = player
       if (player.job == "BLM") {
         blmStartsUsing();
       }
@@ -230,7 +171,7 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
       }
     }
 
-    else if (cancelGroups.sourceID == player.ID) {  // Status source = player
+    else if (cancelledLog && cancelledLog.groups.sourceID == player.ID) {  // Status source = player
       if (player.job == "BLM") {
         blmCancelled();
       }
@@ -239,15 +180,15 @@ document.addEventListener("onLogEvent", function(e) { // Fires on log event
       }
     }
 
-    else if (actionGroups.sourceID != player.ID
-    && actionGroups.sourceID.startsWith("1")) {  // Status source = other player
+    else if (actionLog && actionLog.groups.sourceID != player.ID
+    && actionLog.groups.sourceID.startsWith("1")) {  // Status source = other player
       raidAction();
     }
   }
 });
 
 // onPlayerChangedEvent: fires whenever player change detected (including HP, MP, other resources, positions, etc.)
-document.addEventListener("onPlayerChangedEvent", function(e) {
+addOverlayListener("onPlayerChangedEvent", function(e) {
 
   player = e.detail;
   player.ID = e.detail.id.toString(16).toUpperCase(); // player.id.toString(16) is lowercase; using "ID" to designate uppercase lettering
@@ -311,7 +252,7 @@ document.addEventListener("onPlayerChangedEvent", function(e) {
 
 });
 
-document.addEventListener('onTargetChangedEvent', function(e) {
+addOverlayListener('onTargetChangedEvent', function(e) {
   target = e.detail;
   target.ID = e.detail.id.toString(16).toUpperCase(); // See player.ID above
 
@@ -329,7 +270,7 @@ document.addEventListener('onTargetChangedEvent', function(e) {
   }
 });
 
-document.addEventListener("onInCombatChangedEvent", function(e) {
+addOverlayListener("onInCombatChangedEvent", function(e) {
 // Fires when character exits or enters combat
 
   count.aoe = 1;
@@ -353,13 +294,13 @@ document.addEventListener("onInCombatChangedEvent", function(e) {
   }
 });
 
-document.addEventListener("onZoneChangedEvent", function(e) {
+addOverlayListener("onZoneChangedEvent", function(e) {
   clearUI();
   clearTimers();
   loadInitialState();
 });
 
-document.addEventListener("onPartyWipe", function(e) {
+addOverlayListener("onPartyWipe", function(e) {
   clearUI();
   clearTimers();
   loadInitialState();
@@ -382,7 +323,7 @@ function addIconBlinkTimeout(action, delay, nextid, actionicon, countdowntime) {
 function setupRegExp() {
   actionRegExp = new RegExp(' 1[56]:([\\dA-F]{8}):([ -~]+?):[\\dA-F]{1,4}:([ -~]+?):([\\dA-F]{8}):([ -~]+?):([\\dA-F]{1,8}):');
   effectRegExp = new RegExp(' 1[AE]:([\\dA-F]{8}):([ -~]+?) (gains|loses) the effect of ([ -~]+?) from ([ -~]+?)(?: for )?(\\d*\\.\\d*)?(?: Seconds)?\\.');
-  startsusingRegExp =  new RegExp(' 14:[\\dA-F]{1,4}:([ -~]+?) starts using ([ -~]+?) on ([ -~]+?)\\.');
+  startsRegExp =  new RegExp(' 14:[\\dA-F]{1,4}:([ -~]+?) starts using ([ -~]+?) on ([ -~]+?)\\.');
   cancelledRegExp = new RegExp(' 17:([\\dA-F]{8}):([ -~]+?):[\\dA-F]{1,4}:([ -~]+?):Cancelled:');
 }
 
@@ -430,14 +371,14 @@ function addStatus(name, time, id) {
     id = player.ID;
   }
 
-  if (!statustracker[name]) { // Create array if it doesn't exist yet
-    statustracker[name] = [id, Date.now() + time];
+  if (!effectTracker[name]) { // Create array if it doesn't exist yet
+    effectTracker[name] = [id, Date.now() + time];
   }
-  else if (statustracker[name].indexOf(id) > -1) { // Update array if target match found
-    statustracker[name][statustracker[name].indexOf(id) + 1] = Date.now() + time;
+  else if (effectTracker[name].indexOf(id) > -1) { // Update array if target match found
+    effectTracker[name][effectTracker[name].indexOf(id) + 1] = Date.now() + time;
   }
   else { // Push new entry into array if no matching entry
-    statustracker[name].push(id, Date.now() + time);
+    effectTracker[name].push(id, Date.now() + time);
   }
 }
 
@@ -447,11 +388,11 @@ function checkStatus(name, id) {
     id = player.ID;
   }
 
-  if (!statustracker[name]) {
+  if (!effectTracker[name]) {
     return -1;
   }
-  else if (statustracker[name].indexOf(id) > -1) {
-    return Math.max(statustracker[name][statustracker[name].indexOf(id) + 1] - Date.now(), -1);
+  else if (effectTracker[name].indexOf(id) > -1) {
+    return Math.max(effectTracker[name][effectTracker[name].indexOf(id) + 1] - Date.now(), -1);
   }
   else {
     return -1;
@@ -464,11 +405,11 @@ function removeStatus(name, id) {
     id = player.ID;
   }
 
-  if (!statustracker[name]) {
-    statustracker[name] = [];
+  if (!effectTracker[name]) {
+    effectTracker[name] = [];
   }
-  else if (statustracker[name].indexOf(id) > -1) {
-    statustracker[name].splice(statustracker[name].indexOf(id), 2);
+  else if (effectTracker[name].indexOf(id) > -1) {
+    effectTracker[name].splice(effectTracker[name].indexOf(id), 2);
   }
 }
 
@@ -507,14 +448,6 @@ function addCountdownBar(name, time, text) {
 
   if (text === undefined) {  // Optional parameter
     text = "READY";
-  }
-  else if (text == "icon") {
-    text == "addIcon";
-    removeIcon(name);  // If point is to display icon at end of countdown, remove it first
-  }
-  else if (text == "remove") {
-    text == "removeCountdownBar";
-    removeIcon(name);  // If point is to display icon at end of countdown, remove it first
   }
   else if (text == "removeCountdownBar" || text == "addIcon") {
     removeIcon(name);  // If point is to display icon at end of countdown, remove it first
@@ -684,4 +617,20 @@ function clearTimers() {
       clearInterval(interval[property]);
     }
   }
+}
+
+function countTargets(action) {
+  if (Date.now() - previous[action] > countTargetsTime) {
+    previous[action] = Date.now();
+    countedTargets = 1;
+  }
+  // If multiple lines inside countTargetTime, then increase
+  else {
+    countedTargets = countedTargets + 1;
+  }
+
+  if (totalTargets < countedTargets) {
+    totalTargets = countedTargets;
+  }
+
 }

@@ -115,14 +115,14 @@ function warJobChange() {
 
 function warAction() {
 
-  if (actionList.war.indexOf(actionGroups.actionname) > -1) {
+  if (actionList.war.indexOf(actionLog.groups.actionName) > -1) {
 
 
     // These actions don't break combo
 
-    if (["Berserk", "Inner Release"].indexOf(actionGroups.actionname) > -1) {
+    if (["Berserk", "Inner Release"].indexOf(actionLog.groups.actionName) > -1) {
       removeIcon("berserk");
-      addStatus("berserk", duration.berserk, actionGroups.targetID);
+      addStatus("berserk", duration.berserk, actionLog.groups.targetID);
       addRecast("berserk");
       addIconBlinkTimeout("berserk",recast.berserk,nextid.berserk,icon.berserk);
       if (player.level >= 70) {
@@ -130,13 +130,13 @@ function warAction() {
       }
     }
 
-    else if ("Upheaval" == actionGroups.actionname) {
+    else if ("Upheaval" == actionLog.groups.actionName) {
       removeIcon("upheaval");
       addRecast("upheaval");
       warGauge();
     }
 
-    else if ("Infuriate" == actionGroups.actionname) { // Code treats Infuriate like two different skills to juggle the charges.
+    else if ("Infuriate" == actionLog.groups.actionName) { // Code treats Infuriate like two different skills to juggle the charges.
       if (checkRecast("infuriate2", player.ID) < 0) {
         addRecast("infuriate1", player.ID, -1);
         addRecast("infuriate2", player.ID, recast.infuriate);
@@ -150,24 +150,24 @@ function warAction() {
       warGauge();
     }
 
-    else if ("Raw Intuition" == actionGroups.actionname) {
+    else if ("Raw Intuition" == actionLog.groups.actionName) {
       addRecast("rawintuition");
       removeIcon("rawintuition");
     }
 
-    else if ("Rampart" == actionGroups.actionname) {
+    else if ("Rampart" == actionLog.groups.actionName) {
       addRecast("rampart");
       removeIcon("rampart");
     }
 
-    else if ("Vengeance" == actionGroups.actionname) {
+    else if ("Vengeance" == actionLog.groups.actionName) {
       addRecast("vengeance");
       removeIcon("vengeance");
     }
 
     else { // GCD actions
 
-      if (["Inner Beast", "Fell Cleave", "Inner Chaos"].indexOf(actionGroups.actionname) > -1) {
+      if (["Inner Beast", "Fell Cleave", "Inner Chaos"].indexOf(actionLog.groups.actionName) > -1) {
         if (player.level >= 45
         && player.level < 54) {
           count.aoe = 1; // Steel Cyclone is stronger than Inner Beast at 2+ targets
@@ -181,7 +181,7 @@ function warAction() {
         removeIcon("innerbeast");
       }
 
-      else if (["Steel Cyclone", "Decimate", "Chaotic Cyclone"].indexOf(actionGroups.actionname) > -1) {
+      else if (["Steel Cyclone", "Decimate", "Chaotic Cyclone"].indexOf(actionLog.groups.actionName) > -1) {
         if (Date.now() - previous.steelcyclone > 1000) {
           count.aoe = 1;
           previous.steelcyclone = Date.now();
@@ -200,8 +200,8 @@ function warAction() {
 
       // These actions affect combo
 
-      else if ("Heavy Swing" == actionGroups.actionname
-      && actionGroups.result.length >= 2) {
+      else if ("Heavy Swing" == actionLog.groups.actionName
+      && actionLog.groups.result.length >= 2) {
         count.aoe = 1;
         if ([1, 2].indexOf(next.combo) == -1) {
           warCombo();
@@ -216,8 +216,8 @@ function warAction() {
         }
       }
 
-      else if ("Maim" == actionGroups.actionname
-      && actionGroups.result.length >= 8) {
+      else if ("Maim" == actionLog.groups.actionName
+      && actionLog.groups.result.length >= 8) {
         removeIcon("heavyswing");
         removeIcon("maim");
         if (player.level >= 26) {
@@ -228,19 +228,19 @@ function warAction() {
         }
       }
 
-      else if ("Storm's Path" == actionGroups.actionname
-      && actionGroups.result.length >= 8) {
+      else if ("Storm's Path" == actionLog.groups.actionName
+      && actionLog.groups.result.length >= 8) {
         warCombo();
       }
 
-      else if ("Storm's Eye" == actionGroups.actionname
-      && actionGroups.result.length >= 8) {
+      else if ("Storm's Eye" == actionLog.groups.actionName
+      && actionLog.groups.result.length >= 8) {
         addStatus("stormseye");
         warCombo();
       }
 
-      else if ("Overpower" == actionGroups.actionname
-      && actionGroups.result.length >= 2) {
+      else if ("Overpower" == actionLog.groups.actionName
+      && actionLog.groups.result.length >= 2) {
         if (Date.now() - previous.overpower > 1000) {
           previous.overpower = Date.now();
           count.aoe = 1;
@@ -261,8 +261,8 @@ function warAction() {
         }
       }
 
-      else if ("Mythril Tempest" == actionGroups.actionname
-      && actionGroups.result.length >= 8) {
+      else if ("Mythril Tempest" == actionLog.groups.actionName
+      && actionLog.groups.result.length >= 8) {
 
         if (Date.now() - previous.mythriltempest > 1000) {
           previous.mythriltempest = Date.now();
@@ -282,7 +282,7 @@ function warAction() {
       }
 
       if (count.aoe >= 3
-      && checkStatus("mitigation", statusGroups.targetID) < 1000) {
+      && checkStatus("mitigation", effectLog.groups.targetID) < 1000) {
         warMitigation();
       }
       else {
@@ -296,83 +296,83 @@ function warAction() {
 
 function warStatus() {
 
-  if (statusGroups.targetID == player.ID) { // Target is self
+  if (effectLog.groups.targetID == player.ID) { // Target is self
 
-    if (["Berserk", "Inner Release"].indexOf(statusGroups.statusname) > -1) {
-      if (statusGroups.gainsloses == "gains") {
-        addStatus("berserk", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
-        if (checkRecast("upheaval") < parseInt(statusGroups.duration) * 1000) {
+    if (["Berserk", "Inner Release"].indexOf(effectLog.groups.effectName) > -1) {
+      if (effectLog.groups.gainsLoses == "gains") {
+        addStatus("berserk", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
+        if (checkRecast("upheaval") < parseInt(effectLog.groups.effectDuration) * 1000) {
           addIconBlinkTimeout("upheaval", checkRecast("upheaval"), nextid.upheaval, icon.upheaval); // Show Upheaval if up during Berserk
         }
       }
-      else if (statusGroups.gainsloses == "loses") {
-        removeStatus("berserk", statusGroups.targetID);
+      else if (effectLog.groups.gainsLoses == "loses") {
+        removeStatus("berserk", effectLog.groups.targetID);
       }
 
-      if ("Inner Release" == statusGroups.statusname) {
+      if ("Inner Release" == effectLog.groups.effectName) {
         warGauge();
       }
     }
 
 
-    else if ("Storm's Eye" == statusGroups.statusname) {
-      if (statusGroups.gainsloses == "gains") {
-        addStatus("stormseye", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+    else if ("Storm's Eye" == effectLog.groups.effectName) {
+      if (effectLog.groups.gainsLoses == "gains") {
+        addStatus("stormseye", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
       }
-      else if (statusGroups.gainsloses == "loses") {
-        removeStatus("stormseye", statusGroups.targetID);
+      else if (effectLog.groups.gainsLoses == "loses") {
+        removeStatus("stormseye", effectLog.groups.targetID);
       }
     }
 
-    else if ("Raw Intuition" == statusGroups.statusname) {
-      if (statusGroups.gainsloses == "gains") {
-        if (checkStatus("mitigation", statusGroups.targetID) < parseInt(statusGroups.duration) * 1000) {
-          addStatus("mitigation", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+    else if ("Raw Intuition" == effectLog.groups.effectName) {
+      if (effectLog.groups.gainsLoses == "gains") {
+        if (checkStatus("mitigation", effectLog.groups.targetID) < parseInt(effectLog.groups.effectDuration) * 1000) {
+          addStatus("mitigation", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
         }
       }
-      else if (statusGroups.gainsloses == "loses") {
-        if (checkStatus("mitigation", statusGroups.targetID) < 0
+      else if (effectLog.groups.gainsLoses == "loses") {
+        if (checkStatus("mitigation", effectLog.groups.targetID) < 0
         && count.aoe >= 3) {
           warMitigation();
         }
       }
     }
 
-    else if ("Rampart" == statusGroups.statusname) {
-      if (statusGroups.gainsloses == "gains") {
-        if (checkStatus("mitigation", statusGroups.targetID) < parseInt(statusGroups.duration) * 1000) {
-          addStatus("mitigation", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+    else if ("Rampart" == effectLog.groups.effectName) {
+      if (effectLog.groups.gainsLoses == "gains") {
+        if (checkStatus("mitigation", effectLog.groups.targetID) < parseInt(effectLog.groups.effectDuration) * 1000) {
+          addStatus("mitigation", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
         }
       }
-      else if (statusGroups.gainsloses == "loses") {
-        if (checkStatus("mitigation", statusGroups.targetID) < 0 // Check for overlaps
+      else if (effectLog.groups.gainsLoses == "loses") {
+        if (checkStatus("mitigation", effectLog.groups.targetID) < 0 // Check for overlaps
         && count.aoe >= 3) {
           warMitigation();
         }
       }
     }
 
-    else if ("Vengeance" == statusGroups.statusname) {
-      if (statusGroups.gainsloses == "gains") {
-        if (checkStatus("mitigation", statusGroups.targetID) < parseInt(statusGroups.duration) * 1000) {
-          addStatus("mitigation", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+    else if ("Vengeance" == effectLog.groups.effectName) {
+      if (effectLog.groups.gainsLoses == "gains") {
+        if (checkStatus("mitigation", effectLog.groups.targetID) < parseInt(effectLog.groups.effectDuration) * 1000) {
+          addStatus("mitigation", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
         }
       }
-      else if (statusGroups.gainsloses == "loses") {
-        if (checkStatus("mitigation", statusGroups.targetID) < 0
+      else if (effectLog.groups.gainsLoses == "loses") {
+        if (checkStatus("mitigation", effectLog.groups.targetID) < 0
         && count.aoe >= 3) {
           warMitigation();
         }
       }
     }
 
-    else if ("Nascent Chaos" == statusGroups.statusname) {
-      if (statusGroups.gainsloses == "gains") {
-        addStatus("nascentchaos", parseInt(statusGroups.duration) * 1000, statusGroups.targetID);
+    else if ("Nascent Chaos" == effectLog.groups.effectName) {
+      if (effectLog.groups.gainsLoses == "gains") {
+        addStatus("nascentchaos", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
         removeIcon("berserk");
       }
-      else if (statusGroups.gainsloses == "loses") {
-        removeStatus("nascentchaos", statusGroups.targetID);
+      else if (effectLog.groups.gainsLoses == "loses") {
+        removeStatus("nascentchaos", effectLog.groups.targetID);
         addIconBlinkTimeout("berserk",checkRecast("berserk"),nextid.berserk,icon.berserk);
       }
       warGauge()

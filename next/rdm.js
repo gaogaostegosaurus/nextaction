@@ -180,35 +180,35 @@ function rdmStartsUsing() {
 // 16: NetworkAOEAbility
 function rdmAction() {
 
-  if (actionList.rdm.indexOf(actionGroups.actionname) > -1) {
+  if (actionList.rdm.indexOf(actionLog.groups.actionName) > -1) {
 
     // Off GCD Actions
 
-    if ("Corps-A-Corps" == actionGroups.actionname) {
+    if ("Corps-A-Corps" == actionLog.groups.actionName) {
       // addRecast("corpsacorps");
       addCountdownBar("corpsacorps", recast.corpsacorps, "addIcon");
       removeIcon("corpsacorps");
     }
 
-    else if (["Displacement", "Engagement"].indexOf(actionGroups.actionname) > -1) {
+    else if (["Displacement", "Engagement"].indexOf(actionLog.groups.actionName) > -1) {
       // addRecast("displacement");
       addCountdownBar("displacement", recast.displacement, "addIcon");
       removeIcon("displacement");
     }
 
-    else if ("Fleche" == actionGroups.actionname) {
+    else if ("Fleche" == actionLog.groups.actionName) {
       // addRecast("fleche");
       addCountdownBar("fleche", recast.fleche, "addIcon");
       removeIcon("fleche");
     }
 
-    else if ("Acceleration" == actionGroups.actionname) {
+    else if ("Acceleration" == actionLog.groups.actionName) {
       addRecast("acceleration");
       addCountdownBar("acceleration", recast.acceleration, "addIcon");
       removeIcon("acceleration");
     }
 
-    else if ("Contre Sixte" == actionGroups.actionname) {
+    else if ("Contre Sixte" == actionLog.groups.actionName) {
       // addRecast("contresixte");
       addCountdownBar("contresixte", recast.contresixte, "addIcon");
       // Contre Sixte makes weird things happen when using Single Target
@@ -222,23 +222,23 @@ function rdmAction() {
       removeIcon("contresixte");
     }
 
-    else if ("Embolden" == actionGroups.actionname) {
+    else if ("Embolden" == actionLog.groups.actionName) {
       addRecast("embolden");
     }
 
-    else if ("Swiftcast" == actionGroups.actionname) {
+    else if ("Swiftcast" == actionLog.groups.actionName) {
       addRecast("swiftcast");
       addCountdownBar("swiftcast", recast.swiftcast, "addIcon");
     }
 
-    else if ("Lucid Dreaming" == actionGroups.actionname) {
+    else if ("Lucid Dreaming" == actionLog.groups.actionName) {
       addRecast("luciddreaming");
     }
 
     // GCD
     else {
 
-      if (["Riposte", "Enchanted Riposte"].indexOf(actionGroups.actionname) > -1) {
+      if (["Riposte", "Enchanted Riposte"].indexOf(actionLog.groups.actionName) > -1) {
 
         removeIcon("hardcast");
         removeIcon("dualcast");
@@ -303,7 +303,7 @@ function rdmAction() {
 
       }
 
-      else if (["Zwerchhau", "Enchanted Zwerchhau"].indexOf(actionGroups.actionname) > -1) {
+      else if (["Zwerchhau", "Enchanted Zwerchhau"].indexOf(actionLog.groups.actionName) > -1) {
         removeIcon("zwerchhau");
         if (player.level < 50) {
           delete toggle.combo;
@@ -311,7 +311,7 @@ function rdmAction() {
         }
       }
 
-      else if (["Redoublement", "Enchanted Redoublement"].indexOf(actionGroups.actionname) > -1) {
+      else if (["Redoublement", "Enchanted Redoublement"].indexOf(actionLog.groups.actionName) > -1) {
         removeIcon("redoublement");
         if (player.level < 68) {
           delete toggle.combo;
@@ -319,7 +319,7 @@ function rdmAction() {
         }
       }
 
-      else if ("Verflare" == actionGroups.actionname) {
+      else if ("Verflare" == actionLog.groups.actionName) {
         count.targets = 1;
         removeIcon("verflare");
         if (player.level < 80) {
@@ -328,7 +328,7 @@ function rdmAction() {
         }
       }
 
-      else if ("Verholy" == actionGroups.actionname) {
+      else if ("Verholy" == actionLog.groups.actionName) {
         removeIcon("verholy");
         if (player.level < 80) {
           delete toggle.combo;
@@ -336,7 +336,7 @@ function rdmAction() {
         }
       }
 
-      else if ("Scorch" == actionGroups.actionname) {
+      else if ("Scorch" == actionLog.groups.actionName) {
         removeIcon("scorch");
         delete toggle.combo;
         rdmNext();
@@ -345,20 +345,20 @@ function rdmAction() {
        // Interrupt combo
       else {
 
-        if ("Verfire" == actionGroups.actionname) {
+        if ("Verfire" == actionLog.groups.actionName) {
           removeStatus("verfireready");
         }
 
-        else if ("Verstone" == actionGroups.actionname) {
+        else if ("Verstone" == actionLog.groups.actionName) {
           removeStatus("verstoneready");
         }
 
         else if (player.level >= 66
-        && ["Verthunder", "Veraero"].indexOf(actionGroups.actionname) > -1) {
+        && ["Verthunder", "Veraero"].indexOf(actionLog.groups.actionName) > -1) {
           count.targets = 1;
         }
 
-        else if ("Verthunder II" == actionGroups.actionname) {
+        else if ("Verthunder II" == actionLog.groups.actionName) {
           if (Date.now() - previous.verthunder2 > 1000) {
             previous.verthunder2 = Date.now();
             count.targets = 1;
@@ -368,7 +368,7 @@ function rdmAction() {
           }
         }
 
-        else if ("Veraero II" == actionGroups.actionname) {
+        else if ("Veraero II" == actionLog.groups.actionName) {
           if (Date.now() - previous.veraero2 > 1000) {
             previous.veraero2 = Date.now();
             count.targets = 1;
@@ -378,7 +378,7 @@ function rdmAction() {
           }
         }
 
-        else if (["Scatter", "Impact"].indexOf(actionGroups.actionname) > -1) {
+        else if (["Scatter", "Impact"].indexOf(actionLog.groups.actionName) > -1) {
           if (Date.now() - previous.scatter > 1000) {
             previous.scatter = Date.now();
             count.targets = 1;
@@ -388,7 +388,7 @@ function rdmAction() {
           }
         }
 
-        else if (["Moulinet", "Enchanted Moulinet"].indexOf(actionGroups.actionname) > -1) {
+        else if (["Moulinet", "Enchanted Moulinet"].indexOf(actionLog.groups.actionName) > -1) {
 
           // if (player.level < 60) {  // Only use Moulinet to count targets if >= 60, since it's used as a quick spender after that
               if (Date.now() - previous.moulinet > 1000) {
@@ -402,12 +402,12 @@ function rdmAction() {
           rdmNext();
         }
 
-        else if (["Reprise", "Enchanted Reprise"].indexOf(actionGroups.actionname) > -1) {
+        else if (["Reprise", "Enchanted Reprise"].indexOf(actionLog.groups.actionName) > -1) {
           count.targets = 1;
           rdmNext();
         }
 
-        else if ("Manafication" == actionGroups.actionname) {
+        else if ("Manafication" == actionLog.groups.actionName) {
           addRecast("manafication");
           addCountdownBar("manafication");
           addRecast("corpsacorps", -1);
@@ -434,58 +434,58 @@ function rdmCancelled() {
 // 1A: NetworkBuff
 function rdmEffect() {
 
-  if (statusGroups.targetID == player.ID) {
+  if (effectLog.groups.targetID == player.ID) {
 
-    if ("Dualcast" == statusGroups.statusname) {
-      if (statusGroups.gainsloses == "gains") {
-        addStatus("dualcast", parseInt(statusGroups.duration) * 1000);
+    if ("Dualcast" == effectLog.groups.effectName) {
+      if (effectLog.groups.gainsLoses == "gains") {
+        addStatus("dualcast", parseInt(effectLog.groups.effectDuration) * 1000);
         removeIcon("hardcast");
       }
-      else if (statusGroups.gainsloses == "loses") {
+      else if (effectLog.groups.gainsLoses == "loses") {
         removeStatus("dualcast");
         rdmNext();
       }
     }
 
-    else if ("Verfire Ready" == statusGroups.statusname) {
-      if (statusGroups.gainsloses == "gains") {
-        addStatus("verfireready", parseInt(statusGroups.duration) * 1000);
+    else if ("Verfire Ready" == effectLog.groups.effectName) {
+      if (effectLog.groups.gainsLoses == "gains") {
+        addStatus("verfireready", parseInt(effectLog.groups.effectDuration) * 1000);
         if (!toggle.combo) {
           rdmNext(); // Prevents Verflare proc from resetting combo
         }
       }
-      else if (statusGroups.gainsloses == "loses") {
+      else if (effectLog.groups.gainsLoses == "loses") {
         removeStatus("verfireready", player.ID)
       }
     }
 
-    else if ("Verstone Ready" == statusGroups.statusname) {
-      if (statusGroups.gainsloses == "gains") {
-        addStatus("verstoneready", parseInt(statusGroups.duration) * 1000);
+    else if ("Verstone Ready" == effectLog.groups.effectName) {
+      if (effectLog.groups.gainsLoses == "gains") {
+        addStatus("verstoneready", parseInt(effectLog.groups.effectDuration) * 1000);
         if (!toggle.combo) {
           rdmNext(); // Prevents Verholy proc from resetting combo
         }
       }
-      else if (statusGroups.gainsloses == "loses") {
+      else if (effectLog.groups.gainsLoses == "loses") {
         removeStatus("verstoneready", player.ID)
       }
     }
 
-    else if ("Manafication" == statusGroups.statusname) {
-      if (statusGroups.gainsloses == "gains") {
-        addStatus("manafication", parseInt(statusGroups.duration) * 1000);
+    else if ("Manafication" == effectLog.groups.effectName) {
+      if (effectLog.groups.gainsLoses == "gains") {
+        addStatus("manafication", parseInt(effectLog.groups.effectDuration) * 1000);
       }
-      else if (statusGroups.gainsloses == "loses") {
+      else if (effectLog.groups.gainsLoses == "loses") {
         removeStatus("manafication", player.ID)
       }
     }
 
-    else if ("Swiftcast" == statusGroups.statusname) {
-      if (statusGroups.gainsloses == "gains") {
-        addStatus("swiftcast", parseInt(statusGroups.duration) * 1000);
+    else if ("Swiftcast" == effectLog.groups.effectName) {
+      if (effectLog.groups.gainsLoses == "gains") {
+        addStatus("swiftcast", parseInt(effectLog.groups.effectDuration) * 1000);
         removeIcon("hardcast");
       }
-      else if (statusGroups.gainsloses == "loses") {
+      else if (effectLog.groups.gainsLoses == "loses") {
         removeStatus("swiftcast");
         rdmNext();
       }

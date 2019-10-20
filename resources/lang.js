@@ -42,7 +42,7 @@ class CactbotLanguage {
       TrickAttack: '8D2',
       Embolden: '1D60',
       Aetherflow: 'A6',
-      ChainStrategem: '1D0C',
+      ChainStratagem: '1D0C',
       Hypercharge: 'B45',
       Adloquium: 'B9',
       RabbitMedium: '8E0',
@@ -82,8 +82,16 @@ class CactbotLanguage {
       OffGuard: '2C93',
       SongOfTorment: '2C7A',
       PeculiarLight: '2C9D',
-      Overpower: '29',
       MythrilTempest: '404E',
+      Prominence: '4049',
+      HolyCircle: '404A',
+      Confiteor: '404B',
+      FourPointFury: '4059',
+      TechnicalFinish: '3F44',
+      Thunder1: '90',
+      Thunder2: '94',
+      Thunder3: '99',
+      Thunder4: '1CFC',
 
       // Susano Ex
       ChurningDeep: '203F',
@@ -155,6 +163,10 @@ class CactbotLanguage {
       O10S: /Alphascape V2\.0 \(Savage\)/,
       O11S: /Alphascape V3\.0 \(Savage\)/,
       O12S: /Alphascape V4\.0 \(Savage\)/,
+      E1S: /Eden's Gate: Resurrection \(Savage\)/,
+      E2S: /Eden's Gate: Descent \(Savage\)/,
+      E3S: /Eden's Gate: Inundation \(Savage\)/,
+      E4S: /Eden's Gate: Sepulture \(Savage\)/,
       PvpSeize: /Seal Rock \(Seize\)/,
       PvpSecure: /The Borderland Ruins \(Secure\)/,
       PvpShatter: /The Fields Of Glory \(Shatter\)/,
@@ -239,7 +251,7 @@ class CactbotLanguage {
   };
 };
 
-document.addEventListener('onPlayerChangedEvent', (function(e) {
+addOverlayListener('onPlayerChangedEvent', (function(e) {
   if (gLang)
     gLang.OnPlayerNameChange(e.detail.name);
 }));

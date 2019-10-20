@@ -156,11 +156,11 @@ function mchPlayerChangedEvent() {
 
 function mchAction() {
 
-  if (actionList.mch.indexOf(actionGroups.actionname) > -1) {
+  if (actionList.mch.indexOf(actionLog.groups.actionName) > -1) {
 
     // These actions don't interrupt combos
 
-    if (["Hot Shot", "Air Anchor"].indexOf(actionGroups.actionname) > -1) {
+    if (["Hot Shot", "Air Anchor"].indexOf(actionLog.groups.actionName) > -1) {
       removeIcon("hotshot");
       if (recast.hotshot > Date.now() - previous.hotshot) {
         recast.hotshot = Date.now() - previous.hotshot;
@@ -172,7 +172,7 @@ function mchAction() {
       mchHeat();  // Why? Check later
     }
 
-    else if ("Drill" == actionGroups.actionname) {
+    else if ("Drill" == actionLog.groups.actionName) {
       count.aoe = 1;
       if (recast.drill > Date.now() - previous.drill) {
         recast.drill = Date.now() - previous.drill; // Adjusts cooldown
@@ -190,7 +190,7 @@ function mchAction() {
       mchHeat();
     }
 
-    else if ("Bioblaster" == actionGroups.actionname) {
+    else if ("Bioblaster" == actionLog.groups.actionName) {
       if (Date.now() - previous.drill > 1000) {
         count.aoe = 1;
         // Recast adjust has to go here, otherwise Drill/Bioblaster become 0s recast due to AoE spam
@@ -208,7 +208,7 @@ function mchAction() {
       mchHeat();
     }
 
-    else if ("Heat Blast" == actionGroups.actionname) {
+    else if ("Heat Blast" == actionLog.groups.actionName) {
 
       addRecast("gaussround1", player.ID, checkRecast("gaussround1", player.ID) - 15000);
       addRecast("gaussround2", player.ID, checkRecast("gaussround2", player.ID) - 15000);
@@ -220,8 +220,8 @@ function mchAction() {
       }
     }
 
-    else if ("Auto Crossbow" == actionGroups.actionname
-    && actionGroups.result.length >= 2) {
+    else if ("Auto Crossbow" == actionLog.groups.actionName
+    && actionLog.groups.result.length >= 2) {
       if (Date.now() - previous.autocrossbow > 1000) {
         count.aoe = 1;
         previous.autocrossbow = Date.now();
@@ -231,7 +231,7 @@ function mchAction() {
       }
     }
 
-    else if ("Flamethrower" == actionGroups.actionname) {
+    else if ("Flamethrower" == actionLog.groups.actionName) {
       if (Date.now() - previous.flamethrower > 1000) {
         previous.flamethrower = Date.now();
         count.aoe = 1;
@@ -241,7 +241,7 @@ function mchAction() {
       }
     }
 
-    else if ("Gauss Round" == actionGroups.actionname) {
+    else if ("Gauss Round" == actionLog.groups.actionName) {
       if (player.level >= 74) {
         if (checkRecast("gaussround3", player.ID) < 0) {
           addRecast("gaussround3", player.ID, recast.gaussround);
@@ -271,7 +271,7 @@ function mchAction() {
       }
     }
 
-    else if ("Ricochet" == actionGroups.actionname) {
+    else if ("Ricochet" == actionLog.groups.actionName) {
       if (Date.now() - previous.ricochet > 1000) {
         previous.ricochet = Date.now();
         count.aoe = 1;
@@ -308,7 +308,7 @@ function mchAction() {
       }
     }
 
-    else if ("Reassemble" == actionGroups.actionname) {
+    else if ("Reassemble" == actionLog.groups.actionName) {
       addCountdownBar("reassemble");
       if (player.level >= 58
       && checkRecast("drill") < 0) {
@@ -316,23 +316,23 @@ function mchAction() {
       }
     }
 
-    else if ("Hypercharge" == actionGroups.actionname) {
+    else if ("Hypercharge" == actionLog.groups.actionName) {
       removeIcon("hypercharge");
       mchHeat();
     }
 
-    else if (["Rook Autoturret", "Automaton Queen"].indexOf(actionGroups.actionname) > -1) {
+    else if (["Rook Autoturret", "Automaton Queen"].indexOf(actionLog.groups.actionName) > -1) {
       removeIcon("rookautoturret");
       mchBattery();
     }
 
-    else if ("Wildfire" == actionGroups.actionname) {
+    else if ("Wildfire" == actionLog.groups.actionName) {
       removeIcon("wildfire");
       addRecast("wildfire");
       mchHeat();
     }
 
-    else if ("Barrel Stabilizer" == actionGroups.actionname) {
+    else if ("Barrel Stabilizer" == actionLog.groups.actionName) {
       removeIcon("barrelstabilizer");
       addRecast("barrelstabilizer");
       mchHeat();
@@ -340,8 +340,8 @@ function mchAction() {
 
     // Combo
 
-    else if (["Split Shot", "Heated Split Shot"].indexOf(actionGroups.actionname) > -1
-    && actionGroups.result.length >= 2) {
+    else if (["Split Shot", "Heated Split Shot"].indexOf(actionLog.groups.actionName) > -1
+    && actionLog.groups.result.length >= 2) {
       if (count.aoe >= 3) {
         count.aoe == 2;
       }
@@ -354,8 +354,8 @@ function mchAction() {
       mchComboTimeout();
     }
 
-    else if (["Slug Shot", "Heated Slug Shot"].indexOf(actionGroups.actionname) > -1
-    && actionGroups.result.length == 8) {
+    else if (["Slug Shot", "Heated Slug Shot"].indexOf(actionLog.groups.actionName) > -1
+    && actionLog.groups.result.length == 8) {
       removeIcon("slugshot");
       mchHeat();
       if (player.level < 26) {
@@ -366,15 +366,15 @@ function mchAction() {
       }
     }
 
-    else if (["Clean Shot", "Heated Clean Shot"].indexOf(actionGroups.actionname) > -1
-    && actionGroups.result.length == 8) {
+    else if (["Clean Shot", "Heated Clean Shot"].indexOf(actionLog.groups.actionName) > -1
+    && actionLog.groups.result.length == 8) {
       removeIcon("cleanshot");
       mchHeat();
       mchBattery();
       mchCombo();
     }
 
-    else if ("Spread Shot" == actionGroups.actionname) {
+    else if ("Spread Shot" == actionLog.groups.actionName) {
       if (Date.now() - previous.spreadshot > 1000) {
         previous.spreadshot = Date.now();
         count.aoe = 1;

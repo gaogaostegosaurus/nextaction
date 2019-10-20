@@ -68,24 +68,24 @@ function gnbJobChange() {
 
 function gnbAction() {
 
-  if (actionList.gnb.indexOf(actionGroups.actionname) > -1) {
+  if (actionList.gnb.indexOf(actionLog.groups.actionName) > -1) {
 
-    if ("No Mercy" == actionGroups.actionname) {
+    if ("No Mercy" == actionLog.groups.actionName) {
       addStatus("nomercy");
       addRecast("nomercy");
       addCountdownBar("nomercy", checkRecast("nomercy"), "icon");
       gnbCartridge();
     }
 
-    else if (["Danger Zone", "Blasting Zone"].indexOf(actionGroups.actionname) > -1) {
+    else if (["Danger Zone", "Blasting Zone"].indexOf(actionLog.groups.actionName) > -1) {
 
     }
 
-    else if ("Rough Divide" == actionGroups.actionname) {
+    else if ("Rough Divide" == actionLog.groups.actionName) {
 
     }
 
-    else if ("Bow Shock" == actionGroups.actionname) {
+    else if ("Bow Shock" == actionLog.groups.actionName) {
       if (Date.now() - previous.bowshock > 1000) {
         count.aoe = 1;
         previous.bowshock = Date.now();
@@ -95,35 +95,35 @@ function gnbAction() {
       }
     }
 
-    else if ("Bloodfest" == actionGroups.actionname) {
+    else if ("Bloodfest" == actionLog.groups.actionName) {
 
     }
 
     else {  // GCD Action
 
-      if ("Keen Edge" == actionGroups.actionname
-      && actionGroups.result.length >= 2) {
+      if ("Keen Edge" == actionLog.groups.actionName
+      && actionLog.groups.result.length >= 2) {
         if (next.combo != 1) {
           gnbSolidBarrelCombo();
         }
         removeIcon("keenedge");
       }
 
-      else if ("Brutal Shell" == actionGroups.actionname
-      && actionGroups.result.length >= 2) {
+      else if ("Brutal Shell" == actionLog.groups.actionName
+      && actionLog.groups.result.length >= 2) {
         removeIcon("brutalshell");
         if (player.level < 26) {
           gnbCombo();
         }
       }
 
-      else if ("Solid Barrel" == actionGroups.actionname) {
+      else if ("Solid Barrel" == actionLog.groups.actionName) {
         removeIcon("solidbarrel");
         gnbCombo();
       }
 
-      else if ("Demon Slice" == actionGroups.actionname
-      && actionGroups.result.length >= 2) {
+      else if ("Demon Slice" == actionLog.groups.actionName
+      && actionLog.groups.result.length >= 2) {
         if (next.combo != 2) {
           gnbDemonSlaughterCombo();
         }
@@ -140,7 +140,7 @@ function gnbAction() {
         }
       }
 
-      else if ("Demon Slaughter" == actionGroups.actionname) {
+      else if ("Demon Slaughter" == actionLog.groups.actionName) {
         if (Date.now() - previous.demonslaughter > 1000) {
           count.aoe = 1;
           previous.demonslaughter = Date.now();
@@ -152,7 +152,7 @@ function gnbAction() {
         }
       }
 
-      else if ("Sonic Break" == actionGroups.actionname) {
+      else if ("Sonic Break" == actionLog.groups.actionName) {
         removeIcon("sonicbreak");
         if (recast.sonicbreak > Date.now() - previous.sonicbreak) {
           recast.sonicbreak = Date.now() - previous.sonicbreak; // Adjusts cooldown
@@ -161,7 +161,7 @@ function gnbAction() {
         addRecast("sonicbreak");
       }
 
-      else if ("Gnashing Fang" == actionGroups.actionname) {
+      else if ("Gnashing Fang" == actionLog.groups.actionName) {
         removeIcon("gnashingfang");
         if (recast.gnashingfang > Date.now() - previous.gnashingfang) {
           recast.gnashingfang = Date.now() - previous.gnashingfang; // Adjusts cooldown
@@ -171,18 +171,18 @@ function gnbAction() {
         addRecast("gnashingfang");
       }
 
-      else if ("Savage Claw" == actionGroups.actionname) {
+      else if ("Savage Claw" == actionLog.groups.actionName) {
         removeIcon("savageclaw");
       }
 
-      else if ("Wicked Talon" == actionGroups.actionname) {
+      else if ("Wicked Talon" == actionLog.groups.actionName) {
         removeIcon("wickedtalon");
       }
 
-      else if ("Burst Strike" == actionGroups.actionname) {
+      else if ("Burst Strike" == actionLog.groups.actionName) {
       }
 
-      else if ("Fated Circle" == actionGroups.actionname) {
+      else if ("Fated Circle" == actionLog.groups.actionName) {
         if (Date.now() - previous.fatedcircle > 1000) {
           count.aoe = 1;
           previous.fatedcircle = Date.now();
@@ -204,52 +204,52 @@ function gnbAction() {
 
 function gnbStatus() {
 
-  if (statusGroups.targetID == player.ID) {
+  if (effectLog.groups.targetID == player.ID) {
 
-    if ("No Mercy" == statusGroups.statusname) {
-      if (statusGroups.gainsloses == "gains") {
-        addStatus("nomercy", parseInt(statusGroups.duration) * 1000);
+    if ("No Mercy" == effectLog.groups.effectName) {
+      if (effectLog.groups.gainsLoses == "gains") {
+        addStatus("nomercy", parseInt(effectLog.groups.effectDuration) * 1000);
         addCountdownBar("sonicbreak", checkRecast("sonicbreak"), "icon");
         gnbCartridge();
       }
-      else if (statusGroups.gainsloses == "loses") {
+      else if (effectLog.groups.gainsLoses == "loses") {
         removeStatus("nomercy");
         removeCountdownBar("sonicbreak");
         gnbCartridge();
       }
     }
 
-    else if ("Ready To Rip" == statusGroups.statusname) {
-      if (statusGroups.gainsloses == "gains") {
+    else if ("Ready To Rip" == effectLog.groups.effectName) {
+      if (effectLog.groups.gainsLoses == "gains") {
         icon.continuation = icon.jugularrip;
         addIcon("continuation");
-        addStatus("readytorip", parseInt(statusGroups.duration) * 1000);
+        addStatus("readytorip", parseInt(effectLog.groups.effectDuration) * 1000);
       }
-      else if (statusGroups.gainsloses == "loses") {
+      else if (effectLog.groups.gainsLoses == "loses") {
         removeIcon("continuation");
         removeStatus("readytorip");
       }
     }
 
-    else if ("Ready To Tear" == statusGroups.statusname) {
-      if (statusGroups.gainsloses == "gains") {
+    else if ("Ready To Tear" == effectLog.groups.effectName) {
+      if (effectLog.groups.gainsLoses == "gains") {
         icon.continuation = icon.abdomentear;
         addIcon("continuation");
-        addStatus("readytotear", parseInt(statusGroups.duration) * 1000);
+        addStatus("readytotear", parseInt(effectLog.groups.effectDuration) * 1000);
       }
-      else if (statusGroups.gainsloses == "loses") {
+      else if (effectLog.groups.gainsLoses == "loses") {
         removeIcon("continuation");
         removeStatus("readytotear");
       }
     }
 
-    else if ("Ready To Gouge" == statusGroups.statusname) {
-      if (statusGroups.gainsloses == "gains") {
+    else if ("Ready To Gouge" == effectLog.groups.effectName) {
+      if (effectLog.groups.gainsLoses == "gains") {
         icon.continuation = icon.eyegouge;
         addIcon("continuation");
-        addStatus("readytogouge", parseInt(statusGroups.duration) * 1000);
+        addStatus("readytogouge", parseInt(effectLog.groups.effectDuration) * 1000);
       }
-      else if (statusGroups.gainsloses == "loses") {
+      else if (effectLog.groups.gainsLoses == "loses") {
         removeIcon("continuation");
         removeStatus("readytogouge");
       }

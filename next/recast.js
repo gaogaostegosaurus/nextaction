@@ -10,8 +10,10 @@ recast.swiftcast = 60000;
 
 // BLM
 recast.enochian = 30000;
-recast.sharpcast = 60000;
 recast.manafont = 180000;
+recast.sharpcast = 60000;
+recast.transpose = 5000;
+recast.triplecast = 60000;
 
 // BRD
 recast.ballad = 80000;
