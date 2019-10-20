@@ -47,7 +47,7 @@ function samJobChange() {
 
   if (player.level >= 68
   && checkRecast("ikishoten") < 0) {
-    addIcon("ikishoten");
+    addIcon({name: "ikishoten"});
   }
 
   samMeikyoShisui();
@@ -380,7 +380,7 @@ function samMeikyoShisui() {
 
   if (player.level >= 50
   && checkRecast("meikyoshisui") < 0) {
-    addIcon("meikyoshisui");
+    addIcon({name: "meikyoshisui"});
   }
   else {
     removeIcon("meikyoshisui");
@@ -493,7 +493,7 @@ function samKenki() {
   && checkRecast("ikishoten") > checkRecast("guren") + 5000
   && checkRecast("guren") < 1000
   && player.jobDetail.kenki >= 70) {
-    addIcon("guren");
+    addIcon({name: "guren"});
   }
   else {
     removeIcon("guren");
@@ -504,11 +504,11 @@ function samKenki() {
   && player.jobDetail.kenki >= minimumkenki + 15
   && checkStatus("openeyes", player.ID) > 5000
   && !toggle.aoe) {
-    addIcon("seigan");
+    addIcon({name: "seigan"});
   }
   else if (player.level >= 62
   && player.jobDetail.kenki >= minimumkenki + 25) {
-    addIcon("shinten");
+    addIcon({name: "shinten"});
   }
   else {
     removeIcon("shinten");
@@ -531,22 +531,22 @@ function samCombo() {
 
       if (player.jobDetail.ka == false
       && checkStatus("shifu", player.ID) < checkStatus("jinpu", player.ID)) {
-        addIcon("oka");
+        addIcon({name: "oka"});
       }
       else if (player.jobDetail.getsu == false
       && checkStatus("jinpu", player.ID) < checkStatus("shifu", player.ID)) {
-        addIcon("mangetsu");
+        addIcon({name: "mangetsu"});
       }
 
       else if (player.jobDetail.getsu == false) {
-        addIcon("mangetsu");
+        addIcon({name: "mangetsu"});
       }
       else if (player.jobDetail.ka == false) {
-        addIcon("oka");
+        addIcon({name: "oka"});
       }
 
       else {
-        addIcon("mangetsu");
+        addIcon({name: "mangetsu"});
       }
     }
 
@@ -579,13 +579,13 @@ function samCombo() {
     if (checkStatus("meikyoshisui", player.ID) > 0) {
 
       if (player.jobDetail.getsu == false) {
-        addIcon("gekko");
+        addIcon({name: "gekko"});
       }
       else if (player.jobDetail.ka == false) {
-        addIcon("kasha");
+        addIcon({name: "kasha"});
       }
       else if (player.jobDetail.setsu == false) {
-        addIcon("yukikaze");
+        addIcon({name: "yukikaze"});
       }
     }
 
@@ -633,39 +633,39 @@ function samComboTimeout() {
 
 function gekkoCombo() {
   toggle.combo = 1;
-  addIcon("hakaze");
-  addIcon("jinpu");
+  addIcon({name: "hakaze"});
+  addIcon({name: "jinpu"});
   if (player.level >= 30) {
-    addIcon("gekko");
+    addIcon({name: "gekko"});
   }
 }
 
 function kashaCombo() {
   toggle.combo = 2;
-  addIcon("hakaze");
-  addIcon("shifu");
+  addIcon({name: "hakaze"});
+  addIcon({name: "shifu"});
   if (player.level >= 40) {
-    addIcon("kasha");
+    addIcon({name: "kasha"});
   }
 }
 
 function yukikazeCombo() {
   toggle.combo = 3;
-  addIcon("hakaze");
+  addIcon({name: "hakaze"});
   removeIcon("jinpu");
-  addIcon("yukikaze");
+  addIcon({name: "yukikaze"});
 }
 
 function mangetsuCombo() {
   toggle.combo = 4;
-  addIcon("fuga");
+  addIcon({name: "fuga"});
   removeIcon("jinpu");
-  addIcon("mangetsu");
+  addIcon({name: "mangetsu"});
 }
 
 function okaCombo() {
   toggle.combo = 5;
-  addIcon("fuga");
+  addIcon({name: "fuga"});
   removeIcon("jinpu");
-  addIcon("oka");
+  addIcon({name: "oka"});
 }

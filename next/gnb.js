@@ -222,7 +222,7 @@ function gnbStatus() {
     else if ("Ready To Rip" == effectLog.groups.effectName) {
       if (effectLog.groups.gainsLoses == "gains") {
         icon.continuation = icon.jugularrip;
-        addIcon("continuation");
+        addIcon({name: "continuation"});
         addStatus("readytorip", parseInt(effectLog.groups.effectDuration) * 1000);
       }
       else if (effectLog.groups.gainsLoses == "loses") {
@@ -234,7 +234,7 @@ function gnbStatus() {
     else if ("Ready To Tear" == effectLog.groups.effectName) {
       if (effectLog.groups.gainsLoses == "gains") {
         icon.continuation = icon.abdomentear;
-        addIcon("continuation");
+        addIcon({name: "continuation"});
         addStatus("readytotear", parseInt(effectLog.groups.effectDuration) * 1000);
       }
       else if (effectLog.groups.gainsLoses == "loses") {
@@ -246,7 +246,7 @@ function gnbStatus() {
     else if ("Ready To Gouge" == effectLog.groups.effectName) {
       if (effectLog.groups.gainsLoses == "gains") {
         icon.continuation = icon.eyegouge;
-        addIcon("continuation");
+        addIcon({name: "continuation"});
         addStatus("readytogouge", parseInt(effectLog.groups.effectDuration) * 1000);
       }
       else if (effectLog.groups.gainsLoses == "loses") {
@@ -272,17 +272,17 @@ function gnbCombo() {
 }
 
 function gnbSolidBarrelCombo() {
-  addIcon("keenedge");
-  addIcon("brutalshell");
+  addIcon({name: "keenedge"});
+  addIcon({name: "brutalshell"});
   if (player.level >= 26) {
-    addIcon("solidbarrel");
+    addIcon({name: "solidbarrel"});
   }
 }
 
 function gnbDemonSlaughterCombo() {
-  addIcon("demonslice");
+  addIcon({name: "demonslice"});
   if (player.level >= 40) {
-    addIcon("demonslaughter");
+    addIcon({name: "demonslaughter"});
   }
 }
 
@@ -316,23 +316,23 @@ function gnbCartridge() {
     if (player.level >= 60
     && checkRecast("gnashingfang") < 3000
     && checkRecast("nomercy") + 10000 > recast.gnashingfang) {
-      addIcon("gnashingfang");
-      addIcon("savageclaw");
-      addIcon("wickedtalon");
+      addIcon({name: "gnashingfang"});
+      addIcon({name: "savageclaw"});
+      addIcon({name: "wickedtalon"});
     }
-    addIcon("burststrike");
+    addIcon({name: "burststrike"});
   }
 
   else if (player.tempjobDetail.cartridge - cartridgeFloor >= 1) {
     if (player.level >= 60
     && checkRecast("gnashingfang") < 3000
     && checkRecast("nomercy") + 10000 > recast.gnashingfang) {
-      addIcon("gnashingfang");
-      addIcon("savageclaw");
-      addIcon("wickedtalon");
+      addIcon({name: "gnashingfang"});
+      addIcon({name: "savageclaw"});
+      addIcon({name: "wickedtalon"});
     }
     else {
-      addIcon("burststrike");
+      addIcon({name: "burststrike"});
     }
   }
 }

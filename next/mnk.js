@@ -64,7 +64,7 @@ function mnkJobChange() {
 
 function mnkPlayerChangedEvent(e) {
   if (player.jobDetail.chakraStacks >= 5) {
-    addIcon("theforbiddenchakra");
+    addIcon({name: "theforbiddenchakra"});
   }
   else {
     removeIcon("theforbiddenchakra");
@@ -180,7 +180,7 @@ function mnkStatus(logLine) {
   else if (effectLog.groups.effectName == "Fists Of Earth") {
     if (effectLog.groups.gainsLoses == "gains") {
       addStatus("fistsofearth", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
-      addIcon("fistsoffire");
+      addIcon({name: "fistsoffire"});
     }
     else if (effectLog.groups.gainsLoses == "loses") {
       removeStatus("fistsofearth", effectLog.groups.targetID);
@@ -190,7 +190,7 @@ function mnkStatus(logLine) {
   else if (effectLog.groups.effectName == "Fists Of Wind") {
     if (effectLog.groups.gainsLoses == "gains") {
       addStatus("fistsofwind", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
-      addIcon("fistsoffire");
+      addIcon({name: "fistsoffire"});
     }
     else if (effectLog.groups.gainsLoses == "loses") {
       removeStatus("fistsofwind", effectLog.groups.targetID);
@@ -204,7 +204,7 @@ function mnkStatus(logLine) {
     }
     else if (effectLog.groups.gainsLoses == "loses") {
       removeStatus("fistsoffire", effectLog.groups.targetID);
-      addIcon("fistsoffire");
+      addIcon({name: "fistsoffire"});
     }
   }
 
@@ -303,9 +303,9 @@ function mnkCombo() {
     icon.combo3 = icon.snappunch;
   }
 
-  addIcon("combo1");
-  addIcon("combo2");
-  addIcon("combo3");
+  addIcon({name: "combo1"});
+  addIcon({name: "combo2"});
+  addIcon({name: "combo3"});
 
 }
 

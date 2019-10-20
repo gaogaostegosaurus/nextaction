@@ -147,7 +147,7 @@ function mchPlayerChangedEvent() {
   }
 
   if (player.jobDetail.overheatMilliseconds > 0) {
-    addIcon("heatblast");
+    addIcon({name: "heatblast"});
   }
   else {
     removeIcon("heatblast");
@@ -312,7 +312,7 @@ function mchAction() {
       addCountdownBar("reassemble");
       if (player.level >= 58
       && checkRecast("drill") < 0) {
-        addIcon("drill");
+        addIcon({name: "drill"});
       }
     }
 
@@ -396,7 +396,7 @@ function mchAction() {
     if (player.level >= 70
     && checkRecast("flamethrower") < 0
     && enemyTargets >= 2) {
-      addIcon("flamethrower");
+      addIcon({name: "flamethrower"});
     }
     else {
       removeIcon("flamethrower");
@@ -431,21 +431,21 @@ function mchCombo() {
   if (player.level >= 80
   && enemyTargets >= 3) {
     next.combo = 2;
-    addIcon("spreadshot");
+    addIcon({name: "spreadshot"});
   }
   else if (player.level < 80
   && enemyTargets == 2) {
     next.combo = 2;
-    addIcon("spreadshot");
+    addIcon({name: "spreadshot"});
   }
   else {
     next.combo = 1;
-    addIcon("splitshot");
+    addIcon({name: "splitshot"});
     if (player.level >= 2) {
-      addIcon("slugshot");
+      addIcon({name: "slugshot"});
     }
     if (player.level >= 26) {
-      addIcon("cleanshot");
+      addIcon({name: "cleanshot"});
     }
   }
 }
@@ -460,13 +460,13 @@ function mchHeat() {
   if (player.jobDetail.heat >= 50
   && (player.level < 58 || checkRecast("drill") > 9000)
   && (player.level < 76 || checkRecast("hotshot") > 9000)) {  
-    addIcon("hypercharge");
+    addIcon({name: "hypercharge"});
     // if (player.level >= 45
     // && checkRecast("wildfire") < 1000) {
-    //   addIcon("wildfire");
+    //   addIcon({name: "wildfire"});
     // }
     // else {
-    //   addIcon("hypercharge");
+    //   addIcon({name: "hypercharge"});
     // }
     console.log("Go");
   }
@@ -478,7 +478,7 @@ function mchHeat() {
 
 function mchBattery() {
   if (player.jobDetail.battery >= 50) {
-    addIcon("rookautoturret");
+    addIcon({name: "rookautoturret"});
   }
   else {
     removeIcon("rookautoturret");

@@ -250,9 +250,9 @@ function pldAction() {
       && actionLog.groups.result.length > 6) {
         removeIcon("royalauthority");
         count.atonement = 3;
-        addIcon("atonement1");
-        addIcon("atonement2");
-        addIcon("atonement3");
+        addIcon({name: "atonement1"});
+        addIcon({name: "atonement2"});
+        addIcon({name: "atonement3"});
         pldGoringBladeCombo();
       }
 
@@ -366,7 +366,7 @@ function pldStatus() {
         removeIcon("ironwill");
       }
       else if (effectLog.groups.gainsLoses == "loses") {
-        addIcon("ironwill");
+        addIcon({name: "ironwill"});
       }
     }
 
@@ -420,18 +420,6 @@ function pldMitigation() {
 
   // Shows next mitigation cooldown
 
-  // if (player.level >= 38) {
-  //   if (checkRecast("darkwall") <= checkRecast("rampart")) {
-  //     addIconBlinkTimeout("darkwall",checkRecast("darkwall"),nextid.mitigation,icon.darkwall);
-  //   }
-  //   else if (checkRecast("rampart") <= checkRecast("darkwall")) {
-  //     addIconBlinkTimeout("mitigation",checkRecast("rampart"),nextid.mitigation,icon.rampart);
-  //   }
-  // }
-  //
-  // else {
-  //   addIconBlinkTimeout("mitigation",checkRecast("rampart"),nextid.mitigation,icon.rampart);
-  // }
 }
 //
 // function pldMP() {
@@ -457,7 +445,7 @@ function pldMitigation() {
 //   if (player.level >= 70) {
 //     if (player.currentMP >= 6000
 //     || player.tempjobDetail.darkarts == 1) {
-//       //addIcon("floodofdarkness");
+//       //addIcon({name: "floodofdarkness"});
 //     }
 //     else {
 //       removeIcon("floodofdarkness");
@@ -465,7 +453,7 @@ function pldMitigation() {
 //   }
 //   else if (player.level >= 30) { // No TBN yet
 //     if (player.currentMP >= 3000) {
-//       addIcon("floodofdarkness");
+//       addIcon({name: "floodofdarkness"});
 //     }
 //     else {
 //       removeIcon("floodofdarkness");
@@ -496,10 +484,10 @@ function pldMitigation() {
 //   if (player.jobDetail.blood >= targetblood) {
 //     if (player.level >= 80
 //     && checkRecast("livingshadow") < 1000) {
-//       addIcon("gaugespender");
+//       addIcon({name: "gaugespender"});
 //     }
 //     else if (player.level >= 62) {
-//       addIcon("gaugespender");
+//       addIcon({name: "gaugespender"});
 //     }
 //   }
 //   else {
@@ -556,26 +544,26 @@ function pldAreaOfEffectCombo() {
 
 function pldRageOfHaloneCombo() {
   next.combo = 1;
-  addIcon("fastblade");
-  addIcon("riotblade");
+  addIcon({name: "fastblade"});
+  addIcon({name: "riotblade"});
   if (player.level >= 26) {
-    addIcon("rageofhalone");
+    addIcon({name: "rageofhalone"});
   }
 }
 
 function pldGoringBladeCombo() {
   next.combo = 2;
-  addIcon("fastblade");
-  addIcon("riotblade");
-  addIcon("goringblade");
+  addIcon({name: "fastblade"});
+  addIcon({name: "riotblade"});
+  addIcon({name: "goringblade"});
 }
 
 
 function pldProminenceCombo() {
   next.combo = 3;
-  addIcon("totaleclipse");
+  addIcon({name: "totaleclipse"});
   if (player.level >= 40) {
-    addIcon("prominence");
+    addIcon({name: "prominence"});
   }
 }
 
@@ -612,19 +600,19 @@ function pldRequiescatMP() {
   }
 
   if (Math.floor(player.currentMP / 2000) >= 5) {
-    addIcon("holyspirit1");
+    addIcon({name: "holyspirit1"});
   }
   if (Math.floor(player.currentMP / 2000) >= 4) {
-    addIcon("holyspirit2");
+    addIcon({name: "holyspirit2"});
   }
   if (Math.floor(player.currentMP / 2000) >= 3) {
-    addIcon("holyspirit3");
+    addIcon({name: "holyspirit3"});
   }
   if (Math.floor(player.currentMP / 2000) >= 2) {
-    addIcon("holyspirit4");
+    addIcon({name: "holyspirit4"});
   }
   if (Math.floor(player.currentMP / 2000) >= 1) {
-    addIcon("holyspirit5");
+    addIcon({name: "holyspirit5"});
   }
 
   if (Math.floor(player.currentMP / 2000) == 0) {

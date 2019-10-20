@@ -118,7 +118,7 @@ function dncAction() {
       if ("Cascade" == actionLog.groups.actionName) {
         removeIcon("cascade");
         if (next.combo != 1) {
-          addIcon("fountain");
+          addIcon({name: "fountain"});
         }
       }
 
@@ -131,7 +131,7 @@ function dncAction() {
         removeIcon("windmill");
         if (next.combo != 2
         && player.level >= 25) {
-          addIcon("bladeshower");
+          addIcon({name: "bladeshower"});
         }
       }
 
@@ -178,7 +178,7 @@ function dncAction() {
           else if (player.tempjobDetail["step" + step] == 4) {
             icon["step" + step] = icon.pirouette;
           }
-          addIcon("step" + step);
+          addIcon({name: "step" + step});
         }
       }
 
@@ -199,7 +199,7 @@ function dncAction() {
         }
         if (player.level < 70
         && checkRecast("devilment") < 0) {
-          addIcon("devilment");  // Not sure if this is best use before 70 but whatever
+          addIcon({name: "devilment"});  // Not sure if this is best use before 70 but whatever
         }
       }
 
@@ -227,7 +227,7 @@ function dncAction() {
           }
         }
         if (checkRecast("devilment") < 0) {
-          addIcon("devilment");  // Heck not sure if this best use after 70
+          addIcon({name: "devilment"});  // Heck not sure if this best use after 70
         }
       }
 
@@ -249,11 +249,11 @@ function dncAction() {
 
         if (checkStatus("standardstep") > 0
         && player.tempjobDetail.steps >= 2) {
-          addIcon("standardfinish");
+          addIcon({name: "standardfinish"});
         }
         else if (checkStatus("technicalstep") > 0
         && player.tempjobDetail.steps >= 4) {
-          addIcon("technicalfinish");
+          addIcon({name: "technicalfinish"});
         }
       }
 
@@ -272,7 +272,7 @@ function dncStatus() {
 
     if ("Flourishing Cascade" == effectLog.groups.effectName) {
       if (effectLog.groups.gainsLoses == "gains") {
-        addIcon("reversecascade");
+        addIcon({name: "reversecascade"});
         // addCountdownBar("reversecascade", parseInt(effectLog.groups.effectDuration) * 1000);
         addStatus("flourishingcascade", player.ID, parseInt(effectLog.groups.effectDuration) * 1000);
         dncFlourishCheck();
@@ -287,7 +287,7 @@ function dncStatus() {
 
     else if ("Flourishing Fountain" == effectLog.groups.effectName) {
       if (effectLog.groups.gainsLoses == "gains") {
-        addIcon("fountainfall");
+        addIcon({name: "fountainfall"});
         // addCountdownBar("fountainfall", parseInt(effectLog.groups.effectDuration) * 1000);
         addStatus("flourishingfountain", parseInt(effectLog.groups.effectDuration) * 1000);
         dncFlourishCheck();
@@ -302,7 +302,7 @@ function dncStatus() {
 
     else if ("Flourishing Windmill" == effectLog.groups.effectName) {
       if (effectLog.groups.gainsLoses == "gains") {
-        addIcon("risingwindmill");
+        addIcon({name: "risingwindmill"});
         // addCountdownBar("risingwindmill", parseInt(effectLog.groups.effectDuration) * 1000);
         addStatus("flourishingwindmill", parseInt(effectLog.groups.effectDuration) * 1000);
         dncFlourishCheck();
@@ -317,7 +317,7 @@ function dncStatus() {
 
     else if ("Flourishing Shower" == effectLog.groups.effectName) {
       if (effectLog.groups.gainsLoses == "gains") {
-        addIcon("bloodshower");
+        addIcon({name: "bloodshower"});
         // addCountdownBar("bloodshower", parseInt(effectLog.groups.effectDuration) * 1000);
         addStatus("flourishingshower", parseInt(effectLog.groups.effectDuration) * 1000);
         dncFlourishCheck();
@@ -332,7 +332,7 @@ function dncStatus() {
 
     else if ("Flourishing Fan Dance" == effectLog.groups.effectName) {
       if (effectLog.groups.gainsLoses == "gains") {
-        addIcon("fandance3");
+        addIcon({name: "fandance3"});
         // addCountdownBar("fandance3", parseInt(effectLog.groups.effectDuration) * 1000);
         addStatus("flourishingfandance", parseInt(effectLog.groups.effectDuration) * 1000);
         dncFlourishCheck();
@@ -390,14 +390,14 @@ function dncCombo() {
 
   if (enemyTargets >= 2
   && player.level >= 15) {
-    addIcon("windmill");
+    addIcon({name: "windmill"});
     if (player.level >= 25) {
-      addIcon("bladeshower");
+      addIcon({name: "bladeshower"});
     }
   }
   else {
-    addIcon("cascade");
-    addIcon("fountain");
+    addIcon({name: "cascade"});
+    addIcon({name: "fountain"});
   }
 }
 
@@ -411,7 +411,7 @@ function dncFlourishCheck() {
     checkStatus("flourishingfandance")) < 0) {
       addCountdownBar("flourish", checkRecast("flourish"), "OK")
       if (checkRecast("flourish") < 0) {
-        addIcon("flourish");
+        addIcon({name: "flourish"});
       }
       else {
         removeIcon("flourish");
@@ -435,7 +435,7 @@ function dncFeathers() {
   }
 
   if (player.tempjobDetail.tempfourfoldfeathers == 4) {
-    addIcon("fourfoldfeathers");
+    addIcon({name: "fourfoldfeathers"});
   }
   else {
     removeIcon("fourfoldfeathers");
@@ -450,7 +450,7 @@ function dncEsprit() {
     maxEsprit = 80;
   }
   if (player.tempjobDetail.tempesprit >= maxEsprit) {
-    addIcon("saberdance");
+    addIcon({name: "saberdance"});
   }
   else {
     removeIcon("saberdance");

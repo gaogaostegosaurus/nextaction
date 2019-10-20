@@ -51,6 +51,11 @@ function blmJobChange() {
   nextid.firestarter = 1;
   nextid.xenoglossy = 1;
   nextid.instantAction = 1;
+  nextid.manafont = 2;
+  nextid.sharpcast = 3;
+  nextid.leylines = 4;
+  nextid.triplecast = 5;
+  nextid.swiftcast = 6;
   nextid.weaveAction = 2;
 
   nextid.thunder = 10;  // Appears when necessary at front of rotation
@@ -65,7 +70,6 @@ function blmJobChange() {
   nextid.instant = 16;
   nextid.flare = 17;
   nextid.despair = 17;
-  nextid.manafont = 18;
   nextid.transpose = 19;
   nextid.fire = nextid.transpose;
   nextid.blizzard3 = nextid.transpose;
@@ -80,10 +84,6 @@ function blmJobChange() {
   nextid.coldflare = nextid.fire3;
 
   // oGCD
-  nextid.leylines = 21;
-  nextid.sharpcast = 22;
-  nextid.triplecast = 23;
-  nextid.swiftcast = 24;
 
   countdownid.thunder = 0;
   countdownid.thundercloud = 1;
@@ -406,19 +406,19 @@ function blmNext() {
 
   else if ("Blizzard" == blmCasting) {
     if (player.jobDetail.umbralStacks > 0) {
-      blmAstralRotation(player.currentMP - 400 * blmBlizzardCostModifier, 15000, 0);
+      blmUmbralRotation(player.currentMP - 400 * blmBlizzardCostModifier, 15000, 0);
     }
     else {
-      blmAstralRotation(player.currentMP - 400 * blmBlizzardCostModifier, 15000, Math.max(player.jobDetail.umbralStacks - 1, -3));
+      blmUmbralRotation(player.currentMP - 400 * blmBlizzardCostModifier, 15000, Math.max(player.jobDetail.umbralStacks - 1, -3));
     }
   }
 
   else if ("Blizzard II" == blmCasting) {
     if (player.jobDetail.umbralStacks > 0) {
-      blmAstralRotation(player.currentMP - 800 * blmBlizzardCostModifier, 15000, 0);
+      blmUmbralRotation(player.currentMP - 800 * blmBlizzardCostModifier, 15000, 0);
     }
     else {
-      blmAstralRotation(player.currentMP - 800 * blmBlizzardCostModifier, 15000, Math.max(player.jobDetail.umbralStacks - 1, -3));
+      blmUmbralRotation(player.currentMP - 800 * blmBlizzardCostModifier, 15000, Math.max(player.jobDetail.umbralStacks - 1, -3));
     }
   }
 
@@ -525,7 +525,7 @@ function blmAstralRotation(currentMP, blmAstralTime, blmAstralStacks) {
   }
   else {
     if (count.firespam > 1) {
-      newAddIcon({
+      addIcon({
         name: "firespam",
         img: blmFireIcon,
       });
@@ -540,12 +540,12 @@ function blmAstralRotation(currentMP, blmAstralTime, blmAstralStacks) {
     if (player.level >= 50
     && enemyTargets >= 3
     && currentMP >= 800) {
-      newAddIcon({name: "flare"});
+      addIcon({name: "flare"});
     }
     else if (player.level >= 72
     && currentMP - count.firespam * 1600 >= blmAstralMinimumMP
     && currentMP - count.firespam * 1600 < 1600 + blmAstralMinimumMP) {
-      newAddIcon({name: "despair"});
+      addIcon({name: "despair"});
     }
     else {
       removeIcon("flare");
@@ -558,23 +558,23 @@ function blmAstralRotation(currentMP, blmAstralTime, blmAstralStacks) {
   // Change to Umbral Ice
   if (enemyTargets >= 3) {
     if (player.level >= 72) {
-      newAddIcon({name: "freezeUmbral3"});
+      addIcon({name: "freezeUmbral3"});
     }
     else {
-      newAddIcon({name: "transpose"});
+      addIcon({name: "transpose"});
     }
   }
   else {
     if (player.level >= 60
     && blmAstralStacks == 3
     && (currentMP + player.jobDetail.umbralHearts * 800 - 1600 - blmAstralMinimumMP) / 1600 > (blmAstralTime - blmRotationBufferTime) / 2800) {
-      newAddIcon({name: "fire"});
+      addIcon({name: "fire"});
     }
     else if (blmCasting == "Blizzard III") {
       removeIcon("blizzard3");
     }
     else {
-      newAddIcon({name: "blizzard3"});
+      addIcon({name: "blizzard3"});
     }
   }
 }
@@ -625,14 +625,14 @@ function blmUmbralRotation(currentMP, blmUmbralTime, blmUmbralStacks) {
       }
       // AoE uses Freeze to transition to Umbral III
       else if (player.jobDetail.umbralStacks != -3) {
-        newAddIcon({name: "freeze"});
+        addIcon({name: "freeze"});
       }
       else {
         removeIcon("freeze");
       }
     }
     else if (player.level >= 35) {
-      newAddIcon({name: "freeze"});
+      addIcon({name: "freeze"});
     }
     else {
       if (player.currentMP == 10000) {
@@ -642,7 +642,7 @@ function blmUmbralRotation(currentMP, blmUmbralTime, blmUmbralStacks) {
         removeIcon("blizzard2");
       }
       else {
-        newAddIcon({name: "blizzard2"});
+        addIcon({name: "blizzard2"});
       }
     }
   }
@@ -659,7 +659,7 @@ function blmUmbralRotation(currentMP, blmUmbralTime, blmUmbralStacks) {
         removeIcon("blizzard4");
       }
       else if (player.jobDetail.enochian || checkRecast("enochian") < 0) {
-        newAddIcon({name: "blizzard4"});
+        addIcon({name: "blizzard4"});
       }
       else {
         removeIcon("blizzard4");
@@ -675,7 +675,7 @@ function blmUmbralRotation(currentMP, blmUmbralTime, blmUmbralStacks) {
         removeIcon("blizzard");
       }
       else {
-        newAddIcon({name: "blizzard"});
+        addIcon({name: "blizzard"});
       }
     }
   }
@@ -688,14 +688,14 @@ function blmUmbralRotation(currentMP, blmUmbralTime, blmUmbralStacks) {
     if (player.level >= 72
     && enemyTargets >= 5
     && player.jobDetail.umbralHearts > 0) {
-      newAddIcon({name: "coldflare"});  // "Cold flare"
+      addIcon({name: "coldflare"});  // "Cold flare"
     }
     else {
       if (player.level >= 40) {
-        newAddIcon({name: "fire3"});
+        addIcon({name: "fire3"});
       }
       else if (player.level < 34) {
-        newAddIcon({name: "transpose"});
+        addIcon({name: "transpose"});
       }
     }
   }
@@ -710,7 +710,7 @@ function blmEnochian(rotationTime) {
   && player.level >= 56
   && checkRecast("enochian") <= 0
   && rotationTime > blmRotationBufferTime) {
-    newAddIcon({name: "enochian"});
+    addIcon({name: "enochian"});
   }
   else {
     removeIcon("enochian");
@@ -727,7 +727,7 @@ function blmInstantFiller(currentMP, rotationTime, rotationStacks) {
     if (checkStatus("thundercloud") > 0
     && rotationTime > 2500 + blmRotationBufferTime) {
       blmInstant = "Thundercloud";
-      newAddIcon({name: "thundercloud", img: blmThunderIcon});
+      addIcon({name: "thundercloud", img: blmThunderIcon});
       removeIcon("thunder");
     }
     else {
@@ -740,7 +740,7 @@ function blmInstantFiller(currentMP, rotationTime, rotationStacks) {
   && checkStatus("thundercloud") < blmProcBufferTime
   && rotationTime > 2500 + blmRotationBufferTime) {
     blmInstant = "Thundercloud";
-    newAddIcon({name: "thundercloud", img: blmThunderIcon});
+    addIcon({name: "thundercloud", img: blmThunderIcon});
     removeIcon("thunder");
   }
 
@@ -751,7 +751,7 @@ function blmInstantFiller(currentMP, rotationTime, rotationStacks) {
   && checkStatus("thunder", target.ID) <= 0
   && rotationTime > 2500 + blmRotationBufferTime) {
     blmInstant = "Thundercloud";
-    newAddIcon({name: "thundercloud", img: blmThunderIcon});
+    addIcon({name: "thundercloud", img: blmThunderIcon});
     removeIcon("thunder");
   }
 
@@ -759,7 +759,7 @@ function blmInstantFiller(currentMP, rotationTime, rotationStacks) {
   else if (player.level >= 80
   && player.jobDetail.foulCount > 1
   && rotationTime > 2500 + blmRotationBufferTime) {
-    newAddIcon({name: "xenoglossy"});
+    addIcon({name: "xenoglossy"});
     blmInstant = "Xenoglossy";
   }
 
@@ -806,41 +806,47 @@ function blmInstantFiller(currentMP, rotationTime, rotationStacks) {
     && checkRecast("manafont") < 1000
     && rotationStacks >= 3
     && currentMP <= 7000) {
-      newAddIcon({name: "instantAction", img: blmInstantIcon});
-      newAddIcon({name: "weaveAction", img: "manafont"});
+      addIcon({name: "instantAction", img: blmInstantIcon});
+      addIcon({name: "weaveAction", img: "manafont"});
     }
 
     // Sharpcast
     else if (player.level >= 54
     && checkRecast("sharpcast") < 1000) {
-      newAddIcon({name: "instantAction", img: blmInstantIcon});
-      newAddIcon({name: "weaveAction", img: "sharpcast"});
+      addIcon({name: "instantAction", img: blmInstantIcon});
+      addIcon({name: "weaveAction", img: "sharpcast"});
     }
 
     // Triplecast
-    else if (checkRecast("triplecast") < 1000
+    else if (player.level >= 66
+    && checkRecast("triplecast") < 1000
     && rotationStacks >= 3
     && currentMP >= 1600 * 3 + 800) {
-      newAddIcon({name: "instantAction", img: blmInstantIcon});
-      newAddIcon({name: "weaveAction", img: "triplecast"});
+      addIcon({name: "instantAction", img: blmInstantIcon});
+      addIcon({name: "weaveAction", img: "triplecast"});
     }
 
     // Leylines
-    else if (checkRecast("leylines") < 1000) {
-      newAddIcon({name: "instantAction", img: blmInstantIcon});
-      newAddIcon({name: "weaveAction", img: "leylines"});
+    else if (player.level >= 52
+    && checkRecast("leylines") < 1000) {
+      addIcon({name: "instantAction", img: blmInstantIcon});
+      addIcon({name: "weaveAction", img: "leylines"});
     }
 
     // Swiftcast
-    else if (checkRecast("swiftcast") < 1000
+    else if (player.level >= 18
+    && checkRecast("swiftcast") < 1000
     && rotationStacks >= 3) {
-      newAddIcon({name: "instantAction", img: blmInstantIcon});
-      newAddIcon({name: "weaveAction", img: "swiftcast"});
+      addIcon({name: "instantAction", img: blmInstantIcon});
+      addIcon({name: "weaveAction", img: "swiftcast"});
     }
 
     else {
       removeIcon("weaveAction");
     }
+  }
+  else {
+    removeIcon("instantAction");
   }
 }
 
@@ -901,7 +907,7 @@ function blmThunder(currentMP, rotationTime, rotationStacks, rotationMinimumMP) 
     && target.ID.startsWith("4")
     && checkStatus("thunder", target.ID) <= 2500
     && rotationTime > 2500 + blmRotationBufferTime) {
-      newAddIcon({name: "thunder", img: blmThunderIcon});
+      addIcon({name: "thunder", img: blmThunderIcon});
     }
   }
 

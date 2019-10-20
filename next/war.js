@@ -77,28 +77,28 @@ function warJobChange() {
   if (enemyTargets > 1) {
     if (player.level >= 56
     && checkRecast("rawintuition") < 0) {
-      addIcon("rawintuition");
+      addIcon({name: "rawintuition"});
     }
     else if (player.level >= 8
     && checkRecast("rampart") < 0) {
-      addIcon("rampart");
+      addIcon({name: "rampart"});
     }
     else if (player.level >= 46
     && checkRecast("vengeance") < 0) {
-      addIcon("vengeance");
+      addIcon({name: "vengeance"});
     }
   }
 
   if (player.level >= 50
   && checkRecast("infuriate1", player.ID) < 0) {
-    addIcon("infuriate");
+    addIcon({name: "infuriate"});
   }
 
   // Berserk is complicated
   if (player.level >= 64
   && checkRecast("upheaval") < 0
   && checkRecast("berserk") > 25000 ) {
-    addIcon("upheaval"); // Show Upheaval if Berserk is far away
+    addIcon({name: "upheaval"}); // Show Upheaval if Berserk is far away
   }
   else if (player.level >= 74
   && checkRecast("infuriate1", player.ID) < 0) {
@@ -106,7 +106,7 @@ function warJobChange() {
   }
   else if (player.level >= 6
   && checkRecast("berserk") < 0) {
-    addIcon("berserk");
+    addIcon({name: "berserk"});
   }
 
   warCombo();
@@ -505,18 +505,18 @@ function warGauge() {
   // Berserk/Inner Release
   if (checkRecast("berserk") < 0
   && checkStatus("stormseye", player.ID) > 0) {
-    addIcon("berserk");
+    addIcon({name: "berserk"});
   }
   else if (player.level >= 70
   && checkRecast("upheaval") < 1000
   && checkStatus("berserk", player.ID) > 0) {
-    addIcon("upheaval");
+    addIcon({name: "upheaval"});
   }
   else if (player.level >= 64
   && player.jobDetail.beast >= 20
   && checkRecast("upheaval") < 1000
   && checkRecast("berserk") > 25000) {
-    addIcon("upheaval");
+    addIcon({name: "upheaval"});
   }
   else {
     removeIcon("upheaval");
@@ -524,7 +524,7 @@ function warGauge() {
 
   if (player.level >= 35
   && player.jobDetail.beast >= targetbeast) {
-    addIcon("innerbeast");
+    addIcon({name: "innerbeast"});
   }
   else {
     removeIcon("innerbeast");
@@ -581,27 +581,27 @@ function warComboTimeout() {
 
 function stormspathCombo() {
   next.combo = 1;
-  addIcon("heavyswing");
+  addIcon({name: "heavyswing"});
   if (player.level >= 18) {
-    addIcon("maim");
+    addIcon({name: "maim"});
   }
   if (player.level >= 38) {
-    addIcon("stormspath");
+    addIcon({name: "stormspath"});
   }
 }
 
 function stormseyeCombo() {
   next.combo = 2;
-  addIcon("heavyswing");
-  addIcon("maim");
-  addIcon("stormseye");
+  addIcon({name: "heavyswing"});
+  addIcon({name: "maim"});
+  addIcon({name: "stormseye"});
 }
 
 function mythriltempestCombo() {
   next.combo = 3;
-  addIcon("overpower");
+  addIcon({name: "overpower"});
   removeIcon("maim");
   if (player.level >= 40) {
-    addIcon("mythriltempest");
+    addIcon({name: "mythriltempest"});
   }
 }

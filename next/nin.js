@@ -311,7 +311,7 @@ function ninStatus() {
         if (player.level >= 70
         && checkRecast("trickattack") < 21000
         && checkRecast("tenchijin") < 1000) {
-          addIcon("tenchijin");
+          addIcon({name: "tenchijin"});
         }
       }
     }
@@ -415,31 +415,31 @@ function ninCombo() {
 
 function ninAeolianEdgeCombo() {
   next.combo = 1;
-  addIcon("spinningedge");
-  addIcon("gustslash");
+  addIcon({name: "spinningedge"});
+  addIcon({name: "gustslash"});
   if (player.level >= 26) {
-    addIcon("aeolianedge");
+    addIcon({name: "aeolianedge"});
   }
 }
 
 function ninArmorCrushCombo() {
   next.combo = 2;
-  addIcon("spinningedge");
-  addIcon("gustslash");
-  addIcon("armorcrush");
+  addIcon({name: "spinningedge"});
+  addIcon({name: "gustslash"});
+  addIcon({name: "armorcrush"});
 }
 
 function ninShadowFangCombo() {
   next.combo = 3;
-  addIcon("spinningedge");
-  addIcon("shadowfang");
+  addIcon({name: "spinningedge"});
+  addIcon({name: "shadowfang"});
 }
 
 function ninHakkeMujinsatsuCombo() {
   next.combo = 4;
-  addIcon("deathblossom");
+  addIcon({name: "deathblossom"});
   if (player.level >= 52) {
-    addIcon("hakkemujinsatsu");
+    addIcon({name: "hakkemujinsatsu"});
   }
 }
 
@@ -451,10 +451,10 @@ function ninLosesMudra() {
   clearTimeout(timeout.ninjutsu);
   timeout.ninjutsu = setTimeout(ninNinjutsu, recast.ninjutsu - 1000);
   if (checkRecast("kassatsu1") < 0) {
-    addIcon("kassatsu");
+    addIcon({name: "kassatsu"});
   }
   if (checkRecast("tenchijin") < 0) {
-    addIcon("tenchijin");
+    addIcon({name: "tenchijin"});
   }
 }
 
@@ -474,14 +474,14 @@ function ninNinjutsu() {
   && checkStatus("kassatsu")
   && checkStatus("tenchijin") < 0) {
     icon.ninjutsu3 = icon.huton;
-    addIcon("ninjutsu3"); // Huton if down and no damage buffs
+    addIcon({name: "ninjutsu3"}); // Huton if down and no damage buffs
   }
   else if (player.level >= 45
   && player.level < 54  // No AC
   && player.jobDetail.hutonMilliseconds < 25000
   && checkStatus("kassatsu") < 0) {
     icon.ninjutsu3 = icon.huton;
-    addIcon("ninjutsu3");  // Huton if Huton is low (and no AC yet)
+    addIcon({name: "ninjutsu3"});  // Huton if Huton is low (and no AC yet)
   }
 
   else if (checkStatus("tenchijin") > 0) {
@@ -495,9 +495,9 @@ function ninNinjutsu() {
       icon.ninjutsu2 = icon.raiton;
       icon.ninjutsu3 = icon.suiton;
     }
-    addIcon("ninjutsu1");
-    addIcon("ninjutsu2");
-    addIcon("ninjutsu3");
+    addIcon({name: "ninjutsu1"});
+    addIcon({name: "ninjutsu2"});
+    addIcon({name: "ninjutsu3"});
   }
 
   else if (player.level >= 76
@@ -508,7 +508,7 @@ function ninNinjutsu() {
     else {
       icon.ninjutsu3 = icon.hyoton;
     }
-    addIcon("ninjutsu3");
+    addIcon({name: "ninjutsu3"});
   }
 
   else if (player.level >= 45
@@ -516,19 +516,19 @@ function ninNinjutsu() {
   && checkRecast("trickattack") < 24000
   && checkRecast("tenchijin") > 1000) {
     icon.ninjutsu3 = icon.suiton;
-    addIcon("ninjutsu3");
+    addIcon({name: "ninjutsu3"});
     if (checkStatus("tenchijin") > 0) {
       icon.ninjutsu1 = icon.fumashuriken;
-      addIcon("ninjutsu1");
+      addIcon({name: "ninjutsu1"});
       icon.ninjutsu2 = icon.raiton;
-      addIcon("ninjutsu2");
+      addIcon({name: "ninjutsu2"});
     }
   }
 
   else if (player.level >= 35
   && enemyTargets >= 3) {
     icon.ninjutsu3 = icon.katon;
-    addIcon("ninjutsu3"); // Probably more damage at 3 targets to do Katon than anything else...
+    addIcon({name: "ninjutsu3"}); // Probably more damage at 3 targets to do Katon than anything else...
   }
 
   else if (player.level >= 45
@@ -536,26 +536,26 @@ function ninNinjutsu() {
   && player.jobDetail.ninkiAmount < 60
   && checkRecast("tenchijin") > 1000) {
     icon.ninjutsu3 = icon.suiton;
-    addIcon("ninjutsu3");
+    addIcon({name: "ninjutsu3"});
     if (checkStatus("tenchijin") > 0) {
       icon.ninjutsu1 = icon.fumashuriken;
-      addIcon("ninjutsu1");
+      addIcon({name: "ninjutsu1"});
       icon.ninjutsu2 = icon.raiton;
-      addIcon("ninjutsu2");
+      addIcon({name: "ninjutsu2"});
     }
   }
   else if (player.level >= 35
   && enemyTargets >= 2) {
     icon.ninjutsu3 = icon.katon;
-    addIcon("ninjutsu3");
+    addIcon({name: "ninjutsu3"});
   }
   else if (player.level >= 35) {
     icon.ninjutsu3 = icon.raiton;
-    addIcon("ninjutsu3");
+    addIcon({name: "ninjutsu3"});
   }
   else if (player.level >= 30) {
     icon.ninjutsu3 = icon.fumashuriken;
-    addIcon("ninjutsu3");
+    addIcon({name: "ninjutsu3"});
   }
   else {
     console.log("Possible error in ninjutsu decision")
@@ -614,7 +614,7 @@ function ninNinki() {
     else {
       icon.ninkiaction = icon.hellfrogmedium;
     }
-    addIcon("ninkiaction");
+    addIcon({name: "ninkiaction"});
   }
 
   else {

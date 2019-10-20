@@ -342,7 +342,7 @@ function drkMP() {
   if (player.level >= 70) {
     if (player.currentMP >= 6000
     || player.tempjobDetail.darkarts == 1) {
-      addIcon("floodofdarkness");
+      addIcon({name: "floodofdarkness"});
     }
     else {
       removeIcon("floodofdarkness");
@@ -350,7 +350,7 @@ function drkMP() {
   }
   else if (player.level >= 30) { // No TBN yet
     if (player.currentMP >= 3000) {
-      addIcon("floodofdarkness");
+      addIcon({name: "floodofdarkness"});
     }
     else {
       removeIcon("floodofdarkness");
@@ -381,10 +381,10 @@ function drkGauge() {
   if (player.jobDetail.blood >= targetblood) {
     if (player.level >= 80
     && checkRecast("livingshadow") < 1000) {
-      addIcon("gaugespender");
+      addIcon({name: "gaugespender"});
     }
     else if (player.level >= 62) {
-      addIcon("gaugespender");
+      addIcon({name: "gaugespender"});
     }
   }
   else {
@@ -411,18 +411,18 @@ function drkCombo() {
 
 function drkSouleaterCombo() {
   next.combo = 1;
-  addIcon("hardslash");
-  addIcon("syphonstrike");
+  addIcon({name: "hardslash"});
+  addIcon({name: "syphonstrike"});
   if (player.level >= 26) {
-    addIcon("souleater");
+    addIcon({name: "souleater"});
   }
 }
 
 function drkStalwartSoulCombo() {
   next.combo = 2;
-  addIcon("unleash");
+  addIcon({name: "unleash"});
   if (player.level >= 74) {
-    addIcon("stalwartsoul");
+    addIcon({name: "stalwartsoul"});
   }
 }
 

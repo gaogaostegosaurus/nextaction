@@ -237,9 +237,9 @@ function drgAction() {
       && actionLog.groups.result.length > 6) {
         removeIcon("royalauthority");
         count.atonement = 3;
-        addIcon("atonement1");
-        addIcon("atonement2");
-        addIcon("atonement3");
+        addIcon({name: "atonement1"});
+        addIcon({name: "atonement2"});
+        addIcon({name: "atonement3"});
         pldGoringBladeCombo();
       }
 
@@ -403,7 +403,7 @@ function drgStatus() {
     else if ("Dive Ready" == effectLog.groups.effectName) {
       if (effectLog.groups.gainsLoses == "gains") {
         addStatus("diveready", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
-        addIcon("miragedive");
+        addIcon({name: "miragedive"});
       }
       else if (effectLog.groups.gainsLoses == "loses") {
         removeStatus("diveready");
@@ -513,55 +513,55 @@ function drgAreaOfEffectCombo() {
 
 function drgFullThrustCombo() {
   next.combo = 1;
-  addIcon("truethrust");
-  addIcon("vorpalthrust");
+  addIcon({name: "truethrust"});
+  addIcon({name: "vorpalthrust"});
   if (player.level >= 26) {
-    addIcon("fullthrust");
+    addIcon({name: "fullthrust"});
   }
   if (player.level >= 56) {
     nextid.combo4 = nextid.fangandclaw;
-    addIcon("fangandclaw");
+    addIcon({name: "fangandclaw"});
   }
   if (player.level >= 64) {
     nextid.combo5 = nextid.wheelingthrust;
-    addIcon("wheelingthrust");
+    addIcon({name: "wheelingthrust"});
   }
 }
 
 
 function drgChaosThrustCombo() {
   next.combo = 2;
-  addIcon("truethrust");
-  addIcon("disembowel");
+  addIcon({name: "truethrust"});
+  addIcon({name: "disembowel"});
   if (player.level >= 50) {
-    addIcon("chaosthrust");
+    addIcon({name: "chaosthrust"});
   }
   if (player.level >= 58) {
     nextid.combo4 = nextid.fangandclaw;
-    addIcon("wheelingthrust");
+    addIcon({name: "wheelingthrust"});
   }
   if (player.level >= 64) {
     nextid.combo5 = nextid.wheelingthrust;
-    addIcon("fangandclaw");
+    addIcon({name: "fangandclaw"});
   }
 }
 
 function drgCoerthanTormentCombo() {
   next.combo = 11;
-  addIcon("doomspike");
+  addIcon({name: "doomspike"});
   if (player.level >= 62) {
-    addIcon("sonicthrust");
+    addIcon({name: "sonicthrust"});
   }
   if (player.level >= 72) {
-    addIcon("coerthantorment");
+    addIcon({name: "coerthantorment"});
   }
 }
 
 
 function drgDisembowelCombo() {
   next.combo = 12;
-  addIcon("truethrust");
-  addIcon("disembowel");
+  addIcon({name: "truethrust"});
+  addIcon({name: "disembowel"});
 }
 
 

@@ -48,7 +48,7 @@ function whmJobChange() {
   }
 
   if (checkStatus("freecure") > 0) {
-    addIcon("freecure");
+    addIcon({name: "freecure"});
   }
   else {
     removeIcon("freecure");
@@ -57,7 +57,7 @@ function whmJobChange() {
   if (player.level >= 24
   && player.currentMP / player.maxMP < 0.8
   && checkRecast("luciddreaming") < 0) {
-    addIcon("luciddreaming");
+    addIcon({name: "luciddreaming"});
   }
   else {
     removeIcon("luciddreaming");
@@ -110,14 +110,14 @@ function whmPlayerChangedEvent() {
   if (player.level >= 24
   && player.currentMP / player.maxMP < 0.8
   && checkRecast("luciddreaming") < 0) {
-    addIcon("luciddreaming");
+    addIcon({name: "luciddreaming"});
   }
   else {
     removeIcon("luciddreaming");
   }
 
   if (player.tempjobDetail.bloodlily >= 3) {
-    addIcon("afflatusmisery");
+    addIcon({name: "afflatusmisery"});
   }
   else {
     removeIcon("afflatusmisery");
@@ -210,7 +210,7 @@ function whmStatus() {
   if (effectLog.groups.effectName == "Freecure") {
     if (effectLog.groups.gainsLoses == "gains") {
       addStatus("freecure", parseInt(effectLog.groups.effectDuration) * 1000);
-      addIcon("freecure");
+      addIcon({name: "freecure"});
     }
     else if (effectLog.groups.gainsLoses == "loses") {
       removeStatus("freecure");
@@ -240,7 +240,7 @@ function whmStatus() {
       removeStatus("regen", effectLog.groups.targetID);
       if (target.ID == effectLog.groups.targetID
       && ["PLD", "WAR", "DRK", "GNB"].indexOf(target.job) > -1) {
-        addIcon("regen");
+        addIcon({name: "regen"});
       }
     }
   }
@@ -256,7 +256,7 @@ function whmStatus() {
     else if (effectLog.groups.gainsLoses == "loses") {
       removeStatus("aero", effectLog.groups.targetID);
       if (target.ID == effectLog.groups.targetID) {
-        addIcon("aero");
+        addIcon({name: "aero"});
       }
     }
   }

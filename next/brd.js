@@ -75,11 +75,11 @@ function brdPlayerChangedEvent() {
   // Pitch Perfect
   if (previous.song == "minuet") {
     if (player.jobDetail.songProcs == 3) {
-      addIcon("pitchperfect");
+      addIcon({name: "pitchperfect"});
     }
     else if (player.jobDetail.songProcs > 0
     && player.jobDetail.songMilliseconds < 3000) {
-      addIcon("pitchperfect");
+      addIcon({name: "pitchperfect"});
     }
     else {
       removeIcon("pitchperfect");
@@ -113,7 +113,7 @@ function brdTargetChangedEvent() { // Checks DoTs after switching targets
         }
       }
     }
-    else {  
+    else {
       removeIcon("ironjaws");
       removeIcon("venomousbite");
       removeIcon("windbite");
@@ -156,7 +156,6 @@ function brdAction() {
     // else {
     //   removeIcon("ironjaws");
     //   clearTimeout(timeout.ironjaws);
-    //   addIconBlinkTimeout("venomousbite", 30000, nextid.venomousbite, icon.venomousbite);
     // }
   }
 
@@ -398,7 +397,7 @@ function brdStatus() {
     if (effectLog.groups.effectName == "Straight Shot Ready") {
       if (effectLog.groups.gainsLoses == "gains") {
         addStatus("straightshotready", parseInt(effectLog.groups.effectDuration) * 1000);
-        addIcon("straightshot");
+        addIcon({name: "straightshot"});
         // removeIcon("barrage");
       }
       else if (effectLog.groups.gainsLoses == "loses") {
