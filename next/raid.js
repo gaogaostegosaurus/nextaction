@@ -35,47 +35,47 @@ function raidAction() {
   if (actionList.raid.indexOf(actionLog.groups.actionName) > -1) {
 
     if ("Battle Litany" == actionLog.groups.actionName) {
-      addCountdownBar("raidbattlelitany", recast.battlelitany, actionGroups.sourcenname);
+      addCountdownBar("raidbattlelitany", recast.battlelitany, actionLog.groups.sourceName);
     }
 
     else if ("Battle Voice" == actionLog.groups.actionName) {
-      addCountdownBar("raidbattlevoice", recast.battlevoice, actionGroups.sourcenname);
+      addCountdownBar("raidbattlevoice", recast.battlevoice, actionLog.groups.sourceName);
     }
 
     // else if ("Brotherhood" == actionLog.groups.actionName
     // && ["BRD", "DNC", "DRG", "MCH", "MNK", "NIN", "SAM"].indexOf(player.job) > -1) {
     else if ("Brotherhood" == actionLog.groups.actionName) {
-      addCountdownBar("raidbrotherhood", recast.brotherhood, actionGroups.sourcenname);
+      addCountdownBar("raidbrotherhood", recast.brotherhood, actionLog.groups.sourceName);
     }
 
     else if ("Chain Stratagem" == actionLog.groups.actionName) {
-      addCountdownBar("raidchainstratagem", recast.chainstratagem, actionGroups.sourcenname);
+      addCountdownBar("raidchainstratagem", recast.chainstratagem, actionLog.groups.sourceName);
     }
 
     else if ("Devilment" == actionLog.groups.actionName) {
-      addCountdownBar("raiddevilment", recast.devilment, actionGroups.sourcenname);
+      addCountdownBar("raiddevilment", recast.devilment, actionLog.groups.sourceName);
     }
 
     else if ("Devotion" == actionLog.groups.actionName) {
-      addCountdownBar("raiddevotion", recast.devotion, actionGroups.sourcenname);
+      addCountdownBar("raiddevotion", recast.devotion, actionLog.groups.sourceName);
     }
 
     else if ("Dragon Sight" == actionLog.groups.actionName) {
-      addCountdownBar("raiddragonsight", recast.dragonsight, actionGroups.sourcenname);
+      addCountdownBar("raiddragonsight", recast.dragonsight, actionLog.groups.sourceName);
     }
 
     // else if ("Embolden" == actionLog.groups.actionName
     // && ["BRD", "DNC", "DRG", "MCH", "MNK", "NIN", "SAM"].indexOf(player.job) > -1) {
     else if ("Embolden" == actionLog.groups.actionName) {
-      addCountdownBar("raidembolden", recast.embolden, actionGroups.sourcenname);
+      addCountdownBar("raidembolden", recast.embolden, actionLog.groups.sourceName);
     }
 
     else if ("Technical Step" == actionLog.groups.actionName) {
-      addCountdownBar("raidtechnicalstep", recast.technicalstep, actionGroups.sourcenname);
+      addCountdownBar("raidtechnicalstep", recast.technicalstep, actionLog.groups.sourceName);
     }
 
     else if ("Trick Attack" == actionLog.groups.actionName) {
-      addCountdownBar("raidtrickattack", recast.trickattack, actionGroups.sourcenname);
+      addCountdownBar("raidtrickattack", recast.trickattack, actionLog.groups.sourceName);
     }
 
   }
