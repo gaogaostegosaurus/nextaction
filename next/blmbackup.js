@@ -211,10 +211,10 @@ function blmAction() {
     else if ("Fire II" == actionLog.groups.actionName) {
       if (Date.now() - previous.fire2 > 1000) {
         previous.fire2 = Date.now();
-        count.aoe = 1;
+        enemyTargets = 1;
       }
       else {
-        count.aoe = count.aoe + 1;
+        enemyTargets = enemyTargets + 1;
       }
     }
 
@@ -246,10 +246,10 @@ function blmAction() {
       toggle.thunder2 = 0;
       if (Date.now() - previous.thunder2 > 1000) {
         previous.thunder2 = Date.now();
-        count.aoe = 1;
+        enemyTargets = 1;
       }
       else {
-        count.aoe = count.aoe + 1;
+        enemyTargets = enemyTargets + 1;
       }
       addStatus("thunder2", duration.thunder2, actionLog.groups.targetID);
     }
@@ -257,10 +257,10 @@ function blmAction() {
     else if ("Flare" == actionLog.groups.actionName) {
       if (Date.now() - previous.flare > 1000) {
         previous.flare = Date.now();
-        count.aoe = 1;
+        enemyTargets = 1;
       }
       else {
-        count.aoe = count.aoe + 1;
+        enemyTargets = enemyTargets + 1;
       }
     }
 
@@ -268,10 +268,10 @@ function blmAction() {
       toggle.foul = 0;
       if (Date.now() - previous.foul > 1000) {
         previous.foul = Date.now();
-        count.aoe = 1;
+        enemyTargets = 1;
       }
       else {
-        count.aoe = count.aoe + 1;
+        enemyTargets = enemyTargets + 1;
       }
     }
 
@@ -279,10 +279,10 @@ function blmAction() {
       toggle.freeze = 0;
       if (Date.now() - previous.freeze > 1000) {
         previous.freeze = Date.now();
-        count.aoe = 1;
+        enemyTargets = 1;
       }
       else {
-        count.aoe = count.aoe + 1;
+        enemyTargets = enemyTargets + 1;
       }
     }
 

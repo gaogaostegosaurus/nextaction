@@ -19,8 +19,7 @@ var potency = {};
 var previous = {};
 var next = {};
 
-var totalTargets = 1;
-var countedTargets = 1;
+var enemyTargets = 1;
 var countTargetsTime = 100;    // Determines how many things multi-line attack hits
 
 // Set up doms
@@ -273,7 +272,7 @@ addOverlayListener('onTargetChangedEvent', function(e) {
 addOverlayListener("onInCombatChangedEvent", function(e) {
 // Fires when character exits or enters combat
 
-  count.aoe = 1;
+  enemyTargets = 1;
   // Can't think of a good way to consistently reset AoE count other than this
   // Hopefully does not have a race condition with starting with AoEs...
 
@@ -622,15 +621,10 @@ function clearTimers() {
 function countTargets(action) {
   if (Date.now() - previous[action] > countTargetsTime) {
     previous[action] = Date.now();
-    countedTargets = 1;
+    enemyTargets = 1;
   }
   // If multiple lines inside countTargetTime, then increase
   else {
-    countedTargets = countedTargets + 1;
+    enemyTargets = enemyTargets + 1;
   }
-
-  if (totalTargets < countedTargets) {
-    totalTargets = countedTargets;
-  }
-
 }

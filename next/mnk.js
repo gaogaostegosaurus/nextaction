@@ -267,7 +267,7 @@ function mnkCombo() {
   potency.dragonkick = 200;
 
     if (player.level >= 26
-  && potency.armofthedestroyer * count.aoe > Math.max(potency.bootshine, potency.dragonkick)) {
+  && potency.armofthedestroyer * enemyTargets > Math.max(potency.bootshine, potency.dragonkick)) {
     icon.combo1 = icon.armofthedestroyer;
   }
   else if (player.level >= 50
@@ -283,7 +283,7 @@ function mnkCombo() {
     icon.combo2 = icon.twinsnakes;
   }
   else if (player.level >= 45
-  && count.aoe >= 2) {
+  && enemyTargets >= 2) {
     icon.combo2 = icon.fourpointfury;
   }
   else {
@@ -291,7 +291,7 @@ function mnkCombo() {
   }
 
   if (player.level >= 30
-  && count.aoe >= 2) {
+  && enemyTargets >= 2) {
     icon.combo3 = icon.rockbreaker;
   }
   else if (player.level >= 30

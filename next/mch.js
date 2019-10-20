@@ -73,7 +73,7 @@ function mchJobChange() {
   }
 
   if (player.level >= 72
-  && count.aoe >= 2) {
+  && enemyTargets >= 2) {
     icon.drill = icon.bioblaster;
   }
   else {
@@ -102,7 +102,7 @@ function mchJobChange() {
   }
 
   if (player.level >= 52
-  && count.aoe >= 3) {
+  && enemyTargets >= 3) {
     icon.heatblast = icon.autocrossbow;
   }
   else {
@@ -139,7 +139,7 @@ function mchPlayerChangedEvent() {
   nextid.heatblast = 0; // Not sure if necessary but whatever
 
   if (player.level >= 52
-  && count.aoe >= 3) {
+  && enemyTargets >= 3) {
     icon.heatblast == icon.autocrossbow;
   }
   else {
@@ -173,7 +173,7 @@ function mchAction() {
     }
 
     else if ("Drill" == actionLog.groups.actionName) {
-      count.aoe = 1;
+      enemyTargets = 1;
       if (recast.drill > Date.now() - previous.drill) {
         recast.drill = Date.now() - previous.drill; // Adjusts cooldown
       }
@@ -192,7 +192,7 @@ function mchAction() {
 
     else if ("Bioblaster" == actionLog.groups.actionName) {
       if (Date.now() - previous.drill > 1000) {
-        count.aoe = 1;
+        enemyTargets = 1;
         // Recast adjust has to go here, otherwise Drill/Bioblaster become 0s recast due to AoE spam
         if (recast.drill > Date.now() - previous.drill) {
           recast.drill = Date.now() - previous.drill;
@@ -200,7 +200,7 @@ function mchAction() {
         previous.drill = Date.now();
       }
       else {
-        count.aoe = count.aoe + 1;
+        enemyTargets = enemyTargets + 1;
       }
       removeIcon("drill");
       addRecast("drill");
@@ -223,21 +223,21 @@ function mchAction() {
     else if ("Auto Crossbow" == actionLog.groups.actionName
     && actionLog.groups.result.length >= 2) {
       if (Date.now() - previous.autocrossbow > 1000) {
-        count.aoe = 1;
+        enemyTargets = 1;
         previous.autocrossbow = Date.now();
       }
       else {
-        count.aoe = count.aoe + 1;
+        enemyTargets = enemyTargets + 1;
       }
     }
 
     else if ("Flamethrower" == actionLog.groups.actionName) {
       if (Date.now() - previous.flamethrower > 1000) {
         previous.flamethrower = Date.now();
-        count.aoe = 1;
+        enemyTargets = 1;
       }
       else {
-        count.aoe = count.aoe + 1;
+        enemyTargets = enemyTargets + 1;
       }
     }
 
@@ -274,10 +274,10 @@ function mchAction() {
     else if ("Ricochet" == actionLog.groups.actionName) {
       if (Date.now() - previous.ricochet > 1000) {
         previous.ricochet = Date.now();
-        count.aoe = 1;
+        enemyTargets = 1;
       }
       else {
-        count.aoe = count.aoe + 1;
+        enemyTargets = enemyTargets + 1;
       }
       if (player.level >= 74) {
         if (checkRecast("ricochet3", player.ID) < 0) {
@@ -342,8 +342,8 @@ function mchAction() {
 
     else if (["Split Shot", "Heated Split Shot"].indexOf(actionLog.groups.actionName) > -1
     && actionLog.groups.result.length >= 2) {
-      if (count.aoe >= 3) {
-        count.aoe == 2;
+      if (enemyTargets >= 3) {
+        enemyTargets == 2;
       }
       if (!next.combo) {
        mchCombo();
@@ -377,10 +377,10 @@ function mchAction() {
     else if ("Spread Shot" == actionLog.groups.actionName) {
       if (Date.now() - previous.spreadshot > 1000) {
         previous.spreadshot = Date.now();
-        count.aoe = 1;
+        enemyTargets = 1;
       }
       else {
-        count.aoe = count.aoe + 1;
+        enemyTargets = enemyTargets + 1;
       }
       removeIcon("spreadshot");
       mchHeat();
@@ -395,7 +395,7 @@ function mchAction() {
 
     if (player.level >= 70
     && checkRecast("flamethrower") < 0
-    && count.aoe >= 2) {
+    && enemyTargets >= 2) {
       addIcon("flamethrower");
     }
     else {
@@ -403,7 +403,7 @@ function mchAction() {
     }
 
     if (player.level >= 72
-    && count.aoe >= 2) {
+    && enemyTargets >= 2) {
       icon.drill == icon.bioblaster;
     }
     else {
@@ -429,12 +429,12 @@ function mchCombo() {
   removeIcon("cleanshot");
 
   if (player.level >= 80
-  && count.aoe >= 3) {
+  && enemyTargets >= 3) {
     next.combo = 2;
     addIcon("spreadshot");
   }
   else if (player.level < 80
-  && count.aoe == 2) {
+  && enemyTargets == 2) {
     next.combo = 2;
     addIcon("spreadshot");
   }

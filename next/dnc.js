@@ -83,11 +83,11 @@ function dncAction() {
     else if ("Fan Dance II" == actionLog.groups.actionName) {
       removeIcon("fourfoldfeathers");
       if (Date.now() - previous.fandance2 > 1000) {
-        count.aoe = 1;
+        enemyTargets = 1;
         previous.fandance2 = Date.now();
       }
       else {
-        count.aoe = count.aoe + 1;
+        enemyTargets = enemyTargets + 1;
       }
       dncFeathers();
     }
@@ -95,11 +95,11 @@ function dncAction() {
     else if ("Fan Dance III" == actionLog.groups.actionName) {
       removeIcon("fandance3");
       if (Date.now() - previous.fandance3 > 1000) {
-        count.aoe = 1;
+        enemyTargets = 1;
         previous.fandance3 = Date.now();
       }
       else {
-        count.aoe = count.aoe + 1;
+        enemyTargets = enemyTargets + 1;
       }
     }
 
@@ -190,11 +190,11 @@ function dncAction() {
         removeIcon("step2");
         if (actionLog.groups.targetID.startsWith("4")) {
           if (Date.now() - previous.standardfinish > 1000) {
-            count.aoe = 1;
+            enemyTargets = 1;
             previous.standardfinish = Date.now();
           }
           else {
-            count.aoe = count.aoe + 1;
+            enemyTargets = enemyTargets + 1;
           }
         }
         if (player.level < 70
@@ -219,11 +219,11 @@ function dncAction() {
         removeIcon("step4");
         if (actionLog.groups.targetID.startsWith("4")) {
           if (Date.now() - previous.technicalfinish > 1000) {
-            count.aoe = 1;
+            enemyTargets = 1;
             previous.technicalfinish = Date.now();
           }
           else {
-            count.aoe = count.aoe + 1;
+            enemyTargets = enemyTargets + 1;
           }
         }
         if (checkRecast("devilment") < 0) {
@@ -388,7 +388,7 @@ function dncCombo() {
   removeIcon("cascade");
   removeIcon("fountain");
 
-  if (count.aoe >= 2
+  if (enemyTargets >= 2
   && player.level >= 15) {
     addIcon("windmill");
     if (player.level >= 25) {
@@ -427,7 +427,7 @@ function dncFlourishCheck() {
 function dncFeathers() {
 
   if (player.level >= 50
-  && count.aoe > 2) {
+  && enemyTargets > 2) {
     icon.fourfoldfeathers = icon.fandance2;
   }
   else {
@@ -460,7 +460,7 @@ function dncEsprit() {
 
 function dncPriority() {
 
-  if (count.aoe >= 2) {
+  if (enemyTargets >= 2) {
     nextid.technicalstep = 0;
     nextid.saberdance = 1;
     nextid.technicalfinish = nextid.technicalstep;
@@ -492,12 +492,12 @@ function dncPriority() {
     nextid.bladeshower = nextid.fountain;
   }
 
-  if (checkStatus("standardfinish") > 5000 && count.aoe >= 5) {
+  if (checkStatus("standardfinish") > 5000 && enemyTargets >= 5) {
     removeIcon("standardstep");
     removeCountdownBar("standardstep");
   }
 
-  if (count.aoe >= 3) {
+  if (enemyTargets >= 3) {
     removeIcon("fountainfall");
     removeIcon("reversecascade");
   }

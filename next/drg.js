@@ -186,11 +186,11 @@ function drgAction() {
     else if ("Circle Of Scorn" == actionLog.groups.actionName) {
       if (Date.now() - previous.circleofscorn > 1000) {
         previous.circleofscorn = Date.now();
-        count.aoe = 1;
+        enemyTargets = 1;
         addRecast("circleofscorn");
       }
       else {
-        count.aoe = count.aoe + 1;
+        enemyTargets = enemyTargets + 1;
       }
     }
 
@@ -262,7 +262,7 @@ function drgAction() {
 
         if (Date.now() - previous.totaleclipse > 1000) {
           previous.totaleclipse = Date.now();
-          count.aoe = 1;
+          enemyTargets = 1;
           if (next.combo < 3) {
             pldAreaOfEffectCombo();
           }
@@ -276,7 +276,7 @@ function drgAction() {
           }
         }
         else {
-          count.aoe = count.aoe + 1;
+          enemyTargets = enemyTargets + 1;
           pldCombo();
         }
       }
@@ -286,10 +286,10 @@ function drgAction() {
 
         if (Date.now() - previous.prominence > 1000) {
           previous.prominence = Date.now();
-          count.aoe = 1;
+          enemyTargets = 1;
         }
         else {
-          count.aoe = count.aoe + 1;
+          enemyTargets = enemyTargets + 1;
         }
         pldCombo();
       }
@@ -303,10 +303,10 @@ function drgAction() {
       && actionLog.groups.result.length > 1) {
         if (Date.now() - previous.holycircle > 1000) {
           previous.holycircle = Date.now();
-          count.aoe = 1;
+          enemyTargets = 1;
         }
         else {
-          count.aoe = count.aoe + 1;
+          enemyTargets = enemyTargets + 1;
         }
         pldRequiescatMP();
       }
@@ -315,10 +315,10 @@ function drgAction() {
       && actionLog.groups.result.length > 1) {
         if (Date.now() - previous.confiteor > 1000) {
           previous.confiteor = Date.now();
-          count.aoe = 1;
+          enemyTargets = 1;
         }
         else {
-          count.aoe = count.aoe + 1;
+          enemyTargets = enemyTargets + 1;
         }
         pldRequiescatMP()
       }
@@ -448,7 +448,7 @@ function drgCombo() {
   removeIcon("combo4");
   removeIcon("combo5");
 
-  if (count.aoe >= 3) {
+  if (enemyTargets >= 3) {
     drgAreaOfEffectCombo();
   }
   else {

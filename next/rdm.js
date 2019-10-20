@@ -155,7 +155,7 @@ function rdmJobChange() {
     addCountdownBar("manafication", checkRecast("manafication"));
   }
 
-  count.targets = 1;
+  enemyTargets = 1;
 
   rdmNext();
 
@@ -214,10 +214,10 @@ function rdmAction() {
       // Contre Sixte makes weird things happen when using Single Target
       // if (Date.now() - previous.contresixte > 1000) {
       //   previous.contresixte = Date.now();
-      //   count.targets = 1;
+      //   enemyTargets = 1;
       // }
       // else {
-      //   count.targets = count.targets + 1;
+      //   enemyTargets = enemyTargets + 1;
       // }
       removeIcon("contresixte");
     }
@@ -243,7 +243,7 @@ function rdmAction() {
         removeIcon("hardcast");
         removeIcon("dualcast");
 
-        count.targets = 1;
+        enemyTargets = 1;
         toggle.combo = 1;  // Prevents Verflare/Verholy procs from triggering new Dualcast
 
         if (player.level >= 68
@@ -320,7 +320,7 @@ function rdmAction() {
       }
 
       else if ("Verflare" == actionLog.groups.actionName) {
-        count.targets = 1;
+        enemyTargets = 1;
         removeIcon("verflare");
         if (player.level < 80) {
           delete toggle.combo;
@@ -355,36 +355,36 @@ function rdmAction() {
 
         else if (player.level >= 66
         && ["Verthunder", "Veraero"].indexOf(actionLog.groups.actionName) > -1) {
-          count.targets = 1;
+          enemyTargets = 1;
         }
 
         else if ("Verthunder II" == actionLog.groups.actionName) {
           if (Date.now() - previous.verthunder2 > 1000) {
             previous.verthunder2 = Date.now();
-            count.targets = 1;
+            enemyTargets = 1;
           }
           else {
-            count.targets = count.targets + 1;
+            enemyTargets = enemyTargets + 1;
           }
         }
 
         else if ("Veraero II" == actionLog.groups.actionName) {
           if (Date.now() - previous.veraero2 > 1000) {
             previous.veraero2 = Date.now();
-            count.targets = 1;
+            enemyTargets = 1;
           }
           else {
-            count.targets = count.targets + 1;
+            enemyTargets = enemyTargets + 1;
           }
         }
 
         else if (["Scatter", "Impact"].indexOf(actionLog.groups.actionName) > -1) {
           if (Date.now() - previous.scatter > 1000) {
             previous.scatter = Date.now();
-            count.targets = 1;
+            enemyTargets = 1;
           }
           else {
-            count.targets = count.targets + 1;
+            enemyTargets = enemyTargets + 1;
           }
         }
 
@@ -393,17 +393,17 @@ function rdmAction() {
           // if (player.level < 60) {  // Only use Moulinet to count targets if >= 60, since it's used as a quick spender after that
               if (Date.now() - previous.moulinet > 1000) {
               previous.moulinet = Date.now();
-              count.targets = 1;
+              enemyTargets = 1;
             }
             else {
-              count.targets = count.targets + 1;
+              enemyTargets = enemyTargets + 1;
             }
           // }
           rdmNext();
         }
 
         else if (["Reprise", "Enchanted Reprise"].indexOf(actionLog.groups.actionName) > -1) {
-          count.targets = 1;
+          enemyTargets = 1;
           rdmNext();
         }
 
@@ -500,7 +500,7 @@ function rdmNext() {
   delete toggle.manafication;
   delete toggle.moulinet;
 
-  if (count.targets > 1) {
+  if (enemyTargets > 1) {
     rdmMinimumMana = 50;  // Stay above 50/50 during AoE for Manafication
   }
   else {
@@ -513,7 +513,7 @@ function rdmNext() {
     toggle.manafication = 1;  // Something being done with Manafication is this is on
 
     if (player.level >= 72
-    && count.targets == 1
+    && enemyTargets == 1
     && checkRecast("manafication") < 3500
     && player.jobDetail.whiteMana - 5 >= 50
     && player.jobDetail.blackMana - 5 < 50
@@ -521,7 +521,7 @@ function rdmNext() {
       addIcon("reprise");
     }
     else if (player.level >= 72
-    && count.targets == 1
+    && enemyTargets == 1
     && checkRecast("manafication") < 3500
     && player.jobDetail.blackMana - 5 >= 50
     && player.jobDetail.whiteMana - 5 < 50
@@ -562,21 +562,21 @@ function rdmNext() {
 
     if (player.level >= 68
     && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 90
-    && count.targets >= 2) {
+    && enemyTargets >= 2) {
       addIcon("moulinet");  // Moulinet at two targets to prevent capping
     }
     else if (player.level >= 68
     && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) > 70
-    && count.targets >= 4) {
+    && enemyTargets >= 4) {
       addIcon("moulinet");  // Moulinet at four or more targets (staying above 50/50 for Manafication)
     }
     else if (player.level >= 60
     && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) > 70
-    && count.targets >= 2) {
+    && enemyTargets >= 2) {
       addIcon("moulinet");  // Moulinet at four or more targets (staying above 50/50 for Manafication)
     }
     else if (Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 20
-    && count.targets >= 2) {
+    && enemyTargets >= 2) {
       addIcon("moulinet");  // Moulinet whenever with no Manafication
     }
 
@@ -663,7 +663,7 @@ function rdmDualcast() {
 function rdmDualcastValue(hardcastAction, hardcastBlackMana, hardcastWhiteMana, dualcastAction, dualcastBlackMana, dualcastWhiteMana) {
 
   // Calculate rdmDualcastManaPotency using latest values... probably
-  rdmDualcastManaPotency = Math.max(rdmSingleTargetManaPotency, rdmMultiTargetManaPotency * count.targets);
+  rdmDualcastManaPotency = Math.max(rdmSingleTargetManaPotency, rdmMultiTargetManaPotency * enemyTargets);
 
   // Calculate initial value based on current mana potency
   rdmDualcastPotency = (hardcastBlackMana + dualcastBlackMana + hardcastWhiteMana + dualcastWhiteMana) * rdmDualcastManaPotency;
@@ -712,10 +712,10 @@ function rdmDualcastValue(hardcastAction, hardcastBlackMana, hardcastWhiteMana, 
   else if (player.level >= 18
   && "Verthunder II" == hardcastAction) {
     if (player.level >= 78) { // Trait
-      rdmDualcastPotency = rdmDualcastPotency + 120 * count.targets;
+      rdmDualcastPotency = rdmDualcastPotency + 120 * enemyTargets;
     }
     else {
-      rdmDualcastPotency = rdmDualcastPotency + 100 * count.targets;
+      rdmDualcastPotency = rdmDualcastPotency + 100 * enemyTargets;
     }
     if (player.jobDetail.blackMana < player.jobDetail.whiteMana) {
       rdmDualcastPotency = rdmDualcastPotency + 1;
@@ -724,10 +724,10 @@ function rdmDualcastValue(hardcastAction, hardcastBlackMana, hardcastWhiteMana, 
   else if (player.level >= 22
   && "Veraero II" == hardcastAction) {
     if (player.level >= 78) { // Trait
-      rdmDualcastPotency = rdmDualcastPotency + 120 * count.targets;
+      rdmDualcastPotency = rdmDualcastPotency + 120 * enemyTargets;
     }
     else {
-      rdmDualcastPotency = rdmDualcastPotency + 100 * count.targets;
+      rdmDualcastPotency = rdmDualcastPotency + 100 * enemyTargets;
     }
     if (player.jobDetail.whiteMana < player.jobDetail.blackMana) {
       rdmDualcastPotency = rdmDualcastPotency + 1;
@@ -758,10 +758,10 @@ function rdmDualcastValue(hardcastAction, hardcastBlackMana, hardcastWhiteMana, 
   else if (player.level >= 15
   && "Scatter" == dualcastAction) {
     if (player.level >= 66) { // Trait
-      rdmDualcastPotency = rdmDualcastPotency + 220 * count.targets;
+      rdmDualcastPotency = rdmDualcastPotency + 220 * enemyTargets;
     }
     else {
-      rdmDualcastPotency = rdmDualcastPotency + 120 * count.targets;
+      rdmDualcastPotency = rdmDualcastPotency + 120 * enemyTargets;
     }
   }
   else {
@@ -995,13 +995,13 @@ function rdmVerholyCombo() {
 //       delete toggle.manafication;
 //     }
 //
-//     else if (count.targets >= 4
+//     else if (enemyTargets >= 4
 //     && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 50) {
 //       addIcon("manafication");
 //       toggle.manafication = Date.now();
 //     }
 //
-//     else if (count.targets >= 2
+//     else if (enemyTargets >= 2
 //     && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 50) {
 //       addIcon("manafication");
 //       toggle.manafication = Date.now();

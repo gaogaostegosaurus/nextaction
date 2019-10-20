@@ -74,7 +74,7 @@ function warJobChange() {
     icon.berserk = "000259";
   }
 
-  if (count.aoe > 1) {
+  if (enemyTargets > 1) {
     if (player.level >= 56
     && checkRecast("rawintuition") < 0) {
       addIcon("rawintuition");
@@ -170,7 +170,7 @@ function warAction() {
       if (["Inner Beast", "Fell Cleave", "Inner Chaos"].indexOf(actionLog.groups.actionName) > -1) {
         if (player.level >= 45
         && player.level < 54) {
-          count.aoe = 1; // Steel Cyclone is stronger than Inner Beast at 2+ targets
+          enemyTargets = 1; // Steel Cyclone is stronger than Inner Beast at 2+ targets
         }
         if (player.level >= 66) { // Enhanced Infuriate
           addRecast("infuriate1", player.ID, checkRecast("infuriate1", player.ID) - 5000);
@@ -183,7 +183,7 @@ function warAction() {
 
       else if (["Steel Cyclone", "Decimate", "Chaotic Cyclone"].indexOf(actionLog.groups.actionName) > -1) {
         if (Date.now() - previous.steelcyclone > 1000) {
-          count.aoe = 1;
+          enemyTargets = 1;
           previous.steelcyclone = Date.now();
           if (player.level >= 66) { // Enhanced Infuriate
             addRecast("infuriate1", player.ID, checkRecast("infuriate1", player.ID) - 5000);
@@ -193,7 +193,7 @@ function warAction() {
           }
         }
         else {
-          count.aoe = count.aoe + 1;
+          enemyTargets = enemyTargets + 1;
         }
         removeIcon("innerbeast");
       }
@@ -202,7 +202,7 @@ function warAction() {
 
       else if ("Heavy Swing" == actionLog.groups.actionName
       && actionLog.groups.result.length >= 2) {
-        count.aoe = 1;
+        enemyTargets = 1;
         if ([1, 2].indexOf(next.combo) == -1) {
           warCombo();
           toggle.combo = Date.now();
@@ -243,10 +243,10 @@ function warAction() {
       && actionLog.groups.result.length >= 2) {
         if (Date.now() - previous.overpower > 1000) {
           previous.overpower = Date.now();
-          count.aoe = 1;
+          enemyTargets = 1;
         }
         else {
-          count.aoe = count.aoe + 1;
+          enemyTargets = enemyTargets + 1;
         }
         if (next.combo != 3) {
           warCombo();
@@ -266,13 +266,13 @@ function warAction() {
 
         if (Date.now() - previous.mythriltempest > 1000) {
           previous.mythriltempest = Date.now();
-          count.aoe = 1;
+          enemyTargets = 1;
           if (checkStatus("stormseye", player.ID) > 0) {
             addStatus("stormseye", Math.min(checkStatus("stormseye", player.ID) + 10000, duration.stormseye));
           }
         }
         else {
-          count.aoe = count.aoe + 1;
+          enemyTargets = enemyTargets + 1;
         }
         warCombo();
       }
@@ -281,7 +281,7 @@ function warAction() {
         warCombo();
       }
 
-      if (count.aoe >= 3
+      if (enemyTargets >= 3
       && checkStatus("mitigation", effectLog.groups.targetID) < 1000) {
         warMitigation();
       }
@@ -332,7 +332,7 @@ function warStatus() {
       }
       else if (effectLog.groups.gainsLoses == "loses") {
         if (checkStatus("mitigation", effectLog.groups.targetID) < 0
-        && count.aoe >= 3) {
+        && enemyTargets >= 3) {
           warMitigation();
         }
       }
@@ -346,7 +346,7 @@ function warStatus() {
       }
       else if (effectLog.groups.gainsLoses == "loses") {
         if (checkStatus("mitigation", effectLog.groups.targetID) < 0 // Check for overlaps
-        && count.aoe >= 3) {
+        && enemyTargets >= 3) {
           warMitigation();
         }
       }
@@ -360,7 +360,7 @@ function warStatus() {
       }
       else if (effectLog.groups.gainsLoses == "loses") {
         if (checkStatus("mitigation", effectLog.groups.targetID) < 0
-        && count.aoe >= 3) {
+        && enemyTargets >= 3) {
           warMitigation();
         }
       }
@@ -418,7 +418,7 @@ function warGauge() {
 
   // Set Inner Beast icon - listed from highest to lowest minimum potency
   if (checkStatus("nascentchaos", player.ID) > 2500) {
-    if (count.aoe >= 3) {
+    if (enemyTargets >= 3) {
       icon.innerbeast = icon.chaoticcyclone;
     }
     if (player.level >= 80) {
@@ -429,11 +429,11 @@ function warGauge() {
     }
   }
   else if (player.level >= 60
-  && count.aoe >= 3) {
+  && enemyTargets >= 3) {
     icon.innerbeast = icon.decimate;
   }
   else if (player.level >= 45
-  && count.aoe >= 3) {
+  && enemyTargets >= 3) {
     icon.innerbeast = icon.steelcyclone;
   }
   else if (player.level >= 54) {
@@ -441,7 +441,7 @@ function warGauge() {
   }
   else if (player.level >= 45
   && player.level < 54
-  && count.aoe >= 2) {
+  && enemyTargets >= 2) {
     icon.innerbeast = icon.steelcyclone;
   }
   else {
@@ -482,7 +482,7 @@ function warGauge() {
     targetbeast = 50; // Avoid wasting Nascent Chaos
   }
   else if (player.level >= 50
-  && count.aoe <= 3 // AoE wins at 3
+  && enemyTargets <= 3 // AoE wins at 3
   && checkStatus("stormseye", player.ID) < 15000) {
     targetbeast = 90; // Avoid letting Storm's Eye fall off during AoE
   }
@@ -491,7 +491,7 @@ function warGauge() {
     targetbeast = 90; // Avoid using spenders out of Storm's Eye
   }
   else if (player.level >= 45
-  && count.aoe >= 3) {
+  && enemyTargets >= 3) {
     targetbeast = 50; // Use AoE
   }
   else if (player.level >= 64
@@ -547,13 +547,13 @@ function warCombo() {
   }
 
   else if (player.level >= 74
-  && count.aoe >= 2
+  && enemyTargets >= 2
   && checkStatus("stormseye", player.ID) > 7500) {
     mythriltempestCombo();
   }
 
   else if (player.level >= 50
-  && count.aoe >= 3
+  && enemyTargets >= 3
   && checkStatus("stormseye", player.ID) > 7500) {
     mythriltempestCombo();
   }
@@ -565,7 +565,7 @@ function warCombo() {
   }
 
   else if (player.level >= 40
-  && count.aoe >= 3) {
+  && enemyTargets >= 3) {
     mythriltempestCombo();
   }
 
