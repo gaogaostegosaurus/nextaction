@@ -1,26 +1,5 @@
 "use strict";
 
-// LEVELING ROTATIONS
-
-// Single-Target
-// Sub-40: {F1 spam} Transpose T1 {B1 until max MP} Transpose
-// 40-59:  B3 T3 {optional B1 for MP tick} F3 {F1 spam until low MP} repeat. Use F3p and T3p as you get them, but don't cancel casts to use procs
-// 60-71: B3 B4 T3 F3 F4x3 F1 F4x3 repeat. Foul whenever
-// 72+: B3 B4 T3 F3 F4x3 F1 F4x3 Despair repeat
-// Same as 60-71 with Despair at the end
-// Same as 80 just without Xeno. See guide for better details
-
-// AOE
-// 18-34: {F2 spam} Transpose {B2 until max MP} Transpose repeat. Keep up T2 dot
-// 35-49: Spam Freeze. Keep up T2 dot
-// 50-59: Freeze T2 F3 F2 F2 Flare Transpose repeat
-// 60-67: Freeze T2 F3 {F4 2-3 times} Flare Transpose repeat
-// Save 800 MP for Flare. Use 50-59 AOE Rotation at 5+ enemies
-// 68-71: Freeze T4 F3 Flare Flare Transpose repeat
-// 72+: Freeze T4 F3 Flare Flare repeat
-// Same as 80. See guide for better details
-// For all aoe, use Thundercloud procs on T2/T4 as you get them. Swift/Triple Flares. Manafont for an extra Flare. Foul after Transpose or Freeze
-
 var blmFireSpam = "Fire";
 var blmFireIcon = "none";
 var blmFireMP = 1600;
@@ -37,6 +16,7 @@ var blmCasting = "";
 var blmInstant = "";
 var blmInstantIcon = "";
 var blmSwiftcasted = 0;
+var blmPreviousTargets = 0;
 
 var blmFireCostModifier = 1;
 var blmBlizzardCostModifier = 1;
@@ -384,7 +364,6 @@ function blmStatus() {
 
 function blmNext() {
 
-
   if ("Fire" == blmCasting) {
     if (player.jobDetail.umbralStacks < 0) {
       blmAstralRotation(player.currentMP - 800 * blmFireCostModifier, 15000, 0);
@@ -404,7 +383,7 @@ function blmNext() {
   }
 
   else if ("Fire III" == blmCasting) {
-    blmAstralRotation(player.currentMP - 2000 * blmFireCostModifier, 15000, 3);
+    blmAstralRotation(player.currentMP - 2000 * blmFireCostModifier, 15000, 3 );
   }
 
   else if ("Flare" == blmCasting) {
@@ -463,6 +442,27 @@ function blmNext() {
 
 // Astral Fire
 function blmAstralRotation(currentMP, blmAstralTime, blmAstralStacks) {
+
+  // LEVELING ROTATIONS
+
+  // Single-Target
+  // Sub-40: {F1 spam} Transpose T1 {B1 until max MP} Transpose
+  // 40-59:  B3 T3 {optional B1 for MP tick} F3 {F1 spam until low MP} repeat. Use F3p and T3p as you get them, but don't cancel casts to use procs
+  // 60-71: B3 B4 T3 F3 F4x3 F1 F4x3 repeat. Foul whenever
+  // 72+: B3 B4 T3 F3 F4x3 F1 F4x3 Despair repeat
+  // Same as 60-71 with Despair at the end
+  // Same as 80 just without Xeno. See guide for better details
+
+  // AOE
+  // 18-34: {F2 spam} Transpose {B2 until max MP} Transpose repeat. Keep up T2 dot
+  // 35-49: Spam Freeze. Keep up T2 dot
+  // 50-59: Freeze T2 F3 F2 F2 Flare Transpose repeat
+  // 60-67: Freeze T2 F3 {F4 2-3 times} Flare Transpose repeat
+  // Save 800 MP for Flare. Use 50-59 AOE Rotation at 5+ enemies
+  // 68-71: Freeze T4 F3 Flare Flare Transpose repeat
+  // 72+: Freeze T4 F3 Flare Flare repeat
+  // Same as 80. See guide for better details
+  // For all aoe, use Thundercloud procs on T2/T4 as you get them. Swift/Triple Flares. Manafont for an extra Flare. Foul after Transpose or Freeze
 
   // Picks Fire spell
   if (player.level >= 68 && enemyTargets >= 3) {
@@ -525,7 +525,10 @@ function blmAstralRotation(currentMP, blmAstralTime, blmAstralStacks) {
   }
   else {
     if (count.firespam > 1) {
-      addIcon("firespam", blmFireIcon);
+      newAddIcon({
+        name: "firespam",
+        img: blmFireIcon,
+      });
     }
     else {
       removeIcon("firespam");
@@ -578,6 +581,27 @@ function blmAstralRotation(currentMP, blmAstralTime, blmAstralStacks) {
 
 // Umbral Ice
 function blmUmbralRotation(currentMP, blmUmbralTime, blmUmbralStacks) {
+
+  // LEVELING ROTATIONS
+
+  // Single-Target
+  // Sub-40: {F1 spam} Transpose T1 {B1 until max MP} Transpose
+  // 40-59:  B3 T3 {optional B1 for MP tick} F3 {F1 spam until low MP} repeat. Use F3p and T3p as you get them, but don't cancel casts to use procs
+  // 60-71: B3 B4 T3 F3 F4x3 F1 F4x3 repeat. Foul whenever
+  // 72+: B3 B4 T3 F3 F4x3 F1 F4x3 Despair repeat
+  // Same as 60-71 with Despair at the end
+  // Same as 80 just without Xeno. See guide for better details
+
+  // AOE
+  // 18-34: {F2 spam} Transpose {B2 until max MP} Transpose repeat. Keep up T2 dot
+  // 35-49: Spam Freeze. Keep up T2 dot
+  // 50-59: Freeze T2 F3 F2 F2 Flare Transpose repeat
+  // 60-67: Freeze T2 F3 {F4 2-3 times} Flare Transpose repeat
+  // Save 800 MP for Flare. Use 50-59 AOE Rotation at 5+ enemies
+  // 68-71: Freeze T4 F3 Flare Flare Transpose repeat
+  // 72+: Freeze T4 F3 Flare Flare repeat
+  // Same as 80. See guide for better details
+  // For all aoe, use Thundercloud procs on T2/T4 as you get them. Swift/Triple Flares. Manafont for an extra Flare. Foul after Transpose or Freeze
 
   if (player.jobDetail.umbralStacks <= -3) {
     blmUmbralMinimumMP = 3800;
