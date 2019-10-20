@@ -628,32 +628,32 @@ function rdmDualcast() {
   }
 
   if ("Jolt" == rdmDualcastCombo[0]) {
-    addIcon("hardcast", "jolt");
+    newAddIcon({name: "hardcast", img: "jolt"});
   }
   else if ("Verfire" == rdmDualcastCombo[0]) {
-    addIcon("hardcast", "verfire");
+    newAddIcon({name: "hardcast", img: "verfire"});
   }
   else if ("Verstone" == rdmDualcastCombo[0]) {
-    addIcon("hardcast", "verstone");
+    newAddIcon({name: "hardcast", img: "verstone"});
   }
   else if ("Verthunder II" == rdmDualcastCombo[0]) {
-    addIcon("hardcast", "verthunder2");
+    newAddIcon({name: "hardcast", img: "verthunder2"});
   }
   else if ("Veraero II" == rdmDualcastCombo[0]) {
-    addIcon("hardcast", "veraero2");
+    newAddIcon({name: "hardcast", img: "veraero2"});
   }
   else if ("Swiftcast" == rdmDualcastCombo[0]) {
-    addIcon("hardcast", "swiftcast");
+    newAddIcon({name: "hardcast", img: "swiftcast"});
   }
 
   if ("Verthunder" == rdmDualcastCombo[1]) {
-    addIcon("dualcast", "verthunder");
+    newAddIcon({name: "dualcast", img: "verthunder"});
   }
   else if ("Veraero" == rdmDualcastCombo[1]) {
-    addIcon("dualcast", "veraero");
+    newAddIcon({name: "dualcast", img: "veraero"});
   }
   else if ("Scatter" == rdmDualcastCombo[1]) {
-    addIcon("dualcast", "scatter");
+    newAddIcon({name: "dualcast", img: "scatter"});
   }
 
   // console.log(rdmDualcastCombo[0] + " " + rdmDualcastCombo[1] + " " + previous.rdmDualcastValue);
@@ -841,8 +841,8 @@ function rdmFixProcs() {
   && Math.min(player.jobDetail.whiteMana + 9, player.jobDetail.blackMana + 11) >= 80
   && checkStatus("verstoneready") >= 5000) {
     // Verstone > Verthunder > Verholy combo
-    addIcon("hardcast", "verstone");
-    addIcon("dualcast", "verthunder");
+    newAddIcon({name: "hardcast", img: "verstone"});
+    newAddIcon({name: "dualcast", img: "verthunder"});
   }
 
   else if (Math.min(player.jobDetail.blackMana + 9, 100) < Math.min(player.jobDetail.whiteMana + 11, 100)
@@ -850,8 +850,8 @@ function rdmFixProcs() {
   && Math.min(player.jobDetail.blackMana + 9, player.jobDetail.whiteMana + 11) >= 80
   && checkStatus("verfireready") >= 5000) {
     // Verfire > Veraero > Verflare combo
-    addIcon("hardcast", "verfire");
-    addIcon("dualcast", "veraero");
+    newAddIcon({name: "hardcast", img: "verfire"});
+    newAddIcon({name: "dualcast", img: "veraero"});
   }
 
   else if (player.level >= 70
@@ -861,8 +861,8 @@ function rdmFixProcs() {
   && checkStatus("verfireready") >= 5000
   && checkStatus("verstoneready") < rdmProcBufferTime + 5000) {
     // Verfire > Verthunder > Verholy combo
-    addIcon("hardcast", "verfire");
-    addIcon("dualcast", "verthunder");
+    newAddIcon({name: "hardcast", img: "verfire"});
+    newAddIcon({name: "dualcast", img: "verthunder"});
   }
 
   else if (player.jobDetail.blackMana < Math.min(player.jobDetail.whiteMana + 20, 100)
@@ -871,8 +871,8 @@ function rdmFixProcs() {
   && checkStatus("verstoneready") >= 5000
   && checkStatus("verfireready") < rdmProcBufferTime + 5000) {
     // Verstone > Veraero > Verflare combo
-    addIcon("hardcast", "verstone");
-    addIcon("dualcast", "veraero");
+    newAddIcon({name: "hardcast", img: "verstone"});
+    newAddIcon({name: "dualcast", img: "veraero"});
   }
 
   else if (player.level >= 70
@@ -881,8 +881,8 @@ function rdmFixProcs() {
   && Math.min(player.jobDetail.whiteMana + 3, player.jobDetail.blackMana + 14) >= 80
   && checkStatus("verstoneready") < rdmProcBufferTime + 5000) {
     // Jolt > Verthunder > Verholy combo
-    addIcon("hardcast", "jolt");
-    addIcon("dualcast", "verthunder");
+    newAddIcon({name: "hardcast", img: "jolt"});
+    newAddIcon({name: "dualcast", img: "verthunder"});
   }
 
   else if (Math.min(player.jobDetail.blackMana + 3, 100) < Math.min(player.jobDetail.whiteMana + 14, 100)
@@ -890,8 +890,8 @@ function rdmFixProcs() {
   && Math.min(player.jobDetail.blackMana + 3, player.jobDetail.whiteMana + 14) >= 80
   && checkStatus("verfireready") < rdmProcBufferTime + 5000) {
     // Jolt > Veraero > Verflare combo
-    addIcon("hardcast", "jolt");
-    addIcon("dualcast", "veraero");
+    newAddIcon({name: "hardcast", img: "jolt"});
+    newAddIcon({name: "dualcast", img: "veraero"});
   }
 
   else if (player.level >= 70
@@ -900,8 +900,8 @@ function rdmFixProcs() {
   && Math.min(player.jobDetail.whiteMana, player.jobDetail.blackMana + 11) >= 80
   && checkStatus("verstoneready") < rdmProcBufferTime + 5000) {
     // Swiftcast > Verthunder > Verholy combo
-    addIcon("hardcast", "swiftcast");
-    addIcon("dualcast", "verthunder");
+    newAddIcon({name: "hardcast", img: "swiftcast"});
+    newAddIcon({name: "dualcast", img: "verthunder"});
   }
 
   else if (player.jobDetail.blackMana < Math.min(player.jobDetail.whiteMana + 11, 100)
@@ -909,8 +909,8 @@ function rdmFixProcs() {
   && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana + 11) >= 80
   && checkStatus("verfireready") < rdmProcBufferTime + 5000) {
     // Swiftcast > Veraero > Verflare combo
-    addIcon("hardcast", "swiftcast");
-    addIcon("dualcast", "veraero");
+    newAddIcon({name: "hardcast", img: "swiftcast"});
+    newAddIcon({name: "dualcast", img: "veraero"});
   }
 
   // Nothing above matches but already 80+/80+
