@@ -727,7 +727,7 @@ function blmInstantFiller(currentMP, rotationTime, rotationStacks) {
     if (checkStatus("thundercloud") > 0
     && rotationTime > 2500 + blmRotationBufferTime) {
       blmInstant = "Thundercloud";
-      addIcon("thundercloud", blmThunderIcon);
+      newAddIcon({name: "thundercloud", img: blmThunderIcon});
       removeIcon("thunder");
     }
     else {
@@ -740,7 +740,7 @@ function blmInstantFiller(currentMP, rotationTime, rotationStacks) {
   && checkStatus("thundercloud") < blmProcBufferTime
   && rotationTime > 2500 + blmRotationBufferTime) {
     blmInstant = "Thundercloud";
-    addIcon("thundercloud", blmThunderIcon);
+    newAddIcon({name: "thundercloud", img: blmThunderIcon});
     removeIcon("thunder");
   }
 
@@ -751,7 +751,7 @@ function blmInstantFiller(currentMP, rotationTime, rotationStacks) {
   && checkStatus("thunder", target.ID) <= 0
   && rotationTime > 2500 + blmRotationBufferTime) {
     blmInstant = "Thundercloud";
-    addIcon("thundercloud", blmThunderIcon);
+    newAddIcon({name: "thundercloud", img: blmThunderIcon});
     removeIcon("thunder");
   }
 
@@ -806,36 +806,36 @@ function blmInstantFiller(currentMP, rotationTime, rotationStacks) {
     && checkRecast("manafont") < 1000
     && rotationStacks >= 3
     && currentMP <= 7000) {
-      addIcon("instantAction", blmInstantIcon);
-      addIcon("weaveAction", "manafont");
+      newAddIcon({name: "instantAction", img: blmInstantIcon});
+      newAddIcon({name: "weaveAction", img: "manafont"});
     }
 
     // Sharpcast
     else if (player.level >= 54
     && checkRecast("sharpcast") < 1000) {
-      addIcon("instantAction", blmInstantIcon);
-      addIcon("weaveAction", "sharpcast");
+      newAddIcon({name: "instantAction", img: blmInstantIcon});
+      newAddIcon({name: "weaveAction", img: "sharpcast"});
     }
 
     // Triplecast
     else if (checkRecast("triplecast") < 1000
     && rotationStacks >= 3
     && currentMP >= 1600 * 3 + 800) {
-      addIcon("instantAction", blmInstantIcon);
-      addIcon("weaveAction", "triplecast");
+      newAddIcon({name: "instantAction", img: blmInstantIcon});
+      newAddIcon({name: "weaveAction", img: "triplecast"});
     }
 
     // Leylines
     else if (checkRecast("leylines") < 1000) {
-      addIcon("instantAction", blmInstantIcon);
-      addIcon("weaveAction", "leylines");
+      newAddIcon({name: "instantAction", img: blmInstantIcon});
+      newAddIcon({name: "weaveAction", img: "leylines"});
     }
 
     // Swiftcast
     else if (checkRecast("swiftcast") < 1000
     && rotationStacks >= 3) {
-      addIcon("instantAction", blmInstantIcon);
-      addIcon("weaveAction", "swiftcast");
+      newAddIcon({name: "instantAction", img: blmInstantIcon});
+      newAddIcon({name: "weaveAction", img: "swiftcast"});
     }
 
     else {
@@ -901,7 +901,7 @@ function blmThunder(currentMP, rotationTime, rotationStacks, rotationMinimumMP) 
     && target.ID.startsWith("4")
     && checkStatus("thunder", target.ID) <= 2500
     && rotationTime > 2500 + blmRotationBufferTime) {
-      addIcon("thunder", blmThunderIcon);
+      newAddIcon({name: "thunder", img: blmThunderIcon});
     }
   }
 

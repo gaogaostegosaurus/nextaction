@@ -429,7 +429,7 @@ function newAddIcon({
   name,
   img = name,
   effect = "",
-}={}) {
+} = {}) {
   dom["iconimg" + nextid[name]].src = "icon/" + icon[img] + ".png";
   dom["icondiv" + nextid[name]].className = "icondiv icon-add " + effect;
 }
