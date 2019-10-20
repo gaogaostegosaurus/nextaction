@@ -425,6 +425,15 @@ function addIcon(name, img, effect) {
   dom["icondiv" + nextid[name]].className = "icondiv icon-add " + effect;
 }
 
+function newAddIcon({
+  name,
+  img = name,
+  effect = "",
+}={}) {
+  dom["iconimg" + nextid[name]].src = "icon/" + icon[img] + ".png";
+  dom["icondiv" + nextid[name]].className = "icondiv icon-add " + effect;
+}
+
 function addIconDelay(name, delay, img, effect) {
   clearTimeout(timeout[name]);
   timeout[name] = setTimeout(addIcon, delay, name, img, effect);

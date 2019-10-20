@@ -540,12 +540,12 @@ function blmAstralRotation(currentMP, blmAstralTime, blmAstralStacks) {
     if (player.level >= 50
     && enemyTargets >= 3
     && currentMP >= 800) {
-      addIcon("flare");
+      newAddIcon({name: "flare"});
     }
     else if (player.level >= 72
     && currentMP - count.firespam * 1600 >= blmAstralMinimumMP
     && currentMP - count.firespam * 1600 < 1600 + blmAstralMinimumMP) {
-      addIcon("despair");
+      newAddIcon({name: "despair"});
     }
     else {
       removeIcon("flare");
@@ -558,23 +558,23 @@ function blmAstralRotation(currentMP, blmAstralTime, blmAstralStacks) {
   // Change to Umbral Ice
   if (enemyTargets >= 3) {
     if (player.level >= 72) {
-      addIcon("freezeUmbral3");
+      newAddIcon({name: "freezeUmbral3"});
     }
     else {
-      addIcon("transpose");
+      newAddIcon({name: "transpose"});
     }
   }
   else {
     if (player.level >= 60
     && blmAstralStacks == 3
     && (currentMP + player.jobDetail.umbralHearts * 800 - 1600 - blmAstralMinimumMP) / 1600 > (blmAstralTime - blmRotationBufferTime) / 2800) {
-      addIcon("fire");
+      newAddIcon({name: "fire"});
     }
     else if (blmCasting == "Blizzard III") {
       removeIcon("blizzard3");
     }
     else {
-      addIcon("blizzard3");
+      newAddIcon({name: "blizzard3"});
     }
   }
 }
@@ -625,14 +625,14 @@ function blmUmbralRotation(currentMP, blmUmbralTime, blmUmbralStacks) {
       }
       // AoE uses Freeze to transition to Umbral III
       else if (player.jobDetail.umbralStacks != -3) {
-        addIcon("freeze");
+        newAddIcon({name: "freeze"});
       }
       else {
         removeIcon("freeze");
       }
     }
     else if (player.level >= 35) {
-      addIcon("freeze");
+      newAddIcon({name: "freeze"});
     }
     else {
       if (player.currentMP == 10000) {
@@ -642,7 +642,7 @@ function blmUmbralRotation(currentMP, blmUmbralTime, blmUmbralStacks) {
         removeIcon("blizzard2");
       }
       else {
-        addIcon("blizzard2");
+        newAddIcon({name: "blizzard2"});
       }
     }
   }
@@ -659,7 +659,7 @@ function blmUmbralRotation(currentMP, blmUmbralTime, blmUmbralStacks) {
         removeIcon("blizzard4");
       }
       else if (player.jobDetail.enochian || checkRecast("enochian") < 0) {
-        addIcon("blizzard4");
+        newAddIcon({name: "blizzard4"});
       }
       else {
         removeIcon("blizzard4");
@@ -675,7 +675,7 @@ function blmUmbralRotation(currentMP, blmUmbralTime, blmUmbralStacks) {
         removeIcon("blizzard");
       }
       else {
-        addIcon("blizzard");
+        newAddIcon({name: "blizzard"});
       }
     }
   }
@@ -688,14 +688,14 @@ function blmUmbralRotation(currentMP, blmUmbralTime, blmUmbralStacks) {
     if (player.level >= 72
     && enemyTargets >= 5
     && player.jobDetail.umbralHearts > 0) {
-      addIcon("coldflare");  // "Cold flare"
+      newAddIcon({name: "coldflare"});  // "Cold flare"
     }
     else {
       if (player.level >= 40) {
-        addIcon("fire3");
+        newAddIcon({name: "fire3"});
       }
       else if (player.level < 34) {
-        addIcon("transpose");
+        newAddIcon({name: "transpose"});
       }
     }
   }
@@ -710,7 +710,7 @@ function blmEnochian(rotationTime) {
   && player.level >= 56
   && checkRecast("enochian") <= 0
   && rotationTime > blmRotationBufferTime) {
-    addIcon("enochian");
+    newAddIcon({name: "enochian"});
   }
   else {
     removeIcon("enochian");
@@ -759,7 +759,7 @@ function blmInstantFiller(currentMP, rotationTime, rotationStacks) {
   else if (player.level >= 80
   && player.jobDetail.foulCount > 1
   && rotationTime > 2500 + blmRotationBufferTime) {
-    addIcon("xenoglossy");
+    newAddIcon({name: "xenoglossy"});
     blmInstant = "Xenoglossy";
   }
 
