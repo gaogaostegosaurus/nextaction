@@ -409,7 +409,7 @@ function dncFlourishCheck() {
     checkStatus("flourishingwindmill"),
     checkStatus("flourishingshower"),
     checkStatus("flourishingfandance")) < 0) {
-      addCountdownBar({name: "flourish", time: checkRecast("flourish"), text: "OK")
+      addCountdownBar({name: "flourish", time: checkRecast("flourish"), text: "OK"})
       if (checkRecast("flourish") < 0) {
         addIcon({name: "flourish"});
       }
