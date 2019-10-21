@@ -47,15 +47,15 @@ function mnkJobChange() {
   countdownid.brotherhood = 10;
 
   if (player.level >= 50) {
-    addCountdownBar("perfectbalance", checkRecast("perfectbalance"), "icon");
+    addCountdownBar({name: "perfectbalance", time: checkRecast("perfectbalance"), oncomplete: "addIcon"});
   }
 
   if (player.level >= 68) {
-    addCountdownBar("riddleoffire", checkRecast("riddleoffire"), "icon");
+    addCountdownBar({name: "riddleoffire", time: checkRecast("riddleoffire"), oncomplete: "addIcon"});
   }
 
   if (player.level >= 70) {
-    addCountdownBar("brotherhood", checkRecast("brotherhood"), "icon");
+    addCountdownBar({name: "brotherhood", time: checkRecast("brotherhood"), oncomplete: "addIcon"});
   }
 
   mnkCombo();
@@ -76,19 +76,19 @@ function mnkAction(logLine) {
   if (actionList.mnk.indexOf(actionLog.groups.actionName) > -1) {
 
     if ("Perfect Balance" == actionLog.groups.actionName) {
-      addCountdownBar("perfectbalance", recast.perfectbalance, "icon");
+      addCountdownBar({name: "perfectbalance", time: recast.perfectbalance, oncomplete: "addIcon"});
     }
 
     else if ("Riddle Of Earth" == actionLog.groups.actionName) {
-      addCountdownBar("riddleofearth", recast.riddleofearth, "icon");
+      addCountdownBar({name: "riddleofearth", time: recast.riddleofearth, oncomplete: "addIcon"});
     }
 
     else if ("Riddle Of Fire" == actionLog.groups.actionName) {
-      addCountdownBar("riddleoffire", recast.riddleoffire, "icon");
+      addCountdownBar({name: "riddleoffire", time: recast.riddleoffire, oncomplete: "addIcon"});
     }
 
     else if ("Brotherhood" == actionLog.groups.actionName) {
-      addCountdownBar("brotherhood", recast.brotherhood, "icon");
+      addCountdownBar({name: "brotherhood", time: recast.brotherhood, oncomplete: "addIcon"});
     }
 
     else {

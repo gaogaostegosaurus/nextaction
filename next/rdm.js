@@ -137,22 +137,22 @@ function rdmJobChange() {
 
   // Create cooldown notifications
 
-  addCountdownBar("corpsacorps", checkRecast("corpsacorps"), "addIcon");
+  addCountdownBar({name: "corpsacorps", time: checkRecast("corpsacorps"), oncomplete: "addIcon"});
 
   if (player.level >= 40) {
-    addCountdownBar("displacement", checkRecast("displacement"), "addIcon");
+    addCountdownBar({name: "displacement", time: checkRecast("displacement"), oncomplete: "addIcon"});
   }
 
   if (player.level >= 45) {
-    addCountdownBar("fleche", checkRecast("fleche"), "addIcon");
+    addCountdownBar({name: "fleche", time: checkRecast("fleche"), oncomplete: "addIcon"});
   }
 
   if (player.level >= 56) {
-    addCountdownBar("contresixte", checkRecast("contresixte"), "addIcon");
+    addCountdownBar({name: "contresixte", time: checkRecast("contresixte"), oncomplete: "addIcon"});
   }
 
   if (player.level >= 60) {
-    addCountdownBar("manafication", checkRecast("manafication"));
+    addCountdownBar({name: "manafication", time: checkRecast("manafication")});
   }
 
   enemyTargets = 1;
@@ -185,41 +185,34 @@ function rdmAction() {
     // Off GCD Actions
 
     if ("Corps-A-Corps" == actionLog.groups.actionName) {
-      // addRecast("corpsacorps");
-      addCountdownBar("corpsacorps", recast.corpsacorps, "addIcon");
       removeIcon("corpsacorps");
+      addRecast("corpsacorps");
+      addCountdownBar({name: "corpsacorps", time: recast.corpsacorps, oncomplete: "addIcon"});
     }
 
     else if (["Displacement", "Engagement"].indexOf(actionLog.groups.actionName) > -1) {
-      // addRecast("displacement");
-      addCountdownBar("displacement", recast.displacement, "addIcon");
       removeIcon("displacement");
+      addRecast("displacement");
+      addCountdownBar({name: "displacement", time: recast.displacement, oncomplete: "addIcon"});
     }
 
     else if ("Fleche" == actionLog.groups.actionName) {
-      // addRecast("fleche");
-      addCountdownBar("fleche", recast.fleche, "addIcon");
       removeIcon("fleche");
+      addRecast("fleche");
+      addCountdownBar({name: "fleche", time: recast.fleche, oncomplete: "addIcon"});
     }
 
     else if ("Acceleration" == actionLog.groups.actionName) {
-      addRecast("acceleration");
-      addCountdownBar("acceleration", recast.acceleration, "addIcon");
       removeIcon("acceleration");
+      addRecast("acceleration");
+      addCountdownBar({name: "acceleration", time: recast.acceleration, oncomplete: "addIcon"});
     }
 
     else if ("Contre Sixte" == actionLog.groups.actionName) {
-      // addRecast("contresixte");
-      addCountdownBar("contresixte", recast.contresixte, "addIcon");
-      // Contre Sixte makes weird things happen when using Single Target
-      // if (Date.now() - previous.contresixte > 1000) {
-      //   previous.contresixte = Date.now();
-      //   enemyTargets = 1;
-      // }
-      // else {
-      //   enemyTargets = enemyTargets + 1;
-      // }
       removeIcon("contresixte");
+      addRecast("contresixte");
+      addCountdownBar({name: "contresixte", time: recast.contresixte, oncomplete: "addIcon"});
+      countTargets("contresixte");
     }
 
     else if ("Embolden" == actionLog.groups.actionName) {
@@ -227,8 +220,9 @@ function rdmAction() {
     }
 
     else if ("Swiftcast" == actionLog.groups.actionName) {
+      removeIcon("swiftcast");
       addRecast("swiftcast");
-      addCountdownBar("swiftcast", recast.swiftcast, "addIcon");
+      addCountdownBar({name: "swiftcast", time: recast.swiftcast, oncomplete: "addIcon"});
     }
 
     else if ("Lucid Dreaming" == actionLog.groups.actionName) {
@@ -369,36 +363,17 @@ function rdmAction() {
         }
 
         else if ("Veraero II" == actionLog.groups.actionName) {
-          if (Date.now() - previous.veraero2 > 1000) {
-            previous.veraero2 = Date.now();
-            enemyTargets = 1;
-          }
-          else {
-            enemyTargets = enemyTargets + 1;
-          }
+          countTargets("veraero2");
+          rdmNext();
         }
 
         else if (["Scatter", "Impact"].indexOf(actionLog.groups.actionName) > -1) {
-          if (Date.now() - previous.scatter > 1000) {
-            previous.scatter = Date.now();
-            enemyTargets = 1;
-          }
-          else {
-            enemyTargets = enemyTargets + 1;
-          }
+          countTargets("scatter");
+          rdmNext();
         }
 
         else if (["Moulinet", "Enchanted Moulinet"].indexOf(actionLog.groups.actionName) > -1) {
-
-          // if (player.level < 60) {  // Only use Moulinet to count targets if >= 60, since it's used as a quick spender after that
-              if (Date.now() - previous.moulinet > 1000) {
-              previous.moulinet = Date.now();
-              enemyTargets = 1;
-            }
-            else {
-              enemyTargets = enemyTargets + 1;
-            }
-          // }
+          countTargets("moulinet");
           rdmNext();
         }
 
@@ -408,17 +383,20 @@ function rdmAction() {
         }
 
         else if ("Manafication" == actionLog.groups.actionName) {
-          addRecast("manafication");
-          addCountdownBar("manafication");
-          addRecast("corpsacorps", -1);
-          addCountdownBar("displacement", -1, "addIcon");
-          addRecast("displacement", -1);
-          addCountdownBar("corpsacorps", -1, "addIcon");
           removeIcon("manafication");
+          addRecast("manafication");
+          addRecast("corpsacorps", -1);
+          addRecast("displacement", -1);
+          addCountdownBar({name: "manafication"});
+          addCountdownBar({name: "displacement", time: -1, oncomplete: "addIcon"});
+          addCountdownBar({name: "corpsacorps", time: -1, oncomplete: "addIcon"});
           rdmNext();
         }
 
       }
+
+      // After every GCD action?
+      rdmNext();
 
     }
 

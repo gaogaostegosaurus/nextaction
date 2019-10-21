@@ -53,7 +53,7 @@ function ninJobChange() {
   previous.hellfrogmedium = 0;
 
   if (player.level >= 56) {
-    addCountdownBar("dreamwithinadream", -1);
+    addCountdownBar({name: "dreamwithinadream", time: -1});
   }
 
   ninNinjutsu();
@@ -69,7 +69,7 @@ function ninTargetChangedEvent() {
       removeCountdownBar("shadowfang");
     }
     else {
-      addCountdownBar("shadowfang", checkStatus("shadowfang", target.ID));
+      addCountdownBar({name: "shadowfang", time: checkStatus("shadowfang"), text: target.ID});
     }
     previous.targetID = target.ID;
   }
@@ -105,7 +105,7 @@ function ninAction(logLine) {
         removeIcon("tenchijin");
         addRecast("hide");
         addRecast("ninjutsu", -1);
-        addCountdownBar("ninjutsu", -1);
+        addCountdownBar({name: "ninjutsu", time: -1});
         clearTimeout(timeout.ninjutsu);
         ninNinjutsu();
       }
@@ -115,7 +115,7 @@ function ninAction(logLine) {
       }
 
       else if ("Trick Attack" == actionLog.groups.actionName) {
-        addCountdownBar("trickattack");
+        addCountdownBar({name: "trickattack"});
       }
 
       else if (["Raiton", "Hyosho Ranyu"].indexOf(actionLog.groups.actionName) > -1) {
@@ -148,17 +148,17 @@ function ninAction(logLine) {
         else {
           addRecast("kassatsu1", checkRecast("kassatsu2"));
           addRecast("kassatsu2", checkRecast("kassatsu2") + recast.kassatsu);
-          addCountdownBar("kassatsu", checkRecast("kassatsu1"), "icon");
+          addCountdownBar({name: "kassatsu", time: checkRecast("kassatsu1"), oncomplete: "addIcon"});
         }
 
-        addCountdownBar("ninjutsu", -1);
+        addCountdownBar({name: "ninjutsu", time: -1});
         clearTimeout(timeout.ninjutsu);
         ninNinjutsu();
       }
 
       else if ("Dream Within A Dream" == actionLog.groups.actionName) {
         removeIcon("dreamwithinadream");
-        addCountdownBar("dreamwithinadream", recast.dreamwithinadream, "icon");
+        addCountdownBar({name: "dreamwithinadream", time: recast.dreamwithinadream, oncomplete: "addIcon"});
         addStatus("assassinateready");
       }
 
@@ -181,15 +181,15 @@ function ninAction(logLine) {
       else if ("Ten Chi Jin" == actionLog.groups.actionName) {
         removeIcon("tenchijin");
         addStatus("tenchijin");
-        addCountdownBar("tenchijin");
+        addCountdownBar({name: "tenchijin"});
         addRecast("ninjutsu", -1);
-        addCountdownBar("ninjutsu", -1);
+        addCountdownBar({name: "ninjutsu", time: -1});
         clearTimeout(timeout.ninjutsu);
         ninNinjutsu();
       }
 
       else if ("Meisui" == actionLog.groups.actionName) {
-        addCountdownBar("meisui");
+        addCountdownBar({name: "meisui"});
         ninNinki();
       }
 
@@ -305,7 +305,7 @@ function ninStatus() {
         removeIcon("ninjutsu1");
         removeIcon("ninjutsu2");
         removeIcon("ninjutsu3");
-        addCountdownBar("ninjutsu");
+        addCountdownBar({name: "ninjutsu"});
         clearTimeout(timeout.ninjutsu);
         timeout.ninjutsu = setTimeout(ninNinjutsu, recast.ninjutsu - 1000);
         if (player.level >= 70
@@ -375,7 +375,7 @@ function ninStatus() {
       if ("gains" == effectLog.groups.gainsLoses) {
         addStatus("shadowfang", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
         if (target.ID == effectLog.groups.targetID) {  // Might be possible to switch targets between application to target and log entry
-          addCountdownBar("shadowfang", checkStatus("shadowfang", target.ID));
+          addCountdownBar({name: "shadowfang", time: checkStatus("shadowfang"), text: target.ID});
         }
       }
       else if ("loses" == effectLog.groups.gainsLoses) {
@@ -447,7 +447,7 @@ function ninLosesMudra() {
   removeIcon("ninjutsu1");
   removeIcon("ninjutsu2");
   removeIcon("ninjutsu3");
-  addCountdownBar("ninjutsu");
+  addCountdownBar({name: "ninjutsu"});
   clearTimeout(timeout.ninjutsu);
   timeout.ninjutsu = setTimeout(ninNinjutsu, recast.ninjutsu - 1000);
   if (checkRecast("kassatsu1") < 0) {
@@ -462,7 +462,7 @@ function ninNinjutsu() {
 
   if (player.level >= 70) {
     if (checkRecast("trickattack") < checkRecast("tenchijin") + 25000) {
-      addCountdownBar("tenchijin", checkRecast("tenchijin"), "SUITON");
+      addCountdownBar({name: "tenchijin", time: checkRecast("tenchijin"), text: "SUITON"});
     }
     else {
       removeCountdownBar("tenchijin");  // Maybe explore this another day

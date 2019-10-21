@@ -64,43 +64,43 @@ function whmJobChange() {
   }
 
   if (player.level >= 30) {
-    addCountdownBar("presenceofmind", -1);
+    addCountdownBar({name: "presenceofmind", time: -1});
   }
 
   if (player.level >= 50) {
-    addCountdownBar("benediction", -1);
+    addCountdownBar({name: "benediction", time: -1});
   }
 
   if (player.level >= 52) {
-    addCountdownBar("asylum", -1);
+    addCountdownBar({name: "asylum", time: -1});
   }
 
   if (player.level >= 56) {
-    addCountdownBar("assize", -1);
+    addCountdownBar({name: "assize", time: -1});
   }
 
   if (player.level >= 58) {
-    addCountdownBar("thinair", -1);
+    addCountdownBar({name: "thinair", time: -1});
   }
 
   if (player.level >= 60) {
-    addCountdownBar("tetragrammaton", -1);
+    addCountdownBar({name: "tetragrammaton", time: -1});
   }
 
   if (player.level >= 66) {
-    addCountdownBar("divinebenison", -1);
+    addCountdownBar({name: "divinebenison", time: -1});
   }
 
   if (player.level >= 70) {
-    addCountdownBar("plenaryindulgence", -1);
+    addCountdownBar({name: "plenaryindulgence", time: -1});
   }
 
   if (player.level >= 80) {
-    addCountdownBar("temperance", -1);
+    addCountdownBar({name: "temperance", time: -1});
   }
 
   if (player.level >= 18) {
-    addCountdownBar("swiftcast", -1);
+    addCountdownBar({name: "swiftcast", time: -1});
   }
 }
 
@@ -131,10 +131,10 @@ function whmTargetChangedEvent() {
     // 0 = no target, 1... = player? E... = non-combat NPC?
     if (target.ID.startsWith("1")
     && ["PLD", "WAR", "DRK", "GNB"].indexOf(target.job) > -1) {
-      addCountdownBar("regen", checkStatus("regen", target.ID), "icon");
+      addCountdownBar({name: "regen", time: checkStatus("regen", target.ID), oncomplete: "addIcon"});
     }
     else if (target.ID.startsWith("4")) {
-      addCountdownBar("aero", checkStatus("aero", target.ID), "icon");
+      addCountdownBar({name: "aero", time: checkStatus("aero", target.ID), oncomplete: "addIcon"});
     }
     else {
       removeCountdownBar("aero");
@@ -149,47 +149,47 @@ function whmAction() {
 
     if (actionLog.groups.actionName == "Lucid Dreaming") {
       addRecast("luciddreaming");
-      addCountdownBar("luciddreaming");
+      addCountdownBar({name: "luciddreaming"});
     }
 
     else if (actionLog.groups.actionName == "Presence Of Mind") {
       addRecast("presenceofmind");
-      addCountdownBar("presenceofmind");
+      addCountdownBar({name: "presenceofmind"});
     }
 
     else if (actionLog.groups.actionName == "Benediction") {
       addRecast("benediction");
-      addCountdownBar("benediction");
+      addCountdownBar({name: "benediction"});
     }
 
     else if (actionLog.groups.actionName == "Asylum") {
       addRecast("asylum");
-      addCountdownBar("asylum");
+      addCountdownBar({name: "asylum"});
     }
 
     else if (actionLog.groups.actionName == "Assize") {
       addRecast("assize");
-      addCountdownBar("assize");
+      addCountdownBar({name: "assize"});
     }
 
     else if (actionLog.groups.actionName == "Thin Air") {
       addRecast("thinair");
-      addCountdownBar("thinair");
+      addCountdownBar({name: "thinair"});
     }
 
     else if (actionLog.groups.actionName == "Tetragrammaton") {
       addRecast("tetragrammaton");
-      addCountdownBar("tetragrammaton");
+      addCountdownBar({name: "tetragrammaton"});
     }
 
     else if (actionLog.groups.actionName == "Divine Benison") {
       addRecast("divinebenison");
-      addCountdownBar("divinebenison");
+      addCountdownBar({name: "divinebenison"});
     }
 
     else if (actionLog.groups.actionName == "Regen") {
       removeIcon("regen");
-      addCountdownBar("regen", checkStatus("regen", target.ID), "icon");
+      addCountdownBar({name: "regen", time: checkStatus("regen", target.ID), oncomplete: "addIcon"});
       addStatus("regen", duration.regen, actionLog.groups.targetID);
     }
 
@@ -233,7 +233,7 @@ function whmStatus() {
       removeIcon("regen");
       if (target.ID == effectLog.groups.targetID
       && ["PLD", "WAR", "DRK", "GNB"].indexOf(target.job) > -1) {
-        addCountdownBar("regen", checkStatus("regen", target.ID), "icon");
+        addCountdownBar({name: "regen", time: checkStatus("regen", target.ID), oncomplete: "addIcon"});
       }
     }
     else if (effectLog.groups.gainsLoses == "loses") {
@@ -250,7 +250,7 @@ function whmStatus() {
       addStatus("aero", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
       removeIcon("aero");
       if (target.ID == effectLog.groups.targetID) {
-        addCountdownBar("aero", checkStatus("aero", target.ID), "icon");
+        addCountdownBar({name: "aero", time: checkStatus("aero", target.ID), oncomplete: "addIcon"});
       }
     }
     else if (effectLog.groups.gainsLoses == "loses") {

@@ -58,7 +58,7 @@ function drkJobChange() {
   previous.abyssaldrain = 0;
 
     if (player.level >= 68) {
-      addCountdownBar("delirium", checkRecast("delirium"), "icon");
+      addCountdownBar({name: "delirium", time: checkRecast("delirium"), oncomplete: "addIcon"});
     }
   drkCombo();
   drkGauge();
@@ -80,7 +80,7 @@ function drkAction() {
       removeIcon("delirium");
       addStatus("delirium");
       addRecast("delirium");
-      addCountdownBar("delirium", recast.delirium, "icon");
+      addCountdownBar({name: "delirium", time: recast.delirium, oncomplete: "addIcon"});
       drkGauge();
     }
 

@@ -90,12 +90,12 @@ function drgJobChange() {
   }
 
   if (player.level >= 30) {
-    addCountdownBar("jump", checkRecast("jump"));
+    addCountdownBar({name: "jump", time: checkRecast("jump")});
   }
 
   if (player.level >= 54
   && Math.max(player.jobDetail.bloodMilliseconds, player.jobDetail.lifeMilliseconds) < 500) {
-    addCountdownBar("bloodofthedragon", checkRecast("bloodofthedragon"), "icon");
+    addCountdownBar({name: "bloodofthedragon", time: checkRecast("bloodofthedragon"), oncomplete: "addIcon"});
   }
 
 }
@@ -115,7 +115,7 @@ function drgPlayerChangedEvent() {
     removeIcon("wheelingthrust");
     removeIcon("geirskogul");
     removeIcon("stardiver");
-    addCountdownBar("bloodofthedragon", checkRecast("bloodofthedragon"), "icon");
+    addCountdownBar({name: "bloodofthedragon", time: checkRecast("bloodofthedragon"), oncomplete: "addIcon"});
   }
 
 }
@@ -163,7 +163,7 @@ function drgAction() {
       removeIcon("requiescat");
       addStatus("requiescat");
       addRecast("requiescat");
-      addCountdownBar("requiescat");
+      addCountdownBar({name: "requiescat"});
 
       pldRequiescatMP();
     }

@@ -104,12 +104,12 @@ function brdTargetChangedEvent() { // Checks DoTs after switching targets
       if (player.level >= 54
       && checkStatus("venomousbite", target.ID) > 0
       && checkStatus("windbite", target.ID) > 0) {
-        addCountdownBar("ironjaws", Math.min(checkStatus("venomousbite", target.ID), checkStatus("windbite", target.ID)) - 5000, "icon");
+        addCountdownBar({name: "ironjaws", time: Math.min(checkStatus("venomousbite", target.ID), checkStatus("windbite", target.ID)) - 5000, oncomplete: "addIcon"});
       }
       else {
-        addCountdownBar("venomousbite", checkStatus("venomousbite", target.ID), "icon");
+        addCountdownBar({name: "venomousbite", time: checkStatus("venomousbite", target.ID), oncomplete: "addIcon"});
         if (player.level >= 18) {
-          addCountdownBar("windbite", checkStatus("windbite", target.ID), "icon");
+          addCountdownBar({name: "windbite", time: checkStatus("windbite", target.ID), oncomplete: "addIcon"});
         }
       }
     }
@@ -143,20 +143,12 @@ function brdAction() {
     && checkStatus("windbite", actionLog.groups.targetID) > 0) {
       removeCountdownBar("venomousbite");
       removeCountdownBar("windbite");
-      addCountdownBar("ironjaws", Math.min(checkStatus("venomousbite", actionLog.groups.targetID), checkStatus("windbite", actionLog.groups.targetID)) - 5000, "icon");
+      addCountdownBar({name: "ironjaws", time: Math.min(checkStatus("venomousbite", actionLog.groups.targetID), checkStatus("windbite", actionLog.groups.targetID)) - 5000, oncomplete: "addIcon"});
     }
     else {
       removeCountdownBar("ironjaws");
-      addCountdownBar("venomousbite", checkStatus("venomousbite", actionLog.groups.targetID), "icon");
+      addCountdownBar({name: "venomousbite", time: checkStatus("venomousbite", actionLog.groups.targetID), oncomplete: "addIcon"});
     }
-    // if (player.level >= 54
-    // && checkStatus("windbite", actionLog.groups.targetID) > 0) {
-    //   addCountdownBar("windbite", )
-    // }
-    // else {
-    //   removeIcon("ironjaws");
-    //   clearTimeout(timeout.ironjaws);
-    // }
   }
 
   else if (["Windbite", "Stormbite"].indexOf(actionLog.groups.actionName) > -1
@@ -168,11 +160,11 @@ function brdAction() {
     && checkStatus("venomousbite", actionLog.groups.targetID) > 0) {
       removeCountdownBar("venomousbite");
       removeCountdownBar("windbite");
-      addCountdownBar("ironjaws", Math.min(checkStatus("venomousbite", actionLog.groups.targetID), checkStatus("windbite", actionLog.groups.targetID)) - 5000, "icon");
+      addCountdownBar({name: "ironjaws", time: Math.min(checkStatus("venomousbite", actionLog.groups.targetID), checkStatus("windbite", actionLog.groups.targetID)) - 5000, oncomplete: "addIcon"});
     }
     else {
       removeCountdownBar("ironjaws");
-      addCountdownBar("windbite", checkStatus("windbite", actionLog.groups.targetID), "icon");
+      addCountdownBar({name: "windbite", time: checkStatus("windbite", actionLog.groups.targetID), oncomplete: "addIcon"});
     }
     // if (player.level >= 54
     // && checkStatus("venomousbite", actionLog.groups.targetID) > 0) {
@@ -198,7 +190,7 @@ function brdAction() {
       removeCountdownBar("windbite");
       addStatus("venomousbite", duration.venomousbite, actionLog.groups.targetID);
       addStatus("windbite", duration.windbite, actionLog.groups.targetID);
-      addCountdownBar("ironjaws", Math.min(checkStatus("venomousbite", actionLog.groups.targetID), checkStatus("windbite", actionLog.groups.targetID)) - 5000, "icon");
+      addCountdownBar({name: "ironjaws", time: Math.min(checkStatus("venomousbite", actionLog.groups.targetID), checkStatus("windbite", actionLog.groups.targetID)) - 5000, oncomplete: "addIcon"});
       // removeIcon("venomousbite");
       // clearTimeout(timeout.ironjaws);
       // addIconBlinkTimeout("venomousbite", 30000, nextid.venomousbite, icon.venomousbite);
@@ -207,14 +199,14 @@ function brdAction() {
       removeIcon("venomousbite");
       addStatus("venomousbite", duration.venomousbite, actionLog.groups.targetID);
       removeCountdownBar("ironjaws");
-      addCountdownBar("venomousbite", checkStatus("venomousbite", actionLog.groups.targetID), "icon");
+      addCountdownBar({name: "venomousbite", time: checkStatus("venomousbite", actionLog.groups.targetID), oncomplete: "addIcon"});
     }
 
     else if (checkStatus("windbite", actionLog.groups.targetID) > 0) {
       removeIcon("windbite");
       addStatus("windbite", duration.windbite, actionLog.groups.targetID);
       removeCountdownBar("ironjaws");
-      addCountdownBar("windbite", checkStatus("windbite", actionLog.groups.targetID), "icon");
+      addCountdownBar({name: "windbite", time: checkStatus("windbite", actionLog.groups.targetID), oncomplete: "addIcon"});
     }
 
   }
@@ -240,7 +232,7 @@ function brdAction() {
   }
 
   else if ("Raging Strikes" == actionLog.groups.actionName) {
-    addCountdownBar("ragingstrikes");
+    addCountdownBar({name: "ragingstrikes"});
     // addIconBlinkTimeout("ragingstrikes",recast.ragingstrikes,nextid.ragingstrikes,icon.ragingstrikes);
     // if (player.level >= 38
     // && checkStatus("straightshotready") < 0) {
@@ -249,25 +241,25 @@ function brdAction() {
   }
 
   else if ("Barrage" == actionLog.groups.actionName) {
-    addCountdownBar("barrage");
+    addCountdownBar({name: "barrage"});
   }
 
   else if ("Battle Voice" == actionLog.groups.actionName) {
-    addCountdownBar("battlevoice");
+    addCountdownBar({name: "battlevoice"});
     // addRecast("battlevoice");
     // removeIcon("battlevoice");
     // addIconBlinkTimeout("battlevoice",recast.battlevoice,nextid.battlevoice,icon.battlevoice);
   }
 
   else if ("Sidewinder" == actionLog.groups.actionName) {
-    addCountdownBar("sidewinder");
+    addCountdownBar({name: "sidewinder"});
     // addRecast("sidewinder");
     // removeIcon("sidewinder");
     // addIconBlinkTimeout("sidewinder",recast.sidewinder,nextid.sidewinder,icon.sidewinder);
   }
 
   else if ("Shadowbite" == actionLog.groups.actionName) {
-    addCountdownBar("sidewinder");
+    addCountdownBar({name: "sidewinder"});
     // addRecast("sidewinder"); // Same cooldown as SW
     // removeIcon("sidewinder");
     // addIconBlinkTimeout("sidewinder",recast.sidewinder,nextid.sidewinder,icon.sidewinder);
@@ -281,7 +273,7 @@ function brdAction() {
   }
 
   else if ("Mage's Ballad" == actionLog.groups.actionName) {
-    addCountdownBar("ballad");
+    addCountdownBar({name: "ballad"});
     // removeIcon("ballad");
     // addRecast("ballad");
     // addStatus("song", 30000);
@@ -311,13 +303,13 @@ function brdAction() {
     //   addIconBlinkTimeout("ballad", checkRecast("ballad"), nextid.ballad, icon.ballad);
     // }
     if (player.level >= 68) {
-      addCountdownBar("empyrealarrow", checkRecast("empyrealarrow"));
+      addCountdownBar({name: "empyrealarrow", time: checkRecast("empyrealarrow")});
       // addIconTimeout("empyrealarrow",checkRecast("empyrealarrow"),nextid.empyrealarrow,icon.empyrealarrow);
     }
   }
 
   else if ("Army's Paeon" == actionLog.groups.actionName) {
-    addCountdownBar("paeon");
+    addCountdownBar({name: "paeon"});
     // removeIcon("paeon");
     // addRecast("paeon");
     // addStatus("song", 30000);
@@ -349,12 +341,12 @@ function brdAction() {
     //   addIconBlinkTimeout("ballad", Math.max(checkRecast("ballad"), 30000), nextid.ballad, icon.ballad);
     // }
     if (player.level >= 68) {
-      addCountdownBar("empyrealarrow", checkRecast("empyrealarrow"));
+      addCountdownBar({name: "empyrealarrow", time: checkRecast("empyrealarrow")});
     }
   }
 
   else if ("The Wanderer's Minuet" == actionLog.groups.actionName) {
-    addCountdownBar("paeon");
+    addCountdownBar({name: "paeon"});
     // removeIcon("minuet");
     // addRecast("minuet");
     // addStatus("song", 30000);
@@ -366,7 +358,7 @@ function brdAction() {
     //   addIconBlinkTimeout("paeon", Math.max(checkRecast("paeon"), 30000), nextid.paeon, icon.paeon);
     // }
     if (player.level >= 68) {
-      addCountdownBar("empyrealarrow", checkRecast("empyrealarrow"));
+      addCountdownBar({name: "empyrealarrow", time: checkRecast("empyrealarrow")});
     }
   }
 
@@ -377,7 +369,7 @@ function brdAction() {
     previous.empyrealarrow = Date.now();
     // removeIcon("empyrealarrow");
     // addRecast("empyrealarrow");
-    addCountdownBar("empyrealarrow");
+    addCountdownBar({name: "empyrealarrow"});
     // if (player.level >= 68) {
     //   if (checkStatus("song", player.ID) > recast.empyrealarrow) { // Check if EA should be reused within song duration
     //     addIconTimeout("empyrealarrow",recast.empyrealarrow,nextid.empyrealarrow,icon.empyrealarrow);
@@ -427,20 +419,20 @@ function brdStatus() {
           && checkStatus("windbite", target.ID) > 0) {
             removeCountdownBar("venomousbite");
             removeCountdownBar("windbite");
-            addCountdownBar("ironjaws", Math.min(checkStatus("venomousbite", target.ID), checkStatus("windbite", target.ID)) - 5000, "icon");
+            addCountdownBar({name: "ironjaws", time: Math.min(checkStatus("venomousbite", target.ID), checkStatus("windbite", target.ID)) - 5000, oncomplete: "addIcon"});
           }
           else {
             removeCountdownBar("ironjaws");
-            addCountdownBar("venomousbite", checkStatus("venomousbite", target.ID), "icon");
-            addCountdownBar("windbite", checkStatus("windbite", target.ID), "icon");
+            addCountdownBar({name: "venomousbite", time: checkStatus("venomousbite", target.ID), oncomplete: "addIcon"});
+            addCountdownBar({name: "windbite", time: checkStatus("windbite", target.ID), oncomplete: "addIcon"});
           }
         }
       }
       else if (effectLog.groups.gainsLoses == "loses") {
         removeIcon("ironjaws");
         removeCountdownBar("ironjaws");
-        addCountdownBar("venomousbite", checkStatus("venomousbite", target.ID), "icon");
-        addCountdownBar("windbite", checkStatus("windbite", target.ID), "icon");
+        addCountdownBar({name: "venomousbite", time: checkStatus("venomousbite", target.ID), oncomplete: "addIcon"});
+        addCountdownBar({name: "windbite", time: checkStatus("windbite", target.ID), oncomplete: "addIcon"});
       }
     }
 
@@ -452,21 +444,21 @@ function brdStatus() {
           && checkStatus("venomousbite", target.ID) > 0) {
             removeCountdownBar("venomousbite");
             removeCountdownBar("windbite");
-            addCountdownBar("ironjaws", Math.min(checkStatus("venomousbite", target.ID), checkStatus("windbite", target.ID)) - 5000, "icon");
+            addCountdownBar({name: "ironjaws", time: Math.min(checkStatus("venomousbite", target.ID), checkStatus("windbite", target.ID)) - 5000, oncomplete: "addIcon"});
           }
           else {
             removeIcon("ironjaws");
             removeCountdownBar("ironjaws");
-            addCountdownBar("venomousbite", checkStatus("venomousbite", target.ID), "icon");
-            addCountdownBar("windbite", checkStatus("windbite", target.ID), "icon");
+            addCountdownBar({name: "venomousbite", time: checkStatus("venomousbite", target.ID), oncomplete: "addIcon"});
+            addCountdownBar({name: "windbite", time: checkStatus("windbite", target.ID), oncomplete: "addIcon"});
           }
         }
       }
       else if (effectLog.groups.gainsLoses == "loses") {
         removeIcon("ironjaws");
         removeCountdownBar("ironjaws");
-        addCountdownBar("venomousbite", checkStatus("venomousbite", target.ID), "icon");
-        addCountdownBar("windbite", checkStatus("windbite", target.ID), "icon");
+        addCountdownBar({name: "venomousbite", time: checkStatus("venomousbite", target.ID), oncomplete: "addIcon"});
+        addCountdownBar({name: "windbite", time: checkStatus("windbite", target.ID), oncomplete: "addIcon"});
       }
     }
   }

@@ -60,7 +60,7 @@ function gnbJobChange() {
     icon.dangerzone = icon.blastingzone;
   }
 
-  addCountdownBar("nomercy", checkRecast("nomercy"), "icon");
+  addCountdownBar({name: "nomercy", time: checkRecast("nomercy"), oncomplete: "addIcon"});
 
   gnbCartridge();
   gnbCombo();
@@ -73,7 +73,7 @@ function gnbAction() {
     if ("No Mercy" == actionLog.groups.actionName) {
       addStatus("nomercy");
       addRecast("nomercy");
-      addCountdownBar("nomercy", checkRecast("nomercy"), "icon");
+      addCountdownBar({name: "nomercy", time: checkRecast("nomercy"), oncomplete: "addIcon"});
       gnbCartridge();
     }
 
@@ -167,7 +167,7 @@ function gnbAction() {
           recast.gnashingfang = Date.now() - previous.gnashingfang; // Adjusts cooldown
         }
         previous.gnashingfang = Date.now();
-        addCountdownBar("gnashingfang", recast.gnashingfang);
+        addCountdownBar({name: "gnashingfang", time: recast.gnashingfang});
         addRecast("gnashingfang");
       }
 
@@ -209,7 +209,7 @@ function gnbStatus() {
     if ("No Mercy" == effectLog.groups.effectName) {
       if (effectLog.groups.gainsLoses == "gains") {
         addStatus("nomercy", parseInt(effectLog.groups.effectDuration) * 1000);
-        addCountdownBar("sonicbreak", checkRecast("sonicbreak"), "icon");
+        addCountdownBar({name: "sonicbreak", time: checkRecast("sonicbreak"), oncomplete: "addIcon"});
         gnbCartridge();
       }
       else if (effectLog.groups.gainsLoses == "loses") {

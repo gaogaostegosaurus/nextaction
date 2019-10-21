@@ -78,40 +78,40 @@ function pldJobChange() {
   }
 
   if (checkRecast("fightorflight") <= checkRecast("requiescat")) {
-    addCountdownBar("fightorflight", checkRecast("fightorflight"));
+    addCountdownBar({name: "fightorflight", time: checkRecast("fightorflight")});
   }
   else if (player.level >= 68) {
-    addCountdownBar("requiescat", checkRecast("requiescat"));
+    addCountdownBar({name: "requiescat", time: checkRecast("requiescat")});
   }
 
-  addCountdownBar("rampart", checkRecast("rampart"));
+  addCountdownBar({name: "rampart", time: checkRecast("rampart")});
 
   // if (player.level >= 12) {
-  //   addCountdownBar("lowblow", checkRecast("lowblow"));
+  //   addCountdownBar({name: "lowblow", time: checkRecast("lowblow")});
   // }
 
   // if (player.level >= 18) {
-  //   addCountdownBar("interject", checkRecast("interject"));
+  //   addCountdownBar({name: "interject", time: checkRecast("interject")});
   // }
 
   // if (player.level >= 22) {
-  //   addCountdownBar("reprisal", checkRecast("reprisal"));
+  //   addCountdownBar({name: "reprisal", time: checkRecast("reprisal")});
   // }
 
   if (player.level >= 38) {
-    addCountdownBar("sentinel", checkRecast("sentinel"));
+    addCountdownBar({name: "sentinel", time: checkRecast("sentinel")});
   }
 
   // if (player.level >= 48) {
-  //   addCountdownBar("shirk", checkRecast("shirk"));
+  //   addCountdownBar({name: "shirk", time: checkRecast("shirk")});
   // }
 
   if (player.level >= 50) {
-    addCountdownBar("hallowedground", checkRecast("hallowedground"));
+    addCountdownBar({name: "hallowedground", time: checkRecast("hallowedground")});
   }
 
   if (player.level >= 74) {
-    addCountdownBar("intervene2", checkRecast("intervene2"));
+    addCountdownBar({name: "intervene2", time: checkRecast("intervene2")});
   }
 
   pldCombo();
@@ -145,7 +145,7 @@ function pldAction() {
       removeIcon("fightorflight");
       addStatus("fightorflight");
       addRecast("fightorflight");
-      addCountdownBar("fightorflight");
+      addCountdownBar({name: "fightorflight"});
     }
 
     else if ("Spirits Within" == actionLog.groups.actionName) {
@@ -176,7 +176,7 @@ function pldAction() {
       removeIcon("requiescat");
       addStatus("requiescat");
       addRecast("requiescat");
-      addCountdownBar("requiescat");
+      addCountdownBar({name: "requiescat"});
 
       pldRequiescatMP();
     }

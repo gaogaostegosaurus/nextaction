@@ -65,51 +65,51 @@ function schJobChange() {
   // Show available cooldowns
 
   if (player.level >= 20) {
-    addCountdownBar("whisperingdawn", -1);
+    addCountdownBar({name: "whisperingdawn", time: -1});
   }
 
   if (player.level >= 40) {
-    addCountdownBar("feyillumination", -1);
+    addCountdownBar({name: "feyillumination", time: -1});
   }
 
   if (player.level >= 45) {
-    addCountdownBar("aetherflow", -1, "addIcon");
+    addCountdownBar({name: "aetherflow", time: -1, oncomplete: "addIcon"});
   }
 
   if (player.level >= 50) {
-    addCountdownBar("sacredsoil", -1);
+    addCountdownBar({name: "sacredsoil", time: -1});
   }
 
   if (player.level >= 52) {
-    addCountdownBar("indomitability", -1);
+    addCountdownBar({name: "indomitability", time: -1});
   }
 
   if (player.level >= 56) {
-    addCountdownBar("deploymenttactics", -1);
+    addCountdownBar({name: "deploymenttactics", time: -1});
   }
 
   if (player.level >= 60) {
-    addCountdownBar("dissipation", -1);
+    addCountdownBar({name: "dissipation", time: -1});
   }
 
   if (player.level >= 62) {
-    addCountdownBar("excogitation", -1);
+    addCountdownBar({name: "excogitation", time: -1});
   }
 
   if (player.level >= 66) {
-    addCountdownBar("chainstratagem", checkRecast("chainstratagem"), "addIcon");
+    addCountdownBar({name: "chainstratagem", time: checkRecast("chainstratagem"), oncomplete: "addIcon"});
   }
 
   if (player.level >= 74) {
-    addCountdownBar("recitation", -1);
+    addCountdownBar({name: "recitation", time: -1});
   }
 
   if (player.level >= 76) {
-    addCountdownBar("feyblessing", -1);
+    addCountdownBar({name: "feyblessing", time: -1});
   }
 
   if (player.level >= 80) {
-    addCountdownBar("summonseraph", -1);
+    addCountdownBar({name: "summonseraph", time: -1});
   }
 }
 
@@ -122,7 +122,7 @@ function schTargetChangedEvent() {
       removeCountdownBar("bio");
     }
     else {
-      addCountdownBar("bio", checkStatus("bio", target.ID), "addIcon");
+      addCountdownBar({name: "bio", time: checkStatus("bio", target.ID), oncomplete: "addIcon"});
     }
     previous.targetID = target.ID;
   }
@@ -141,48 +141,48 @@ function schAction() {
     }
 
     else if ("Whispering Dawn" == actionLog.groups.actionName) {
-      addCountdownBar("whisperingdawn");
+      addCountdownBar({name: "whisperingdawn"});
     }
 
     else if ("Fey Illumination" == actionLog.groups.actionName) {
-      addCountdownBar("feyillumination");
+      addCountdownBar({name: "feyillumination"});
     }
 
     else if ("Aetherflow" == actionLog.groups.actionName) {
       removeIcon("aetherflow");
-      addCountdownBar("aetherflow", recast.aetherflow, "addIcon");
+      addCountdownBar({name: "aetherflow", time: recast.aetherflow, oncomplete: "addIcon"});
     }
 
     else if ("Sacred Soil" == actionLog.groups.actionName) {
-      addCountdownBar("sacredsoil");
+      addCountdownBar({name: "sacredsoil"});
     }
 
     else if ("Indomitability" == actionLog.groups.actionName) {
-      addCountdownBar("indomitability");
+      addCountdownBar({name: "indomitability"});
     }
 
     else if ("Excogitation" == actionLog.groups.actionName) {
-      addCountdownBar("excogitation");
+      addCountdownBar({name: "excogitation"});
     }
 
     else if ("Deployment Tactics" == actionLog.groups.actionName) {
-      addCountdownBar("deploymenttactics");
+      addCountdownBar({name: "deploymenttactics"});
     }
 
     else if ("Dissipation" == actionLog.groups.actionName) {
-      addCountdownBar("dissipation");
+      addCountdownBar({name: "dissipation"});
     }
 
     else if ("Chain Stratagem" == actionLog.groups.actionName) {
-      addCountdownBar("chainstratagem", recast.chainstratagem, "addIcon");
+      addCountdownBar({name: "chainstratagem", time: recast.chainstratagem, oncomplete: "addIcon"});
     }
 
     else if ("Recitation" == actionLog.groups.actionName) {
-      addCountdownBar("recitation");
+      addCountdownBar({name: "recitation"});
     }
 
     else if ("Summon Seraph" == actionLog.groups.actionName) {
-      addCountdownBar("summonseraph");
+      addCountdownBar({name: "summonseraph"});
     }
   }
 }
@@ -193,7 +193,7 @@ function schStatus() {
     if (effectLog.groups.gainsLoses == "gains") {
       addStatus("bio", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
       if (target.ID == effectLog.groups.targetID) {  // Might be possible to switch targets between application to target and log entry
-        addCountdownBar("bio", checkStatus("bio", target.ID), "addIcon");
+        addCountdownBar({name: "bio", time: checkStatus("bio", target.ID), oncomplete: "addIcon"});
       }
     }
     else if (effectLog.groups.gainsLoses == "loses") {

@@ -325,7 +325,7 @@ function blmStatus() {
     if (effectLog.groups.effectName == "Thundercloud") {
       if (effectLog.groups.gainsLoses == "gains") {
         addStatus("thundercloud", parseInt(effectLog.groups.effectDuration) * 1000);
-        addCountdownBar("thundercloud", checkStatus("thundercloud"), "removeCountdownBar");
+        addCountdownBar({name: "thundercloud", time: checkStatus("thundercloud"), oncomplete: "removeCountdownBar"});
       }
       else if (effectLog.groups.gainsLoses == "loses") {
         removeStatus("thundercloud", effectLog.groups.targetID);
@@ -335,7 +335,7 @@ function blmStatus() {
     else if (effectLog.groups.effectName == "Firestarter") {
       if (effectLog.groups.gainsLoses == "gains") {
         addStatus("firestarter", parseInt(effectLog.groups.effectDuration) * 1000);
-        addCountdownBar("firestarter", checkStatus("firestarter"), "removeCountdownBar");
+        addCountdownBar({name: "firestarter", time: checkStatus("firestarter"), oncomplete: "removeCountdownBar"});
       }
       else if (effectLog.groups.gainsLoses == "loses") {
         removeStatus("firestarter", effectLog.groups.targetID);
@@ -352,7 +352,7 @@ function blmStatus() {
     if (["Thunder", "Thunder II", "Thunder III", "Thunder IV"].indexOf(effectLog.groups.effectName) > -1) {
       if (effectLog.groups.gainsLoses == "gains") {
         addStatus("thunder", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
-        addCountdownBar("thunder", checkStatus("thunder", effectLog.groups.targetID), "removeCountdownBar");
+        addCountdownBar({name: "thunder", time: checkStatus("thunder", effectLog.groups.targetID), oncomplete: "removeCountdownBar"});
       }
       else if (effectLog.groups.gainsLoses == "loses") {
         removeStatus("thunder", effectLog.groups.targetID);

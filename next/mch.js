@@ -111,22 +111,22 @@ function mchJobChange() {
 
   // Show available cooldowns
 
-  addCountdownBar("hotshot", checkRecast("hotshot"), "icon");
+  addCountdownBar({name: "hotshot", time: checkRecast("hotshot"), oncomplete: "addIcon"});
 
   if (player.level >= 15) {
-    addCountdownBar("gaussround", checkRecast("gaussround1"));
+    addCountdownBar({name: "gaussround", time: checkRecast("gaussround1")});
   }
 
   if (player.level >= 50) {
-    addCountdownBar("ricochet", checkRecast("ricochet1"));
+    addCountdownBar({name: "ricochet", time: checkRecast("ricochet1")});
   }
 
   if (player.level >= 10) {
-    addCountdownBar("reassemble", checkRecast("reassemble"));
+    addCountdownBar({name: "reassemble", time: checkRecast("reassemble")});
   }
 
   if (player.level >= 58) {
-    addCountdownBar("drill", checkRecast("drill"), "icon");
+    addCountdownBar({name: "drill", time: checkRecast("drill"), oncomplete: "addIcon"});
   }
 
   mchHeat();
@@ -167,7 +167,7 @@ function mchAction() {
       }
       previous.hotshot = Date.now();
       addRecast("hotshot");
-      addCountdownBar("hotshot", recast.hotshot, "icon");
+      addCountdownBar({name: "hotshot", time: recast.hotshot, oncomplete: "addIcon"});
       mchBattery();
       mchHeat();  // Why? Check later
     }
@@ -180,7 +180,7 @@ function mchAction() {
       previous.drill = Date.now();
       addRecast("drill");
       //removeIcon("drill");
-      addCountdownBar("drill", recast.drill, "icon");
+      addCountdownBar({name: "drill", time: recast.drill, oncomplete: "addIcon"});
       // if (checkRecast("reassemble") < checkRecast("drill")) {
       //   addIconBlinkTimeout("drill", recast.drill - 1000, nextid.drill, icon.reassemble);
       // }
@@ -309,7 +309,7 @@ function mchAction() {
     }
 
     else if ("Reassemble" == actionLog.groups.actionName) {
-      addCountdownBar("reassemble");
+      addCountdownBar({name: "reassemble"});
       if (player.level >= 58
       && checkRecast("drill") < 0) {
         addIcon({name: "drill"});
