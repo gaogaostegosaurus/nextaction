@@ -74,6 +74,13 @@
       margin-top: 2px;
     }
 
+    .new-iconimg {
+      position: relative;
+      width: 40px;
+      height: 40px;
+      margin: 2px;
+    }
+
     .iconoverlay {
       position: absolute;
       width: 48px;
@@ -168,11 +175,28 @@
       opacity: 1;
     }
 
+    .new-icon-add {
+      display: inline-flex;
+      position: relative;
+      animation: icon-add 1s ease;
+    }
+
+    .new-icon-remove {
+      display: inline-flex;
+      position: relative;
+      animation: icon-remove 1s ease;
+    }
+
     .icon-remove {
       transition: opacity 0.1s ease 0s, height 0.5s ease 0.1s, width 0.2s ease 0.1s;
       width: 0px;
       height: 0px;
       opacity: 0;
+    }
+
+    .icon-fade {
+      transition: opacity 0.5s ease 0s;
+      opacity: 0.5;
     }
 
     .countdown-add {
@@ -198,11 +222,44 @@
       100% {opacity: 1;}
     }
 
+    @keyframes icon-add {
+      0% {opacity: 0; width: 0; height: 0;}
+      50% {opacity: 0; width: 44; height: 44;}
+      100% {opacity: 1; width: 44; height: 44;}
+    }
+
+    @keyframes icon-remove {
+      0% {opacity: 1; width: 44; height: 44;}
+      50% {opacity: 0; width: 44; height: 44;}
+      100% {opacity: 0; width: 0; height: 0;}
+    }
+
+    @keyframes fade-in {
+      0% {opacity: 0;}
+      100% {opacity: 1;}
+    }
+
+    @keyframes fade-out {
+      0% {opacity: 1;}
+      100% {opacity: 0;}
+    }
+
+    @keyframes slide-in {
+      0% {width: 0; height: 0;}
+      100% {width: 44; height: 44;}
+    }
+
+    @keyframes slide-out {
+      0% {width: 44; height: 44;}
+      100% {width: 0; height: 0;}
+    }
+
   </style>
 
 </head>
 
 <body>
+
   <div id="nextdiv" class="next-box">
     <div class="row">
       <div id="icondiv0" class="icondiv"><div id="iconimgdiv0" class="iconimgdiv"><img id="iconimg0" class="iconimg" src="icon/066161.png"><img class="iconoverlay" src="icon/overlay.png"></div><div id="iconcountdown0" class="iconcountdowndiv"></div></div>
@@ -578,6 +635,15 @@
     </div>
   </div>
 
+  <div id="test-box" class="next-box">
+    <div id="normal-priority" class="row">
+      <div style="order: 0;"></div>
+    </div>
+</div>
+
+
+  <div id="gcd-box" class="next-box">
+  </div>
 </body>
 </html>
 
@@ -605,3 +671,4 @@
 <script src="next/war.js"></script>
 <script src="next/whm.js"></script>
 <script src="next/raid.js"></script>
+<script src="next/test.js"></script>

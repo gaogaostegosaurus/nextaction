@@ -7,6 +7,7 @@ var rdmMultiTargetManaPotency = 2.43;
 var rdmProcPotency = 20;
 var rdmMinimumMana = 50;
 var rdmManaBreakpoint = 5;  // "If you lose this much mana fixing your procs, you have not gained potency."
+var rdmBestDualcastValue = 0;
 
 // Time from Enchanted Riposte to Verflare/Verholy
 // If proc time is below this value, it's considered "gone" for purposes of Verflare/Verholy procs
@@ -27,17 +28,32 @@ var hardcast = [
   "Verthunder II", 7, 0,
   "Veraero II", 0, 7,
   "Swiftcast", 0, 0
-  ];
+];
 var dualcast = [
   "Verthunder", 11, 0,
   "Veraero", 0, 11,
   "Scatter", 3, 3
 ];
 
+var rdmHardcastSpells = [
+  ["Jolt", 3, 3],
+  ["Verfire", 9, 0],
+  ["Verstone", 0, 9],
+  ["Verthunder II", 7, 0],
+  ["Veraero II", 0, 7],
+  ["Swiftcast", 0, 0]
+];
+
+var rdmDualcastSpells = [
+  ["Verthunder", 11, 0],
+  ["Veraero", 0, 11],
+  ["Scatter", 3, 3]
+];
+
 var i;  // For loops
 var j;
 
-actionList.rdm = [
+var rdmActions = [
 
   // Off-GCD
   "Corps-A-Corps", "Displacement", "Fleche", "Contre Sixte", "Acceleration", "Manafication", "Engagement",
@@ -101,7 +117,6 @@ function rdmJobChange() {
   previous.veraero2 = 0;
   previous.scatter = 0;
   previous.moulinet = 0;
-
 
   // Set up icons
 
@@ -180,7 +195,7 @@ function rdmStartsUsing() {
 // 16: NetworkAOEAbility
 function rdmAction() {
 
-  if (actionList.rdm.indexOf(actionLog.groups.actionName) > -1) {
+  if (rdmActions.indexOf(actionLog.groups.actionName) > -1) {
 
     // Off GCD Actions
 
@@ -233,7 +248,6 @@ function rdmAction() {
     else {
 
       if (["Riposte", "Enchanted Riposte"].indexOf(actionLog.groups.actionName) > -1) {
-
         removeIcon("hardcast");
         removeIcon("dualcast");
 
@@ -471,6 +485,7 @@ function rdmEffect() {
   }
 }
 
+
 // Main function
 function rdmNext() {
 
@@ -590,17 +605,18 @@ function rdmNext() {
 
 }
 
+
 function rdmDualcast() {
 
   rdmDualcastCombo = ["Hardcast", "Dualcast"];
   rdmDualcastComboValue = 0;
-  previous.rdmDualcastValue = 0;
+  rdmBestDualcastValue = 0;
 
   for (i = 0; i < hardcast.length; i = i + 3) {
     for (j = 0; j < dualcast.length; j = j + 3) {
-      if (rdmDualcastValue(hardcast[i], hardcast[i + 1], hardcast[i + 2], dualcast[j], dualcast[j + 1], dualcast[j + 2]) > previous.rdmDualcastValue) {
+      if (rdmDualcastValue(hardcast[i], hardcast[i + 1], hardcast[i + 2], dualcast[j], dualcast[j + 1], dualcast[j + 2]) > rdmBestDualcastValue) {
         rdmDualcastCombo = [hardcast[i], dualcast[j]];
-        previous.rdmDualcastValue = rdmDualcastValue(hardcast[i], hardcast[i + 1], hardcast[i + 2], dualcast[j], dualcast[j + 1], dualcast[j + 2]);
+        rdmBestDualcastValue = rdmDualcastValue(hardcast[i], hardcast[i + 1], hardcast[i + 2], dualcast[j], dualcast[j + 1], dualcast[j + 2]);
       }
     }
   }
@@ -634,7 +650,7 @@ function rdmDualcast() {
     addIcon({name: "dualcast", img: "scatter"});
   }
 
-  // console.log(rdmDualcastCombo[0] + " " + rdmDualcastCombo[1] + " " + previous.rdmDualcastValue);
+  // console.log(rdmDualcastCombo[0] + " " + rdmDualcastCombo[1] + " " + rdmBestDualcastValue);
 
 }
 

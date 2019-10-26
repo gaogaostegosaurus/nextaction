@@ -1,12 +1,12 @@
 "use strict";
 
-var blmFireSpam = "Fire";
+var blmFireSpam = "none";
 var blmFireIcon = "none";
-var blmFireMP = 1600;
-var blmThunderMP = 200;
+var blmFireMP = 1000000;
+var blmThunderMP = 1000000;
 var blmThunderIcon = "none";
 
-var blmFireTime = 2800;
+var blmFireTime = 100000;
 
 var blmAstralMinimumMP = 200;
 var blmUmbralMinimumMP = 0;
@@ -530,6 +530,9 @@ function blmAstralRotation(currentMP, blmAstralTime, blmAstralStacks) {
         img: blmFireIcon,
       });
     }
+    else if (blmCasting == blmFireSpam) {
+      fadeIcon({name: "firespam"});
+    }
     else {
       removeIcon("firespam");
     }
@@ -547,6 +550,12 @@ function blmAstralRotation(currentMP, blmAstralTime, blmAstralStacks) {
     && currentMP - count.firespam * 1600 < 1600 + blmAstralMinimumMP) {
       addIcon({name: "despair"});
     }
+    else if (blmCasting == "Flare") {
+      fadeIcon({name: "flare"});
+    }
+    else if (blmCasting == "Despair") {
+      fadeIcon({name: "despair"});
+    }
     else {
       removeIcon("flare");
     }
@@ -558,7 +567,12 @@ function blmAstralRotation(currentMP, blmAstralTime, blmAstralStacks) {
   // Change to Umbral Ice
   if (enemyTargets >= 3) {
     if (player.level >= 72) {
-      addIcon({name: "freezeUmbral3"});
+      if (blmCasting != "Freeze") {
+        addIcon({name: "freezeUmbral3"});
+      }
+      else {
+        fadeIcon({name: "freezeUmbral3"});
+      }
     }
     else {
       addIcon({name: "transpose"});
@@ -571,7 +585,7 @@ function blmAstralRotation(currentMP, blmAstralTime, blmAstralStacks) {
       addIcon({name: "fire"});
     }
     else if (blmCasting == "Blizzard III") {
-      removeIcon("blizzard3");
+      fadeIcon({name: "blizzard3"});
     }
     else {
       addIcon({name: "blizzard3"});

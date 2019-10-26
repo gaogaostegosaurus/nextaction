@@ -2,8 +2,8 @@
 
 // Use https://quisquous.github.io/cactbot/ui/test/test.html to figure out random values
 
-
-var cooldowntracker = {};     // Holds timestamps for cooldowns
+var removeAnimationTime = 1000;
+var cooldownTracker = {};     // Holds timestamps for cooldowns
 var effectTracker = {};       // Holds timestamps for statuses
 var cooldowntime = {};        // Holds timestamps for cooldowns
 var bufferTime = 0;
@@ -335,14 +335,14 @@ function addRecast(name, time, id) {
     id = player.ID;
   }
 
-  if (!cooldowntracker[name]) { // Create array if it doesn't exist yet
-    cooldowntracker[name] = [id, time + Date.now()];
+  if (!cooldownTracker[name]) { // Create array if it doesn't exist yet
+    cooldownTracker[name] = [id, time + Date.now()];
   }
-  else if (cooldowntracker[name].indexOf(id) > -1) { // Update array if source match found
-    cooldowntracker[name][cooldowntracker[name].indexOf(id) + 1] = time + Date.now();
+  else if (cooldownTracker[name].indexOf(id) > -1) { // Update array if source match found
+    cooldownTracker[name][cooldownTracker[name].indexOf(id) + 1] = time + Date.now();
   }
   else { // Push new entry into array if no matching entry
-    cooldowntracker[name].push(id, time + Date.now());
+    cooldownTracker[name].push(id, time + Date.now());
   }
 }
 
@@ -350,11 +350,11 @@ function checkRecast(name, id) {
   if (id === undefined) {
     id = player.ID;
   }
-  if (!cooldowntracker[name]) {
+  if (!cooldownTracker[name]) {
     return -1;
   }
-  else if (cooldowntracker[name].indexOf(id) > -1) {
-    return Math.max(cooldowntracker[name][cooldowntracker[name].indexOf(id) + 1] - Date.now(), -1);
+  else if (cooldownTracker[name].indexOf(id) > -1) {
+    return Math.max(cooldownTracker[name][cooldownTracker[name].indexOf(id) + 1] - Date.now(), -1);
   }
   else {
     return -1; // Always eturns -1 when cooldown is available
@@ -421,6 +421,19 @@ function addIcon({
   dom["iconimg" + nextid[name]].src = "icon/" + icon[img] + ".png";
   dom["icondiv" + nextid[name]].className = "icondiv icon-add " + effect;
 
+}
+
+function addIconEffect({
+  name,
+  img = name,
+  effect = "",
+} = {}) {
+
+  dom["icondiv" + nextid[name]].className = dom["icondiv" + nextid[name]].className + " " + effect;
+}
+
+function fadeIcon({name} = {}) {
+  dom["icondiv" + nextid[name]].className = "icondiv icon-fade";
 }
 
 function removeIcon(name) {

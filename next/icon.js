@@ -2,6 +2,8 @@
 
 var icon = {};
 
+icon.default = "000000";
+
 // Role Actions
 icon.rampart = "000801";
 icon.lowblow = "000802";
