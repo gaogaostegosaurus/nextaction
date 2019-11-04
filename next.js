@@ -1,6 +1,5 @@
-import * as rdm from './rdm';
+import * as rdm from './rdm.js';
 
-// Use https://quisquous.github.io/cactbot/ui/test/test.html to figure out random values
 const priorityArray = [];
 const actionArray = [];
 const cooldownArray = [];
