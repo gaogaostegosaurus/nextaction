@@ -584,8 +584,9 @@ function countTargets(action) {
   }
 }
 
- callOverlayHandler({ call: "cactbotRequestState" });
+callOverlayHandler({ call: 'cactbotRequestState' });
 
-// callOverlayHandler accepts an object so you can add more parameters which will be passed to the C# code.
+// callOverlayHandler:
+// accepts an object so you can add more parameters which will be passed to the C# code.
 // i.e. a TTS call for Cactbot would look like this:
 // callOverlayHandler({ call: "cactbotSay", text: "Hello World!" });.
