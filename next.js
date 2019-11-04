@@ -1,4 +1,6 @@
-import * as rdm from './rdm.js';
+import {
+  rdmOnStartsUsing, rdmOnAction, rdmOnCancelled, rdmOnEffect,
+} from './rdm';
 
 const priorityArray = [];
 const actionArray = [];
@@ -92,7 +94,7 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
       } else if (player.job === "PLD") {
         pldAction();
       } else if (player.job === 'RDM') {
-        rdm.onAction(actionMatch);
+        rdmOnAction(actionMatch);
       } else if (player.job === 'SAM') {
         samAction(actionMatch);
       } else if (player.job === "SCH") {
@@ -131,7 +133,7 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
         pldStatus();
       }
       else if (player.job === 'RDM') {
-        rdm.onEffect(effectMatch);
+        rdmOnEffect(effectMatch);
       } else if (player.job === "SAM") {
         samStatus();
       }
@@ -150,7 +152,7 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
       if (player.job === "BLM") {
         blmStartsUsing();
       } else if (player.job === 'RDM') {
-        rdm.onStartsUsing();
+        rdmOnStartsUsing();
       }
     }
 
@@ -159,7 +161,7 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
         blmCancelled();
       }
       else if (player.job === "RDM") {
-        rdm.onCancelled();
+        rdmOnCancelled();
       }
     }
 
