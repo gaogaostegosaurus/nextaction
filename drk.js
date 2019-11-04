@@ -105,10 +105,10 @@ function drkAction() {
     else if ("Abyssal Drain" == actionLog.groups.actionName) {
       if (Date.now() - previous.abyssaldrain > 1000) {
         previous.abyssaldrain = Date.now();
-        enemyTargets = 1;
+        count.targets = 1;
       }
       else {
-        enemyTargets = enemyTargets + 1;
+        count.targets = count.targets + 1;
       }
       //removeIcon("abyssaldrain");
       //addRecast("abyssaldrain");
@@ -164,10 +164,10 @@ function drkAction() {
       else if ("Quietus" == actionLog.groups.actionName) {
         if (Date.now() - previous.quietus > 1000) {
           previous.quietus = Date.now();
-          enemyTargets = 1;
+          count.targets = 1;
         }
         else {
-          enemyTargets = enemyTargets + 1;
+          count.targets = count.targets + 1;
         }
         removeIcon("quietus");
       }
@@ -176,7 +176,7 @@ function drkAction() {
 
       else if ("Hard Slash" == actionLog.groups.actionName
       && actionLog.groups.result.length >= 2) {
-        enemyTargets = 1;
+        count.targets = 1;
         if (next.combo != 1) {
           drkSouleaterCombo();
           toggle.combo = Date.now();
@@ -207,7 +207,7 @@ function drkAction() {
 
         if (Date.now() - previous.unleash > 1000) {
           previous.unleash = Date.now();
-          enemyTargets = 1;
+          count.targets = 1;
           removeIcon("unleash");
 
           if (next.combo != 2) {
@@ -223,7 +223,7 @@ function drkAction() {
           }
         }
         else {
-          enemyTargets = enemyTargets + 1;
+          count.targets = count.targets + 1;
         }
       }
 
@@ -231,11 +231,11 @@ function drkAction() {
       && actionLog.groups.result.length >= 8) {
         if (Date.now() - previous.stalwartsoul > 1000) {
           previous.stalwartsoul = Date.now();
-          enemyTargets = 1;
+          count.targets = 1;
           drkCombo();
         }
         else {
-          enemyTargets = enemyTargets + 1;
+          count.targets = count.targets + 1;
         }
       }
 
@@ -243,7 +243,7 @@ function drkAction() {
         drkCombo();
       }
 
-      if (enemyTargets >= 3
+      if (count.targets >= 3
       && checkStatus("mitigation", effectLog.groups.targetID) < 1000) {
         drkMitigation();
       }
@@ -278,7 +278,7 @@ function drkStatus() {
       }
       else if (effectLog.groups.gainsLoses == "loses") {
         if (checkStatus("mitigation", effectLog.groups.targetID) < 0 // Check for overlaps
-        && enemyTargets >= 3) {
+        && count.targets >= 3) {
           drkMitigation();
         }
       }
@@ -292,7 +292,7 @@ function drkStatus() {
       }
       else if (effectLog.groups.gainsLoses == "loses") {
         if (checkStatus("mitigation", effectLog.groups.targetID) < 0
-        && enemyTargets >= 3) {
+        && count.targets >= 3) {
           drkMitigation();
         }
       }
@@ -324,7 +324,7 @@ function drkMP() {
   player.tempjobDetail.darkarts = player.debugJobSplit[4]; // 0 or 1
 
   if (player.level >= 74) {
-    if (enemyTargets >= 2) {
+    if (count.targets >= 2) {
       icon.floodofdarkness = icon.floodofshadow;
     }
     else {
@@ -332,7 +332,7 @@ function drkMP() {
     }
   }
   else if (player.level >= 40
-  && enemyTargets == 1) {
+  && count.targets == 1) {
     icon.floodofdarkness = icon.edgeofdarkness;
   }
   else {
@@ -363,7 +363,7 @@ function drkGauge() {
   let targetblood = 50; // Use spender at or above this number
 
   if (player.level >= 64
-  && enemyTargets >= 3) {
+  && count.targets >= 3) {
     icon.gaugespender = icon.quietus;
   }
   else {
@@ -401,7 +401,7 @@ function drkCombo() {
   removeIcon("syphonstrike");
   removeIcon("souleater");
 
-  if (enemyTargets >= 2) {
+  if (count.targets >= 2) {
     drkStalwartSoulCombo();
   }
   else {

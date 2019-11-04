@@ -123,7 +123,7 @@ function blmJobChange() {
   previous.flare = 0;
   previous.foul = 0;
 
-  enemyTargets = 1;
+  count.targets = 1;
 
   blmNext();
 
@@ -247,7 +247,7 @@ function blmAction() {
     else {
 
       if ("Fire" == actionLog.groups.actionName) {
-        enemyTargets = 1;
+        count.targets = 1;
       }
 
       else if ("Fire II" == actionLog.groups.actionName) {
@@ -261,7 +261,7 @@ function blmAction() {
       }
 
       else if ("Blizzard" == actionLog.groups.actionName) {
-        enemyTargets = 1;
+        count.targets = 1;
       }
 
       else if ("Blizzard II" == actionLog.groups.actionName) {
@@ -269,11 +269,11 @@ function blmAction() {
       }
 
       else if ("Blizzard III" == actionLog.groups.actionName) {
-        enemyTargets = 1;
+        count.targets = 1;
       }
 
       else if (["Thunder", "Thunder III"].indexOf(actionLog.groups.actionName) > -1) {
-        enemyTargets = 1;
+        count.targets = 1;
         addStatus("thunder", duration.thunder, actionLog.groups.targetID);
       }
 
@@ -308,7 +308,7 @@ function blmAction() {
 
     blmNext();
 
-    // console.log(enemyTargets);
+    // console.log(count.targets);
 
   }
 }
@@ -465,22 +465,22 @@ function blmAstralRotation(currentMP, blmAstralTime, blmAstralStacks) {
   // For all aoe, use Thundercloud procs on T2/T4 as you get them. Swift/Triple Flares. Manafont for an extra Flare. Foul after Transpose or Freeze
 
   // Picks Fire spell
-  if (player.level >= 68 && enemyTargets >= 3) {
+  if (player.level >= 68 && count.targets >= 3) {
     blmFireSpam = "none";
   }
-  else if (player.level >= 60 && enemyTargets >= 5) {
+  else if (player.level >= 60 && count.targets >= 5) {
     blmFireSpam = "Fire II";
   }
   else if (player.level >= 60) {
     blmFireSpam = "Fire IV";
   }
-  else if (player.level >= 50 && enemyTargets >= 3) {
+  else if (player.level >= 50 && count.targets >= 3) {
     blmFireSpam = "Fire II";
   }
-  else if (player.level >= 35 && enemyTargets >= 3) {
+  else if (player.level >= 35 && count.targets >= 3) {
     blmFireSpam = "none";
   }
-  else if (player.level >= 18 && enemyTargets >= 3) {
+  else if (player.level >= 18 && count.targets >= 3) {
     blmFireSpam = "Fire II";
   }
   else {
@@ -541,7 +541,7 @@ function blmAstralRotation(currentMP, blmAstralTime, blmAstralStacks) {
   // MP to 0 spells
   if (blmAstralStacks == 3) {
     if (player.level >= 50
-    && enemyTargets >= 3
+    && count.targets >= 3
     && currentMP >= 800) {
       addIcon({name: "flare"});
     }
@@ -565,7 +565,7 @@ function blmAstralRotation(currentMP, blmAstralTime, blmAstralStacks) {
   }
 
   // Change to Umbral Ice
-  if (enemyTargets >= 3) {
+  if (count.targets >= 3) {
     if (player.level >= 72) {
       if (blmCasting != "Freeze") {
         addIcon({name: "freezeUmbral3"});
@@ -632,7 +632,7 @@ function blmUmbralRotation(currentMP, blmUmbralTime, blmUmbralStacks) {
   blmThunder(currentMP, blmUmbralTime, blmUmbralStacks, blmUmbralMinimumMP);
 
   // AoE
-  if (enemyTargets >= 3) {
+  if (count.targets >= 3) {
     if (player.level >= 50) {
       if (blmCasting == "Freeze") {
         removeIcon("freeze");
@@ -700,7 +700,7 @@ function blmUmbralRotation(currentMP, blmUmbralTime, blmUmbralStacks) {
   (player.currentMP >= blmUmbralMinimumMP && Date.now() - previous.serverTick > 1500)) {
 
     if (player.level >= 72
-    && enemyTargets >= 5
+    && count.targets >= 5
     && player.jobDetail.umbralHearts > 0) {
       addIcon({name: "coldflare"});  // "Cold flare"
     }
@@ -737,7 +737,7 @@ function blmInstantFiller(currentMP, rotationTime, rotationStacks) {
   // Check for Instants to weave behind
 
   // Thundercloud gets priority use during AoE - ignore rest
-  if (enemyTargets >= 3) {
+  if (count.targets >= 3) {
     if (checkStatus("thundercloud") > 0
     && rotationTime > 2500 + blmRotationBufferTime) {
       blmInstant = "Thundercloud";
@@ -867,7 +867,7 @@ function blmInstantFiller(currentMP, rotationTime, rotationStacks) {
 // Thunder
 function blmThunder(currentMP, rotationTime, rotationStacks, rotationMinimumMP) {
 
-  if (enemyTargets >= 3) {
+  if (count.targets >= 3) {
     if (player.level >= 64) {
       blmThunderMP = 800;
       blmThunderIcon = "thunder4";

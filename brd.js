@@ -214,20 +214,20 @@ function brdAction() {
   else if ("Quick Nock" == actionLog.groups.actionName) {
     if (Date.now() - previous.quicknock > 1000) {
       previous.quicknock = Date.now();
-      enemyTargets = 1;
+      count.targets = 1;
     }
     else {
-      enemyTargets = enemyTargets + 1;
+      count.targets = count.targets + 1;
     }
   }
 
   else if ("Rain Of Death" == actionLog.groups.actionName) {
     if (Date.now() - previous.rainofdeath > 1000) {
       previous.rainofdeath = Date.now();
-      enemyTargets = 1;
+      count.targets = 1;
     }
     else {
-      enemyTargets = enemyTargets + 1;
+      count.targets = count.targets + 1;
     }
   }
 
@@ -265,10 +265,10 @@ function brdAction() {
     // addIconBlinkTimeout("sidewinder",recast.sidewinder,nextid.sidewinder,icon.sidewinder);
     if (Date.now() - previous.shadowbite > 1000) {
       previous.shadowbite = Date.now();
-      enemyTargets = 1;
+      count.targets = 1;
     }
     else {
-      enemyTargets = enemyTargets + 1;
+      count.targets = count.targets + 1;
     }
   }
 
@@ -279,7 +279,7 @@ function brdAction() {
     // addStatus("song", 30000);
     // previous.song = "ballad";
     // if (player.level >= 52) {
-    //   if (enemyTargets > 6) {
+    //   if (count.targets > 6) {
     //     if (checkRecast("paeon") <= checkRecast("minuet")) {
     //       addIconBlinkTimeout("paeon", Math.max(checkRecast("paeon"), 30000), nextid.paeon, icon.paeon);
     //     }
@@ -315,12 +315,12 @@ function brdAction() {
     // addStatus("song", 30000);
     // previous.song = "paeon";
     // if (player.level >= 52) {
-    //   if (enemyTargets > 2) { // Min AP time for 3-6 targets
+    //   if (count.targets > 2) { // Min AP time for 3-6 targets
     //     if (checkRecast("ballad") <= checkRecast("minuet")) {
     //       addIconBlinkTimeout("ballad", Math.max(checkRecast("ballad"), checkRecast("minuet") - 30000, 20000), nextid.ballad, icon.ballad);
     //     }
     //     else {
-    //       if (enemyTargets > 6) { // Max AP time if many targets
+    //       if (count.targets > 6) { // Max AP time if many targets
     //         addIconBlinkTimeout("minuet", Math.max(checkRecast("minuet"), 30000), nextid.minuet, icon.minuet);
     //       }
     //       else { // Min AP time if 1-2 targets

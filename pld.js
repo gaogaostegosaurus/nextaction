@@ -199,11 +199,11 @@ function pldAction() {
     else if ("Circle Of Scorn" == actionLog.groups.actionName) {
       if (Date.now() - previous.circleofscorn > 1000) {
         previous.circleofscorn = Date.now();
-        enemyTargets = 1;
+        count.targets = 1;
         addRecast("circleofscorn");
       }
       else {
-        enemyTargets = enemyTargets + 1;
+        count.targets = count.targets + 1;
       }
     }
 
@@ -275,7 +275,7 @@ function pldAction() {
 
         if (Date.now() - previous.totaleclipse > 1000) {
           previous.totaleclipse = Date.now();
-          enemyTargets = 1;
+          count.targets = 1;
           if (next.combo < 3) {
             pldAreaOfEffectCombo();
           }
@@ -289,7 +289,7 @@ function pldAction() {
           }
         }
         else {
-          enemyTargets = enemyTargets + 1;
+          count.targets = count.targets + 1;
           pldCombo();
         }
       }
@@ -299,10 +299,10 @@ function pldAction() {
 
         if (Date.now() - previous.prominence > 1000) {
           previous.prominence = Date.now();
-          enemyTargets = 1;
+          count.targets = 1;
         }
         else {
-          enemyTargets = enemyTargets + 1;
+          count.targets = count.targets + 1;
         }
         pldCombo();
       }
@@ -316,10 +316,10 @@ function pldAction() {
       && actionLog.groups.result.length > 1) {
         if (Date.now() - previous.holycircle > 1000) {
           previous.holycircle = Date.now();
-          enemyTargets = 1;
+          count.targets = 1;
         }
         else {
-          enemyTargets = enemyTargets + 1;
+          count.targets = count.targets + 1;
         }
         pldRequiescatMP();
       }
@@ -328,10 +328,10 @@ function pldAction() {
       && actionLog.groups.result.length > 1) {
         if (Date.now() - previous.confiteor > 1000) {
           previous.confiteor = Date.now();
-          enemyTargets = 1;
+          count.targets = 1;
         }
         else {
-          enemyTargets = enemyTargets + 1;
+          count.targets = count.targets + 1;
         }
         pldRequiescatMP()
       }
@@ -355,7 +355,7 @@ function pldStatus() {
       }
       else if (effectLog.groups.gainsLoses == "loses") {
         if (checkStatus("mitigation", effectLog.groups.targetID) < 0 // Check for overlaps
-        && enemyTargets >= 3) {
+        && count.targets >= 3) {
           drkMitigation();
         }
       }
@@ -378,7 +378,7 @@ function pldStatus() {
       }
       else if (effectLog.groups.gainsLoses == "loses") {
         if (checkStatus("mitigation", effectLog.groups.targetID) < 0
-        && enemyTargets >= 3) {
+        && count.targets >= 3) {
           drkMitigation();
         }
       }
@@ -427,7 +427,7 @@ function pldMitigation() {
 //   player.tempjobDetail.darkarts = player.debugJobSplit[4]; // 0 or 1
 //
 //   if (player.level >= 74) {
-//     if (enemyTargets >= 2) {
+//     if (count.targets >= 2) {
 //       icon.floodofdarkness = icon.floodofshadow;
 //     }
 //     else {
@@ -435,7 +435,7 @@ function pldMitigation() {
 //     }
 //   }
 //   else if (player.level >= 40
-//   && enemyTargets == 1) {
+//   && count.targets == 1) {
 //     icon.floodofdarkness = icon.edgeofdarkness;
 //   }
 //   else {
@@ -466,7 +466,7 @@ function pldMitigation() {
 //   let targetblood = 50; // Use spender at or above this number
 //
 //   if (player.level >= 64
-//   && enemyTargets >= 3) {
+//   && count.targets >= 3) {
 //     icon.gaugespender = icon.quietus;
 //   }
 //   else {
@@ -506,7 +506,7 @@ function pldCombo() {
 
   if (checkStatus("requiescat") < 0
   || player.currentMP < 2000) {
-    if (enemyTargets >= 3) {
+    if (count.targets >= 3) {
       pldAreaOfEffectCombo();
     }
     else {
@@ -580,7 +580,7 @@ function pldRequiescatMP() {
   removeIcon("holyspirit4");
   removeIcon("holyspirit5");
 
-  if (enemyTargets >= 2) {
+  if (count.targets >= 2) {
     icon.holyspirit1 = icon.holycircle;
     icon.holyspirit2 = icon.holycircle;
     icon.holyspirit3 = icon.holycircle;

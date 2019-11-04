@@ -87,11 +87,11 @@ function gnbAction() {
 
     else if ("Bow Shock" == actionLog.groups.actionName) {
       if (Date.now() - previous.bowshock > 1000) {
-        enemyTargets = 1;
+        count.targets = 1;
         previous.bowshock = Date.now();
       }
       else {
-        enemyTargets = enemyTargets + 1;
+        count.targets = count.targets + 1;
       }
     }
 
@@ -128,7 +128,7 @@ function gnbAction() {
           gnbDemonSlaughterCombo();
         }
         if (Date.now() - previous.demonslice > 1000) {
-          enemyTargets = 1;
+          count.targets = 1;
           previous.demonslice = Date.now();
           removeIcon("demonslice");
           if (player.level < 40) {
@@ -136,19 +136,19 @@ function gnbAction() {
           }
         }
         else {
-          enemyTargets = enemyTargets + 1;
+          count.targets = count.targets + 1;
         }
       }
 
       else if ("Demon Slaughter" == actionLog.groups.actionName) {
         if (Date.now() - previous.demonslaughter > 1000) {
-          enemyTargets = 1;
+          count.targets = 1;
           previous.demonslaughter = Date.now();
           removeIcon("demonslaughter");
           gnbCombo();
         }
         else {
-          enemyTargets = enemyTargets + 1;
+          count.targets = count.targets + 1;
         }
       }
 
@@ -184,12 +184,12 @@ function gnbAction() {
 
       else if ("Fated Circle" == actionLog.groups.actionName) {
         if (Date.now() - previous.fatedcircle > 1000) {
-          enemyTargets = 1;
+          count.targets = 1;
           previous.fatedcircle = Date.now();
           gnbCartridge();
         }
         else {
-          enemyTargets = enemyTargets + 1;
+          count.targets = count.targets + 1;
         }
       }
 
@@ -263,7 +263,7 @@ function gnbCombo() {
   removeIcon("brutalshell");
   removeIcon("solidbarrel");
 
-  if (enemyTargets >= 2) {
+  if (count.targets >= 2) {
     gnbDemonSlaughterCombo();
   }
   else {
@@ -289,7 +289,7 @@ function gnbDemonSlaughterCombo() {
 function gnbCartridge() {
 
   if (player.level >= 72
-  && enemyTargets >= 2) {
+  && count.targets >= 2) {
     icon.burststrike = icon.fatedcircle;
   }
   else {

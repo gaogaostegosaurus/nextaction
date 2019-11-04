@@ -46,7 +46,7 @@ function ninJobChange() {
   countdownid.trickattack = 10;
   countdownid.dreamwithinadream = 11;
 
-  enemyTargets = 1;
+  count.targets = 1;
   previous.deathblossom = 0;
   previous.hakkemujinsatsu = 0;
   previous.katon = 0; // Includes Goka Mekkyaku
@@ -119,16 +119,16 @@ function ninAction(logLine) {
       }
 
       else if (["Raiton", "Hyosho Ranyu"].indexOf(actionLog.groups.actionName) > -1) {
-        enemyTargets = 1;
+        count.targets = 1;
       }
 
       else if (["Katon", "Goka Mekkyaku"].indexOf(actionLog.groups.actionName) > -1) {
         if (Date.now() - previous.katon > 1000) {
           previous.katon = Date.now()
-          enemyTargets = 1;
+          count.targets = 1;
         }
         else {
-          enemyTargets = enemyTargets + 1;
+          count.targets = count.targets + 1;
         }
       }
 
@@ -165,16 +165,16 @@ function ninAction(logLine) {
       else if ("Hellfrog Medium" == actionLog.groups.actionName) {
         if (Date.now() - previous.hellfrogmedium > 1000) {
           previous.hellfrogmedium = Date.now()
-          enemyTargets = 1;
+          count.targets = 1;
         }
         else {
-          enemyTargets = enemyTargets + 1;
+          count.targets = count.targets + 1;
         }
         ninNinki();
       }
 
       else if ("Bhavacakra" == actionLog.groups.actionName) {
-        enemyTargets = 1;
+        count.targets = 1;
         ninNinki();
       }
 
@@ -248,7 +248,7 @@ function ninAction(logLine) {
 
           if (Date.now() - previous.deathblossom > 1000) {
             previous.deathblossom = Date.now()
-            enemyTargets = 1;
+            count.targets = 1;
             if (next.combo != 4) {
               ninHakkeMujinsatsuCombo();
             }
@@ -258,7 +258,7 @@ function ninAction(logLine) {
             }
           }
           else {
-            enemyTargets = enemyTargets + 1;
+            count.targets = count.targets + 1;
           }
         }
 
@@ -267,11 +267,11 @@ function ninAction(logLine) {
 
           if (Date.now() - previous.hakkemujinsatsu > 1000) {
             previous.hakkemujinsatsu = Date.now()
-            enemyTargets = 1;
+            count.targets = 1;
             ninCombo();
           }
           else {
-            enemyTargets = enemyTargets + 1;
+            count.targets = count.targets + 1;
           }
         }
 
@@ -393,18 +393,18 @@ function ninCombo() {
   removeIcon("aeolianedge");
 
   if (player.level >= 54
-  && enemyTargets <= 2
+  && count.targets <= 2
   && player.jobDetail.hutonMilliseconds > 6000
   && player.jobDetail.hutonMilliseconds < 46000) {
     ninArmorCrushCombo();
   }
   else if (player.level >= 38
-  && enemyTargets <= 3
+  && count.targets <= 3
   && checkStatus("shadowfang", target.ID) < 9000) {
     ninShadowFangCombo();
   }
   else if (player.level >= 38
-  && enemyTargets >= 3
+  && count.targets >= 3
   && player.jobDetail.hutonMilliseconds > 3000) {
     ninHakkeMujinsatsuCombo();
   }
@@ -485,7 +485,7 @@ function ninNinjutsu() {
   }
 
   else if (checkStatus("tenchijin") > 0) {
-    if (enemyTargets >= 2) {
+    if (count.targets >= 2) {
       icon.ninjutsu1 = icon.fumashuriken;
       icon.ninjutsu2 = icon.katon;
       icon.ninjutsu3 = icon.suiton;
@@ -502,7 +502,7 @@ function ninNinjutsu() {
 
   else if (player.level >= 76
   && checkStatus("kassatsu") > 0) {
-    if (enemyTargets >= 2) {
+    if (count.targets >= 2) {
       icon.ninjutsu3 = icon.katon;
     }
     else {
@@ -526,7 +526,7 @@ function ninNinjutsu() {
   }
 
   else if (player.level >= 35
-  && enemyTargets >= 3) {
+  && count.targets >= 3) {
     icon.ninjutsu3 = icon.katon;
     addIcon({name: "ninjutsu3"}); // Probably more damage at 3 targets to do Katon than anything else...
   }
@@ -545,7 +545,7 @@ function ninNinjutsu() {
     }
   }
   else if (player.level >= 35
-  && enemyTargets >= 2) {
+  && count.targets >= 2) {
     icon.ninjutsu3 = icon.katon;
     addIcon({name: "ninjutsu3"});
   }
@@ -608,7 +608,7 @@ function ninNinki() {
     //   icon.ninkiaction = icon.bunshin;
     // }
     if (player.level >= 68
-    && enemyTargets == 1) {
+    && count.targets == 1) {
       icon.ninkiaction = icon.bhavacakra;
     }
     else {

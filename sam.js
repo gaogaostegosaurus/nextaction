@@ -77,10 +77,10 @@ function samAction() {
     else if ("Tenka Goken" == actionLog.groups.actionName) {
       if (Date.now() - previous.tenkagoken > 1000) {
         previous.tenkagoken = Date.now();
-        enemyTargets = 1;
+        count.targets = 1;
       }
       else {
-        enemyTargets = enemyTargets + 1;
+        count.targets = count.targets + 1;
       }
       if (checkStatus("meikyoshisui", player.ID) > 0) {
         samCombo(); // Consuming Sen under Meikyo will trigger a new combo
@@ -148,10 +148,10 @@ function samAction() {
     else if (actionLog.groups.actionName == "Hissatsu: Guren" || actionLog.groups.actionName == "Hissatsu: Senei") {
       if (Date.now() - previous.guren > 1000) {
         previous.guren = Date.now();
-        enemyTargets = 1;
+        count.targets = 1;
       }
       else {
-        enemyTargets = enemyTargets + 1;
+        count.targets = count.targets + 1;
       }
       // Senei is on same cooldown as Guren
       addRecast("guren");
@@ -182,10 +182,10 @@ function samAction() {
     && [4,5].indexOf(toggle.combo) > -1) {
       if (Date.now() - previous.fuga > 1000) {
         previous.fuga = Date.now();
-        enemyTargets = 1;
+        count.targets = 1;
       }
       else {
-        enemyTargets = enemyTargets + 1;
+        count.targets = count.targets + 1;
       }
       removeIcon(id.fuga);
       samKenki();
@@ -223,13 +223,13 @@ function samAction() {
     && actionLog.groups.result.length >= 8) {
       if (Date.now() - previous.mangetsu > 1000) {
         previous.mangetsu = Date.now();
-        enemyTargets = 1;
+        count.targets = 1;
         if (checkStatus("jinpu", player.ID) > 0) {
           addStatus("jinpu", Math.min(checkStatus("jinpu", player.ID) + 15000, duration.jinpu));
         }
       }
       else {
-        enemyTargets = enemyTargets + 1;
+        count.targets = count.targets + 1;
       }
       samKenki();
       samSen();
@@ -240,13 +240,13 @@ function samAction() {
     && actionLog.groups.result.length >= 8) {
       if (Date.now() - previous.oka > 1000) {
         previous.oka = Date.now();
-        enemyTargets = 1;
+        count.targets = 1;
         if (checkStatus("shifu", player.ID) > 0) {
           addStatus("shifu", Math.min(checkStatus("shifu", player.ID) + 15000, duration.shifu));
         }
       }
       else {
-        enemyTargets = enemyTargets + 1;
+        count.targets = count.targets + 1;
       }
       samKenki();
       samSen();
