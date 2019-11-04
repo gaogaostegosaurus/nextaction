@@ -41,6 +41,7 @@ class CactbotLanguageDe extends CactbotLanguage {
       StandardFinish: 'Einfaches Finale',
       Thundercloud: 'Blitz +',
       Firestarter: 'Feuga +',
+      BattleVoice: 'Ode an die Seele',
 
       Petrification: 'Stein',
       BeyondDeath: 'Jenseits Des Jenseits',
@@ -59,7 +60,7 @@ class CactbotLanguageDe extends CactbotLanguage {
     });
 
     this.countdownStartRegex = function() {
-      return Regexes.Parse(/Noch (\y{Float}) Sekunden bis Kampfbeginn!/);
+      return Regexes.parse(/Noch (\y{Float}) Sekunden bis Kampfbeginn!/);
     };
     this.countdownEngageRegex = function() {
       return /:Start!/;

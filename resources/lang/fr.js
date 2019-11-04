@@ -41,6 +41,7 @@ class CactbotLanguageFr extends CactbotLanguage {
       StandardFinish: 'Final classique',
       Thundercloud: 'Nuage d\'orage',
       Firestarter: 'Pyromane',
+      BattleVoice: 'Voix de combat',
 
       Petrification: 'Pétrification',
       BeyondDeath: 'Outre-mort',
@@ -59,7 +60,7 @@ class CactbotLanguageFr extends CactbotLanguage {
     });
 
     this.countdownStartRegex = function() {
-      return Regexes.Parse(/Début du combat dans (\y{Float}) secondes !/);
+      return Regexes.parse(/Début du combat dans (\y{Float}) secondes !/);
     };
     this.countdownEngageRegex = function() {
       return /:À l'attaque !/;

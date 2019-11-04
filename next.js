@@ -1,10 +1,6 @@
-import {
-  rdmOnStartsUsing, rdmOnAction, rdmOnCancelled, rdmOnEffect,
-} from './rdm';
-
-const priorityArray = [];
-const actionArray = [];
-const cooldownArray = [];
+let priorityArray = [];
+let actionArray = [];
+let cooldownArray = [];
 
 const removeAnimationTime = 1000;
 let cooldownTracker = {}; // Holds timestamps for cooldowns
@@ -30,10 +26,10 @@ const countTargetsTime = 100; // Determines how many things multi-line attack hi
 
 const dom = {};
 for (let x = 0; x < 30; x += 1) {
-  dom[`icondiv${x}`] = document.getElementById("icondiv" + x); // Container for all parts
-  dom[`iconimgdiv${x}`] = document.getElementById("iconimgdiv" + x); // Wraps icon and overlay (for animation)
-  dom[`iconimg${x}`] = document.getElementById("iconimg" + x); // src = icon
-  dom[`iconcountdown${x}`] = document.getElementById("iconcountdown" + x); // Countdown - separate from img
+  dom[`icondiv${x}`] = document.getElementById(`icondiv${x}`); // Container for all parts
+  dom[`iconimgdiv${x}`] = document.getElementById(`iconimgdiv${x}`); // Wraps icon and overlay (for animation)
+  dom[`iconimg${x}`] = document.getElementById(`iconimg${x}`); // src = icon
+  dom[`iconcountdown${x}`] = document.getElementById(`iconcountdown${x}`); // Countdown - separate from img
 }
 for (let x = 0; x < 40; x += 1) {
   dom[`countdowndiv${x}`] = document.getElementById("countdowndiv" + x); // Countdown - separate from img
@@ -156,19 +152,19 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
       }
     }
 
-    else if (cancelledLog && cancelledLog.groups.sourceID === player.ID) { // Status source = player
+    else if (cancelledMatch && cancelledMatch.groups.sourceID === player.ID) { // Status source = player
       if (player.job === "BLM") {
         blmCancelled();
       }
       else if (player.job === "RDM") {
-        rdmOnCancelled();
+        rdmOnCancelled(cancelledMatch);
       }
     }
 
-    else if (statsLog) {
+    else if (statsMatch) {
       // Uncomment to check
       const whatever = gcdCalculation({
-        speed: Math.max(statsLog.groups.skillSpeed, statsLog.groups.spellSpeed),
+        speed: Math.max(statsMatch.groups.skillSpeed, statsMatch.groups.spellSpeed),
       });
       console.log(whatever);
     }
@@ -418,20 +414,8 @@ const addAction = ({
   }
 };
 
-const removeAction = ({
-  name,
-  array = actionArray,
-} = {}) => {
-  const row = 'action-row';
-  const removeTarget = array.findIndex((action) => action.name === name);
-  if (removeTarget > -1) {
-    array.splice(removeTarget, 1);
-    document.getElementById(row).children[removeTarget].className = 'icondiv icon-remove';
-  }
-};
 
-
-const syncIcons = ({
+const syncActions = ({
   array = actionArray,
 } = {}) => {
   const row = 'action-row';
@@ -488,6 +472,18 @@ const addIcon = ({
   dom[`icondiv${nextid[name]}`].className = `icondiv icon-add ${effect}`;
 };
 
+const removeAction = ({
+  name,
+  array = actionArray,
+} = {}) => {
+  const row = 'action-row';
+  const removeTarget = array.findIndex((action) => action.name === name);
+  if (removeTarget > -1) {
+    array.splice(removeTarget, 1);
+    document.getElementById(row).children[removeTarget].className = 'icondiv icon-remove';
+  }
+};
+
 function addIconEffect({
   name,
   img = name,
@@ -537,7 +533,7 @@ function loadInitialState() {
     pldJobChange();
   }
   else if (player.job == "RDM") {
-    rdmJobChange();
+    rdmOnJobChange();
   }
   else if (player.job == "SAM") {
     samJobChange();

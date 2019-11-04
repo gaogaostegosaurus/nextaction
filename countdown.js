@@ -1,9 +1,9 @@
-export function addCountdownBar({
+const addCountdownBar = ({
   name,
   time = recast[name],
   oncomplete = "showText",
   text = "READY",
-} = {}) {
+} = {}) => {
 
   dom["countdownimg" + countdownid[name]].src = "icon/" + icon[name] + ".png";
 
@@ -91,11 +91,11 @@ export function addCountdownBar({
 
 }
 
-export function stopCountdownBar(name) {
+function stopCountdownBar(name) {
   clearInterval(interval[name]);
 }
 
-export function removeCountdownBar(name) {
+function removeCountdownBar(name) {
   clearInterval(interval[name]);
   let id = countdownid[name];
   dom["countdowndiv" + id].className = "countdowndiv countdown-remove"; // Possibility of countdown getting fubared in this (left behind or something else), check later

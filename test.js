@@ -8,8 +8,8 @@
 
 let testDualcastPotency;
 let testBestDualcastValue;
-let priorityArray = [];
-let cooldownArray = [];
+// let priorityArray = [];
+// let cooldownArray = [];
 let rdmUnbalancedBonus = 1;
 
 // function testAddAction({

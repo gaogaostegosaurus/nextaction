@@ -91,14 +91,14 @@ let Util = {
   let sendMessage = null;
 
   if (wsUrl) {
-    sendMessage = (obj) => {
+    sendMessage = (msg) => {
       if (queue)
         queue.push(msg);
       else
-        ws.send(JSON.stringify(obj));
+        ws.send(JSON.stringify(msg));
     };
 
-    function connectWs() {
+    let connectWs = function() {
       ws = new WebSocket(wsUrl[1]);
 
       ws.addEventListener('error', (e) => {
@@ -145,7 +145,7 @@ let Util = {
           connectWs();
         }, 300);
       });
-    }
+    };
 
     connectWs();
   } else {
@@ -156,7 +156,7 @@ let Util = {
         OverlayPluginApi.callHandler(JSON.stringify(obj), cb);
     };
 
-    function waitForApi() {
+    let waitForApi = function() {
       if (!window.OverlayPluginApi || !window.OverlayPluginApi.ready) {
         setTimeout(waitForApi, 300);
         return;
@@ -174,7 +174,7 @@ let Util = {
 
       for (let [msg, resolve] of q)
         sendMessage(msg, resolve);
-    }
+    };
 
     waitForApi();
   }

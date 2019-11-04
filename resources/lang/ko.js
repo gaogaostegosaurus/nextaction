@@ -41,6 +41,7 @@ class CactbotLanguageKo extends CactbotLanguage {
       StandardFinish: 'FIXME',
       Thundercloud: 'FIXME',
       Firestarter: 'FIXME',
+      BattleVoice: 'FIXME',
 
       Petrification: '석화',
       BeyondDeath: '죽음의 초월',
@@ -63,7 +64,7 @@ class CactbotLanguageKo extends CactbotLanguage {
 
     // TODO: Countdowns
     this.countdownStartRegex = function() {
-      return Regexes.Parse(/전투 시작 (\y{Float})초 전!/);
+      return Regexes.parse(/전투 시작 (\y{Float})초 전!/);
     };
     this.countdownEngageRegex = function() {
       return /:전투 시작!/;
