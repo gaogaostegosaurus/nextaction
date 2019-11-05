@@ -1,19 +1,20 @@
-const addCountdownBar = ({
+const addCountdown = ({
   name,
-  time = recast[name],
-  array = actionArray,
+  img = icon[name],
   countdownArray = countdownArrayA,
+  time = recast[name],
   order = 'last',
   onComplete = 'showText',
+  array = actionArray,
   text = 'READY',
 } = {}) => {
-  const countdownIntervalTime = 100;
-
   // Identify correct column
   let column = 'countdown-a';
   if (countdownArray === countdownArrayB) {
     column = 'countdown-b';
   }
+
+  const countdownIntervalTime = 100;
 
   let countdownDiv;
   let countdownImgDiv;
@@ -33,8 +34,8 @@ const addCountdownBar = ({
     countdownTime = countdownDiv.children[1];
     countdownBar = countdownDiv.children[2];
   } else {
-    countdownArray.push({ name, icon });
     // Does not exist, so create
+    countdownArray.push({ name, img });
     countdownDiv = document.createElement('div');
     countdownImgDiv = document.createElement('div');
     countdownImg = document.createElement('img');
@@ -55,7 +56,7 @@ const addCountdownBar = ({
   }
   // Divs ready
 
-  countdownImg.src = `icon/${icon[name]}.png`;
+  countdownImg.src = `/img/icon/${img}.png`;
 
   // Add or remove icons
   if (text === 'addIcon'
@@ -125,12 +126,24 @@ const addCountdownBar = ({
   }, countdownIntervalTime);
 };
 
-function stopCountdownBar(name) {
+const stopCountdown = ({
+  name,
+} = {}) => {
   clearInterval(interval[name]);
-}
+};
 
-function removeCountdownBar(name) {
+const removeCountdown = ({
+  name,
+  countdownArray = countdownArrayA,
+} = {}) => {
+  let column = 'countdown-a';
+  if (countdownArray === countdownArrayB) {
+    column = 'countdown-b';
+  }
+  const removeTarget = countdownArray.findIndex((action) => action.name === name);
+  if (removeTarget > -1) {
+    countdownArray.splice(removeTarget, 1);
+    document.getElementById(column).children[removeTarget].className = 'countdowndiv countdown-remove';
+  }
   clearInterval(interval[name]);
-  let id = countdownid[name];
-  dom["countdowndiv" + id].className = "countdowndiv countdown-remove"; // Possibility of countdown getting fubared in this (left behind or something else), check later
-}
+};
