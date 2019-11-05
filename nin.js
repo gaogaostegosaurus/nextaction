@@ -5,19 +5,21 @@
 actionList.nin = [
 
   // Off GCD
-  "Hide", "Mug", "Trick Attack", "Kassatsu", "Dream Within A Dream", "Assassinate",
-  "Bhavacakra", "Hellfrog Medium",
-  "Ten Chi Jin",
+  'Hide', 'Mug', 'Trick Attack', 'Kassatsu', 'Dream Within A Dream', 'Assassinate', 'Bhavacakra',
+  'Hellfrog Medium', 'Ten Chi Jin', 'Meisui',
 
   // GCD
-  "Spinning Edge", "Gust Slash", "Shadow Fang", "Aeolian Edge", "Armor Crush",
-  "Death Blossom", "Hakke Mujinsatsu", "Throwing Dagger",
-  "Katon", "Raiton", "Suiton", "Goka Mekkyaku", "Hyosho Ranyu",
+  'Spinning Edge', 'Gust Slash', 'Shadow Fang', 'Aeolian Edge', 'Armor Crush',
+  'Death Blossom', 'Hakke Mujinsatsu',
+  'Throwing Dagger',
+
+  // Ninjutsu
+  'Katon', 'Raiton', 'Suiton', 'Goka Mekkyaku', 'Hyosho Ranyu',
   // Code currently doesn't use mudra or most ninjutsu for decision-making
   // "Ten", "Chi", "Jin", "Fuma Shuriken",  "Hyoton", "Huton", "Doton",
 
   // Role
-  "True North"
+  'True North'
 ];
 
 function ninJobChange() {

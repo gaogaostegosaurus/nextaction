@@ -1,13 +1,14 @@
 let priorityArray = [];
 let actionArray = [];
 let cooldownArray = [];
+let countdownArrayA = [];
+let countdownArrayB = [];
 
 const removeAnimationTime = 1000;
 let cooldownTracker = {}; // Holds timestamps for cooldowns
 let effectTracker = {}; // Holds timestamps for statuses
 let cooldowntime = {}; // Holds timestamps for cooldowns
 let bufferTime = 0;
-const countdownIntervalTime = 100;
 
 const timeout = {}; // For timeout variables
 const interval = {};
@@ -253,7 +254,7 @@ addOverlayListener('onTargetChangedEvent', (e) => {
 });
 
 addOverlayListener('onInCombatChangedEvent', (e) => {
-// Fires when character exits or enters combat
+  // Fires when character exits or enters combat
 
   count.targets = 1;
   // Can't think of a good way to consistently reset AoE count other than this
@@ -301,16 +302,6 @@ addOverlayListener("onPartyWipe", function(e) {
 //     countdowntimeout[action] = setTimeout(addIconCountdown, delay - countdowntime, nextid, countdowntime, actionicon);
 //   }
 // }
-
-function setupRegExp() {
-  actionRegExp = new RegExp(' 1[56]:([\\dA-F]{8}):([ -~]+?):[\\dA-F]{1,4}:([ -~]+?):([\\dA-F]{8}):([ -~]+?):([\\dA-F]{1,8}):');
-  effectRegExp = new RegExp(' 1[AE]:([\\dA-F]{8}):([ -~]+?) (gains|loses) the effect of ([ -~]+?) from ([ -~]+?)(?: for )?(\\d*\\.\\d*)?(?: Seconds)?\\.');
-  startsRegExp = new RegExp(' 14:[\\dA-F]{1,4}:([ -~]+?) starts using ([ -~]+?) on ([ -~]+?)\\.');
-  cancelledRegExp = new RegExp(' 17:([\\dA-F]{8}):([ -~]+?):[\\dA-F]{1,4}:([ -~]+?):Cancelled:');
-}
-
-// Calculate level 80 GCD length in ms
-// Formula from Theoryjerks site
 
 function addRecast(name, time, id) {
 
@@ -398,23 +389,6 @@ function removeStatus(name, id) {
   }
 }
 
-const addAction = ({
-  name,
-  array = actionArray,
-} = {}) => {
-  let row = 'action-row';
-  if (array === cooldownArray) {
-    row = 'cooldown-row';
-  }
-
-  const addTarget = array.findIndex((action) => action.name === name);
-  if (removeTarget > -1) {
-    array.splice(removeTarget, 1);
-    document.getElementById(row).children[removeTarget].className = 'icondiv icon-remove';
-  }
-};
-
-
 const syncActions = ({
   array = actionArray,
 } = {}) => {
@@ -472,11 +446,65 @@ const addIcon = ({
   dom[`icondiv${nextid[name]}`].className = `icondiv icon-add ${effect}`;
 };
 
+const addAction = ({
+  name,
+  array = actionArray,
+  order = 'last',
+} = {}) => {
+
+  let row = 'action-row';
+  if (array === priorityArray) {
+    row = 'priority-row';
+  } else if (array === cooldownArray) {
+    row = 'cooldown-row';
+  }
+
+  const iconDiv = document.createElement('div');
+  const iconImg = document.createElement('img');
+  const iconOverlay = document.createElement('img');
+  if (order === 'last') {
+    document.getElementById(row).prepend(iconDiv);
+  } else {
+    document.getElementById(row).append(iconDiv);
+  }
+  iconDiv.append(iconImg);
+  iconDiv.append(iconOverlay);
+  void iconDiv.offsetWidth;
+  iconDiv.className = 'icondiv icon-add';
+  iconImg.className = 'new-iconimg';
+  iconImg.src = `icon/${icon[name]}.png`;
+  iconOverlay.className = 'new-iconoverlay';
+  iconOverlay.src = 'icon/overlay.png';
+};
+
+const fadeAction = ({
+  name,
+  array = actionArray,
+} = {}) => {
+  let row = 'action-row';
+  if (array === priorityArray) {
+    row = 'priority-row';
+  } else if (array === cooldownArray) {
+    row = 'cooldown-row';
+  }
+
+  const fadeTarget = array.findIndex((action) => action.name === name);
+  if (fadeTarget > -1) {
+    document.getElementById(row).children[fadeTarget].style.opacity = '0.5';
+  }
+}
+
 const removeAction = ({
   name,
   array = actionArray,
 } = {}) => {
-  const row = 'action-row';
+  let row = 'action-row';
+  if (array === priorityArray) {
+    row = 'priority-row';
+  } else if (array === cooldownArray) {
+    row = 'cooldown-row';
+  }
+
   const removeTarget = array.findIndex((action) => action.name === name);
   if (removeTarget > -1) {
     array.splice(removeTarget, 1);
