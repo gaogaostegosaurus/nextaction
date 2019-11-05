@@ -1,5 +1,9 @@
-**/.git
-node_modules
-package.json
-package-lock.json
-.eslintrc*
+/.git
+/node_modules
+/package.json
+/package-lock.json
+/.eslintrc*
+/resources/icon/
+/resources/img/
+/resources/lang/
+/resources/sounds/
