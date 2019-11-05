@@ -1,6 +1,35 @@
 // Recast properties - list by alphabetical job then alphabetical action
+function addRecast(name, time, id) {
 
-var recast = {};
+  if (time === undefined) {
+    time = recast[name];
+  }
+  if (id === undefined) {
+    id = player.ID;
+  }
+
+  if (!cooldownTracker[name]) { // Create array if it doesn't exist yet
+    cooldownTracker[name] = [id, time + Date.now()];
+  }
+  else if (cooldownTracker[name].indexOf(id) > -1) { // Update array if source match found
+    cooldownTracker[name][cooldownTracker[name].indexOf(id) + 1] = time + Date.now();
+  }
+  else { // Push new entry into array if no matching entry
+    cooldownTracker[name].push(id, time + Date.now());
+  }
+}
+
+function checkRecast(name, id) {
+  if (id === undefined) {
+    id = player.ID;
+  }
+  if (cooldownTracker[name].indexOf(id) > -1) {
+    return Math.max(cooldownTracker[name][cooldownTracker[name].indexOf(id) + 1] - Date.now(), -1);
+  }
+  return -1;
+}
+
+const recast = {};
 
 // Role actions
 recast.luciddreaming = 60000;

@@ -349,7 +349,7 @@ const rdmDualcast = () => {
 
   // Uncomment to check array
   // console.log(`Black: ${blackMana}/${manaCap} White:${whiteMana}/${manaCap}`);
-  console.log(JSON.stringify(dualcastArray));
+  // console.log(JSON.stringify(dualcastArray));
 
   actionArray = dualcastArray;
   syncActions({ array: actionArray });
@@ -390,20 +390,20 @@ const rdmOnJobChange = () => {
   // nextid.displacement = nextid.fleche + 3;
   // nextid.swiftcast = nextid.fleche + 4;
   // nextid.acceleration = nextid.fleche + 5;
-  countdownid.manafication = 0;
-  countdownid.swiftcast = 1;
-  countdownid.fleche = 2;
-  countdownid.contresixte = 3;
-  countdownid.corpsacorps = 4;
-  countdownid.displacement = 5;
-  countdownid.acceleration = 6;
-  countdownid.embolden = 7;
-  countdownid.luciddreaming = 8;
-  previous.contresixte = 0;
-  previous.verthunder2 = 0;
-  previous.veraero2 = 0;
-  previous.scatter = 0;
-  previous.moulinet = 0;
+  // countdownid.manafication = 0;
+  // countdownid.swiftcast = 1;
+  // countdownid.fleche = 2;
+  // countdownid.contresixte = 3;
+  // countdownid.corpsacorps = 4;
+  // countdownid.displacement = 5;
+  // countdownid.acceleration = 6;
+  // countdownid.embolden = 7;
+  // countdownid.luciddreaming = 8;
+  // previous.contresixte = 0;
+  // previous.verthunder2 = 0;
+  // previous.veraero2 = 0;
+  // previous.scatter = 0;
+  // previous.moulinet = 0;
 
   // Set up icons
 
@@ -434,7 +434,9 @@ const rdmOnJobChange = () => {
 
 
   // Create cooldown notifications
-  addCountdownBar({ name: 'corpsacorps', array: cooldownArray, time: checkRecast('corpsacorps'), onComplete: 'addIcon' });
+  addCountdown({
+    name: 'corpsacorps', array: cooldownArray, time: checkRecast('corpsacorps'), onComplete: 'addIcon',
+  });
   if (player.level >= 40) {
     addCountdownBar({ name: 'displacement', array: cooldownArray, time: checkRecast('displacement'), onComplete: 'addIcon' });
   }
