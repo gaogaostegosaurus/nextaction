@@ -1,8 +1,23 @@
 
+const getArrayRow = ({
+  array,
+} = {}) => {
+  // Associate array with row
+  let row = 'action-row';
+  if (array === priorityArray) {
+    row = 'priority-row';
+  } else if (array === cooldownArray) {
+    row = 'cooldown-row';
+  }
+  return row;
+};
+
 const removeOldActions = ({
   row,
 } = {}) => {
-  // Removes actions already hidden (hopefully anyway)
+  // Clear away old divs before adding more actions
+  // Called at beginning of other action functions
+  
   document.getElementById(row).querySelectorAll('div[class~="action-hide"]').forEach((e) => e.parentNode.removeChild(e));
 };
 
@@ -10,18 +25,14 @@ const removeOldActions = ({
 const resyncActions = ({
   array = actionArray,
 } = {}) => {
-  // Use this to reset entire row to a brand new thing
+  // Use this to reset entire row if array is reset somehow 
   // i. e. on RNG procs that change rotation, missed/fatfingered combos, etc.
-
-  let row = 'action-row';
-  if (array === priorityArray) {
-    row = 'priority-row';
-  } else if (array === cooldownArray) {
-    row = 'cooldown-row';
-  }
-
+  
+  const row = getArrayRow({ array });
+  
   removeOldActions({ row });
-
+  
+  // Find current row length
   const rowLength = document.getElementById(row).children.length;
 
   // Delete already-hidden divs
@@ -32,14 +43,14 @@ const resyncActions = ({
     }
   }
 
-  // Hide all current blocks
+  // Hide all actions currently displayed
   for (let i = 0; i < rowLength; i += 1) {
     const iconDiv = document.getElementById(row).children[i];
     iconDiv.dataset.action = 'none';
     iconDiv.className = 'action action-hide';
   }
 
-  // Create new divs
+  // Append new actions from array to end of row
   for (let i = 0; i < array.length; i += 1) {
     const iconDiv = document.createElement('div');
     const iconImg = document.createElement('img');
@@ -65,15 +76,9 @@ const addAction = ({
   order = 'last',
 } = {}) => {
   // Adds action to specified array and row
-
-  // Pick row
-  let row = 'action-row'; // Default
-  if (array === priorityArray) {
-    row = 'priority-row';
-  } else if (array === cooldownArray) {
-    row = 'cooldown-row';
-  }
-
+  
+  // Pick row using array
+  const row = getArrayRow({ array });
   removeOldActions({ row });
 
   // Create elements
@@ -110,13 +115,9 @@ const fadeAction = ({
   name,
   array = actionArray,
 } = {}) => {
-  let row = 'action-row';
-  if (array === priorityArray) {
-    row = 'priority-row';
-  } else if (array === cooldownArray) {
-    row = 'cooldown-row';
-  }
-
+  // Sets an action to lower opacity, for casting or whatever
+  
+  const row = getArrayRow({ array });
   removeOldActions({ row });
 
   const match = document.getElementById(row).querySelector(`div[data-action="${name}"]`);
@@ -129,13 +130,9 @@ const unfadeAction = ({
   name,
   array = actionArray,
 } = {}) => {
-  let row = 'action-row';
-  if (array === priorityArray) {
-    row = 'priority-row';
-  } else if (array === cooldownArray) {
-    row = 'cooldown-row';
-  }
-
+  // Undos fadeAction effect
+  
+  const row = getArrayRow({ array });
   removeOldActions({ row });
 
   const match = document.getElementById(row).querySelector(`div[data-action="${name}"]`);
@@ -148,19 +145,15 @@ const removeAction = ({
   name,
   array = actionArray,
 } = {}) => {
-  let row = 'action-row';
-  if (array === priorityArray) {
-    row = 'priority-row';
-  } else if (array === cooldownArray) {
-    row = 'cooldown-row';
-  }
-
+  // Removes action from display
+  
+  const row = getArrayRow({ array });
   removeOldActions({ row });
 
-  const divMatch = document.getElementById(row).querySelector(`div[data-action="${name}"]`);
-  if (divMatch) {
-    divMatch.className = 'action action-hide';
-    divMatch.dataset.action = 'none';
+  const match = document.getElementById(row).querySelector(`div[data-action="${name}"]`);
+  if (match) {
+    match.className = 'action action-hide';
+    match.dataset.action = 'none';
   }
 
   const removeTarget = array.findIndex((action) => action.name === name);
