@@ -1,7 +1,9 @@
 'use strict';
 
+/* Proc's remaining time lower than this means that it is not considered active for dualcast calculations */
 const rdmProcBufferTime = 7500;
 
+// Verflare (called after melee combo function)
 const rdmVerflareCombo = () => {
   addAction({ name: 'verflare', array: priorityArray });
   if (player.level >= 80) {
@@ -9,6 +11,7 @@ const rdmVerflareCombo = () => {
   }
 };
 
+// Verholy (called after melee combo function)
 const rdmVerholyCombo = () => {
   addAction({ name: 'verholy', array: priorityArray });
   if (player.level >= 80) {
@@ -17,12 +20,13 @@ const rdmVerholyCombo = () => {
 };
 
 const rdmMeleeCombo = () => {
-  toggle.combo = Date.now();
   addAction({ name: 'riposte', array: priorityArray });
-  if (player.level >= 35) {
+  if (player.level >= 35
+  && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 55) {
     addAction({ name: 'zwerchhau', array: priorityArray });
   }
-  if (player.level >= 50) {
+  if (player.level >= 50
+  && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 80) {
     addAction({ name: 'redoublement', array: priorityArray });
   }
   // Verflare or Verholy?
@@ -32,21 +36,27 @@ const rdmMeleeCombo = () => {
     if (player.level >= 70
     && player.jobDetail.blackMana > player.jobDetail.whiteMana
     && checkStatus('verstoneready') < rdmProcBufferTime) {
+      // 100% proc
       rdmVerholyCombo();
     } else if (player.jobDetail.whiteMana > player.jobDetail.blackMana
     && checkStatus('verfireready') < rdmProcBufferTime) {
+      // 100% proc
       rdmVerflareCombo();
     } else if (player.level >= 70
     && player.jobDetail.whiteMana + 20 - player.jobDetail.blackMana <= 30
     && checkStatus('verstoneready') < rdmProcBufferTime) {
+      // 20% proc
       rdmVerholyCombo();
     } else if (player.jobDetail.blackMana + 20 - player.jobDetail.whiteMana <= 30
     && checkStatus('verfireready') < rdmProcBufferTime) {
+      // 20% proc
       rdmVerflareCombo();
     } else if (player.level >= 70
     && player.jobDetail.blackMana > player.jobDetail.whiteMana) {
+      // 0% proc
       rdmVerholyCombo();
     } else {
+      // 0% proc
       rdmVerflareCombo();
     }
   }
@@ -179,8 +189,8 @@ const rdmDualcastPotency = ({
   const manaOverCap = blackMana + hardcastBlackMana + dualcastBlackMana - 100
     + whiteMana + hardcastWhiteMana + dualcastWhiteMana - 100;
 
-  // Prioritize smaller mana differences
-  let manaDifferenceModifier = Math.abs(newBlackMana - newWhiteMana);
+  // Give some priority to smaller mana differences
+  let manaDifferenceModifier = Math.abs(newBlackMana - newWhiteMana) / 10;
   if (Math.min(newBlackMana, newWhiteMana) >= manaTarget
   && Math.max(newBlackMana, newWhiteMana) < manaCap) {
     manaDifferenceModifier *= -1; // Attempt to value larger spreads when above 80/80
@@ -190,16 +200,16 @@ const rdmDualcastPotency = ({
   let startMeleeBonus = 0;
   if (Math.min(newBlackMana, newWhiteMana) >= manaTarget && manaOverCap < manaBreakpoint) {
     if (player.level >= 70 && newBlackMana > newWhiteMana && dualcastAction === 'verthunder'
-    && verfireReady <= 0 && (hardcastAction === 'verstone' || verstoneReady <= 0)) {
+    && verfireReady <= 0 && (hardcastAction === 'verstone' || verstoneReady < 0)) {
       startMeleeBonus = 1000000; // 100% proc Verholy
     } else if (player.level >= 68 && newWhiteMana > newBlackMana && dualcastAction === 'veraero'
-    && verstoneReady <= 0 && (hardcastAction === 'verfire' || verfireReady <= 0)) {
+    && verstoneReady <= 0 && (hardcastAction === 'verfire' || verfireReady < 0)) {
       startMeleeBonus = 1000000; // 100% proc Verflare
     } else if (player.level >= 70 && newBlackMana > newWhiteMana && dualcastAction === 'verthunder'
     && (hardcastAction === 'verstone' || verstoneReady <= 0)) {
       startMeleeBonus = 100000; // 100% proc Verholy, 50% overwrite existing proc
     } else if (player.level >= 68 && newWhiteMana > newBlackMana && dualcastAction === 'veraero'
-    && (hardcastAction === 'verfire' || verfireReady <= 0)) {
+    && (hardcastAction === 'verfire' || verfireReady < 0)) {
       startMeleeBonus = 100000; // 100% proc Verflare, 50% overwrite existing proc
     }
   }
@@ -743,67 +753,3 @@ function rdmComboTimeout() {
   clearTimeout(timeout.combo);
   timeout.combo = setTimeout(rdmNext, 12500);
 }
-
-// function rdmManafication() {
-//
-//   if (player.level >= 60
-//   && checkRecast('manafication') < 0
-//   && !toggle.combo) {
-//
-//    // Don't use Manafication if more than 28 away from 50/50
-//     if (Math.abs(player.jobDetail.blackMana - 50) + Math.abs(player.jobDetail.whiteMana - 50)
-// > 28) {
-//       removeAction('manafication');
-//       delete toggle.manafication;
-//     }
-//
-//     else if (count.targets >= 4
-//     && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 50) {
-//       addIcon({ name: 'manafication' });
-//       toggle.manafication = Date.now();
-//     }
-//
-//     else if (count.targets >= 2
-//     && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 50) {
-//       addIcon({ name: 'manafication' });
-//       toggle.manafication = Date.now();
-//     }
-//
-//    // Early Manafication if able to proc from Verholy
-//     else if (player.level >= 70
-//     && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 40
-//     && player.jobDetail.whiteMana < 50
-//     && player.jobDetail.blackMana > player.jobDetail.whiteMana
-//     && checkStatus('verstoneready') < 2500) {
-//       addIcon({ name: 'manafication' });
-//       toggle.manafication = Date.now();
-//     }
-//
-//    // Early Manafication if able to proc from Verflare
-//     else if (player.level >= 68
-//     && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 40
-//     && player.jobDetail.blackMana < 50
-//     && player.jobDetail.whiteMana > player.jobDetail.blackMana
-//     && checkStatus('verfireready') < 2500) {
-//       addIcon({ name: 'manafication' });
-//       toggle.manafication = Date.now();
-//     }
-//
-//    // Use if otherwise over 40/40
-//     else if (player.level >= 60
-//     && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 40) {
-//       addIcon({ name: 'manafication' });
-//       toggle.manafication = Date.now();
-//     }
-//
-//     else {
-//      // Hide otherwise?
-//       removeAction('manafication');
-//       delete toggle.manafication;
-//     }
-//   }
-//   else {
-//     removeAction('manafication');
-//     delete toggle.manafication;
-//   }
-// }
