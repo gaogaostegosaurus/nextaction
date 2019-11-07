@@ -1,0 +1,39 @@
+
+
+@keyframes blink {
+  0% {opacity: 1;}
+  50% {opacity: 0.5;}
+  100% {opacity: 1;}
+}
+
+@keyframes icon-add {
+  0% {opacity: 0; width: 0; height: 0;}
+  50% {opacity: 0; width: 44; height: 44;}
+  100% {opacity: 1; width: 44; height: 44;}
+}
+
+@keyframes icon-remove {
+  0% {opacity: 1; width: 44; height: 44;}
+  50% {opacity: 0; width: 44; height: 44;}
+  100% {opacity: 0; width: 0; height: 0;}
+}
+
+@keyframes fade-in {
+  0% {opacity: 0;}
+  100% {opacity: 1;}
+}
+
+@keyframes fade-out {
+  0% {opacity: 1;}
+  100% {opacity: 0;}
+}
+
+@keyframes slide-in {
+  0% {width: 0; height: 0;}
+  100% {width: 44; height: 44;}
+}
+
+@keyframes slide-out {
+  0% {width: 44; height: 44;}
+  100% {width: 0; height: 0;}
+}

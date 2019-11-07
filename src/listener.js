@@ -19,7 +19,7 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
         blmAction(actionMatch);
       } else if (player.job === 'BRD') {
         brdAction(actionMatch);
-      } else if (player.job == 'DNC') {
+      } else if (player.job === 'DNC') {
         dncAction(actionMatch);
       } else if (player.job === 'DRK') {
         drkAction(actionMatch);
@@ -74,26 +74,19 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
       } else if (player.job === 'WHM') {
         whmStatus();
       }
-    }
-
-    else if (startsMatch && startsMatch.groups.sourceName === player.name) { // Status source = player
+    } else if (startsMatch && startsMatch.groups.sourceName === player.name) {
       if (player.job === 'BLM') {
         blmStartsUsing();
       } else if (player.job === 'RDM') {
-        rdmOnStartsUsing();
+        rdmOnStartsUsing(startsMatch);
       }
-    }
-
-    else if (cancelledMatch && cancelledMatch.groups.sourceID === player.ID) { // Status source = player
+    } else if (cancelledMatch && cancelledMatch.groups.sourceID === player.ID) {
       if (player.job === 'BLM') {
         blmCancelled();
-      }
-      else if (player.job === 'RDM') {
+      } else if (player.job === 'RDM') {
         rdmOnCancelled(cancelledMatch);
       }
-    }
-
-    else if (statsMatch) {
+    } else if (statsMatch) {
       // Uncomment to check
       const whatever = gcdCalculation({
         speed: Math.max(statsMatch.groups.skillSpeed, statsMatch.groups.spellSpeed),
@@ -129,16 +122,16 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
     player.tempjobDetail.step3 = parseInt(player.debugJobSplit[4], 16);
     player.tempjobDetail.step4 = parseInt(player.debugJobSplit[5], 16);
     player.tempjobDetail.steps = parseInt(player.debugJobSplit[6], 16); // 0-4
-  } else if (player.job == 'GNB') {
-    player.tempjobDetail.cartridge = parseInt(player.debugJobSplit[0]); // 0-2
-  } else if (player.job == 'SCH') {
-    player.tempjobDetail.tempaetherflow = parseInt(player.debugJobSplit[2]); // 0-3
+  } else if (player.job === 'GNB') {
+    player.tempjobDetail.cartridge = parseInt(player.debugJobSplit[0], 16); // 0-2
+  } else if (player.job === 'SCH') {
+    player.tempjobDetail.tempaetherflow = parseInt(player.debugJobSplit[2], 16); // 0-3
     player.tempjobDetail.tempfaerie = parseInt(player.debugJobSplit[3], 16); // 0-100
-  } else if (player.job == 'WHM') {
-    player.tempjobDetail.bloodlily = parseInt(player.debugJobSplit[5]); // 0-3
+  } else if (player.job === 'WHM') {
+    player.tempjobDetail.bloodlily = parseInt(player.debugJobSplit[5], 16); // 0-3
   }
   // Detects name/job/level change and clears elements
-  if (previous.job != player.job || previous.level != player.level) {
+  if (previous.job !== player.job || previous.level !== player.level) {
 
     clearUI();
     clearTimers();

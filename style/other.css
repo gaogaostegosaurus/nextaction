@@ -1,0 +1,26 @@
+
+
+.combat-show {
+  animation: fadein 0.1s forwards;
+}
+
+.combat-hide {
+  animation: fadeout 1s forwards;
+}
+
+/* Transition and animations here */
+
+.next-show {
+  transition: opacity 0.2s ease 0s;
+  opacity: 0.8;
+}
+
+.next-hide {
+  transition: opacity 1s ease 4s;
+  opacity: 0;
+}
+
+.blink {
+  animation: blink 1s infinite;
+  animation-delay: 0.2s;
+}

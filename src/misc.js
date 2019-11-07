@@ -2,12 +2,17 @@ const gcdCalculation = ({
   speed,
   time = 2500, // GCD in ms
 } = {}) => {
+  // From theoryjerks site:
+  // Math.floor(Math.floor(100 * 100 *
+  // (Math.floor(2500 * (1000 - Math.floor(130 * this.delta/levelMod))/1000)/1000))/100)/100;
+
   const base = 380;
   const delta = speed - base;
   const levelMod = 1 / 3300;
 
-  return Math.floor(Math.floor(100 * 100 * (Math.floor(time * (1000
-    - Math.floor(130 * delta * levelMod)) * 0.001) * 0.001)) * 0.01);
+  return Math.floor(Math.floor(100 * 100 * (Math.floor((time * (1000 - Math.floor(
+    (130 * delta) / levelMod,
+  ))) / 1000) / 1000)) / 100) * 10;
 };
 
 const loadInitialState = () => {

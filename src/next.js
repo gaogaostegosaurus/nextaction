@@ -1,27 +1,4 @@
-let priorityArray = [];
-let actionArray = [];
-let cooldownArray = [];
-let countdownArrayA = [];
-let countdownArrayB = [];
 
-const removeAnimationTime = 1000;
-let cooldownTracker = {}; // Holds timestamps for cooldowns
-let effectTracker = {}; // Holds timestamps for statuses
-let cooldowntime = {}; // Holds timestamps for cooldowns
-let bufferTime = 0;
-
-const timeout = {}; // For timeout variables
-const interval = {};
-const nextid = {}; // Store document id - location on page for icons, etc.
-const countdownid = {};
-const toggle = {}; // Toggley things
-const count = {}; // County things?
-let potency = {};
-let previous = {};
-let next = {};
-
-count.targets = 1;
-const countTargetsTime = 100; // Determines how many things multi-line attack hits
 
 // Set up doms
 //
@@ -40,9 +17,6 @@ const countTargetsTime = 100; // Determines how many things multi-line attack hi
 //   dom[`countdowntime${x}`] = document.getElementById("countdowntime" + x); // Countdown - separate from img
 // }
 
-let player = {};
-let target = {};
-let actionList = {};
 
 
 
@@ -69,9 +43,9 @@ function fadeIcon({name} = {}) {
   dom["icondiv" + nextid[name]].className = "icondiv icon-fade";
 }
 
-function removeIcon(name) {
-  dom["icondiv" + nextid[name]].className = "icondiv icon-remove";
-}
+// function removeIcon(name) {
+//   dom["icondiv" + nextid[name]].className = "icondiv icon-remove";
+// }
 
 
 

@@ -1,0 +1,71 @@
+
+.countdown-add {
+  transition: height 0.5s ease 0s, opacity 0.5s ease 0.5s;
+  height: 24px;
+  opacity: 1;
+}
+
+.countdown-remove {
+  transition: opacity 0.5s ease 0s, height 0.5s ease 0.5s;
+  height: 0px;
+  opacity: 0;
+}
+.countdownbar {
+  height: 10px;
+  width: 0px;
+  opacity: 0.5;
+  margin-top: 5px;
+  margin-left: 2px;
+  margin-right: 2px;
+  border-radius: 4px;
+  background-color: white;
+  transition: width 100ms ease, background-color 5s ease;
+  display: inline-flex;
+}
+
+.countdowntime {
+  font-size: 16px;
+  height: 22px;
+  line-height: 22px;
+  display: inline-flex;
+}
+
+
+.iconcountdowndiv {
+  position: absolute;
+  top: 50%;
+  left: calc(50% - 2px);
+  transform: translate(-50%, -50%);
+}
+
+.countdown-box {
+  padding-top: 11px;
+  padding-left: 11px;
+}
+
+.countdowndiv {
+  height: 24px;
+  opacity: 1;
+  margin-left: 2px;
+  display: flex;
+}
+
+.smalliconimgdiv {
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+}
+
+.smalliconimg {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+}
+
+.smalliconoverlay {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  margin-left: -2px;
+  margin-top: -1px;
+}

@@ -1,6 +1,6 @@
 // Duration properties - list by alphabetical job then alphabetical status
 
-var duration = {};
+const duration = {};
 
 // Role
 duration.swiftcast = 10000;

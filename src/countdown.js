@@ -1,3 +1,4 @@
+
 const addCountdown = ({
   name,
   img = icon[name],
@@ -44,10 +45,14 @@ const addCountdown = ({
     countdownBar = document.createElement('div');
 
     if (order === 'last') {
-      document.getElementById(column).columnDiv.append(countdownDiv);
+      document.getElementById(column).append(countdownDiv);
     } else {
-      document.getElementById(column).columnDiv.prepend(countdownDiv);
+      document.getElementById(column).prepend(countdownDiv);
     }
+    countdownImg.className = 'smalliconimg';
+    countdownImg.src = `img/icon/${img}.png`;
+    countdownOverlay.className = 'smalliconoverlay';
+    countdownOverlay.src = 'img/icon/overlay.png';
     countdownDiv.append(countdownImgDiv);
     countdownDiv.append(countdownTime);
     countdownDiv.append(countdownBar);
@@ -56,7 +61,6 @@ const addCountdown = ({
   }
   // Divs ready
 
-  countdownImg.src = `/img/icon/${img}.png`;
 
   // Add or remove icons
   if (text === 'addIcon'
@@ -72,15 +76,17 @@ const addCountdown = ({
   }
 
   let displayTime = time;
+  let actionAdded = 0;
 
   clearInterval(interval[name]);
 
   // Countdown animation function starts here
   interval[name] = setInterval(() => {
     // Show icons a little bit early
-    if (displayTime < 1000) {
+    if (displayTime < 1000 && actionAdded === 0) {
       if (onComplete === 'addIcon' || onComplete === 'addAction') {
         addAction({ name, array, order });
+        actionAdded = 1;
       }
     }
 

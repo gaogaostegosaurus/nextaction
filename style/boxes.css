@@ -1,0 +1,22 @@
+
+.row {
+  display: flex;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.next-box {
+  display: block;
+}
+
+.row2 {
+  margin-left: 11px;
+}
+
+.row3 {
+  margin-left: 22px;
+}

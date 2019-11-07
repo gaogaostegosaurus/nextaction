@@ -1,0 +1,153 @@
+
+.icon-add {
+  display: inline-flex;
+  position: relative;
+  transition: height 0.5s ease 0s, width 0.5s ease 0s, opacity 0.5s ease 0.5s;
+  height: 44px;
+  width: 44px;
+  opacity: 1;
+}
+
+
+.icon-show {
+  display: inline-flex;
+  position: relative;
+  transition: height 0.5s ease 0s, width 0.5s ease 0s, opacity 0.5s ease 0.5s;
+  height: 44px;
+  width: 44px;
+  opacity: 1;
+}
+
+
+.icon-hide {
+  display: inline-flex;
+  position: relative;
+  transition: opacity 0.5s ease 0s, height 0.5s ease 0.5s, width 0.5s ease 0.5s;
+  height: 0px;
+  width: 0px;
+  opacity: 0;
+}
+
+.action {
+  display: inline-flex;
+  position: relative;
+  transition: height 0.2s ease 0s, width 0.2s ease 0s, opacity 0.2s ease 0.2s;
+}
+
+.action-show {
+  height: 44px;
+  width: 44px;
+  opacity: 1;
+}
+
+.action-hide {
+  height: 0px;
+  width: 0px;
+  opacity: 0;
+}
+
+.action-fade {
+  height: 0px;
+  width: 0px;
+  opacity: 0.5;
+}
+
+.actionoverlay {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  top: 0px;
+  left: -2px;
+}
+
+.actionimg {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  margin-left: 2px;
+  margin-top: 2px;
+}
+
+.new-icon-add {
+  display: inline-flex;
+  position: relative;
+  animation: icon-add 1s ease;
+}
+
+.new-icon-remove {
+  display: inline-flex;
+  position: relative;
+  animation: icon-remove 1s ease;
+}
+
+.icon-remove {
+  transition: opacity 0.1s ease 0s, height 0.5s ease 0.1s, width 0.2s ease 0.1s;
+  width: 0px;
+  height: 0px;
+  opacity: 0;
+}
+
+.icon-fade {
+  transition: opacity 0.5s ease 0s;
+  opacity: 0.5;
+}
+
+
+.iconimgdiv {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+}
+
+.iconimg {
+  position: absolute;
+  transition: height 0.5s ease 0s, width 0.5s ease 0s, opacity 0.5s ease 0.5s,;
+  opacity: 1;
+  width: 40px;
+  height: 40px;
+  margin-left: 2px;
+  margin-top: 2px;
+}
+
+
+.iconimg-add {
+  position: absolute;
+  transition: height 0.5s ease 0s, width 0.5s ease 0s, opacity 0.5s ease 0.5s,;
+  opacity: 1;
+  width: 40px;
+  height: 40px;
+  margin-left: 2px;
+  margin-top: 2px;
+}
+
+.iconimg-remove {
+  position: absolute;
+  transition: opacity 0.5s ease 0s, height 0.5s ease 0.5s, width 0.5s ease 0.5s;
+  opacity: 0;
+  width: 40px;
+  height: 40px;
+  margin-left: 2px;
+  margin-top: 2px;
+}
+
+.new-icondiv {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+}
+
+.new-iconimg {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  margin: 2px;
+}
+
+.new-iconoverlay {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  top: 0px;
+  left: -2px;
+}
