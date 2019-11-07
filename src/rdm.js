@@ -1,6 +1,6 @@
 'use strict';
 
-/* Proc's remaining time lower than this means that it is not considered active for dualcast calculations */
+/* If the proc's remaining time lower than this, it is not considered active for dualcast calculations */
 const rdmProcBufferTime = 7500;
 
 // Verflare (called after melee combo function)
