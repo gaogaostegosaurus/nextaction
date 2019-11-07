@@ -3,7 +3,7 @@ const removeOldActions = ({
   row,
 } = {}) => {
   // Removes actions already hidden (hopefully anyway)
-  document.getElementById(row).querySelectorAll('div[class="action action-hide"]').forEach((e) => e.parentNode.removeChild(e));
+  document.getElementById(row).querySelectorAll('div[class~="action-hide"]').forEach((e) => e.parentNode.removeChild(e));
 };
 
 
