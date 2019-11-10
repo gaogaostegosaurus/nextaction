@@ -49,15 +49,21 @@ const addCountdown = ({
     } else {
       document.getElementById(column).prepend(countdownDiv);
     }
-    countdownImg.className = 'smalliconimg';
-    countdownImg.src = `img/icon/${img}.png`;
-    countdownOverlay.className = 'smalliconoverlay';
-    countdownOverlay.src = 'img/icon/overlay.png';
     countdownDiv.append(countdownImgDiv);
     countdownDiv.append(countdownTime);
     countdownDiv.append(countdownBar);
     countdownImgDiv.append(countdownImg);
     countdownImgDiv.append(countdownOverlay);
+    countdownDiv.className = 'countdown countdown-hide';
+    countdownImgDiv.classname = 'smalliconimgdiv';
+    countdownImg.className = 'smalliconimg';
+    countdownImg.src = `img/icon/${img}.png`;
+    countdownOverlay.className = 'smalliconoverlay';
+    countdownOverlay.src = 'img/icon/overlay.png';
+    countdownBar.className = 'countdownbar';
+    countdownTime.className = 'countdowntime';
+    void countdownDiv.offsetWidth;
+    countdownDiv.className = 'countdown countdown-show';
   }
   // Divs ready
 

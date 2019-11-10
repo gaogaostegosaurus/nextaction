@@ -1,20 +1,23 @@
-// Recast properties - list by alphabetical job then alphabetical action
+
+// Adds a recast time to tracker array
 const addRecast = ({
   name,
   time = recast[name],
   id = player.ID,
 } = {}) => {
-  let checkTarget = -1;
-
-  if (recastTracker[name]) {
-    checkTarget = recastTracker.findIndex((action) => action.name === name);
-    if (checkTarget > -1) { // Update array if source match found
-      recastTracker[name][checkTarget] = { id, time: time + Date.now() };
-    } else { // Push new entry into array if no matching entry
-      recastTracker[name].push({ id, time: time + Date.now() });
-    }
-  } else {
+  // Create if array doesn't exist yet
+  if (!recastTracker[name]) {
     recastTracker[name] = [];
+  }
+
+  // Look for matching index
+  const match = recastTracker[name].findIndex((entry) => entry.id === id);
+
+  if (match > -1) {
+    // Update array if match found
+    recastTracker[name][match] = { id, time: time + Date.now() };
+  } else {
+    // Push new entry into array if no matching entry
     recastTracker[name].push({ id, time: time + Date.now() });
   }
 };
@@ -23,17 +26,26 @@ const checkRecast = ({
   name,
   id = player.ID,
 } = {}) => {
-  let checkTarget = -1;
-
-  if (recastTracker[name]) {
-    checkTarget = recastTracker[name].findIndex((action) => action.name === name);
-  } else if (checkTarget > -1) {
-    return Math.max(recastTracker[name][checkTarget].time, -1);
+  // Check if array exists
+  if (!recastTracker[name]) {
+    return -1;
   }
+
+  // Find matching index
+  const match = recastTracker[name].findIndex((entry) => entry.id === id);
+
+  if (match > -1) {
+    // Returns matching recast time
+    return Math.max(recastTracker[name][match].time - Date.now(), -1);
+  }
+
+  // Return a recast time of -1 if no match
   return -1;
 };
 
 const recast = {};
+
+// Recast properties - list by alphabetical job then alphabetical action
 
 // Role actions
 recast.luciddreaming = 60000;
@@ -87,7 +99,7 @@ recast.sonicbreak = 60000;
 
 // MCH
 recast.barrelstabilizer = 120000;
-recast.drill = 20000
+recast.drill = 20000;
 // recast.bioblaster = recast.drill; // Use above due to shared cooldown
 recast.flamethrower = 60000;
 recast.gaussround = 30000;

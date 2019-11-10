@@ -8,10 +8,12 @@ const gcdCalculation = ({
 
   const base = 380;
   const delta = speed - base;
-  const levelMod = 1 / 3300;
+  const levelMod = 3300;
 
-  return Math.floor(Math.floor(100 * 100 * (Math.floor((time * (1000 - Math.floor(
-    (130 * delta) / levelMod,
+  // console.log(speed);
+
+  return Math.floor(Math.floor(10000 * (Math.floor((time * (1000 - Math.floor(
+    130 * (delta / levelMod)
   ))) / 1000) / 1000)) / 100) * 10;
 };
 
@@ -66,8 +68,8 @@ const clearUI = () => {
 
 
 const countTargets = (action) => {
-  const countTargetsTime = 100;
-  if (Date.now() - previous[action] > countTargetsTime) {
+  const countTargetsDelay = 1000;
+  if (Date.now() - previous[action] > countTargetsDelay) {
     previous[action] = Date.now();
     count.targets = 1;
   } else {

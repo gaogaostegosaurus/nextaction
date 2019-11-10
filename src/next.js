@@ -18,30 +18,30 @@
 // }
 
 
-
-
-const addIcon = ({
-  name,
-  img = name,
-  effect = '',
-} = {}) => {
-
-  dom[`iconimg${nextid[name]}`].src = `icon/${icon[img]}.png`;
-  dom[`icondiv${nextid[name]}`].className = `icondiv icon-add ${effect}`;
-};
-
-function addIconEffect({
-  name,
-  img = name,
-  effect = "",
-} = {}) {
-
-  dom["icondiv" + nextid[name]].className = dom["icondiv" + nextid[name]].className + " " + effect;
-}
-
-function fadeIcon({name} = {}) {
-  dom["icondiv" + nextid[name]].className = "icondiv icon-fade";
-}
+//
+//
+// const addIcon = ({
+//   name,
+//   img = name,
+//   effect = '',
+// } = {}) => {
+//
+//   dom[`iconimg${nextid[name]}`].src = `icon/${icon[img]}.png`;
+//   dom[`icondiv${nextid[name]}`].className = `icondiv icon-add ${effect}`;
+// };
+//
+// function addIconEffect({
+//   name,
+//   img = name,
+//   effect = "",
+// } = {}) {
+//
+//   dom["icondiv" + nextid[name]].className = dom["icondiv" + nextid[name]].className + " " + effect;
+// }
+//
+// function fadeIcon({name} = {}) {
+//   dom["icondiv" + nextid[name]].className = "icondiv icon-fade";
+// }
 
 // function removeIcon(name) {
 //   dom["icondiv" + nextid[name]].className = "icondiv icon-remove";

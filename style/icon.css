@@ -31,24 +31,26 @@
 .action {
   display: inline-flex;
   position: relative;
-  transition: height 0.2s ease 0s, width 0.2s ease 0s, opacity 0.2s ease 0.2s;
 }
 
 .action-show {
+  transition: height 0.2s ease 0s, width 0.2s ease 0s, opacity 0.2s ease 0.2s;
   height: 44px;
   width: 44px;
   opacity: 1;
 }
 
 .action-hide {
+  transition: opacity 0.2s ease 0s, height 0.2s ease 0.2s, width 0.2s ease 0.2s;
   height: 0px;
   width: 0px;
   opacity: 0;
 }
 
 .action-fade {
-  height: 0px;
-  width: 0px;
+  transition: opacity 1s ease 0s;
+  height: 44px;
+  width: 44px;
   opacity: 0.5;
 }
 

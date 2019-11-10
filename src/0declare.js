@@ -3,7 +3,9 @@ let actionArray = [];
 let cooldownArray = [];
 let countdownArrayA = [];
 let countdownArrayB = [];
-let recastTracker = []; // Holds timestamps for cooldowns
+
+// Objects
+let recastTracker = {}; // Holds timestamps for cooldowns
 let statusTracker = {}; // Holds timestamps for statuses
 let cooldowntime = {}; // Holds timestamps for cooldowns
 let actionList = {};
@@ -22,3 +24,5 @@ const count = {}; // County things?
 let potency = {};
 let previous = {};
 let next = {};
+
+player.gcd = 2500;

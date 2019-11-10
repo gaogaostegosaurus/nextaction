@@ -1,15 +1,20 @@
+.countdown {
+  display: flex;
+  margin-left: 2px;
+}
 
-.countdown-add {
+.countdown-show {
   transition: height 0.5s ease 0s, opacity 0.5s ease 0.5s;
   height: 24px;
   opacity: 1;
 }
 
-.countdown-remove {
+.countdown-hide {
   transition: opacity 0.5s ease 0s, height 0.5s ease 0.5s;
   height: 0px;
   opacity: 0;
 }
+
 .countdownbar {
   height: 10px;
   width: 0px;
@@ -24,10 +29,10 @@
 }
 
 .countdowntime {
+  display: inline-flex;
   font-size: 16px;
   height: 22px;
   line-height: 22px;
-  display: inline-flex;
 }
 
 
@@ -51,9 +56,9 @@
 }
 
 .smalliconimgdiv {
+  display: inline-flex;
   width: 22px;
   height: 22px;
-  display: inline-flex;
 }
 
 .smalliconimg {
