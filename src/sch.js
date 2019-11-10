@@ -31,18 +31,16 @@ const schStatusList = [
   'Galvanize', 'Catalyze',
 ];
 
-function schOnJobChange() {
+const schOnJobChange = () => {
 
   previous.artofwar = 0;
 
   if (player.level >= 72) {
     icon.bio = icon.biolysis;
-  }
-  else if (player.level >= 26) {
+  } else if (player.level >= 26) {
     icon.bio = icon.bio2;
-  }
-  else {
-    icon.bio = "000503";
+  } else {
+    icon.bio = '000503';
   }
 
   // Show available cooldowns
@@ -94,7 +92,7 @@ function schOnJobChange() {
   if (player.level >= 80) {
     addCountdown({ name: 'summonseraph' });
   }
-}
+};
 
 // Copied from BRD mostly...
 function schOnTargetChangedEvent() {
