@@ -33,7 +33,7 @@ const resyncActions = ({
 
   const row = getArrayRow({ array });
 
-  // removeOldActions({ row });
+  removeOldActions({ row });
 
   // Find current row length
   const rowDiv = document.getElementById(row);
@@ -45,7 +45,7 @@ const resyncActions = ({
   for (let i = 0; i < rowLength; i += 1) {
     const iconDiv = rowDiv.children[i];
     if (array[arrayIndex] && array[arrayIndex].name === iconDiv.dataset.action
-    && iconDiv.className === 'action action-show') {
+    && iconDiv.className !== 'action action-hide') {
       arrayIndex += 1;
     } else {
       iconDiv.className = 'action action-hide';
@@ -84,7 +84,6 @@ const addAction = ({
 
   // Pick row using array
   const row = getArrayRow({ array });
-  removeOldActions({ row });
 
   // Create elements
   const iconDiv = document.createElement('div');
@@ -123,7 +122,7 @@ const fadeAction = ({
   // Sets an action to lower opacity, for casting or whatever
 
   const row = getArrayRow({ array });
-  removeOldActions({ row });
+  // removeOldActions({ row });
 
   const match = document.getElementById(row).querySelector(`div[data-action="${name}"]`);
   if (match) {
@@ -138,7 +137,6 @@ const unfadeAction = ({
   // Undos fadeAction effect
 
   const row = getArrayRow({ array });
-  removeOldActions({ row });
 
   const match = document.getElementById(row).querySelector(`div[data-action="${name}"]`);
   if (match) {

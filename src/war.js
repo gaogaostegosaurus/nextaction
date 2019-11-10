@@ -2,7 +2,7 @@
 
 // Define actions to watch for
 
-actionList.war = [
+const warActionList = [
 
   // Role actions
   "Rampart", "Arm\'s Length",

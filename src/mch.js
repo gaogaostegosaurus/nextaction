@@ -1,6 +1,6 @@
 "use strict";
 
-actionList.mch = [
+const mchActionList = [
 
 
   // Non-GCD
@@ -459,7 +459,7 @@ function mchHeat() {
   console.log("  Heat:" + player.jobDetail.heat + "  Drill:" + checkRecast("drill") + "  Hotshot:" +  checkRecast("hotshot"));
   if (player.jobDetail.heat >= 50
   && (player.level < 58 || checkRecast("drill") > 9000)
-  && (player.level < 76 || checkRecast("hotshot") > 9000)) {  
+  && (player.level < 76 || checkRecast("hotshot") > 9000)) {
     addIcon({name: "hypercharge"});
     // if (player.level >= 45
     // && checkRecast("wildfire") < 1000) {

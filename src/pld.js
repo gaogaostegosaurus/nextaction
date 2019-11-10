@@ -2,7 +2,7 @@
 
 // Define actions to watch for
 
-actionList.pld = [
+const pldActionList = [
 
   // Non-GCD actions
   "Fight Or Flight", "Spirits Within", "Sheltron", "Sentinel", "Cover",

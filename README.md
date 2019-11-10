@@ -1,3 +1,7 @@
 # next
 
-URL: https://gaogaostegosaurus.github.io/next/next.html
+Maybe works version:
+https://gaogaostegosaurus.github.io/next/index.html
+
+Test version:
+https://gaogaostegosaurus.github.io/next/test.html

@@ -10,15 +10,7 @@
 
 /* Transition and animations here */
 
-.next-show {
-  transition: opacity 0.2s ease 0s;
-  opacity: 0.8;
-}
 
-.next-hide {
-  transition: opacity 1s ease 4s;
-  opacity: 0;
-}
 
 .blink {
   animation: blink 1s infinite;

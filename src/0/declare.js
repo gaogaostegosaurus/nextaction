@@ -8,9 +8,13 @@ let countdownArrayB = [];
 let recastTracker = {}; // Holds timestamps for cooldowns
 let statusTracker = {}; // Holds timestamps for statuses
 let cooldowntime = {}; // Holds timestamps for cooldowns
-let actionList = {};
 let player = {};
 let target = {};
+
+// RegEx matching strings
+let actionList = '';
+let statusList = '';
+let castingList = '';
 
 
 const removeAnimationTime = 1000;
@@ -24,5 +28,3 @@ const count = {}; // County things?
 let potency = {};
 let previous = {};
 let next = {};
-
-player.gcd = 2500;

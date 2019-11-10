@@ -29,7 +29,7 @@ var sightCooldown = 0; // Dragon Sight
 var spineshatterCooldown = 0;
 var surgeCooldown = 0; // Life Surge
 
-actionList.drg = [
+const drgActionList = [
 
   // Off-GCD
   "Life Surge", "Lance Charge", "Jump", "Spineshatter Dive", "Battle Litany",

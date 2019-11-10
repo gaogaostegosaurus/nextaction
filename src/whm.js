@@ -1,6 +1,6 @@
 "use strict";
 
-actionList.whm = [
+const whmActionList = [
 
   // oGCD actions
   "Presence Of Mind", "Benediction", "Asylum", "Assize", "Thin Air", "Tetragrammaton", "Divine Benison",

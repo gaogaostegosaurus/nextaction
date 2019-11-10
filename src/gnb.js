@@ -1,6 +1,6 @@
 "use strict";
 
-actionList.gnb = [
+const gnbActionList = [
 
   // Non-GCD
   "No Mercy",

@@ -2,7 +2,7 @@
 
 // Define actions to watch for
 
-actionList.drk = [
+const drkActionList = [
 
   // Role actions
   "Rampart", "Arm\'s Length",

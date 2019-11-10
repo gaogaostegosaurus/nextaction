@@ -30,38 +30,38 @@ const addCountdown = ({
     // Already exists, so assign accordingly
     countdownDiv = document.getElementById(column).children[findTarget];
     countdownImgDiv = countdownDiv.children[0];
+    countdownBar = countdownDiv.children[1];
+    countdownTime = countdownDiv.children[2];
     countdownImg = countdownImgDiv.children[0];
     countdownOverlay = countdownImgDiv.children[1];
-    countdownTime = countdownDiv.children[1];
-    countdownBar = countdownDiv.children[2];
   } else {
     // Does not exist, so create
     countdownArray.push({ name, img });
     countdownDiv = document.createElement('div');
     countdownImgDiv = document.createElement('div');
+    countdownBar = document.createElement('div');
+    countdownTime = document.createElement('div');
     countdownImg = document.createElement('img');
     countdownOverlay = document.createElement('img');
-    countdownTime = document.createElement('div');
-    countdownBar = document.createElement('div');
 
     if (order === 'last') {
       document.getElementById(column).append(countdownDiv);
     } else {
       document.getElementById(column).prepend(countdownDiv);
     }
-    countdownDiv.append(countdownImgDiv);
-    countdownDiv.append(countdownTime);
-    countdownDiv.append(countdownBar);
-    countdownImgDiv.append(countdownImg);
-    countdownImgDiv.append(countdownOverlay);
     countdownDiv.className = 'countdown countdown-hide';
-    countdownImgDiv.classname = 'smalliconimgdiv';
+    countdownImgDiv.className = 'smalliconimgdiv';
     countdownImg.className = 'smalliconimg';
     countdownImg.src = `img/icon/${img}.png`;
     countdownOverlay.className = 'smalliconoverlay';
     countdownOverlay.src = 'img/icon/overlay.png';
     countdownBar.className = 'countdownbar';
     countdownTime.className = 'countdowntime';
+    countdownDiv.append(countdownImgDiv);
+    countdownDiv.append(countdownBar);
+    countdownDiv.append(countdownTime);
+    countdownImgDiv.append(countdownImg);
+    countdownImgDiv.append(countdownOverlay);
     void countdownDiv.offsetWidth;
     countdownDiv.className = 'countdown countdown-show';
   }
@@ -71,14 +71,14 @@ const addCountdown = ({
   // Add or remove icons
   if (text === 'addIcon'
   && time <= 1000) {
-    countdownDiv.className = 'countdowndiv countdown-remove';
+    countdownDiv.className = 'countdown countdown-hide';
   }
 
   if (text === 'removeCountdownBar'
   && time <= 0) {
-    countdownDiv.className = 'countdowndiv countdown-remove';
+    countdownDiv.className = 'countdown countdown-hide';
   } else {
-    countdownDiv.className = 'countdowndiv countdown-add';
+    countdownDiv.className = 'countdown countdown-show';
   }
 
   let displayTime = time;
@@ -120,7 +120,7 @@ const addCountdown = ({
       clearInterval(interval[name]);
 
       if (onComplete !== 'showText') {
-        countdownDiv.className = 'countdowndiv countdown-remove';
+        countdownDiv.className = 'countdown countdown-hide';
       } else {
         countdownTime.innerHTML = text;
       }
@@ -155,7 +155,7 @@ const removeCountdown = ({
   const removeTarget = countdownArray.findIndex((action) => action.name === name);
   if (removeTarget > -1) {
     countdownArray.splice(removeTarget, 1);
-    document.getElementById(column).children[removeTarget].className = 'countdowndiv countdown-remove';
+    document.getElementById(column).children[removeTarget].className = 'countdown countdown-hide';
   }
   clearInterval(interval[name]);
 };

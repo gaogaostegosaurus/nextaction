@@ -2,25 +2,7 @@
 
 // To do: clearer indication of when TCJ / Mudra is active
 
-actionList.nin = [
 
-  // Off GCD
-  'Hide', 'Mug', 'Trick Attack', 'Kassatsu', 'Dream Within A Dream', 'Assassinate', 'Bhavacakra',
-  'Hellfrog Medium', 'Ten Chi Jin', 'Meisui',
-
-  // GCD
-  'Spinning Edge', 'Gust Slash', 'Shadow Fang', 'Aeolian Edge', 'Armor Crush',
-  'Death Blossom', 'Hakke Mujinsatsu',
-  'Throwing Dagger',
-
-  // Ninjutsu
-  'Katon', 'Raiton', 'Suiton', 'Goka Mekkyaku', 'Hyosho Ranyu',
-  // Code currently doesn't use mudra or most ninjutsu for decision-making
-  // "Ten", "Chi", "Jin", "Fuma Shuriken",  "Hyoton", "Huton", "Doton",
-
-  // Role
-  'True North'
-];
 
 function ninJobChange() {
 
@@ -77,24 +59,42 @@ function ninTargetChangedEvent() {
   }
 }
 
-function ninAction(logLine) {
+function ninOnAction(actionMatch) {
+  const ninActions = [
 
+    // Off GCD
+    'Hide', 'Mug', 'Trick Attack', 'Kassatsu', 'Dream Within A Dream', 'Assassinate', 'Bhavacakra',
+    'Hellfrog Medium', 'Ten Chi Jin', 'Meisui',
+
+    // GCD
+    'Spinning Edge', 'Gust Slash', 'Shadow Fang', 'Aeolian Edge', 'Armor Crush',
+    'Death Blossom', 'Hakke Mujinsatsu',
+    'Throwing Dagger',
+
+    // Ninjutsu
+    'Katon', 'Raiton', 'Suiton', 'Goka Mekkyaku', 'Hyosho Ranyu',
+    // Code currently doesn't use mudra or most ninjutsu for decision-making
+    // "Ten", "Chi", "Jin", "Fuma Shuriken",  "Hyoton", "Huton", "Doton",
+
+    // Role
+    'True North'
+  ];
   // console.log("Logline")
 
-  if (actionList.nin.indexOf(actionLog.groups.actionName) > -1) {
+  if (ninActions.indexOf(actionMatch.groups.actionName) > -1) {
 
     // Everything breaks Mudra "combo" so list it first
     // Not sure what to do with this
 
-    if ("Ten" == actionLog.groups.actionName) {
+    if ("Ten" == actionMatch.groups.actionName) {
       // toggle.mudra = toggle.mudra + "T";
       // ninMudraCombo();
     }
-    else if ("Chi" == actionLog.groups.actionName) {
+    else if ("Chi" == actionMatch.groups.actionName) {
       // toggle.mudra = toggle.mudra + "C";
       // ninMudraCombo();
     }
-    else if ("Jin" == actionLog.groups.actionName) {
+    else if ("Jin" == actionMatch.groups.actionName) {
       // toggle.mudra = toggle.mudra + "J";
       // ninMudraCombo();
     }
@@ -103,7 +103,7 @@ function ninAction(logLine) {
 
       delete toggle.mudra;
 
-      if ("Hide" == actionLog.groups.actionName) {
+      if ("Hide" == actionMatch.groups.actionName) {
         removeIcon("tenchijin");
         addRecast("hide");
         addRecast("ninjutsu", -1);
@@ -112,19 +112,19 @@ function ninAction(logLine) {
         ninNinjutsu();
       }
 
-      else if ("Mug" == actionLog.groups.actionName) {
+      else if ("Mug" == actionMatch.groups.actionName) {
         ninNinki();
       }
 
-      else if ("Trick Attack" == actionLog.groups.actionName) {
+      else if ("Trick Attack" == actionMatch.groups.actionName) {
         addCountdownBar({name: "trickattack"});
       }
 
-      else if (["Raiton", "Hyosho Ranyu"].indexOf(actionLog.groups.actionName) > -1) {
+      else if (["Raiton", "Hyosho Ranyu"].indexOf(actionMatch.groups.actionName) > -1) {
         count.targets = 1;
       }
 
-      else if (["Katon", "Goka Mekkyaku"].indexOf(actionLog.groups.actionName) > -1) {
+      else if (["Katon", "Goka Mekkyaku"].indexOf(actionMatch.groups.actionName) > -1) {
         if (Date.now() - previous.katon > 1000) {
           previous.katon = Date.now()
           count.targets = 1;
@@ -134,11 +134,11 @@ function ninAction(logLine) {
         }
       }
 
-      else if ("Suiton" == actionLog.groups.actionName) {
+      else if ("Suiton" == actionMatch.groups.actionName) {
         addStatus("suiton");
       }
 
-      else if ("Kassatsu" == actionLog.groups.actionName) {
+      else if ("Kassatsu" == actionMatch.groups.actionName) {
 
         removeIcon("kassatsu");
         addStatus("kassatsu");
@@ -158,13 +158,13 @@ function ninAction(logLine) {
         ninNinjutsu();
       }
 
-      else if ("Dream Within A Dream" == actionLog.groups.actionName) {
+      else if ("Dream Within A Dream" == actionMatch.groups.actionName) {
         removeIcon("dreamwithinadream");
         addCountdownBar({name: "dreamwithinadream", time: recast.dreamwithinadream, oncomplete: "addIcon"});
         addStatus("assassinateready");
       }
 
-      else if ("Hellfrog Medium" == actionLog.groups.actionName) {
+      else if ("Hellfrog Medium" == actionMatch.groups.actionName) {
         if (Date.now() - previous.hellfrogmedium > 1000) {
           previous.hellfrogmedium = Date.now()
           count.targets = 1;
@@ -175,12 +175,12 @@ function ninAction(logLine) {
         ninNinki();
       }
 
-      else if ("Bhavacakra" == actionLog.groups.actionName) {
+      else if ("Bhavacakra" == actionMatch.groups.actionName) {
         count.targets = 1;
         ninNinki();
       }
 
-      else if ("Ten Chi Jin" == actionLog.groups.actionName) {
+      else if ("Ten Chi Jin" == actionMatch.groups.actionName) {
         removeIcon("tenchijin");
         addStatus("tenchijin");
         addCountdownBar({name: "tenchijin"});
@@ -190,15 +190,15 @@ function ninAction(logLine) {
         ninNinjutsu();
       }
 
-      else if ("Meisui" == actionLog.groups.actionName) {
+      else if ("Meisui" == actionMatch.groups.actionName) {
         addCountdownBar({name: "meisui"});
         ninNinki();
       }
 
       else { // Weaponskills and combos (hopefully)
 
-        if ("Spinning Edge" == actionLog.groups.actionName
-        && actionLog.groups.result.length >= 2) {
+        if ("Spinning Edge" == actionMatch.groups.actionName
+        && actionMatch.groups.result.length >= 2) {
 
           if ([1, 2, 3].indexOf(next.combo) == -1) {
             if (player.level >= 38
@@ -218,8 +218,8 @@ function ninAction(logLine) {
           toggle.combo = Date.now();
         }
 
-        else if ("Gust Slash" == actionLog.groups.actionName
-        && actionLog.groups.result.length >= 8) {
+        else if ("Gust Slash" == actionMatch.groups.actionName
+        && actionMatch.groups.result.length >= 8) {
 
           if ([1, 2].indexOf(next.combo) == -1) {
             if (player.level >= 54
@@ -239,14 +239,14 @@ function ninAction(logLine) {
           }
         }
 
-        else if ("Shadow Fang" == actionLog.groups.actionName
-        && actionLog.groups.result.length >= 8) {
-          addStatus("shadowfang", duration.shadowfang, actionLog.groups.targetID);
+        else if ("Shadow Fang" == actionMatch.groups.actionName
+        && actionMatch.groups.result.length >= 8) {
+          addStatus("shadowfang", duration.shadowfang, actionMatch.groups.targetID);
           ninCombo();
         }
 
-        else if ("Death Blossom" == actionLog.groups.actionName
-        && actionLog.groups.result.length >= 2) {
+        else if ("Death Blossom" == actionMatch.groups.actionName
+        && actionMatch.groups.result.length >= 2) {
 
           if (Date.now() - previous.deathblossom > 1000) {
             previous.deathblossom = Date.now()
@@ -264,8 +264,8 @@ function ninAction(logLine) {
           }
         }
 
-        else if ("Hakke Mujinsatsu" == actionLog.groups.actionName
-        && actionLog.groups.result.length == 8) {
+        else if ("Hakke Mujinsatsu" == actionMatch.groups.actionName
+        && actionMatch.groups.result.length == 8) {
 
           if (Date.now() - previous.hakkemujinsatsu > 1000) {
             previous.hakkemujinsatsu = Date.now()

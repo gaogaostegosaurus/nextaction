@@ -13,6 +13,21 @@
   display: block;
 }
 
+
+.next {
+  display: block;
+}
+
+.next-show {
+  transition: opacity 0.2s ease 0s;
+  opacity: 0.8;
+}
+
+.next-hide {
+  transition: opacity 2s ease 5s;
+  opacity: 0;
+}
+
 .row2 {
   margin-left: 11px;
 }

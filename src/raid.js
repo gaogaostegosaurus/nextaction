@@ -1,6 +1,6 @@
 "use strict";
 
-actionList.raid = [
+const raidActionList = [
 
   // ALl
   "Battle Litany",

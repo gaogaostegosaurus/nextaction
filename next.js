@@ -1070,7 +1070,7 @@ function blmThunder(currentMP, rotationTime, rotationStacks, rotationMinimumMP) 
 
 "use strict";
 
-actionList.brd = [
+const brdActionList = [
   "Heavy Shot", "Straight Shot", "Venomous Bite", "Windbite", "Iron Jaws", "Caustic Bite", "Stormbite", "Refulgent Arrow",
   "Quick Nock",
   "Raging Strikes", "Barrage", "Battle Voice", "The Wanderer\'s Minuet", "Empyreal Arrow", "Sidewinder",
@@ -1689,7 +1689,7 @@ const removeCountdown = ({
 
 var maxEsprit;
 
-actionList.dnc = [
+const dncActionList = [
 
   // Non-GCD
   "Fan Dance", "Fan Dance II", "Fan Dance III", "Devilment", "Flourish",
@@ -2221,7 +2221,7 @@ var sightCooldown = 0; // Dragon Sight
 var spineshatterCooldown = 0;
 var surgeCooldown = 0; // Life Surge
 
-actionList.drg = [
+const drgActionList = [
 
   // Off-GCD
   "Life Surge", "Lance Charge", "Jump", "Spineshatter Dive", "Battle Litany",
@@ -2766,7 +2766,7 @@ function drgComboTimeout() {
 
 // Define actions to watch for
 
-actionList.drk = [
+const drkActionList = [
 
   // Role actions
   "Rampart", "Arm\'s Length",
@@ -3272,7 +3272,7 @@ duration.regen = 18000;
 
 "use strict";
 
-actionList.gnb = [
+const gnbActionList = [
 
   // Non-GCD
   "No Mercy",
@@ -4273,7 +4273,7 @@ addOverlayListener('onPartyWipe', function(e) {
 
 "use strict";
 
-actionList.mch = [
+const mchActionList = [
 
 
   // Non-GCD
@@ -4832,7 +4832,7 @@ const countTargets = (action) => {
 
 "use strict";
 
-actionList.mnk = [
+const mnkActionList = [
 
   // oGCD
   "Perfect Balance", "Riddle Of Fire", "Brotherhood", "The Forbidden Chakra", "Enlightenment", "Shoulder Tackle", "Elixir Field", "Tornado Kick",
@@ -5222,7 +5222,7 @@ callOverlayHandler({ call: 'cactbotRequestState' });
 
 // To do: clearer indication of when TCJ / Mudra is active
 
-actionList.nin = [
+const ninActionList = [
 
   // Off GCD
   'Hide', 'Mug', 'Trick Attack', 'Kassatsu', 'Dream Within A Dream', 'Assassinate', 'Bhavacakra',
@@ -5848,7 +5848,7 @@ function ninNinki() {
 
 // Define actions to watch for
 
-actionList.pld = [
+const pldActionList = [
 
   // Non-GCD actions
   "Fight Or Flight", "Spirits Within", "Sheltron", "Sentinel", "Cover",
@@ -7548,7 +7548,7 @@ recast.raidtrickattack = recast.trickattack;
 
 "use strict";
 
-actionList.sam = [
+const samActionList = [
   "Higanbana", "Midare Setsugekka", "Kaeshi: Higanbana", "Kaeshi: Setsugekka",
 
   "Meikyo Shisui",
@@ -8220,7 +8220,7 @@ function okaCombo() {
 
 "use strict";
 
-actionList.sch = [
+const schActionList = [
 
   // Off-GCD
   "Aetherflow",
@@ -8474,7 +8474,7 @@ function removeStatus(name, id) {
 
 // Define actions to watch for
 
-actionList.war = [
+const warActionList = [
 
   // Role actions
   "Rampart", "Arm\'s Length",
@@ -9080,7 +9080,7 @@ function mythriltempestCombo() {
 
 "use strict";
 
-actionList.whm = [
+const whmActionList = [
 
   // oGCD actions
   "Presence Of Mind", "Benediction", "Asylum", "Assize", "Thin Air", "Tetragrammaton", "Divine Benison",

@@ -2,7 +2,7 @@
 
 var maxEsprit;
 
-actionList.dnc = [
+const dncActionList = [
 
   // Non-GCD
   "Fan Dance", "Fan Dance II", "Fan Dance III", "Devilment", "Flourish",

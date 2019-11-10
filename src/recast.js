@@ -47,6 +47,8 @@ const recast = {};
 
 // Recast properties - list by alphabetical job then alphabetical action
 
+recast.gcd = 2500;
+
 // Role actions
 recast.luciddreaming = 60000;
 recast.peloton = 5000;

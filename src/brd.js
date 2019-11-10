@@ -1,6 +1,6 @@
 "use strict";
 
-actionList.brd = [
+const brdActionList = [
   "Heavy Shot", "Straight Shot", "Venomous Bite", "Windbite", "Iron Jaws", "Caustic Bite", "Stormbite", "Refulgent Arrow",
   "Quick Nock",
   "Raging Strikes", "Barrage", "Battle Voice", "The Wanderer\'s Minuet", "Empyreal Arrow", "Sidewinder",

@@ -3,7 +3,30 @@
 /* If the proc's remaining time lower than this, it is not considered active for dualcast
 calculations */
 
+const rdmActionList = [
+  // Off-GCD
+  'Corps-A-Corps', 'Displacement', 'Fleche', 'Contre Sixte', 'Acceleration', 'Manafication',
+  'Engagement',
+  // GCD
+  'Jolt', 'Verfire', 'Verstone', 'Jolt II', 'Verthunder', 'Veraero',
+  'Verthunder II', 'Veraero II', 'Impact', 'Scatter',
+  'Riposte', 'Zwerchhau', 'Redoublement', 'Moulinet', 'Reprise',
+  'Enchanted Riposte', 'Enchanted Zwerchhau', 'Enchanted Redoublement', 'Enchanted Moulinet',
+  'Enchanted Reprise',
+  'Verflare', 'Verholy', 'Scorch',
+  // Role
+  'Swiftcast', 'Lucid Dreaming',
+];
 
+const rdmCastingList = [
+  'Jolt', 'Verfire', 'Verstone', 'Jolt II', 'Verthunder', 'Veraero',
+  'Verthunder II', 'Veraero II', 'Impact', 'Scatter',
+];
+
+const rdmStatusList = [
+  'Dualcast', 'Verfire Ready', 'Verstone Ready', 'Manafication',
+  'Swiftcast',
+];
 
 const rdmMeleeCombo = () => {
   addAction({ name: 'riposte', array: priorityArray });
@@ -241,8 +264,8 @@ const rdmDualcast = () => {
   let { whiteMana } = player.jobDetail;
   let manaCap = 100; // Define outside for loop conditions
   let manaTarget = 80;
-  const gcdTime = 2500;
-  let elapsedTime = gcdTime * 1;
+  let elapsedTime = recast.gcd;
+
   // console.log(`Verfire Ready: ${verfireStatus}  Verstone Ready: ${verstoneStatus}`);
   // console.log(JSON.stringify(dualcastArray));
 
@@ -270,68 +293,65 @@ const rdmDualcast = () => {
       manaTarget = 80;
     }
 
+    // Reprise/Moulinet control
     // Lower mana preempitively with moulinet/reprise
-    if (player.level >= 72 && count.targets === 1) {
-      if (manaficationRecast - elapsedTime - 2200 * 5 < 0
-      && Math.min(blackMana, whiteMana) < 80
-      && Math.min(blackMana - 25, whiteMana - 25) >= 50) {
-        dualcastArray.push({ name: 'reprise', img: 'reprise' });
-        dualcastArray.push({ name: 'reprise', img: 'reprise' });
-        dualcastArray.push({ name: 'reprise', img: 'reprise' });
-        dualcastArray.push({ name: 'reprise', img: 'reprise' });
-        dualcastArray.push({ name: 'reprise', img: 'reprise' });
-        elapsedTime += 2200 * 5;
-        blackMana -= 25;
-        whiteMana -= 25;
-      } else if (manaficationRecast - elapsedTime - 2200 * 4 < 0
-      && Math.min(blackMana, whiteMana) < 80
-      && Math.min(blackMana - 20, whiteMana - 20) >= 50) {
-        dualcastArray.push({ name: 'reprise', img: 'reprise' });
-        dualcastArray.push({ name: 'reprise', img: 'reprise' });
-        dualcastArray.push({ name: 'reprise', img: 'reprise' });
-        dualcastArray.push({ name: 'reprise', img: 'reprise' });
-        elapsedTime += 2200 * 4;
-        blackMana -= 20;
-        whiteMana -= 20;
-      } else if (manaficationRecast - elapsedTime - 2200 * 3 < 0
-      && Math.min(blackMana, whiteMana) < 80
-      && Math.min(blackMana - 15, whiteMana - 15) >= 50) {
-        dualcastArray.push({ name: 'reprise', img: 'reprise' });
-        dualcastArray.push({ name: 'reprise', img: 'reprise' });
-        dualcastArray.push({ name: 'reprise', img: 'reprise' });
-        elapsedTime += 2200 * 3;
-        blackMana -= 15;
-        whiteMana -= 15;
-      } else if (manaficationRecast - elapsedTime - 2200 * 2 < 0
-      && Math.min(blackMana, whiteMana) < 80
-      && Math.min(blackMana - 10, whiteMana - 10) >= 50) {
-        dualcastArray.push({ name: 'reprise', img: 'reprise' });
-        dualcastArray.push({ name: 'reprise', img: 'reprise' });
-        elapsedTime += 2200 * 2;
-        blackMana -= 10;
-        whiteMana -= 10;
-      } else if (manaficationRecast - elapsedTime - 2200 * 1 < 0
-      && Math.min(blackMana, whiteMana) < 80
-      && Math.min(blackMana - 5, whiteMana - 5) >= 50) {
-        dualcastArray.push({ name: 'reprise', img: 'reprise' });
-        elapsedTime += 2200 * 1;
-        blackMana -= 5;
-        whiteMana -= 5;
+
+    // With Manafication
+    if (player.level >= 60) {
+      // Single Target/Reprise
+      if (count.targets === 1 && Math.min(blackMana, whiteMana) < 80) {
+
+        if (player.level >= 72) {
+          for (let i = 1; i <= 5; i += 1) {
+            // console.log(recast.gcd);
+            if (manaficationRecast - elapsedTime - 2200 * i < 0
+            && Math.min(blackMana - 5 * i, whiteMana - 5 * i) >= 50) {
+              for (let j = 1; j <= i; j += 1) {
+                dualcastArray.unshift({ name: 'reprise', img: 'reprise' });
+                elapsedTime += 2200;
+                blackMana -= 5;
+                whiteMana -= 5;
+              }
+            }
+          }
+        } else {
+          for (let i = 1; i <= 2; i += 1) {
+            if (manaficationRecast - elapsedTime - 1500 * i < 0
+            && Math.min(blackMana - 20 * i, whiteMana - 20 * i) >= 50) {
+              for (let j = 1; j <= i; j += 1) {
+                dualcastArray.unshift({ name: 'moulinet', img: 'moulinet' });
+                elapsedTime += 1500;
+                blackMana -= 20;
+                whiteMana -= 20;
+              }
+            }
+          }
+        }
+      } else if (count.targets > 1) {
+        for (let i = 1; i <= 2; i += 1) {
+          if (manaficationRecast - elapsedTime - 1500 * i < 0
+          && Math.min(blackMana - 20 * i, whiteMana - 20 * i) >= 50) {
+            for (let j = 1; j <= i; j += 1) {
+              dualcastArray.unshift({ name: 'moulinet', img: 'moulinet' });
+              elapsedTime += 1500;
+              blackMana -= 20;
+              whiteMana -= 20;
+            }
+          }
+        }
       }
-    } else if (player.level >= 60 && count.targets > 1) {
-      if (manaficationRecast - elapsedTime - 1500 * 2 < 0
-      && Math.min(blackMana - 40, whiteMana - 40) >= 50) {
-        dualcastArray.push({ name: 'moulinet', img: 'moulinet' });
-        dualcastArray.push({ name: 'moulinet', img: 'moulinet' });
-        elapsedTime += 1500 * 2;
-        blackMana -= 40;
-        whiteMana -= 40;
-      } else if (manaficationRecast - elapsedTime - 1500 * 1 < 0
-      && Math.min(blackMana - 20, whiteMana - 20) >= 50) {
-        dualcastArray.push({ name: 'moulinet', img: 'moulinet' });
-        elapsedTime += 1500 * 1;
-        blackMana -= 20;
-        whiteMana -= 20;
+    } else if (player.level >= 52 && count.targets > 1) {
+      // Moulinet only
+      for (let i = 1; i <= 5; i += 1) {
+        // console.log(recast.gcd);
+        if (Math.min(blackMana - 20 * i, whiteMana - 20 * i) >= 0) {
+          for (let j = 1; j <= i; j += 1) {
+            dualcastArray.unshift({ name: 'moulinet', img: 'moulinet' });
+            elapsedTime += 1500;
+            blackMana -= 20;
+            whiteMana -= 20;
+          }
+        }
       }
     }
 
@@ -389,7 +409,7 @@ const rdmDualcast = () => {
     // Add to action array
     dualcastArray.push({ name: `hardcast ${bestCombo.hardcastAction}`, img: bestCombo.hardcastAction });
     dualcastArray.push({ name: `dualcast ${bestCombo.dualcastAction}`, img: bestCombo.dualcastAction });
-    elapsedTime += gcdTime * 2;
+    elapsedTime += recast.gcd * 2;
     blackMana = Math.min(blackMana + bestCombo.blackManaGain, 100);
     whiteMana = Math.min(whiteMana + bestCombo.whiteManaGain, 100);
 
@@ -401,11 +421,18 @@ const rdmDualcast = () => {
       elapsedTime += 1000 * 1;
     }
 
-    if (bestCombo.startCombo !== '') {
-      next.comboBlackMana = blackMana;
-      next.comboWhiteMana = whiteMana;
-      next.combo = bestCombo.startCombo;
+    if (bestCombo.startCombo !== '') { // non empty string
+      if (next.combo !== bestCombo.startCombo) {
+        priorityArray.length = 0;
+        resyncActions({ array: priorityArray });
+        next.combo = bestCombo.startCombo;
+      }
       break;
+    } else {
+      // Hide everything
+      priorityArray.length = 0;
+      resyncActions({ array: priorityArray });
+      delete next.combo;
     }
   } while (elapsedTime < 15000);
 
@@ -418,44 +445,44 @@ const rdmDualcast = () => {
 };
 
 const rdmNext = () => { // Main function
-  // if (player.level >= 60 && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) > 40) {
-  //   addAction({ name: 'manafication', array: priorityArray });
-  //   rdmMeleeCombo();
-  // } else if (player.level >= 68
-  //   && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) > 89) {
-  //   rdmMeleeCombo();
-  // } else if (player.level >= 68 && player.jobDetail.whiteMana > player.jobDetail.blackMana && checkStatus({ name: 'verfireready' }) < 0) {
-  //   rdmMeleeCombo();
-  // }
+
   rdmDualcast();
 
   // Check if combo was toggled by Dualcast function
-  if (player.jobDetail.blackMana === next.comboBlackMana
-  && player.jobDetail.whiteMana === next.comboWhiteMana) {
-    if (next.combo === 'verholy' && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 80) {
-      rdmVerholyCombo();
-      console.log('start verholy combo');
-    } else if (next.combo === 'verflare' && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 80) {
-      rdmVerflareCombo();
-      console.log('start verflare combo');
-    } else if (next.combo === 'melee') {
-      console.log('start meee combo');
-      if (player.level >= 50
-      && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 80) {
-        rdmMeleeCombo();
-      } else if (player.level < 50
-      && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 55) {
-        rdmMeleeCombo();
-      } else if (player.level < 35
-      && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 30) {
-        rdmMeleeCombo();
+  if (next.combo) {
+    if (player.level >= 68
+    && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 80) {
+      if (player.level >= 70 && player.jobDetail.whiteMana < player.jobDetail.blackMana
+      && checkStatus({ name: 'verstoneready' }) < 1500 * 3 + recast.gcd) {
+        rdmVerholyCombo();
+      } else if (player.jobDetail.blackMana < player.jobDetail.whiteMana
+      && checkStatus({ name: 'verfireready' }) < 1500 * 3 + recast.gcd) {
+        rdmVerflareCombo();
+      } else if (player.level >= 70
+      && player.jobDetail.whiteMana + 20 - player.jobDetail.blackMana <= 30
+      && checkStatus({ name: 'verstoneready' }) < 1500 * 3 + recast.gcd
+      && checkStatus({ name: 'verfireready' }) > 1500 * 3 + recast.gcd) {
+        rdmVerholyCombo(); // 20% proc, avoid overwrite
+      } else if (player.jobDetail.blackMana + 20 - player.jobDetail.whiteMana <= 30
+      && checkStatus({ name: 'verfireready' }) < 1500 * 3 + recast.gcd
+      && checkStatus({ name: 'verstoneready' }) > 1500 * 3 + recast.gcd) {
+        rdmVerflareCombo(); // 20% proc, avoid overwrite
+      } else if (player.level >= 70 && player.jobDetail.blackMana <= player.jobDetail.whiteMana) {
+        rdmVerholyCombo();
+      } else {
+        rdmVerflareCombo();
       }
+    } else if (player.level < 68
+    && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 80) {
+      rdmMeleeCombo();
+    } else if (player.level < 50
+    && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 55) {
+      rdmMeleeCombo();
+    } else if (player.level < 35
+    && Math.min(player.jobDetail.blackMana, player.jobDetail.whiteMana) >= 30) {
+      rdmMeleeCombo();
     }
-  } else {
-    priorityArray.length = 0;
-    resyncActions({ array: priorityArray });
   }
-
 };
 
 const rdmOnJobChange = () => {
@@ -513,8 +540,10 @@ const rdmOnJobChange = () => {
 };
 
 const rdmOnStartsUsing = () => {
-  priorityArray = [];
+  // Clear out combo stuff
+  priorityArray.length = 0;
   resyncActions({ array: priorityArray });
+
   const row = document.getElementById('action-row');
   const match = row.querySelector('div[data-action~="hardcast"]');
   if (match) {
@@ -524,188 +553,174 @@ const rdmOnStartsUsing = () => {
 };
 
 const rdmOnAction = (actionMatch) => {
-  const rdmActions = [
-    // Off-GCD
-    'Corps-A-Corps', 'Displacement', 'Fleche', 'Contre Sixte', 'Acceleration', 'Manafication',
-    'Engagement',
-    // GCD
-    'Jolt', 'Verfire', 'Verstone', 'Jolt II', 'Verthunder', 'Veraero',
-    'Verthunder II', 'Veraero II', 'Impact', 'Scatter',
-    'Riposte', 'Zwerchhau', 'Redoublement', 'Moulinet', 'Reprise',
-    'Enchanted Riposte', 'Enchanted Zwerchhau', 'Enchanted Redoublement', 'Enchanted Moulinet',
-    'Enchanted Reprise',
-    'Verflare', 'Verholy', 'Scorch',
-    // Role
-    'Swiftcast', 'Lucid Dreaming',
-  ];
-
-  if (rdmActions.indexOf(actionMatch.groups.actionName) > -1) {
-    // Non-GCD Actions
-    if (actionMatch.groups.actionName === 'Corps-A-Corps') {
-      removeAction({ name: 'corpsacorps', array: cooldownArray });
-      addRecast({ name: 'corpsacorps' });
-      addCountdown({
-        name: 'corpsacorps', time: recast.corpsacorps, onComplete: 'addIcon', array: cooldownArray,
-      });
-    } else if (['Displacement', 'Engagement'].indexOf(actionMatch.groups.actionName) > -1) {
-      removeAction({ name: 'displacement', array: cooldownArray });
-      addRecast({ name: 'displacement' });
-      addCountdown({
-        name: 'displacement', time: recast.displacement, onComplete: 'addIcon', array: cooldownArray,
-      });
-    } else if (actionMatch.groups.actionName === 'Fleche') {
-      removeAction({ name: 'fleche', array: cooldownArray });
-      addRecast({ name: 'fleche' });
-      addCountdown({
-        name: 'fleche', time: recast.fleche, onComplete: 'addIcon', array: cooldownArray,
-      });
-    } else if (actionMatch.groups.actionName === 'Acceleration') {
-      removeAction({ name: 'acceleration', array: cooldownArray });
-      addRecast({ name: 'acceleration' });
-      addCountdown({
-        name: 'acceleration', time: recast.acceleration, onComplete: 'addIcon', array: cooldownArray,
-      });
-    } else if (actionMatch.groups.actionName === 'Contre Sixte') {
-      removeAction({ name: 'contresixte', array: cooldownArray });
-      addRecast({ name: 'contresixte' });
-      addCountdown({
-        name: 'contresixte', time: recast.contresixte, onComplete: 'addIcon', array: cooldownArray,
-      });
-      // Contre Sixte makes the formulas act funny it seems...
-      // countTargets('contresixte');
-    } else if (actionMatch.groups.actionName === 'Embolden') {
-      addRecast({ name: 'embolden' });
-    } else if (actionMatch.groups.actionName === 'Swiftcast') {
-      removeAction({ name: 'swiftcast', array: cooldownArray });
-      addRecast({ name: 'swiftcast' });
-      addCountdown({
-        name: 'swiftcast', time: recast.swiftcast, onComplete: 'addIcon', array: cooldownArray,
-      });
-    } else if (actionMatch.groups.actionName === 'Lucid Dreaming') {
-      addRecast({ name: 'luciddreaming' });
-    } else if (['Riposte', 'Enchanted Riposte'].indexOf(actionMatch.groups.actionName) > -1) {
-      toggle.combo = Date.now();
-      count.targets = 1;
-      removeAction({ name: 'riposte', array: priorityArray });
-      if (player.level < 35
-      || Math.max(player.jobDetail.blackMana, player.jobDetail.whiteMana) < 25) {
-        delete toggle.combo;
-      }
-    } else if (['Zwerchhau', 'Enchanted Zwerchhau'].indexOf(actionMatch.groups.actionName) > -1) {
-      removeAction({ name: 'zwerchhau', array: priorityArray });
-      toggle.combo = Date.now();
-      if (player.level < 50
-      || Math.max(player.jobDetail.blackMana, player.jobDetail.whiteMana) < 25) {
-        delete toggle.combo;
-      }
-    } else if (['Redoublement', 'Enchanted Redoublement'].indexOf(actionMatch.groups.actionName) > -1) {
-      toggle.combo = Date.now();
-      removeAction({ name: 'redoublement', array: priorityArray });
-      if (player.level < 68) {
-        delete toggle.combo;
-      }
-    } else if (actionMatch.groups.actionName === 'Verflare') {
-      toggle.combo = Date.now();
-      removeAction({ name: 'verflare', array: priorityArray });
-      if (player.level < 80) {
-        delete toggle.combo;
-        rdmNext();
-      }
-    } else if (actionMatch.groups.actionName === 'Verholy') {
-      toggle.combo = Date.now();
-      removeAction({ name: 'verholy', array: priorityArray });
-      if (player.level < 80) {
-        delete toggle.combo;
-        rdmNext();
-      }
-    } else if (actionMatch.groups.actionName === 'Scorch') {
-      removeAction({ name: 'scorch', array: priorityArray });
+  // Non-GCD Actions
+  if (actionMatch.groups.actionName === 'Corps-A-Corps') {
+    removeAction({ name: 'corpsacorps', array: cooldownArray });
+    addRecast({ name: 'corpsacorps' });
+    addCountdown({
+      name: 'corpsacorps', time: recast.corpsacorps, onComplete: 'addIcon', array: cooldownArray,
+    });
+  } else if (['Displacement', 'Engagement'].indexOf(actionMatch.groups.actionName) > -1) {
+    removeAction({ name: 'displacement', array: cooldownArray });
+    addRecast({ name: 'displacement' });
+    addCountdown({
+      name: 'displacement', time: recast.displacement, onComplete: 'addIcon', array: cooldownArray,
+    });
+  } else if (actionMatch.groups.actionName === 'Fleche') {
+    removeAction({ name: 'fleche', array: cooldownArray });
+    addRecast({ name: 'fleche' });
+    addCountdown({
+      name: 'fleche', time: recast.fleche, onComplete: 'addIcon', array: cooldownArray,
+    });
+  } else if (actionMatch.groups.actionName === 'Acceleration') {
+    removeAction({ name: 'acceleration', array: cooldownArray });
+    addRecast({ name: 'acceleration' });
+    addCountdown({
+      name: 'acceleration', time: recast.acceleration, onComplete: 'addIcon', array: cooldownArray,
+    });
+  } else if (actionMatch.groups.actionName === 'Contre Sixte') {
+    removeAction({ name: 'contresixte', array: cooldownArray });
+    addRecast({ name: 'contresixte' });
+    addCountdown({
+      name: 'contresixte', time: recast.contresixte, onComplete: 'addIcon', array: cooldownArray,
+    });
+    // Contre Sixte makes the formulas act funny it seems...
+    // countTargets('contresixte');
+  } else if (actionMatch.groups.actionName === 'Embolden') {
+    addRecast({ name: 'embolden' });
+  } else if (actionMatch.groups.actionName === 'Swiftcast') {
+    removeAction({ name: 'swiftcast', array: cooldownArray });
+    addRecast({ name: 'swiftcast' });
+    addCountdown({
+      name: 'swiftcast', time: recast.swiftcast, onComplete: 'addIcon', array: cooldownArray,
+    });
+  } else if (actionMatch.groups.actionName === 'Lucid Dreaming') {
+    addRecast({ name: 'luciddreaming' });
+  } else if (['Riposte', 'Enchanted Riposte'].indexOf(actionMatch.groups.actionName) > -1) {
+    toggle.combo = Date.now();
+    count.targets = 1;
+    removeAction({ name: 'riposte', array: priorityArray });
+    if (player.level < 35
+    || Math.max(player.jobDetail.blackMana, player.jobDetail.whiteMana) < 25) {
+      delete toggle.combo;
+    }
+  } else if (['Zwerchhau', 'Enchanted Zwerchhau'].indexOf(actionMatch.groups.actionName) > -1) {
+    removeAction({ name: 'zwerchhau', array: priorityArray });
+    toggle.combo = Date.now();
+    if (player.level < 50
+    || Math.max(player.jobDetail.blackMana, player.jobDetail.whiteMana) < 25) {
+      delete toggle.combo;
+    }
+  } else if (['Redoublement', 'Enchanted Redoublement'].indexOf(actionMatch.groups.actionName) > -1) {
+    toggle.combo = Date.now();
+    removeAction({ name: 'redoublement', array: priorityArray });
+    if (player.level < 68) {
+      delete toggle.combo;
+    }
+  } else if (actionMatch.groups.actionName === 'Verflare') {
+    toggle.combo = Date.now();
+    removeAction({ name: 'verflare', array: priorityArray });
+    if (player.level < 80) {
       delete toggle.combo;
       rdmNext();
-    } else {
-      delete toggle.combo; // Everything else here interrupts melee combo
+    }
+  } else if (actionMatch.groups.actionName === 'Verholy') {
+    toggle.combo = Date.now();
+    removeAction({ name: 'verholy', array: priorityArray });
+    if (player.level < 80) {
+      delete toggle.combo;
+      rdmNext();
+    }
+  } else if (actionMatch.groups.actionName === 'Scorch') {
+    removeAction({ name: 'scorch', array: priorityArray });
+    delete toggle.combo;
+    rdmNext();
+  } else {
+    delete toggle.combo; // Everything else here interrupts melee combo
 
-      if (player.level >= 66
-      && ['Verthunder', 'Veraero'].indexOf(actionMatch.groups.actionName) > -1) {
-        count.targets = 1;
-      } else if (actionMatch.groups.actionName === 'Verthunder II') {
-        countTargets('verthunder2');
-      } else if (actionMatch.groups.actionName === 'Veraero II') {
-        countTargets('veraero2');
-      } else if (['Scatter', 'Impact'].indexOf(actionMatch.groups.actionName) > -1) {
-        countTargets('scatter');
-      } else if (['Moulinet', 'Enchanted Moulinet'].indexOf(actionMatch.groups.actionName) > -1) {
-        countTargets('moulinet');
-        removeAction({ name: 'moulinet' });
-        rdmNext();
-      } else if (['Reprise', 'Enchanted Reprise'].indexOf(actionMatch.groups.actionName) > -1) {
-        count.targets = 1;
-        removeAction({ name: 'reprise' });
-        rdmNext();
-      } else if (actionMatch.groups.actionName === 'Manafication') {
-        removeAction({ name: 'manafication' });
-        removeAction({ name: 'corpsacorps', array: cooldownArray });
-        removeAction({ name: 'displacement', array: cooldownArray });
-        addRecast({ name: 'manafication' });
-        addRecast({ name: 'corpsacorps', time: -1 });
-        addRecast({ name: 'displacement', time: -1 });
-        addCountdown({ name: 'manafication' });
-        addCountdown({
-          name: 'displacement', time: -1, onComplete: 'addIcon', array: cooldownArray,
-        });
-        addCountdown({
-          name: 'corpsacorps', time: -1, onComplete: 'addIcon', array: cooldownArray,
-        });
-        rdmNext();
-      }
+    if (player.level >= 66
+    && ['Verthunder', 'Veraero'].indexOf(actionMatch.groups.actionName) > -1) {
+      count.targets = 1;
+    } else if (actionMatch.groups.actionName === 'Verthunder II') {
+      countTargets('verthunder2');
+    } else if (actionMatch.groups.actionName === 'Veraero II') {
+      countTargets('veraero2');
+    } else if (['Scatter', 'Impact'].indexOf(actionMatch.groups.actionName) > -1) {
+      countTargets('scatter');
+    } else if (['Moulinet', 'Enchanted Moulinet'].indexOf(actionMatch.groups.actionName) > -1) {
+      countTargets('moulinet');
+      removeAction({ name: 'moulinet' });
+      rdmNext();
+    } else if (['Reprise', 'Enchanted Reprise'].indexOf(actionMatch.groups.actionName) > -1) {
+      count.targets = 1;
+      removeAction({ name: 'reprise' });
+      rdmNext();
+    } else if (actionMatch.groups.actionName === 'Manafication') {
+      removeAction({ name: 'manafication' });
+      removeAction({ name: 'corpsacorps', array: cooldownArray });
+      removeAction({ name: 'displacement', array: cooldownArray });
+      addRecast({ name: 'manafication' });
+      addRecast({ name: 'corpsacorps', time: -1 });
+      addRecast({ name: 'displacement', time: -1 });
+      addCountdown({ name: 'manafication' });
+      addCountdown({
+        name: 'displacement', time: -1, onComplete: 'addIcon', array: cooldownArray,
+      });
+      addCountdown({
+        name: 'corpsacorps', time: -1, onComplete: 'addIcon', array: cooldownArray,
+      });
+      rdmNext();
     }
   }
 };
 
 // 17: NetworkCancelAbility
 const rdmOnCancelled = (cancelledMatch) => {
-  unfadeAction({ name: 'hardcast' });
+  const row = document.getElementById('action-row');
+  const match = row.querySelector('div[data-action~="hardcast"]');
+  if (match) {
+    const name = match.dataset.action;
+    unfadeAction({ name });
+  }
   rdmNext(); // Recheck dualcast if casting canceled
 };
 
 // 1A: NetworkBuff
 const rdmOnEffect = (effectMatch) => {
-  if (effectMatch.groups.targetID === player.ID) {
-    if (effectMatch.groups.effectName === 'Dualcast') {
-      if (effectMatch.groups.gainsLoses === 'gains') {
-        addStatus({ name: 'dualcast', time: parseInt(effectMatch.groups.effectDuration, 10) * 1000 });
-        const name = document.getElementById('action-row').querySelector('div[data-action~="hardcast"]').dataset.action;
-        removeAction({ name });
-      } else if (effectMatch.groups.gainsLoses === 'loses') {
-        removeStatus({ name: 'dualcast' });
-        rdmNext();
-      }
-    } else if (effectMatch.groups.effectName === 'Verfire Ready') {
-      if (effectMatch.groups.gainsLoses === 'gains') {
-        addStatus({ name: 'verfireready', time: parseInt(effectMatch.groups.effectDuration, 10) * 1000 });
-        if (!toggle.combo) { rdmNext(); } // Prevents Verflare proc from resetting combo
-      } else if (effectMatch.groups.gainsLoses === 'loses') {
-        removeStatus({ name: 'verfireready' });
-      }
-    } else if (effectMatch.groups.effectName === 'Verstone Ready') {
-      if (effectMatch.groups.gainsLoses === 'gains') {
-        addStatus({ name: 'verstoneready', time: parseInt(effectMatch.groups.effectDuration, 10) * 1000 });
-        if (!toggle.combo) { rdmNext(); } // Prevents Verholy proc from resetting combo
-      } else if (effectMatch.groups.gainsLoses === 'loses') {
-        removeStatus({ name: 'verstoneready' });
-      }
-    } else if (effectMatch.groups.effectName === 'Manafication') {
-      if (effectMatch.groups.gainsLoses === 'gains') {
-        addStatus({ name: 'manafication', time: parseInt(effectMatch.groups.effectDuration, 10) * 1000 });
-      } else if (effectMatch.groups.gainsLoses === 'loses') {
-        removeStatus({ name: 'manafication' });
-      }
-    } else if (effectMatch.groups.effectName === 'Swiftcast') {
-      if (effectMatch.groups.gainsLoses === 'gains') {
-        addStatus({ name: 'swiftcast', time: parseInt(effectMatch.groups.effectDuration, 10) * 1000 });
-      } else if (effectMatch.groups.gainsLoses === 'loses') {
-        removeStatus({ name: 'swiftcast' });
-      }
+  if (effectMatch.groups.effectName === 'Dualcast') {
+    if (effectMatch.groups.gainsLoses === 'gains') {
+      addStatus({ name: 'dualcast', time: parseInt(effectMatch.groups.effectDuration, 10) * 1000 });
+      const name = document.getElementById('action-row').querySelector('div[data-action~="hardcast"]').dataset.action;
+      removeAction({ name });
+    } else if (effectMatch.groups.gainsLoses === 'loses') {
+      removeStatus({ name: 'dualcast' });
+      rdmNext();
+    }
+  } else if (effectMatch.groups.effectName === 'Verfire Ready') {
+    if (effectMatch.groups.gainsLoses === 'gains') {
+      addStatus({ name: 'verfireready', time: parseInt(effectMatch.groups.effectDuration, 10) * 1000 });
+      if (!toggle.combo) { rdmNext(); } // Prevents Verflare proc from resetting combo
+    } else if (effectMatch.groups.gainsLoses === 'loses') {
+      removeStatus({ name: 'verfireready' });
+    }
+  } else if (effectMatch.groups.effectName === 'Verstone Ready') {
+    if (effectMatch.groups.gainsLoses === 'gains') {
+      addStatus({ name: 'verstoneready', time: parseInt(effectMatch.groups.effectDuration, 10) * 1000 });
+      if (!toggle.combo) { rdmNext(); } // Prevents Verholy proc from resetting combo
+    } else if (effectMatch.groups.gainsLoses === 'loses') {
+      removeStatus({ name: 'verstoneready' });
+    }
+  } else if (effectMatch.groups.effectName === 'Manafication') {
+    if (effectMatch.groups.gainsLoses === 'gains') {
+      addStatus({ name: 'manafication', time: parseInt(effectMatch.groups.effectDuration, 10) * 1000 });
+    } else if (effectMatch.groups.gainsLoses === 'loses') {
+      removeStatus({ name: 'manafication' });
+    }
+  } else if (effectMatch.groups.effectName === 'Swiftcast') {
+    if (effectMatch.groups.gainsLoses === 'gains') {
+      addStatus({ name: 'swiftcast', time: parseInt(effectMatch.groups.effectDuration, 10) * 1000 });
+    } else if (effectMatch.groups.gainsLoses === 'loses') {
+      removeStatus({ name: 'swiftcast' });
     }
   }
 };

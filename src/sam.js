@@ -1,6 +1,6 @@
 "use strict";
 
-actionList.sam = [
+const samActionList = [
   "Higanbana", "Midare Setsugekka", "Kaeshi: Higanbana", "Kaeshi: Setsugekka",
 
   "Meikyo Shisui",

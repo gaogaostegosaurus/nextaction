@@ -1,6 +1,6 @@
 "use strict";
 
-actionList.mnk = [
+const mnkActionList = [
 
   // oGCD
   "Perfect Balance", "Riddle Of Fire", "Brotherhood", "The Forbidden Chakra", "Enlightenment", "Shoulder Tackle", "Elixir Field", "Tornado Kick",
