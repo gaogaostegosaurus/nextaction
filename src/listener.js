@@ -9,87 +9,89 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
 
   const statsRegExp = new RegExp(' 0C:Player Stats: (?<jobID>[\\d]+):(?<strength>[\\d]+):(?<dexterity>[\\d]+):(?<vitality>[\\d]+):(?<intelligence>[\\d]+):(?<mind>[\\d]+):(?<piety>[\\d]+):(?<attackPower>[\\d]+):(?<directHitRate>[\\d]+):(?<criticalHit>[\\d]):(?<attackMagicPotency>[\\d]+):(?<healingMagicPotency>[\\d]+):(?<determination>[\\d]+):(?<skillSpeed>[\\d]+):(?<spellSpeed>[\\d]+):0:(?<tenacity>[\\d]+)');
   const actionRegExp = new RegExp(` (?<logType>1[56]):(?<sourceID>${player.ID}):(?<sourceName>${player.name}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${actionList}):(?<targetID>[\\dA-F]{8}):(?<targetName>[ -~]+?):(?<result>[\\dA-F]{1,8}):`);
-  const effectRegExp = new RegExp(` (?<logType>1[AE]):(?<targetID>[\\dA-F]{8}):(?<targetName>[ -~]+?) (?<gainsLoses>gains|loses) the effect of (?<effectName>${statusList}) from (?<sourceName>${player.name})(?: for )?(?<effectDuration>\\d*\\.\\d*)?(?: Seconds)?\\.`);
+  const statusRegExp = new RegExp(` (?<logType>1[AE]):(?<targetID>[\\dA-F]{8}):(?<targetName>[ -~]+?) (?<gainsLoses>gains|loses) the effect of (?<effectName>${statusList}) from (?<sourceName>${player.name})(?: for )?(?<effectDuration>\\d*\\.\\d*)?(?: Seconds)?\\.`);
   const startsUsingRegExp = new RegExp(` 14:(?<actionID>[\\dA-F]{1,4}):(?<sourceName>${player.name}) starts using (?<actionName>${castingList}) on (?<targetName>[ -~]+?)\\.`);
   const cancelledRegExp = new RegExp(` 17:(?<sourceID>[\\dA-F]{8}):(?<sourceName>${player.name}):(?<actionID>[\\dA-F]{1,4}):(?<actionName>${castingList}):Cancelled:`);
   const l = e.detail.logs.length;
 
   for (let i = 0; i < l; i += 1) {
     const actionMatch = e.detail.logs[i].match(actionRegExp);
-    const effectMatch = e.detail.logs[i].match(effectRegExp);
+    const statusMatch = e.detail.logs[i].match(statusRegExp);
     const startsMatch = e.detail.logs[i].match(startsUsingRegExp);
     const cancelledMatch = e.detail.logs[i].match(cancelledRegExp);
     const statsMatch = e.detail.logs[i].match(statsRegExp);
 
-    if (actionMatch && actionMatch.groups.sourceID === player.ID) { // Status source = player
+    if (actionMatch) { // Status source = player
       if (player.job === 'BLM') {
-        blmAction(actionMatch);
+        // blmAction(actionMatch);
+      } else if (player.job === 'BLU') {
+        // bluOnAction(actionMatch);
       } else if (player.job === 'BRD') {
-        brdAction(actionMatch);
+        // brdAction(actionMatch);
       } else if (player.job === 'DNC') {
-        dncAction(actionMatch);
+        // dncAction(actionMatch);
       } else if (player.job === 'DRK') {
-        drkAction(actionMatch);
+        // drkAction(actionMatch);
       } else if (player.job === 'GNB') {
-        gnbAction(actionMatch);
+        // gnbAction(actionMatch);
       } else if (player.job === 'MCH') {
-        mchAction(actionMatch);
+        // mchAction(actionMatch);
       } else if (player.job === 'MNK') {
-        mnkAction(actionMatch);
+        // mnkAction(actionMatch);
       } else if (player.job === 'NIN') {
-        ninAction(actionMatch);
+        // ninAction(actionMatch);
       } else if (player.job === 'PLD') {
-        pldAction(actionMatch);
+        // pldAction(actionMatch);
       } else if (player.job === 'RDM') {
         rdmOnAction(actionMatch);
       } else if (player.job === 'SAM') {
-        samAction(actionMatch);
+        // samAction(actionMatch);
       } else if (player.job === 'SCH') {
-        schAction(actionMatch);
+        schOnAction(actionMatch);
       } else if (player.job === 'WAR') {
-        warAction(actionMatch);
+        // warAction(actionMatch);
       } else if (player.job === 'WHM') {
-        whmAction(actionMatch);
+        // whmAction(actionMatch);
       }
-    } else if (effectMatch && effectMatch.groups.sourceName === player.name) {
+    } else if (statusMatch) {
       if (player.job === 'BLM') {
-        blmStatus();
+        // blmStatus();
       } else if (player.job === 'BRD') {
-        brdStatus();
+        // brdStatus();
       } else if (player.job === 'DNC') {
-        dncStatus();
+        // dncStatus();
       } else if (player.job === 'DRK') {
-        drkStatus();
+        // drkStatus();
       } else if (player.job === 'GNB') {
-        gnbStatus();
+        // gnbStatus();
       } else if (player.job === 'MCH') {
-        mchStatus();
+        // mchStatus();
       } else if (player.job === 'MNK') {
-        mnkStatus();
+        // mnkStatus();
       } else if (player.job === 'NIN') {
-        ninStatus();
+        // ninStatus();
       } else if (player.job === 'PLD') {
-        pldStatus();
+        // pldStatus();
       } else if (player.job === 'RDM') {
-        rdmOnEffect(effectMatch);
+        rdmOnStatus(statusMatch);
       } else if (player.job === 'SAM') {
-        samStatus();
+        // samStatus();
       } else if (player.job === 'SCH') {
-        schStatus();
+        schOnStatus(statusMatch);
       } else if (player.job === 'WAR') {
-        warStatus();
+        // warStatus();
       } else if (player.job === 'WHM') {
-        whmStatus();
+        // whmStatus();
       }
-    } else if (startsMatch && startsMatch.groups.sourceName === player.name) {
+    } else if (startsMatch) {
       if (player.job === 'BLM') {
-        blmStartsUsing();
+        // blmStartsUsing();
       } else if (player.job === 'RDM') {
         rdmOnStartsUsing(startsMatch);
       }
-    } else if (cancelledMatch && cancelledMatch.groups.sourceID === player.ID) {
+    } else if (cancelledMatch) {
       if (player.job === 'BLM') {
-        blmCancelled();
+        // blmCancelled();
       } else if (player.job === 'RDM') {
         rdmOnCancelled(cancelledMatch);
       }
@@ -176,10 +178,14 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
       actionList = rdmActionList.join('|');
       castingList = rdmCastingList.join('|');
       statusList = rdmStatusList.join('|');
+      rdmOnJobChange();
     } else if (player.job === 'SAM') {
       // actions = samActions.join('|');
     } else if (player.job === 'SCH') {
-      // actions = schActions.join('|');
+      actionList = schActionList.join('|');
+      castingList = schCastingList.join('|');
+      statusList = schStatusList.join('|');
+      schOnJobChange();
     } else if (player.job === 'SMN') {
       // actions = smnActions.join('|');
     } else if (player.job === 'WAR') {
@@ -220,13 +226,13 @@ addOverlayListener('onTargetChangedEvent', (e) => {
   target.ID = e.detail.id.toString(16).toUpperCase(); // See player.ID above
 
   if (player.job === 'BLM') {
-    blmTargetChangedEvent();
+    // blmTargetChangedEvent();
   } else if (player.job === 'BRD') {
-    brdTargetChangedEvent();
+    // brdTargetChangedEvent();
   } else if (player.job === 'SCH') {
-    schTargetChangedEvent();
+    schOnTargetChangedEvent();
   } else if (player.job === 'WHM') {
-    whmTargetChangedEvent();
+    // whmTargetChangedEvent();
   }
 });
 

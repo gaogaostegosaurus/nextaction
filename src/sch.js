@@ -21,10 +21,17 @@ const schActionList = [
   'Summon Seraph',
 
   // GCD
-  'Bio', 'Bio II', 'Biolysis'
+  'Bio', 'Bio II', 'Biolysis',
 ];
 
-function schJobChange() {
+const schCastingList = [];
+
+const schStatusList = [
+  'Bio', 'Bio II', 'Biolysis',
+  'Galvanize', 'Catalyze',
+];
+
+function schOnJobChange() {
 
   previous.artofwar = 0;
 
@@ -41,139 +48,127 @@ function schJobChange() {
   // Show available cooldowns
 
   if (player.level >= 20) {
-    addCountdown({name: 'whisperingdawn', time: -1});
+    addCountdown({ name: 'whisperingdawn' });
   }
 
   if (player.level >= 40) {
-    addCountdown({name: 'feyillumination', time: -1});
+    addCountdown({ name: 'feyillumination' });
   }
 
   if (player.level >= 45) {
-    addCountdown({name: 'aetherflow', time: -1, oncomplete: 'addIcon'});
+    addCountdown({ name: 'aetherflow', onComplete: 'addAction' });
   }
 
   if (player.level >= 50) {
-    addCountdown({name: 'sacredsoil', time: -1});
+    addCountdown({ name: 'sacredsoil' });
   }
 
   if (player.level >= 52) {
-    addCountdown({name: 'indomitability', time: -1});
+    addCountdown({ name: 'indomitability' });
   }
 
   if (player.level >= 56) {
-    addCountdown({name: 'deploymenttactics', time: -1});
+    addCountdown({ name: 'deploymenttactics' });
   }
 
   if (player.level >= 60) {
-    addCountdown({name: 'dissipation', time: -1});
+    addCountdown({ name: 'dissipation' });
   }
 
   if (player.level >= 62) {
-    addCountdown({name: 'excogitation', time: -1});
+    addCountdown({ name: 'excogitation' });
   }
 
   if (player.level >= 66) {
-    addCountdown({name: 'chainstratagem', time: checkRecast('chainstratagem'), oncomplete: 'addIcon'});
+    addCountdown({ name: 'chainstratagem', onComplete: 'addAction' });
   }
 
   if (player.level >= 74) {
-    addCountdown({name: 'recitation', time: -1});
+    addCountdown({ name: 'recitation' });
   }
 
   if (player.level >= 76) {
-    addCountdown({name: 'feyblessing', time: -1});
+    addCountdown({ name: 'feyblessing' });
   }
 
   if (player.level >= 80) {
-    addCountdown({name: 'summonseraph', time: -1});
+    addCountdown({ name: 'summonseraph' });
   }
 }
 
 // Copied from BRD mostly...
-function schTargetChangedEvent() {
+function schOnTargetChangedEvent() {
   if (previous.targetID != target.ID) {
 
     // If not a target then clear things out
-    if (target.ID == 0 || target.ID.startsWith("1") || target.ID.startsWith('E')) {  // 0 = no target, 1... = player? E... = non-combat NPC?
-      removeCountdownBar('bio');
+    if (target.ID === 0 || target.ID.startsWith("1") || target.ID.startsWith('E')) {  // 0 = no target, 1... = player? E... = non-combat NPC?
+      removeAction({ name: 'bio' });
+      removeCountdown({ name: 'bio' });
     }
     else {
-      addCountdown({name: 'bio', time: checkStatus('bio', target.ID), oncomplete: 'addIcon'});
+      removeAction({ name: 'bio' });
+      addCountdown({ name: 'bio', time: checkStatus({ name: 'bio', id: target.ID }), onComplete: 'addAction' });
     }
     previous.targetID = target.ID;
   }
 }
 
 
-function schAction() {
+function schOnAction(actionMatch) {
 
   // Set up icon changes from combat here
 
-  if (actionList.sch.indexOf(actionLog.groups.actionName) > -1) {
-
-    if (['Bio', 'Bio II', 'Biolysis'].indexOf(actionLog.groups.actionName) > -1) {
-      removeIcon('bio');
-      addStatus('bio', 30000, actionLog.groups.targetID);
-    }
-
-    else if ('Whispering Dawn' == actionLog.groups.actionName) {
-      addCountdown({name: 'whisperingdawn'});
-    }
-
-    else if ('Fey Illumination' == actionLog.groups.actionName) {
-      addCountdown({name: 'feyillumination'});
-    }
-
-    else if ('Aetherflow' == actionLog.groups.actionName) {
-      removeIcon('aetherflow');
-      addCountdown({name: 'aetherflow', time: recast.aetherflow, oncomplete: 'addIcon'});
-    }
-
-    else if ('Sacred Soil' == actionLog.groups.actionName) {
-      addCountdown({name: 'sacredsoil'});
-    }
-
-    else if ('Indomitability' == actionLog.groups.actionName) {
-      addCountdown({name: 'indomitability'});
-    }
-
-    else if ('Excogitation' == actionLog.groups.actionName) {
-      addCountdown({name: 'excogitation'});
-    }
-
-    else if ('Deployment Tactics' == actionLog.groups.actionName) {
-      addCountdown({name: 'deploymenttactics'});
-    }
-
-    else if ('Dissipation' == actionLog.groups.actionName) {
-      addCountdown({name: 'dissipation'});
-    }
-
-    else if ('Chain Stratagem' == actionLog.groups.actionName) {
-      addCountdown({name: 'chainstratagem', time: recast.chainstratagem, oncomplete: 'addIcon'});
-    }
-
-    else if ('Recitation' == actionLog.groups.actionName) {
-      addCountdown({name: 'recitation'});
-    }
-
-    else if ('Summon Seraph' == actionLog.groups.actionName) {
-      addCountdown({name: 'summonseraph'});
-    }
+  if (['Bio', 'Bio II', 'Biolysis'].indexOf(actionMatch.groups.actionName) > -1) {
+    removeAction({ name: 'bio' });
+    addStatus('bio', 30000, actionMatch.groups.targetID);
+  } else if (actionMatch.groups.actionName === 'Whispering Dawn') {
+    addRecast({ name: 'whisperingdawn' });
+    addCountdown({ name: 'whisperingdawn' });
+  } else if (actionMatch.groups.actionName === 'Fey Illumination') {
+    addRecast({ name: 'feyillumination' });
+    addCountdown({ name: 'feyillumination' });
+  } else if (actionMatch.groups.actionName === 'Aetherflow') {
+    removeAction({ name: 'aetherflow' });
+    addRecast({ name: 'aetherflow' });
+    addCountdown({ name: 'aetherflow', onComplete: 'addAction' });
+  } else if (actionMatch.groups.actionName === 'Sacred Soil') {
+    addRecast({ name: 'sacredsoil' });
+    addCountdown({ name: 'sacredsoil' });
+  } else if (actionMatch.groups.actionName === 'Indomitability') {
+    addRecast({ name: 'indomitability' });
+    addCountdown({ name: 'indomitability' });
+  } else if (actionMatch.groups.actionName === 'Excogitation') {
+    addRecast({ name: 'excogitation' });
+    addCountdown({ name: 'excogitation' });
+  } else if (actionMatch.groups.actionName === 'Deployment Tactics') {
+    addRecast({ name: 'deploymenttactics' });
+    addCountdown({ name: 'deploymenttactics' });
+  } else if (actionMatch.groups.actionName === 'Dissipation') {
+    addRecast({ name: 'dissipation' });
+    addCountdown({ name: 'dissipation' });
+  } else if (actionMatch.groups.actionName === 'Chain Stratagem') {
+    addRecast({ name: 'chainstratagem' });
+    addCountdown({ name: 'chainstratagem', onComplete: 'addAction' });
+  } else if (actionMatch.groups.actionName === 'Recitation') {
+    addRecast({ name: 'recitation' });
+    addCountdown({ name: 'recitation' });
+  } else if (actionMatch.groups.actionName === 'Summon Seraph') {
+    addRecast({ name: 'summonseraph' });
+    addCountdown({ name: 'summonseraph' });
   }
 }
 
-function schStatus() {
+const schOnStatus = (statusMatch) => {
+  if (['Bio', 'Bio II', 'Biolysis'].indexOf(statusMatch.groups.effectName) > -1) {
+    if (statusMatch.groups.gainsLoses === 'gains') {
+      addStatus({ name: 'bio', time: parseFloat(statusMatch.groups.effectDuration) * 1000, id: statusMatch.groups.targetID });
 
-  if (['Bio', 'Bio II', 'Biolysis'].indexOf(effectLog.groups.effectName) > -1) {
-    if (effectLog.groups.gainsLoses == 'gains') {
-      addStatus('bio', parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
-      if (target.ID == effectLog.groups.targetID) {  // Might be possible to switch targets between application to target and log entry
-        addCountdown({name: 'bio', time: checkStatus('bio', target.ID), oncomplete: 'addIcon'});
+      // Might be possible to switch targets between application to target and log entry
+      if (target.ID === statusMatch.groups.targetID) {
+        addCountdown({ name: 'bio', time: checkStatus({ name: 'bio', id: target.ID }), onComplete: 'addAction' });
       }
-    }
-    else if (effectLog.groups.gainsLoses == 'loses') {
-      removeStatus('bio', effectLog.groups.targetID);
+    } else if (statusMatch.groups.gainsLoses === 'loses') {
+      removeStatus({ name: 'bio', id: statusMatch.groups.targetID });
     }
   }
-}
+};

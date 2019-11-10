@@ -3,12 +3,14 @@ const addCountdown = ({
   name,
   img = icon[name],
   countdownArray = countdownArrayA,
-  time = recast[name],
+  time = checkRecast({ name }),
   order = 'last',
   onComplete = 'showText',
   array = actionArray,
   text = 'READY',
 } = {}) => {
+  // For some reason the time is slightly off... might not be much to be done about it
+
   // Identify correct column
   let column = 'countdown-a';
   if (countdownArray === countdownArrayB) {
@@ -69,12 +71,12 @@ const addCountdown = ({
 
 
   // Add or remove icons
-  if (text === 'addIcon'
+  if (text === 'addAction'
   && time <= 1000) {
     countdownDiv.className = 'countdown countdown-hide';
   }
 
-  if (text === 'removeCountdownBar'
+  if (text === 'removeCountdown'
   && time <= 0) {
     countdownDiv.className = 'countdown countdown-hide';
   } else {
@@ -82,7 +84,7 @@ const addCountdown = ({
   }
 
   let displayTime = time;
-  let actionAdded = 0;
+  let actionAdded = 0; // Prevent from being added multiple times
 
   clearInterval(interval[name]);
 
@@ -90,7 +92,7 @@ const addCountdown = ({
   interval[name] = setInterval(() => {
     // Show icons a little bit early
     if (displayTime < 1000 && actionAdded === 0) {
-      if (onComplete === 'addIcon' || onComplete === 'addAction') {
+      if (onComplete === 'addAction') {
         addAction({ name, array, order });
         actionAdded = 1;
       }

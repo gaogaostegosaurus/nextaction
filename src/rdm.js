@@ -514,25 +514,25 @@ const rdmOnJobChange = () => {
 
   // Create cooldown notifications
   addCountdown({
-    name: 'corpsacorps', array: cooldownArray, time: checkRecast({ name: 'corpsacorps' }), onComplete: 'addIcon',
+    name: 'corpsacorps', array: cooldownArray, onComplete: 'addAction',
   });
   if (player.level >= 40) {
     addCountdown({
-      name: 'displacement', array: cooldownArray, time: checkRecast({ name: 'displacement' }), onComplete: 'addIcon',
+      name: 'displacement', array: cooldownArray, onComplete: 'addAction',
     });
   }
   if (player.level >= 45) {
     addCountdown({
-      name: 'fleche', array: cooldownArray, time: checkRecast({ name: 'fleche' }), onComplete: 'addIcon',
+      name: 'fleche', array: cooldownArray, onComplete: 'addAction',
     });
   }
   if (player.level >= 56) {
     addCountdown({
-      name: 'contresixte', array: cooldownArray, time: checkRecast({ name: 'contresixte' }), onComplete: 'addIcon',
+      name: 'contresixte', array: cooldownArray, onComplete: 'addAction',
     });
   }
   if (player.level >= 60) {
-    addCountdown({ name: 'manafication', time: checkRecast({ name: 'manafication' }) });
+    addCountdown({ name: 'manafication' });
   }
 
   count.targets = 1;
@@ -558,31 +558,31 @@ const rdmOnAction = (actionMatch) => {
     removeAction({ name: 'corpsacorps', array: cooldownArray });
     addRecast({ name: 'corpsacorps' });
     addCountdown({
-      name: 'corpsacorps', time: recast.corpsacorps, onComplete: 'addIcon', array: cooldownArray,
+      name: 'corpsacorps', time: recast.corpsacorps, onComplete: 'addAction', array: cooldownArray,
     });
   } else if (['Displacement', 'Engagement'].indexOf(actionMatch.groups.actionName) > -1) {
     removeAction({ name: 'displacement', array: cooldownArray });
     addRecast({ name: 'displacement' });
     addCountdown({
-      name: 'displacement', time: recast.displacement, onComplete: 'addIcon', array: cooldownArray,
+      name: 'displacement', time: recast.displacement, onComplete: 'addAction', array: cooldownArray,
     });
   } else if (actionMatch.groups.actionName === 'Fleche') {
     removeAction({ name: 'fleche', array: cooldownArray });
     addRecast({ name: 'fleche' });
     addCountdown({
-      name: 'fleche', time: recast.fleche, onComplete: 'addIcon', array: cooldownArray,
+      name: 'fleche', time: recast.fleche, onComplete: 'addAction', array: cooldownArray,
     });
   } else if (actionMatch.groups.actionName === 'Acceleration') {
     removeAction({ name: 'acceleration', array: cooldownArray });
     addRecast({ name: 'acceleration' });
     addCountdown({
-      name: 'acceleration', time: recast.acceleration, onComplete: 'addIcon', array: cooldownArray,
+      name: 'acceleration', time: recast.acceleration, onComplete: 'addAction', array: cooldownArray,
     });
   } else if (actionMatch.groups.actionName === 'Contre Sixte') {
     removeAction({ name: 'contresixte', array: cooldownArray });
     addRecast({ name: 'contresixte' });
     addCountdown({
-      name: 'contresixte', time: recast.contresixte, onComplete: 'addIcon', array: cooldownArray,
+      name: 'contresixte', time: recast.contresixte, onComplete: 'addAction', array: cooldownArray,
     });
     // Contre Sixte makes the formulas act funny it seems...
     // countTargets('contresixte');
@@ -592,7 +592,7 @@ const rdmOnAction = (actionMatch) => {
     removeAction({ name: 'swiftcast', array: cooldownArray });
     addRecast({ name: 'swiftcast' });
     addCountdown({
-      name: 'swiftcast', time: recast.swiftcast, onComplete: 'addIcon', array: cooldownArray,
+      name: 'swiftcast', time: recast.swiftcast, onComplete: 'addAction', array: cooldownArray,
     });
   } else if (actionMatch.groups.actionName === 'Lucid Dreaming') {
     addRecast({ name: 'luciddreaming' });
@@ -664,10 +664,10 @@ const rdmOnAction = (actionMatch) => {
       addRecast({ name: 'displacement', time: -1 });
       addCountdown({ name: 'manafication' });
       addCountdown({
-        name: 'displacement', time: -1, onComplete: 'addIcon', array: cooldownArray,
+        name: 'displacement', time: -1, onComplete: 'addAction', array: cooldownArray,
       });
       addCountdown({
-        name: 'corpsacorps', time: -1, onComplete: 'addIcon', array: cooldownArray,
+        name: 'corpsacorps', time: -1, onComplete: 'addAction', array: cooldownArray,
       });
       rdmNext();
     }
@@ -686,40 +686,40 @@ const rdmOnCancelled = (cancelledMatch) => {
 };
 
 // 1A: NetworkBuff
-const rdmOnEffect = (effectMatch) => {
-  if (effectMatch.groups.effectName === 'Dualcast') {
-    if (effectMatch.groups.gainsLoses === 'gains') {
-      addStatus({ name: 'dualcast', time: parseInt(effectMatch.groups.effectDuration, 10) * 1000 });
+const rdmOnStatus = (statusMatch) => {
+  if (statusMatch.groups.effectName === 'Dualcast') {
+    if (statusMatch.groups.gainsLoses === 'gains') {
+      addStatus({ name: 'dualcast', time: parseInt(statusMatch.groups.effectDuration, 10) * 1000 });
       const name = document.getElementById('action-row').querySelector('div[data-action~="hardcast"]').dataset.action;
       removeAction({ name });
-    } else if (effectMatch.groups.gainsLoses === 'loses') {
+    } else if (statusMatch.groups.gainsLoses === 'loses') {
       removeStatus({ name: 'dualcast' });
       rdmNext();
     }
-  } else if (effectMatch.groups.effectName === 'Verfire Ready') {
-    if (effectMatch.groups.gainsLoses === 'gains') {
-      addStatus({ name: 'verfireready', time: parseInt(effectMatch.groups.effectDuration, 10) * 1000 });
+  } else if (statusMatch.groups.effectName === 'Verfire Ready') {
+    if (statusMatch.groups.gainsLoses === 'gains') {
+      addStatus({ name: 'verfireready', time: parseInt(statusMatch.groups.effectDuration, 10) * 1000 });
       if (!toggle.combo) { rdmNext(); } // Prevents Verflare proc from resetting combo
-    } else if (effectMatch.groups.gainsLoses === 'loses') {
+    } else if (statusMatch.groups.gainsLoses === 'loses') {
       removeStatus({ name: 'verfireready' });
     }
-  } else if (effectMatch.groups.effectName === 'Verstone Ready') {
-    if (effectMatch.groups.gainsLoses === 'gains') {
-      addStatus({ name: 'verstoneready', time: parseInt(effectMatch.groups.effectDuration, 10) * 1000 });
+  } else if (statusMatch.groups.effectName === 'Verstone Ready') {
+    if (statusMatch.groups.gainsLoses === 'gains') {
+      addStatus({ name: 'verstoneready', time: parseInt(statusMatch.groups.effectDuration, 10) * 1000 });
       if (!toggle.combo) { rdmNext(); } // Prevents Verholy proc from resetting combo
-    } else if (effectMatch.groups.gainsLoses === 'loses') {
+    } else if (statusMatch.groups.gainsLoses === 'loses') {
       removeStatus({ name: 'verstoneready' });
     }
-  } else if (effectMatch.groups.effectName === 'Manafication') {
-    if (effectMatch.groups.gainsLoses === 'gains') {
-      addStatus({ name: 'manafication', time: parseInt(effectMatch.groups.effectDuration, 10) * 1000 });
-    } else if (effectMatch.groups.gainsLoses === 'loses') {
+  } else if (statusMatch.groups.effectName === 'Manafication') {
+    if (statusMatch.groups.gainsLoses === 'gains') {
+      addStatus({ name: 'manafication', time: parseInt(statusMatch.groups.effectDuration, 10) * 1000 });
+    } else if (statusMatch.groups.gainsLoses === 'loses') {
       removeStatus({ name: 'manafication' });
     }
-  } else if (effectMatch.groups.effectName === 'Swiftcast') {
-    if (effectMatch.groups.gainsLoses === 'gains') {
-      addStatus({ name: 'swiftcast', time: parseInt(effectMatch.groups.effectDuration, 10) * 1000 });
-    } else if (effectMatch.groups.gainsLoses === 'loses') {
+  } else if (statusMatch.groups.effectName === 'Swiftcast') {
+    if (statusMatch.groups.gainsLoses === 'gains') {
+      addStatus({ name: 'swiftcast', time: parseInt(statusMatch.groups.effectDuration, 10) * 1000 });
+    } else if (statusMatch.groups.gainsLoses === 'loses') {
       removeStatus({ name: 'swiftcast' });
     }
   }

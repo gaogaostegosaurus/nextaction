@@ -104,36 +104,36 @@ const gcdCalculation = ({
 const loadInitialState = () => {
 
   delete toggle.combo;
-
-  if (player.job === 'BLM') {
-    blmJobChange();
-  } else if (player.job === 'BRD') {
-    brdJobChange();
-  } else if (player.job === 'DNC') {
-    dncJobChange();
-  } else if (player.job === 'DRK') {
-    drkJobChange();
-  } else if (player.job === 'GNB') {
-    gnbJobChange();
-  } else if (player.job === 'MCH') {
-    mchJobChange();
-  } else if (player.job === 'MNK') {
-    mnkJobChange();
-  } else if (player.job === 'NIN') {
-    ninJobChange();
-  } else if (player.job === 'PLD') {
-    pldJobChange();
-  } else if (player.job === 'RDM') {
-    rdmOnJobChange();
-  } else if (player.job === 'SAM') {
-    samJobChange();
-  } else if (player.job === 'SCH') {
-    schJobChange();
-  } else if (player.job === 'WAR') {
-    warJobChange();
-  } else if (player.job === 'WHM') {
-    whmJobChange();
-  }
+  // 
+  // if (player.job === 'BLM') {
+  //   blmJobChange();
+  // } else if (player.job === 'BRD') {
+  //   brdJobChange();
+  // } else if (player.job === 'DNC') {
+  //   dncJobChange();
+  // } else if (player.job === 'DRK') {
+  //   drkJobChange();
+  // } else if (player.job === 'GNB') {
+  //   gnbJobChange();
+  // } else if (player.job === 'MCH') {
+  //   mchJobChange();
+  // } else if (player.job === 'MNK') {
+  //   mnkJobChange();
+  // } else if (player.job === 'NIN') {
+  //   ninJobChange();
+  // } else if (player.job === 'PLD') {
+  //   pldJobChange();
+  // } else if (player.job === 'RDM') {
+  //   rdmOnJobChange();
+  // } else if (player.job === 'SAM') {
+  //   samJobChange();
+  // } else if (player.job === 'SCH') {
+  //   schJobChange();
+  // } else if (player.job === 'WAR') {
+  //   warJobChange();
+  // } else if (player.job === 'WHM') {
+  //   whmJobChange();
+  // }
 };
 
 
