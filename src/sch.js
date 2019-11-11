@@ -72,6 +72,17 @@ const schAetherflow = () => {
   }
 };
 
+
+const schLucidDreaming = () => {
+  if (toggle.luciddreaming) {
+    return;
+  }
+  if (player.level >= 24 && player.currentMP < 7500 && checkRecast({ name: 'luciddreaming' }) < 0) {
+    addAction({ name: 'luciddreaming', array: priorityArray });
+    toggle.luciddreaming = Date.now();
+  }
+};
+
 const schNext = () => {
   schAetherflow();
   schLucidDreaming();
@@ -144,21 +155,11 @@ const schOnJobChange = () => {
 
 const schOnCasting = (castingMatch) => {
   schNext();
-}
-
-const schLucidDreaming = () => {
-  if (toggle.luciddreaming) {
-    return;
-  }
-  if (player.level >= 24 && player.currentMP < 7500 && checkRecast({ name: 'luciddreaming' }) < 0) {
-    addAction({ name: 'luciddreaming', array: priorityArray });
-    toggle.luciddreaming = Date.now();
-  }
 };
 
 const schOnCancel = (cancelMatch) => {
   schNext();
-}
+};
 
 const schOnTargetChangedEvent = () => {
   // Check if target is a new target
