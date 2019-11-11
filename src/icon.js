@@ -364,6 +364,7 @@ icon.bio2 = '000504';
 icon.aetherflow = '000510';
 
 // SCH
+icon.energydrain = '000514';
 icon.sacredsoil = '002804';
 icon.indomitability = '002806';
 icon.deploymenttactics = '002808';

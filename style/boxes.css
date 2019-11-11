@@ -1,19 +1,4 @@
 
-.row {
-  display: flex;
-}
-
-.column {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-}
-
-.next-box {
-  display: block;
-}
-
-
 .next {
   display: block;
 }
@@ -28,10 +13,20 @@
   opacity: 0;
 }
 
-.row2 {
+.row {
+  display: flex;
+}
+
+.row-b {
   margin-left: 11px;
 }
 
-.row3 {
+.row-c {
   margin-left: 22px;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  flex: 2;
 }

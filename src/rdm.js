@@ -445,8 +445,10 @@ const rdmDualcast = () => {
 };
 
 const rdmNext = () => { // Main function
-
   rdmDualcast();
+
+  priorityArray.length = 0;
+  resyncActions({ array: priorityArray });
 
   // Check if combo was toggled by Dualcast function
   if (next.combo) {
@@ -539,7 +541,7 @@ const rdmOnJobChange = () => {
   rdmNext();
 };
 
-const rdmOnStartsUsing = () => {
+const rdmOnCasting = () => {
   // Clear out combo stuff
   priorityArray.length = 0;
   resyncActions({ array: priorityArray });
@@ -675,7 +677,7 @@ const rdmOnAction = (actionMatch) => {
 };
 
 // 17: NetworkCancelAbility
-const rdmOnCancelled = (cancelledMatch) => {
+const rdmOnCancel = (cancelledMatch) => {
   const row = document.getElementById('action-row');
   const match = row.querySelector('div[data-action~="hardcast"]');
   if (match) {
@@ -690,8 +692,8 @@ const rdmOnStatus = (statusMatch) => {
   if (statusMatch.groups.effectName === 'Dualcast') {
     if (statusMatch.groups.gainsLoses === 'gains') {
       addStatus({ name: 'dualcast', time: parseInt(statusMatch.groups.effectDuration, 10) * 1000 });
-      const name = document.getElementById('action-row').querySelector('div[data-action~="hardcast"]').dataset.action;
-      removeAction({ name });
+      const hardcastDiv = document.getElementById('action-row').querySelector('div[data-action~="hardcast"]');
+      if (hardcastDiv) { removeAction({ hardcastDiv }); }
     } else if (statusMatch.groups.gainsLoses === 'loses') {
       removeStatus({ name: 'dualcast' });
       rdmNext();

@@ -17,9 +17,8 @@ const removeOldActions = ({
 } = {}) => {
   // Clear away old divs before adding more actions
   // Called at beginning of other action functions
-  if (!previous.removeAction) {
+  if (!previous.removeAction || Date.now() - previous.removeAction > 1000) {
     previous.removeAction = Date.now();
-  } else if (Date.now() - previous.removeAction > 1000) {
     document.getElementById(row).querySelectorAll('div[class~="action-hide"]').forEach((e) => e.remove());
   }
 };
@@ -78,7 +77,7 @@ const addAction = ({
   name,
   img = name,
   array = actionArray,
-  order = 'last',
+  order = 10,
 } = {}) => {
   // Adds action to specified array and row
 
@@ -91,28 +90,22 @@ const addAction = ({
   const iconOverlay = document.createElement('img');
 
   // Add elements to page
-  if (order === 'last') {
-    document.getElementById(row).append(iconDiv);
-  } else {
-    document.getElementById(row).prepend(iconDiv);
-  }
   iconDiv.className = 'action action-hide';
+  iconDiv.style.order = order;
   iconImg.className = 'actionimg';
   iconOverlay.className = 'actionoverlay';
   iconDiv.dataset.action = name;
   iconImg.src = `img/icon/${icon[img]}.png`;
   iconOverlay.src = 'img/icon/overlay.png';
+  document.getElementById(row).append(iconDiv);
   iconDiv.append(iconImg);
   iconDiv.append(iconOverlay);
   void iconDiv.offsetWidth; // Reflow to make transition work
   iconDiv.className = 'action action-show';
 
   // Add to array
-  if (order === 'last') {
-    array.push({ name, img });
-  } else {
-    array.unshift({ name, img });
-  }
+  array.push({ name, img, order });
+  array.sort((a, b) => a.order - b.order);
 };
 
 const fadeAction = ({
@@ -162,8 +155,8 @@ const removeAction = ({
     match.dataset.action = 'none';
   }
 
-  const removeTarget = array.findIndex((action) => action.name === name);
-  if (removeTarget > -1) {
-    array.splice(removeTarget, 1);
+  const matchIndex = array.findIndex((action) => action.name === name);
+  if (matchIndex > -1) {
+    array.splice(matchIndex, 1);
   }
 };

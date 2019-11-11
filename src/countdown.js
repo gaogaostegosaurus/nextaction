@@ -1,87 +1,79 @@
+const removeOldCountdowns = ({
+  column,
+} = {}) => {
+  // Clear away old divs before adding more actions
+  // Called at beginning of other action functions
+  if (!previous.removeCountdown || Date.now() - previous.removeCountdown > 1000) {
+    previous.removeCountdown = Date.now();
+    document.getElementById(column).querySelectorAll('div[class~="countdown-hide"]').forEach((e) => e.remove());
+  }
+};
+
 
 const addCountdown = ({
   name,
-  img = icon[name],
-  countdownArray = countdownArrayA,
+  img = name,
   time = checkRecast({ name }),
-  order = 'last',
+  countdownArray = countdownArrayA,
+  order = 10,
   onComplete = 'showText',
   array = actionArray,
   text = 'READY',
 } = {}) => {
   // For some reason the time is slightly off... might not be much to be done about it
+  const countdownIntervalTime = 100;
 
   // Identify correct column
   let column = 'countdown-a';
   if (countdownArray === countdownArrayB) {
     column = 'countdown-b';
+  } else if (countdownArray === countdownArrayC) {
+    column = 'countdown-c';
   }
 
-  const countdownIntervalTime = 100;
+  removeOldCountdowns({ column });
 
-  let countdownDiv;
-  let countdownImgDiv;
-  let countdownImg;
-  let countdownOverlay;
-  let countdownTime;
-  let countdownBar;
-
-  // See if already exists somehow
-  const findTarget = countdownArray.findIndex((action) => action.name === name);
-  if (findTarget > -1) {
-    // Already exists, so assign accordingly
-    countdownDiv = document.getElementById(column).children[findTarget];
-    countdownImgDiv = countdownDiv.children[0];
-    countdownBar = countdownDiv.children[1];
-    countdownTime = countdownDiv.children[2];
-    countdownImg = countdownImgDiv.children[0];
-    countdownOverlay = countdownImgDiv.children[1];
-  } else {
-    // Does not exist, so create
-    countdownArray.push({ name, img });
-    countdownDiv = document.createElement('div');
-    countdownImgDiv = document.createElement('div');
-    countdownBar = document.createElement('div');
-    countdownTime = document.createElement('div');
-    countdownImg = document.createElement('img');
-    countdownOverlay = document.createElement('img');
-
-    if (order === 'last') {
-      document.getElementById(column).append(countdownDiv);
-    } else {
-      document.getElementById(column).prepend(countdownDiv);
-    }
-    countdownDiv.className = 'countdown countdown-hide';
-    countdownImgDiv.className = 'smalliconimgdiv';
-    countdownImg.className = 'smalliconimg';
-    countdownImg.src = `img/icon/${img}.png`;
-    countdownOverlay.className = 'smalliconoverlay';
-    countdownOverlay.src = 'img/icon/overlay.png';
-    countdownBar.className = 'countdownbar';
-    countdownTime.className = 'countdowntime';
-    countdownDiv.append(countdownImgDiv);
-    countdownDiv.append(countdownBar);
-    countdownDiv.append(countdownTime);
-    countdownImgDiv.append(countdownImg);
-    countdownImgDiv.append(countdownOverlay);
-    void countdownDiv.offsetWidth;
-    countdownDiv.className = 'countdown countdown-show';
-  }
-  // Divs ready
-
-
-  // Add or remove icons
-  if (text === 'addAction'
-  && time <= 1000) {
-    countdownDiv.className = 'countdown countdown-hide';
+  const matchIndex = countdownArray.findIndex((action) => action.name === name);
+  if (matchIndex > -1) {
+    countdownArray.splice(matchIndex, 1);
   }
 
-  if (text === 'removeCountdown'
-  && time <= 0) {
-    countdownDiv.className = 'countdown countdown-hide';
-  } else {
-    countdownDiv.className = 'countdown countdown-show';
+  const matchDiv = document.getElementById(column).querySelector(`div[data-name="${name}"]`);
+  if (matchDiv) {
+    matchDiv.className = 'countdown countdown-hide';
+    matchDiv.dataset.name = 'none';
   }
+
+  const countdownDiv = document.createElement('div');
+  const countdownImgDiv = document.createElement('div');
+  const countdownBar = document.createElement('div');
+  const countdownTime = document.createElement('div');
+  const countdownImg = document.createElement('img');
+  const countdownOverlay = document.createElement('img');
+
+  // Place into array and sort
+  countdownArray.push({ name, img, order });
+  countdownArray.sort((a, b) => a.order - b.order);
+
+  // Place into div with order
+  countdownDiv.className = 'countdown countdown-hide';
+  countdownDiv.dataset.name = name;
+  countdownDiv.style.order = time;
+  countdownImgDiv.className = 'smalliconimgdiv';
+  countdownImg.className = 'smalliconimg';
+  countdownImg.src = `img/icon/${icon[img]}.png`;
+  countdownOverlay.className = 'smalliconoverlay';
+  countdownOverlay.src = 'img/icon/overlay.png';
+  countdownBar.className = 'countdownbar';
+  countdownTime.className = 'countdowntime';
+  document.getElementById(column).append(countdownDiv);
+  countdownDiv.append(countdownImgDiv);
+  countdownDiv.append(countdownBar);
+  countdownDiv.append(countdownTime);
+  countdownImgDiv.append(countdownImg);
+  countdownImgDiv.append(countdownOverlay);
+  void countdownDiv.offsetWidth;
+  countdownDiv.className = 'countdown countdown-show';
 
   let displayTime = time;
   let actionAdded = 0; // Prevent from being added multiple times
@@ -90,14 +82,46 @@ const addCountdown = ({
 
   // Countdown animation function starts here
   interval[name] = setInterval(() => {
-    // Show icons a little bit early
-    if (displayTime < 1000 && actionAdded === 0) {
-      if (onComplete === 'addAction') {
+    // Div removal
+    if (displayTime <= 0) {
+      // Cleanup at 0
+      if (onComplete.includes('removeCountdown')) {
+        countdownDiv.className = 'countdown countdown-hide';
+      }
+      if (onComplete.includes('addAction') && actionAdded === 0) {
+        // Show icons a little bit early
+        addAction({ name, array, order });
+        actionAdded = 1;
+      }
+      countdownBar.style.width = '0px';
+      clearInterval(interval[name]);
+    } else if (displayTime < 1000) {
+      // Show icons a little bit early
+      if (onComplete.includes('addAction') && actionAdded === 0) {
         addAction({ name, array, order });
         actionAdded = 1;
       }
     }
 
+    // Div order
+    if (displayTime <= 0) {
+      countdownDiv.style.order = order;
+    } else {
+      countdownDiv.style.order = 100 + displayTime;
+    }
+
+    // Time display
+    if (displayTime <= 0) {
+      countdownTime.innerHTML = text;
+    } else if (displayTime < 1000) {
+      countdownTime.innerHTML = (displayTime / 1000).toFixed(1);
+      countdownBar.style.width = `${Math.floor(displayTime / 100)}px`;
+    } else {
+      countdownTime.innerHTML = Math.ceil(displayTime / 1000);
+      countdownBar.style.width = `${Math.min(Math.floor((displayTime - 1000) / 1000) + 10, 70)}px`;
+    }
+
+    // Color
     if (displayTime < 5000) {
       if (countdownBar.style.backgroundColor !== 'red') {
         countdownBar.style.backgroundColor = 'red';
@@ -114,28 +138,6 @@ const addCountdown = ({
       countdownBar.style.backgroundColor = 'white';
     }
 
-    // Countdown bar animation
-    if (displayTime <= 0) {
-      // Cleanup when time <= 0
-
-      countdownBar.style.width = '0px'; // Time 0 = bar width 0
-      clearInterval(interval[name]);
-
-      if (onComplete !== 'showText') {
-        countdownDiv.className = 'countdown countdown-hide';
-      } else {
-        countdownTime.innerHTML = text;
-      }
-    } else if (displayTime < 1000) {
-      // Special animation when remaining time is low
-      countdownTime.innerHTML = (displayTime / 1000).toFixed(1);
-      countdownBar.style.width = `${Math.floor(displayTime / 100)}px`;
-    } else {
-      // This appears to best mathematically mimic the displayed values for XIV
-      countdownTime.innerHTML = Math.ceil(displayTime / 1000);
-      // Sets a max bar size
-      countdownBar.style.width = `${Math.min(Math.floor((displayTime - 1000) / 1000) + 10, 70)}px`;
-    }
     displayTime -= countdownIntervalTime;
   }, countdownIntervalTime);
 };

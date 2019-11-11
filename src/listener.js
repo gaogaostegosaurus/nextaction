@@ -1,24 +1,28 @@
 
 // https://github.com/quisquous/cactbot/blob/master/CactbotOverlay/JSEvents.cs shows all possible events
 
+// This seems useful to eventually add
 // addOverlayListener('onInitializeOverlay', (e) => {
-  // This seems useful to eventually add
 // });
+
+let actionList = '';
+let statusList = '';
+let castingList = '';
 
 addOverlayListener('onLogEvent', (e) => { // Fires on log event
 
   const statsRegExp = new RegExp(' 0C:Player Stats: (?<jobID>[\\d]+):(?<strength>[\\d]+):(?<dexterity>[\\d]+):(?<vitality>[\\d]+):(?<intelligence>[\\d]+):(?<mind>[\\d]+):(?<piety>[\\d]+):(?<attackPower>[\\d]+):(?<directHitRate>[\\d]+):(?<criticalHit>[\\d]):(?<attackMagicPotency>[\\d]+):(?<healingMagicPotency>[\\d]+):(?<determination>[\\d]+):(?<skillSpeed>[\\d]+):(?<spellSpeed>[\\d]+):0:(?<tenacity>[\\d]+)');
   const actionRegExp = new RegExp(` (?<logType>1[56]):(?<sourceID>${player.ID}):(?<sourceName>${player.name}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${actionList}):(?<targetID>[\\dA-F]{8}):(?<targetName>[ -~]+?):(?<result>[\\dA-F]{1,8}):`);
   const statusRegExp = new RegExp(` (?<logType>1[AE]):(?<targetID>[\\dA-F]{8}):(?<targetName>[ -~]+?) (?<gainsLoses>gains|loses) the effect of (?<effectName>${statusList}) from (?<sourceName>${player.name})(?: for )?(?<effectDuration>\\d*\\.\\d*)?(?: Seconds)?\\.`);
-  const startsUsingRegExp = new RegExp(` 14:(?<actionID>[\\dA-F]{1,4}):(?<sourceName>${player.name}) starts using (?<actionName>${castingList}) on (?<targetName>[ -~]+?)\\.`);
-  const cancelledRegExp = new RegExp(` 17:(?<sourceID>[\\dA-F]{8}):(?<sourceName>${player.name}):(?<actionID>[\\dA-F]{1,4}):(?<actionName>${castingList}):Cancelled:`);
+  const castingRegExp = new RegExp(` 14:(?<actionID>[\\dA-F]{1,4}):(?<sourceName>${player.name}) starts using (?<actionName>${castingList}) on (?<targetName>[ -~]+?)\\.`);
+  const cancelRegExp = new RegExp(` 17:(?<sourceID>[\\dA-F]{8}):(?<sourceName>${player.name}):(?<actionID>[\\dA-F]{1,4}):(?<actionName>${castingList}):Cancelled:`);
   const l = e.detail.logs.length;
 
   for (let i = 0; i < l; i += 1) {
     const actionMatch = e.detail.logs[i].match(actionRegExp);
     const statusMatch = e.detail.logs[i].match(statusRegExp);
-    const startsMatch = e.detail.logs[i].match(startsUsingRegExp);
-    const cancelledMatch = e.detail.logs[i].match(cancelledRegExp);
+    const castingMatch = e.detail.logs[i].match(castingRegExp);
+    const cancelMatch = e.detail.logs[i].match(cancelRegExp);
     const statsMatch = e.detail.logs[i].match(statsRegExp);
 
     if (actionMatch) { // Status source = player
@@ -83,17 +87,21 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
       } else if (player.job === 'WHM') {
         // whmStatus();
       }
-    } else if (startsMatch) {
+    } else if (castingMatch) {
       if (player.job === 'BLM') {
         // blmStartsUsing();
       } else if (player.job === 'RDM') {
-        rdmOnStartsUsing(startsMatch);
+        rdmOnCasting(castingMatch);
+      } else if (player.job === 'SCH') {
+        schOnCasting(castingMatch);
       }
-    } else if (cancelledMatch) {
+    } else if (cancelMatch) {
       if (player.job === 'BLM') {
         // blmCancelled();
       } else if (player.job === 'RDM') {
-        rdmOnCancelled(cancelledMatch);
+        rdmOnCancel(cancelMatch);
+      } else if (player.job === 'SCH') {
+        schOnCancel(cancelMatch);
       }
     } else if (statsMatch) {
       gcdCalculation({
@@ -135,8 +143,8 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
   } else if (player.job === 'GNB') {
     player.tempjobDetail.cartridge = parseInt(player.debugJobSplit[0], 16); // 0-2
   } else if (player.job === 'SCH') {
-    player.tempjobDetail.tempaetherflow = parseInt(player.debugJobSplit[2], 16); // 0-3
-    player.tempjobDetail.tempfaerie = parseInt(player.debugJobSplit[3], 16); // 0-100
+    player.tempjobDetail.aetherflow = parseInt(player.debugJobSplit[2], 16); // 0-3
+    player.tempjobDetail.faerie = parseInt(player.debugJobSplit[3], 16); // 0-100
   } else if (player.job === 'WHM') {
     player.tempjobDetail.bloodlily = parseInt(player.debugJobSplit[5], 16); // 0-3
   }
@@ -193,20 +201,19 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
     } else if (player.job === 'WHM') {
       // actions = whmActions.join('|');
     }
-
   }
 
   // This is probably only useful for jobs that need to watch things that 'tick' up or down
   if (player.job === 'BLM') {
-    blmPlayerChangedEvent();
+    // blmPlayerChangedEvent();
   } else if (player.job === 'BRD') {
-    brdPlayerChangedEvent();
+    // brdPlayerChangedEvent();
   } else if (player.job === 'MCH') {
-    mchPlayerChangedEvent();
+    // mchPlayerChangedEvent();
   } else if (player.job === 'MNK') {
-    mnkPlayerChangedEvent();
+    // mnkPlayerChangedEvent();
   } else if (player.job === 'WHM') {
-    whmPlayerChangedEvent();
+    // whmPlayerChangedEvent();
   }
 
   // Possible use for later

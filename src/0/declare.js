@@ -3,6 +3,7 @@ let actionArray = [];
 let cooldownArray = [];
 let countdownArrayA = [];
 let countdownArrayB = [];
+let countdownArrayC = [];
 
 // Objects
 let recastTracker = {}; // Holds timestamps for cooldowns
@@ -12,9 +13,7 @@ let player = {};
 let target = {};
 
 // RegEx matching strings
-let actionList = '';
-let statusList = '';
-let castingList = '';
+player.gcd = 2500;
 
 
 const removeAnimationTime = 1000;
