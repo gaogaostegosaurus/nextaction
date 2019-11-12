@@ -19,6 +19,14 @@ const dncActionList = [
   "Saber Dance"
 ];
 
+const dncNext = () => {
+  next.flourishingcascadeStatus = checkStatus({ name: 'flourishingcascade' });
+  next.flourishingwindmillStatus = checkStatus({ name: 'flourishingwindmill' });
+  next.flourishingshowerStatus = checkStatus({ name: 'flourishingshower' });
+  next.flourishingfountainStatus = checkStatus({ name: 'flourishingfountain' });
+
+}
+
 function dncJobChange() {
 
   dncPriority();
