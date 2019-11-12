@@ -446,7 +446,7 @@ const rdmDualcast = () => {
 
 const rdmNext = () => { // Main function
   rdmDualcast();
-
+  
   priorityArray.length = 0;
   resyncActions({ array: priorityArray });
 
@@ -693,7 +693,7 @@ const rdmOnStatus = (statusMatch) => {
     if (statusMatch.groups.gainsLoses === 'gains') {
       addStatus({ name: 'dualcast', time: parseInt(statusMatch.groups.effectDuration, 10) * 1000 });
       const hardcastDiv = document.getElementById('action-row').querySelector('div[data-action~="hardcast"]');
-      if (hardcastDiv) { removeAction({ hardcastDiv }); }
+      if (hardcastDiv) { removeAction({ name: hardcastDiv.dataset.action }); }
     } else if (statusMatch.groups.gainsLoses === 'loses') {
       removeStatus({ name: 'dualcast' });
       rdmNext();

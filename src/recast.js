@@ -124,6 +124,8 @@ recast.riddleoffire = 90000;
 recast.riddleofearth = 60000;
 
 // NIN
+recast.mudra1 = 20000;
+recast.mudra2 = 20000;
 recast.hide = 20000;
 recast.mug = 110000;
 recast.ninjutsu = 20000;
@@ -134,6 +136,7 @@ recast.dreamwithinadream = 60000;
 recast.tenchijin = 100000;
 recast.meisui = 60000;
 recast.bunshin = 110000;
+recast.shadowfang = 70000;
 
 // RDM
 recast.acceleration = 35000;

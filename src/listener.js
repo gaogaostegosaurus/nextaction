@@ -179,7 +179,7 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
     } else if (player.job === 'MNK') {
       // actions = mnkActions.join('|');
     } else if (player.job === 'NIN') {
-      // actions = ninActions.join('|');
+      ninOnJobChange();
     } else if (player.job === 'PLD') {
       // actions = pldActions.join('|');
     } else if (player.job === 'RDM') {

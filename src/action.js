@@ -12,6 +12,7 @@ const getArrayRow = ({
   return row;
 };
 
+
 const removeOldActions = ({
   row,
 } = {}) => {
@@ -69,14 +70,19 @@ const resyncActions = ({
       iconOverlay.src = 'img/icon/overlay.png';
       void iconDiv.offsetWidth;
       iconDiv.className = 'action action-show';
+      if (array[i].size === 'small') {
+        iconDiv.className = 'action action-show action-small';
+      }
     }
   }
 };
+
 
 const addAction = ({
   name,
   img = name,
   array = actionArray,
+  size = 'normal',
   order = 10,
 } = {}) => {
   // Adds action to specified array and row
@@ -102,14 +108,19 @@ const addAction = ({
   iconDiv.append(iconOverlay);
   void iconDiv.offsetWidth; // Reflow to make transition work
   iconDiv.className = 'action action-show';
+  if (size === 'small') {
+    iconDiv.className = 'action action-show action-small';
+  }
 
   // Add to array
-  array.push({ name, img, order });
+  array.push({ name, img, size, order });
   array.sort((a, b) => a.order - b.order);
 };
 
+
 const fadeAction = ({
   name,
+  size = 'normal',
   array = actionArray,
 } = {}) => {
   // Sets an action to lower opacity, for casting or whatever
@@ -122,6 +133,7 @@ const fadeAction = ({
     match.className = 'action action-fade';
   }
 };
+
 
 const unfadeAction = ({
   name,
@@ -136,6 +148,7 @@ const unfadeAction = ({
     match.className = 'action action-show';
   }
 };
+
 
 const removeAction = ({
   name,
