@@ -1,6 +1,6 @@
 # next
 
-Maybe works version:
+Maybe works version (when I finish the current iteration):
 https://gaogaostegosaurus.github.io/next/index.html
 
 Test version:
