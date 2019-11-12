@@ -26,6 +26,7 @@ const ninPushWeave = ({
   array = actionArray,
 } = {}) => {
   if (player.level >= 45 && next.suitonStatus - next.elapsedTime > 0
+    && next.suitonStatus - next.elapsedTime < 10000
     && next.trickattackRecast - next.elapsedTime < 0) {
     array.push({ name: 'trickattack', img: 'trickattack', size: 'small' });
     next.trickattackRecast = recast.trickattack + next.elapsedTime;
@@ -38,7 +39,7 @@ const ninPushWeave = ({
     && next.dreamwithinadreamRecast - next.elapsedTime > 0) {
     array.push({ name: 'dreamwithinadream', img: 'dreamwithinadream', size: 'small' });
     next.dreamwithinadreamRecast = recast.dreamwithinadream + next.elapsedTime;
-    next.assassinatereadyStatus = 15000;
+    next.assassinatereadyStatus = 15000 + next.elapsedTime;
   } else if (player.level >= 80 && next.ninki >= 50
     && next.trickattackRecast - next.elapsedTime < 10000
     && next.bunshinRecast - next.elapsedTime < 0) {
@@ -51,7 +52,8 @@ const ninPushWeave = ({
     next.tenchijinRecast = recast.tenchijin + next.elapsedTime;
     next.tenchijinStatus = 6000 + next.elapsedTime;
     ninPushNinjutsu();
-  } else if (player.level >= 50 && next.trickattackRecast - next.elapsedTime < 5000
+  } else if (player.level >= 50 && next.trickattackRecast - next.elapsedTime < 20000
+    && next.suitonStatus - next.elapsedTime > 0
     && next.kassatsuRecast - next.elapsedTime < 0) {
     array.push({ name: 'kassatsu', img: 'kassatsu', size: 'small' });
     next.kassatsuRecast = recast.kassatsu + next.elapsedTime;
@@ -88,16 +90,81 @@ const ninPushWeave = ({
 const ninPushNinjutsu = ({
   array = actionArray,
 } = {}) => {
-  if (next.mudra1Recast - next.elapsedTime < 0 || next.tenchijinStatus - next.elapsedTime > 0
-    || (next.kassatsuStatus - next.elapsedTime > 0 && next.trickattackRecast - next.elapsedTime > 45000)) {
-    if (next.kassatsuStatus - next.elapsedTime > 0 && count.targets === 1) {
-      ninPushHyoshoRanyu();
+  if (next.mudra1Recast - next.elapsedTime < 0 && next.huton + next.elapsedTime < 500 * 3) {
+    // Huton if it is not active
+    ninPushHuton();
+    next.elapsedTime += 500 * 3 + 1500;
+    next.huton += 70000 + next.elapsedTime;
+    ninPushWeave();
+  } else if (next.mudra2Recast - next.elapsedTime < 500 * 3 + 1500) {
+    // Prevent Mudra from sitting at 2 stacks
+    if (player.level >= 45 && next.trickattackRecast - next.elapsedTime < 20000 + 500 * 3 + 1500) {
+      // Suiton for upcoming Trick
+      ninPushSuiton();
+      next.elapsedTime += 500 * 3 + 1500;
+      next.suitonStatus = 20000 + next.elapsedTime;
+      ninPushWeave();
+    } else if (player.level >= 72
+      && next.meisuiRecast - next.elapsedTime < 20000 + 500 * 3 + 1500) {
+      // Suiton for upcoming Meisui
+      ninPushSuiton();
+      next.elapsedTime += 500 * 3 + 1500;
+      next.suitonStatus = 20000 + next.elapsedTime;
+      ninPushWeave();
+    } else if (player.level >= 35 && count.targets > 1) {
+      // Katon
+      ninPushKaton();
       next.elapsedTime += 500 * 2 + 1500;
-    } else if (next.kassatsuStatus - next.elapsedTime > 0 && count.targets > 1) {
-      ninPushGokaMekkyaku();
+      ninPushWeave();
+    } else if (player.level >= 35 && count.targets > 1) {
+      // Katon
+      ninPushRaiton();
       next.elapsedTime += 500 * 2 + 1500;
-    } else if (player.level >= 45
-      && next.trickattackRecast - next.elapsedTime < 20000 + 500 * 3 + 1500) {
+      ninPushWeave();
+    } else {
+      // Katon
+      ninPushFumaShuriken();
+      next.elapsedTime += 500 * 2 + 1500;
+      ninPushWeave();
+    }
+  } else if (next.tenchijinStatus - next.elapsedTime > 0) {
+    if (player.level >= 45
+    && next.trickattackRecast - next.elapsedTime < 20000 + 500 * 3) {
+      ninPushSuiton();
+      next.elapsedTime += 500 * 3 + 1500;
+      next.suitonStatus = 20000 + next.elapsedTime;
+      ninPushWeave();
+    } else if (player.level >= 72
+      && next.meisuiRecast - next.elapsedTime < 20000 + 500 * 3) {
+      ninPushSuiton();
+      next.elapsedTime += 500 * 3 + 1500;
+      next.suitonStatus = 20000 + next.elapsedTime;
+      ninPushWeave();
+    }
+  } else if (next.kassatsuStatus - next.elapsedTime > 0) {
+    if (next.trickattackRecast - next.elapsedTime > 45000 + 500 * 2 + 1500) {
+      if (player.level >= 76 && count.targets > 1) {
+        ninPushGokaMekkyaku();
+        next.elapsedTime += 500 * 2 + 1500;
+        ninPushWeave();
+      } else if (player.level >= 76) {
+        ninPushHyoshoRanyu();
+        next.elapsedTime += 500 * 2 + 1500;
+        ninPushWeave();
+      } else if (count.targets > 1) {
+        ninPushKaton();
+        next.elapsedTime += 500 * 2 + 1500;
+        ninPushWeave();
+      } else {
+        ninPushRaiton();
+        next.elapsedTime += 500 * 2 + 1500;
+        ninPushWeave();
+      }
+      next.kassatsuStatus = 0;
+    }
+  } else if (next.mudra1Recast - next.elapsedTime < 0) {
+    if (player.level >= 45
+      && next.trickattackRecast - next.elapsedTime < 20000 + 500 * 3) {
       ninPushSuiton();
       next.elapsedTime += 500 * 3 + 1500;
       next.suitonStatus = 20000 + next.elapsedTime;
@@ -107,11 +174,16 @@ const ninPushNinjutsu = ({
       next.elapsedTime += 500 * 3 + 1500;
       next.huton = 70000 + next.elapsedTime;
     } else if (player.level >= 72
-      && next.meisuiRecast - next.elapsedTime < 20000 + 500 * 3 + 1500) {
+      && next.meisuiRecast - next.elapsedTime < 20000 + 500 * 3) {
       ninPushSuiton();
       next.elapsedTime += 500 * 3 + 1500;
       next.suitonStatus = 20000 + next.elapsedTime;
-    } else if (player.level >= 35 && count.targets === 1) {
+    } else if (player.level >= 35 && count.targets === 1
+      && next.trickattackRecast - next.elapsedTime > 45000 + 500 * 2) {
+      ninPushRaiton();
+      next.elapsedTime += 500 * 2 + 1500;
+    } else if (player.level >= 35 && count.targets === 1
+      && next.mudra2Recast - next.elapsedTime < 500 * 2 + 1500) {
       ninPushRaiton();
       next.elapsedTime += 500 * 2 + 1500;
     } else if (player.level >= 35 && count.targets > 1) {
@@ -125,7 +197,6 @@ const ninPushNinjutsu = ({
     if (next.tenchijinStatus - next.elapsedTime > 0) {
       next.tenchijinStatus = 0;
     } else if (next.kassatsuStatus - next.elapsedTime > 0) {
-      next.kassatsuStatus = 0;
     } else if (next.mudra2Recast < 0) {
       next.mudra2Recast = recast.mudra2 + next.elapsedTime;
     } else {
@@ -146,42 +217,42 @@ const ninPushMelee = ({
     // Apply while trick is up
     array.push({ name: 'shadowfang', img: 'shadowfang' });
     next.shadowfangRecast = recast.shadowfang + next.elapsedTime;
+    ninPushWeave();
     next.elapsedTime += recast.gcd;
     next.ninki += 10;
-    ninPushWeave();
     ninPushNinjutsu();
   } else if (player.level >= 30 && next.trickattackRecast - next.elapsedTime > 6000
     && next.shadowfangRecast - next.elapsedTime < 0) {
     // Apply without trick due to delay
     array.push({ name: 'shadowfang', img: 'shadowfang' });
     next.shadowfangRecast = recast.shadowfang + next.elapsedTime;
+    ninPushWeave();
     next.elapsedTime += recast.gcd;
     next.ninki += 10;
-    ninPushWeave();
     ninPushNinjutsu();
   } else {
     array.push({ name: 'spinningedge', img: 'spinningedge' });
-    next.elapsedTime += recast.gcd;
-    next.ninki += 5;
-    ninPushWeave();
     ninPushNinjutsu();
-    array.push({ name: 'gustslash', img: 'gustslash' });
     next.elapsedTime += recast.gcd;
     next.ninki += 5;
     ninPushWeave();
+    array.push({ name: 'gustslash', img: 'gustslash' });
+    ninPushWeave();
+    next.elapsedTime += recast.gcd;
+    next.ninki += 5;
     ninPushNinjutsu();
     if (player.level >= 56 && next.huton < 40000 + recast.gcd * 2
     && next.huton > 0 + recast.gcd * 2) {
       array.push({ name: 'armorcrush', img: 'armorcrush' }); // Add Armor Crush
+      ninPushWeave();
       next.elapsedTime += recast.gcd;
       next.ninki += 10;
-      ninPushWeave();
       ninPushNinjutsu();
     } else if (player.level >= 26) {
       array.push({ name: 'aeolianedge', img: 'aeolianedge' }); // Add Armor Crush
+      ninPushWeave();
       next.elapsedTime += recast.gcd;
       next.ninki += 10;
-      ninPushWeave();
       ninPushNinjutsu();
     }
   }
@@ -254,7 +325,7 @@ const ninNext = ({
     ninPushNinjutsu();
     ninPushMelee();
     // Adjust all cooldown/status info
-  } while (next.elapsedTime < 120000);
+  } while (next.elapsedTime < 180000);
   console.log(JSON.stringify(actionArray));
   resyncActions();
 };
