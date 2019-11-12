@@ -19,6 +19,45 @@ const dncActionList = [
   "Saber Dance"
 ];
 
+const dncPushWeave = ({
+  array = actionArray,
+} = {}) => {
+  if (next.devilmentRecast - next.elapsedTime < 0) {
+    array.push({ name: 'devilment', img: 'devilment', size: 'small' });
+  } else if (next.flourishRecast - next.elapsedTime < 0) {
+    array.push({ name: 'flourish', img: 'flourish', size: 'small' });
+  } else if (next.espirit - next.elapsedTime < 0) {
+    array.push({ name: 'devilment', img: 'devilment', size: 'small' });
+  }
+}
+
+const dncNext = () => {
+  next.flourishingcascadeStatus = checkStatus({ name: 'flourishingcascade' });
+  next.flourishingwindmillStatus = checkStatus({ name: 'flourishingwindmill' });
+  next.flourishingshowerStatus = checkStatus({ name: 'flourishingshower' });
+  next.flourishingfountainStatus = checkStatus({ name: 'flourishingfountain' });
+  next.devilmentStatus = checkStatus({ name: 'devilment' });
+  
+  next.devilmentRecast = checkRecast({ name: 'devilment' });
+  next.standardstepRecast = checkRecast({ name: 'standardstep' });
+  next.technicalstepRecast = checkRecast({ name: 'technicalstep' });
+  next.espirit = player.tempjobDetail.espirit;
+  next.steps = player.tempjobDetail.steps;
+  
+  next.elapsedTime = recast.gcd;
+  
+  do {
+    if (next.technicalstepRecast - next.elapsedTime < 0) {
+      // Technical Step
+    } else if (next.standardstepRecast - next.elapsedTime < 0) {
+      // Standard Step
+    }
+    
+    
+  } while (next.elapsedTime < 15000); 
+
+}
+
 function dncJobChange() {
 
   dncPriority();
