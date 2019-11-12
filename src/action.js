@@ -160,3 +160,32 @@ const removeAction = ({
     array.splice(matchIndex, 1);
   }
 };
+
+const removeToAction = ({
+  name,
+  array = actionArray,
+} = {}) => {
+  // Removes all actions up to the first case of selected action from display
+
+  const row = getArrayRow({ array });
+  
+  // Cannot do this because if you call this function multiple times, it acts weird
+  // Maybe make a previous variable to prevent that from happening if necessary
+  // removeOldActions({ row });
+  let rowDiv = document.getElementById(row);
+  let actionDivData = rowDiv.children[0].dataset.action;
+  
+  do {
+    actionDivData = rowDiv.children[0].dataset.action;
+    if (actionDivData !== name) {
+      rowDiv.children[0].remove();
+    } else {
+      break;
+    }
+  } while (divAction !== name);
+  
+  const matchIndex = array.findIndex((action) => action.name === name);
+  if (matchIndex > -1) {
+    array.splice(0, matchIndex); // Remove all array entries to this point
+  }
+};
