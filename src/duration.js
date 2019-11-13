@@ -36,14 +36,17 @@ duration.perfectbalance = 10000;
 duration.riddleoffire = 20000;
 
 // NIN
-duration.shadowfang = 24000;
-duration.mudra = 5000;
+duration.trickattack = 15000;
+duration.shadowfang = 30000;
+duration.mudra = 6000;
+duration.huton = 70000;
 duration.doton = 24000;
 duration.suiton = 20000;
 duration.kassatsu = 15000;
-duration.assassinateready = 10000;
-duration.tenchijin = 10000;
-duration.bunshin = 15000;
+duration.armorcrush = 30000;
+duration.assassinateready = 15000;
+duration.tenchijin = 6000;
+duration.bunshin = 30000;
 
 // PLD
 duration.fightorflight = 25000;

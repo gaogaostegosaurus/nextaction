@@ -124,19 +124,21 @@ recast.riddleoffire = 90000;
 recast.riddleofearth = 60000;
 
 // NIN
-recast.mudra1 = 20000;
-recast.mudra2 = 20000;
+recast.shadeshift = 120000;
 recast.hide = 20000;
-recast.mug = 110000;
-recast.ninjutsu = 20000;
+recast.mug = 120000;
 recast.trickattack = 60000;
+recast.shadowfang = 70000;
 recast.ninjutsu = 20000;
+recast.mudra1 = recast.ninjutsu;
+recast.mudra2 = recast.ninjutsu;
+recast.shukuchi1 = 60000;
+recast.shukuchi2 = 60000;
 recast.kassatsu = 60000;
 recast.dreamwithinadream = 60000;
-recast.tenchijin = 100000;
-recast.meisui = 60000;
-recast.bunshin = 110000;
-recast.shadowfang = 70000;
+recast.tenchijin = 120000;
+recast.meisui = 120000;
+recast.bunshin = 90000;
 
 // RDM
 recast.acceleration = 35000;
