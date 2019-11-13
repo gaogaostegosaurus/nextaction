@@ -179,8 +179,23 @@ const removeToAction = ({
   array = actionArray,
 } = {}) => {
   // Removes all actions up to the first case of selected action from display
-
-  const row = getArrayRow({ array });
+  
+  const rowID = getArrayRow({ array });
+  const rowDiv = document.getElementById(rowID);
+  
+  const actionName = action.replace(/\s/g,'').toLowerCase(); // Clean up action so that it can be matched
+  
+  for (let i = 0; i < rowDiv.children.length; i += 1) {
+    
+  }
+  
+  let actionDivName = actionRow.children[0].dataset.name;
+  
+  if (actionName === actionDivName) {
+    actionDivName.remove(); 
+  } else {
+    
+  }
   
   // Cannot do this because if you call this function multiple times, it acts weird
   // Maybe make a previous variable to prevent that from happening if necessary
