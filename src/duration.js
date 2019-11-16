@@ -67,6 +67,11 @@ duration.kaiten = 10000;
 duration.meikyoshisui = 15000;
 duration.shifu = 40000;
 
+// SCH
+duration.bio = 30000;
+duration.bioii = 30000;
+duration.biolysis = 30000;
+
 // WAR
 duration.stormseye = 30000;
 

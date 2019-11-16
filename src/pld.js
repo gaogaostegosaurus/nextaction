@@ -345,50 +345,50 @@ function pldAction() {
 
 function pldStatus() {
 
-  if (effectLog.groups.targetID == player.ID) { // Target is self
+  if (statusLog.groups.targetID == player.ID) { // Target is self
 
-    if ("Rampart" == effectLog.groups.effectName) {
-      if (effectLog.groups.gainsLoses == "gains") {
-        if (checkStatus("mitigation", effectLog.groups.targetID) < parseInt(effectLog.groups.effectDuration) * 1000) {
-          addStatus("mitigation", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
+    if ("Rampart" == statusLog.groups.statusName) {
+      if (statusLog.groups.gainsLoses == "gains") {
+        if (checkStatus("mitigation", statusLog.groups.targetID) < parseInt(statusLog.groups.effectDuration) * 1000) {
+          addStatus("mitigation", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
         }
       }
-      else if (effectLog.groups.gainsLoses == "loses") {
-        if (checkStatus("mitigation", effectLog.groups.targetID) < 0 // Check for overlaps
+      else if (statusLog.groups.gainsLoses == "loses") {
+        if (checkStatus("mitigation", statusLog.groups.targetID) < 0 // Check for overlaps
         && count.targets >= 3) {
           drkMitigation();
         }
       }
     }
 
-    else if ("Iron Will" == effectLog.groups.effectName) {
-      if (effectLog.groups.gainsLoses == "gains") {
+    else if ("Iron Will" == statusLog.groups.statusName) {
+      if (statusLog.groups.gainsLoses == "gains") {
         removeIcon("ironwill");
       }
-      else if (effectLog.groups.gainsLoses == "loses") {
+      else if (statusLog.groups.gainsLoses == "loses") {
         addIcon({name: "ironwill"});
       }
     }
 
-    else if ("Sentinel" == effectLog.groups.effectName) {
-      if (effectLog.groups.gainsLoses == "gains") {
-        if (checkStatus("mitigation", effectLog.groups.targetID) < parseInt(effectLog.groups.effectDuration) * 1000) {
-          addStatus("mitigation", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
+    else if ("Sentinel" == statusLog.groups.statusName) {
+      if (statusLog.groups.gainsLoses == "gains") {
+        if (checkStatus("mitigation", statusLog.groups.targetID) < parseInt(statusLog.groups.effectDuration) * 1000) {
+          addStatus("mitigation", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
         }
       }
-      else if (effectLog.groups.gainsLoses == "loses") {
-        if (checkStatus("mitigation", effectLog.groups.targetID) < 0
+      else if (statusLog.groups.gainsLoses == "loses") {
+        if (checkStatus("mitigation", statusLog.groups.targetID) < 0
         && count.targets >= 3) {
           drkMitigation();
         }
       }
     }
 
-    else if ("Requiescat" == effectLog.groups.effectName) {
-      if (effectLog.groups.gainsLoses == "gains") {
-        addStatus("requiescat", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID)
+    else if ("Requiescat" == statusLog.groups.statusName) {
+      if (statusLog.groups.gainsLoses == "gains") {
+        addStatus("requiescat", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID)
       }
-      else if (effectLog.groups.gainsLoses == "loses") {
+      else if (statusLog.groups.gainsLoses == "loses") {
         removeStatus("requiescat");
         removeIcon("holyspirit1");
         removeIcon("holyspirit2");
@@ -399,11 +399,11 @@ function pldStatus() {
       }
     }
 
-    else if ("Sword Oath" == effectLog.groups.effectName) {
-      if (effectLog.groups.gainsLoses == "gains") {
-        addStatus("swordoath", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID)
+    else if ("Sword Oath" == statusLog.groups.statusName) {
+      if (statusLog.groups.gainsLoses == "gains") {
+        addStatus("swordoath", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID)
       }
-      else if (effectLog.groups.gainsLoses == "loses") {
+      else if (statusLog.groups.gainsLoses == "loses") {
         removeIcon("atonement1");
         removeIcon("atonement2");
         removeIcon("atonement3");

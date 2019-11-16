@@ -282,7 +282,7 @@ function warAction() {
       }
 
       if (count.targets >= 3
-      && checkStatus("mitigation", effectLog.groups.targetID) < 1000) {
+      && checkStatus("mitigation", statusLog.groups.targetID) < 1000) {
         warMitigation();
       }
       else {
@@ -296,83 +296,83 @@ function warAction() {
 
 function warStatus() {
 
-  if (effectLog.groups.targetID == player.ID) { // Target is self
+  if (statusLog.groups.targetID == player.ID) { // Target is self
 
-    if (["Berserk", "Inner Release"].indexOf(effectLog.groups.effectName) > -1) {
-      if (effectLog.groups.gainsLoses == "gains") {
-        addStatus("berserk", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
-        if (checkRecast("upheaval") < parseInt(effectLog.groups.effectDuration) * 1000) {
+    if (["Berserk", "Inner Release"].indexOf(statusLog.groups.statusName) > -1) {
+      if (statusLog.groups.gainsLoses == "gains") {
+        addStatus("berserk", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
+        if (checkRecast("upheaval") < parseInt(statusLog.groups.effectDuration) * 1000) {
           addIconBlinkTimeout("upheaval", checkRecast("upheaval"), nextid.upheaval, icon.upheaval); // Show Upheaval if up during Berserk
         }
       }
-      else if (effectLog.groups.gainsLoses == "loses") {
-        removeStatus("berserk", effectLog.groups.targetID);
+      else if (statusLog.groups.gainsLoses == "loses") {
+        removeStatus("berserk", statusLog.groups.targetID);
       }
 
-      if ("Inner Release" == effectLog.groups.effectName) {
+      if ("Inner Release" == statusLog.groups.statusName) {
         warGauge();
       }
     }
 
 
-    else if ("Storm's Eye" == effectLog.groups.effectName) {
-      if (effectLog.groups.gainsLoses == "gains") {
-        addStatus("stormseye", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
+    else if ("Storm's Eye" == statusLog.groups.statusName) {
+      if (statusLog.groups.gainsLoses == "gains") {
+        addStatus("stormseye", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
       }
-      else if (effectLog.groups.gainsLoses == "loses") {
-        removeStatus("stormseye", effectLog.groups.targetID);
+      else if (statusLog.groups.gainsLoses == "loses") {
+        removeStatus("stormseye", statusLog.groups.targetID);
       }
     }
 
-    else if ("Raw Intuition" == effectLog.groups.effectName) {
-      if (effectLog.groups.gainsLoses == "gains") {
-        if (checkStatus("mitigation", effectLog.groups.targetID) < parseInt(effectLog.groups.effectDuration) * 1000) {
-          addStatus("mitigation", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
+    else if ("Raw Intuition" == statusLog.groups.statusName) {
+      if (statusLog.groups.gainsLoses == "gains") {
+        if (checkStatus("mitigation", statusLog.groups.targetID) < parseInt(statusLog.groups.effectDuration) * 1000) {
+          addStatus("mitigation", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
         }
       }
-      else if (effectLog.groups.gainsLoses == "loses") {
-        if (checkStatus("mitigation", effectLog.groups.targetID) < 0
+      else if (statusLog.groups.gainsLoses == "loses") {
+        if (checkStatus("mitigation", statusLog.groups.targetID) < 0
         && count.targets >= 3) {
           warMitigation();
         }
       }
     }
 
-    else if ("Rampart" == effectLog.groups.effectName) {
-      if (effectLog.groups.gainsLoses == "gains") {
-        if (checkStatus("mitigation", effectLog.groups.targetID) < parseInt(effectLog.groups.effectDuration) * 1000) {
-          addStatus("mitigation", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
+    else if ("Rampart" == statusLog.groups.statusName) {
+      if (statusLog.groups.gainsLoses == "gains") {
+        if (checkStatus("mitigation", statusLog.groups.targetID) < parseInt(statusLog.groups.effectDuration) * 1000) {
+          addStatus("mitigation", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
         }
       }
-      else if (effectLog.groups.gainsLoses == "loses") {
-        if (checkStatus("mitigation", effectLog.groups.targetID) < 0 // Check for overlaps
+      else if (statusLog.groups.gainsLoses == "loses") {
+        if (checkStatus("mitigation", statusLog.groups.targetID) < 0 // Check for overlaps
         && count.targets >= 3) {
           warMitigation();
         }
       }
     }
 
-    else if ("Vengeance" == effectLog.groups.effectName) {
-      if (effectLog.groups.gainsLoses == "gains") {
-        if (checkStatus("mitigation", effectLog.groups.targetID) < parseInt(effectLog.groups.effectDuration) * 1000) {
-          addStatus("mitigation", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
+    else if ("Vengeance" == statusLog.groups.statusName) {
+      if (statusLog.groups.gainsLoses == "gains") {
+        if (checkStatus("mitigation", statusLog.groups.targetID) < parseInt(statusLog.groups.effectDuration) * 1000) {
+          addStatus("mitigation", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
         }
       }
-      else if (effectLog.groups.gainsLoses == "loses") {
-        if (checkStatus("mitigation", effectLog.groups.targetID) < 0
+      else if (statusLog.groups.gainsLoses == "loses") {
+        if (checkStatus("mitigation", statusLog.groups.targetID) < 0
         && count.targets >= 3) {
           warMitigation();
         }
       }
     }
 
-    else if ("Nascent Chaos" == effectLog.groups.effectName) {
-      if (effectLog.groups.gainsLoses == "gains") {
-        addStatus("nascentchaos", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
+    else if ("Nascent Chaos" == statusLog.groups.statusName) {
+      if (statusLog.groups.gainsLoses == "gains") {
+        addStatus("nascentchaos", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
         removeIcon("berserk");
       }
-      else if (effectLog.groups.gainsLoses == "loses") {
-        removeStatus("nascentchaos", effectLog.groups.targetID);
+      else if (statusLog.groups.gainsLoses == "loses") {
+        removeStatus("nascentchaos", statusLog.groups.targetID);
         addIconBlinkTimeout("berserk",checkRecast("berserk"),nextid.berserk,icon.berserk);
       }
       warGauge()

@@ -104,7 +104,7 @@ const gcdCalculation = ({
 const loadInitialState = () => {
 
   delete toggle.combo;
-  // 
+  //
   // if (player.job === 'BLM') {
   //   blmJobChange();
   // } else if (player.job === 'BRD') {
@@ -138,23 +138,28 @@ const loadInitialState = () => {
 
 
 const clearUI = () => {
-  priorityArray = [];
-  actionArray = [];
-  cooldownArray = [];
+  iconArrayA = [];
+  iconArrayB = [];
+  iconArrayC = [];
   countdownArrayA = [];
   countdownArrayB = [];
-  document.getElementById('priority-row').innerHTML = '';
-  document.getElementById('action-row').innerHTML = '';
-  document.getElementById('cooldown-row').innerHTML = '';
+  countdownArrayC = [];
+  document.getElementById('icon-a').innerHTML = '';
+  document.getElementById('icon-b').innerHTML = '';
+  document.getElementById('icon-c').innerHTML = '';
   document.getElementById('countdown-a').innerHTML = '';
   document.getElementById('countdown-b').innerHTML = '';
+  document.getElementById('countdown-c').innerHTML = '';
 };
 
 
-const countTargets = (action) => {
+const countTargets = ({
+  name,
+  property = name.replace(/[\s'-]/g, '').toLowerCase(),
+} = {}) => {
   const countTargetsDelay = 1000;
-  if (Date.now() - previous[action] > countTargetsDelay) {
-    previous[action] = Date.now();
+  if (Date.now() - previous[property] > countTargetsDelay) {
+    previous[property] = Date.now();
     count.targets = 1;
   } else {
     count.targets += 1;

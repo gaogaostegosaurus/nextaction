@@ -244,7 +244,7 @@ function drkAction() {
       }
 
       if (count.targets >= 3
-      && checkStatus("mitigation", effectLog.groups.targetID) < 1000) {
+      && checkStatus("mitigation", statusLog.groups.targetID) < 1000) {
         drkMitigation();
       }
       else {
@@ -259,39 +259,39 @@ function drkAction() {
 
 function drkStatus() {
 
-  if (effectLog.groups.targetID == player.ID) { // Target is self
+  if (statusLog.groups.targetID == player.ID) { // Target is self
 
-    if ("Delirium" == effectLog.groups.effectName) {
-      if (effectLog.groups.gainsLoses == "gains") {
-        addStatus("delirium", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
+    if ("Delirium" == statusLog.groups.statusName) {
+      if (statusLog.groups.gainsLoses == "gains") {
+        addStatus("delirium", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
       }
-      else if (effectLog.groups.gainsLoses == "loses") {
+      else if (statusLog.groups.gainsLoses == "loses") {
         removeStatus("delirium");
       }
     }
 
-    else if ("Rampart" == effectLog.groups.effectName) {
-      if (effectLog.groups.gainsLoses == "gains") {
-        if (checkStatus("mitigation", effectLog.groups.targetID) < parseInt(effectLog.groups.effectDuration) * 1000) {
-          addStatus("mitigation", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
+    else if ("Rampart" == statusLog.groups.statusName) {
+      if (statusLog.groups.gainsLoses == "gains") {
+        if (checkStatus("mitigation", statusLog.groups.targetID) < parseInt(statusLog.groups.effectDuration) * 1000) {
+          addStatus("mitigation", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
         }
       }
-      else if (effectLog.groups.gainsLoses == "loses") {
-        if (checkStatus("mitigation", effectLog.groups.targetID) < 0 // Check for overlaps
+      else if (statusLog.groups.gainsLoses == "loses") {
+        if (checkStatus("mitigation", statusLog.groups.targetID) < 0 // Check for overlaps
         && count.targets >= 3) {
           drkMitigation();
         }
       }
     }
 
-    else if ("Dark Wall" == effectLog.groups.effectName) {
-      if (effectLog.groups.gainsLoses == "gains") {
-        if (checkStatus("mitigation", effectLog.groups.targetID) < parseInt(effectLog.groups.effectDuration) * 1000) {
-          addStatus("mitigation", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
+    else if ("Dark Wall" == statusLog.groups.statusName) {
+      if (statusLog.groups.gainsLoses == "gains") {
+        if (checkStatus("mitigation", statusLog.groups.targetID) < parseInt(statusLog.groups.effectDuration) * 1000) {
+          addStatus("mitigation", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
         }
       }
-      else if (effectLog.groups.gainsLoses == "loses") {
-        if (checkStatus("mitigation", effectLog.groups.targetID) < 0
+      else if (statusLog.groups.gainsLoses == "loses") {
+        if (checkStatus("mitigation", statusLog.groups.targetID) < 0
         && count.targets >= 3) {
           drkMitigation();
         }

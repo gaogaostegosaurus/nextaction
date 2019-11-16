@@ -204,52 +204,52 @@ function gnbAction() {
 
 function gnbStatus() {
 
-  if (effectLog.groups.targetID == player.ID) {
+  if (statusLog.groups.targetID == player.ID) {
 
-    if ("No Mercy" == effectLog.groups.effectName) {
-      if (effectLog.groups.gainsLoses == "gains") {
-        addStatus("nomercy", parseInt(effectLog.groups.effectDuration) * 1000);
+    if ("No Mercy" == statusLog.groups.statusName) {
+      if (statusLog.groups.gainsLoses == "gains") {
+        addStatus("nomercy", parseInt(statusLog.groups.effectDuration) * 1000);
         addCountdownBar({name: "sonicbreak", time: checkRecast("sonicbreak"), oncomplete: "addIcon"});
         gnbCartridge();
       }
-      else if (effectLog.groups.gainsLoses == "loses") {
+      else if (statusLog.groups.gainsLoses == "loses") {
         removeStatus("nomercy");
         removeCountdownBar("sonicbreak");
         gnbCartridge();
       }
     }
 
-    else if ("Ready To Rip" == effectLog.groups.effectName) {
-      if (effectLog.groups.gainsLoses == "gains") {
+    else if ("Ready To Rip" == statusLog.groups.statusName) {
+      if (statusLog.groups.gainsLoses == "gains") {
         icon.continuation = icon.jugularrip;
         addIcon({name: "continuation"});
-        addStatus("readytorip", parseInt(effectLog.groups.effectDuration) * 1000);
+        addStatus("readytorip", parseInt(statusLog.groups.effectDuration) * 1000);
       }
-      else if (effectLog.groups.gainsLoses == "loses") {
+      else if (statusLog.groups.gainsLoses == "loses") {
         removeIcon("continuation");
         removeStatus("readytorip");
       }
     }
 
-    else if ("Ready To Tear" == effectLog.groups.effectName) {
-      if (effectLog.groups.gainsLoses == "gains") {
+    else if ("Ready To Tear" == statusLog.groups.statusName) {
+      if (statusLog.groups.gainsLoses == "gains") {
         icon.continuation = icon.abdomentear;
         addIcon({name: "continuation"});
-        addStatus("readytotear", parseInt(effectLog.groups.effectDuration) * 1000);
+        addStatus("readytotear", parseInt(statusLog.groups.effectDuration) * 1000);
       }
-      else if (effectLog.groups.gainsLoses == "loses") {
+      else if (statusLog.groups.gainsLoses == "loses") {
         removeIcon("continuation");
         removeStatus("readytotear");
       }
     }
 
-    else if ("Ready To Gouge" == effectLog.groups.effectName) {
-      if (effectLog.groups.gainsLoses == "gains") {
+    else if ("Ready To Gouge" == statusLog.groups.statusName) {
+      if (statusLog.groups.gainsLoses == "gains") {
         icon.continuation = icon.eyegouge;
         addIcon({name: "continuation"});
-        addStatus("readytogouge", parseInt(effectLog.groups.effectDuration) * 1000);
+        addStatus("readytogouge", parseInt(statusLog.groups.effectDuration) * 1000);
       }
-      else if (effectLog.groups.gainsLoses == "loses") {
+      else if (statusLog.groups.gainsLoses == "loses") {
         removeIcon("continuation");
         removeStatus("readytogouge");
       }

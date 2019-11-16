@@ -372,7 +372,7 @@ const ninNext = ({
     next.ninkiFloor = 0;
   }
 
-  
+
   do {
 
 
@@ -382,7 +382,7 @@ const ninNext = ({
     // Adjust all cooldown/status info
   } while (next.elapsedTime < 150000);
   console.log(JSON.stringify(actionArray));
-  resyncActions();
+  syncIcons();
 };
 
 const ninOnJobChange = () => {
@@ -405,228 +405,242 @@ const ninOnTargetChangedEvent = () => {
   }
 };
 
-function ninOnAction(actionMatch) {
+const ninCheckAction = ({ array = actionArray } = {}) => {
+
+};
+
+const ninOnAction = (actionMatch) => {
+  const actionName = actionMatch.groups.actionName.replace(/[\s']/g,'').toLowerCase();
+  const matchDiv = document.getElementById(row).querySelector(`div[data-action="${actionName}"]`);
+  if (document.getElementById(row).children[0].dataset.action === actionName) {
+    matchDiv.remove();
+  } else {
+    ninNext();
+  }
+};
+
+function ninOnAction2(actionMatch) {
 
   // console.log("Logline")
 
-    // Everything breaks Mudra "combo" so list it first
-    // Not sure what to do with this
+  // Everything breaks Mudra "combo" so list it first
+  // Not sure what to do with this
 
-    if (['Ten', 'Chi', 'Jin'].indexOf(actionMatch.groups.actionName) > -1) {
-      if (!toggle.mudra) {
-        toggle.mudra = Date.now();
-        if (checkRecast({ name: 'mudra2' }) > 0) {
-          addRecast({ name: 'mudra2' });
-        } else {
-          addRecast({ name: 'mudra1', time: checkRecast({ name: 'mudra2' }) });
-          addRecast({ name: 'mudra2', time: checkRecast({ name: 'mudra2' }) + 20000 });
-        }
+  if (['Ten', 'Chi', 'Jin'].indexOf(actionMatch.groups.actionName) > -1) {
+    if (!toggle.mudra) {
+      toggle.mudra = Date.now();
+      if (checkRecast({ name: 'mudra2' }) > 0) {
+        addRecast({ name: 'mudra2' });
+      } else {
+        addRecast({ name: 'mudra1', time: checkRecast({ name: 'mudra2' }) });
+        addRecast({ name: 'mudra2', time: checkRecast({ name: 'mudra2' }) + 20000 });
       }
     }
-    else { // Off-GCD actions
+  }
+  else { // Off-GCD actions
 
-      delete toggle.mudra;
+    delete toggle.mudra;
 
-      if ("Hide" == actionMatch.groups.actionName) {
-        removeIcon("tenchijin");
-        addRecast("hide");
-        addRecast("ninjutsu", -1);
-        addCountdown({name: "ninjutsu", time: -1});
-        clearTimeout(timeout.ninjutsu);
-        ninNinjutsu();
-      }
+    if ("Hide" == actionMatch.groups.actionName) {
+      removeIcon("tenchijin");
+      addRecast("hide");
+      addRecast("ninjutsu", -1);
+      addCountdown({name: "ninjutsu", time: -1});
+      clearTimeout(timeout.ninjutsu);
+      ninNinjutsu();
+    }
 
-      else if ("Mug" == actionMatch.groups.actionName) {
-        ninNinki();
-      }
+    else if ("Mug" == actionMatch.groups.actionName) {
+      ninNinki();
+    }
 
-      else if ("Trick Attack" == actionMatch.groups.actionName) {
-        addCountdown({name: "trickattack"});
-      }
+    else if ("Trick Attack" == actionMatch.groups.actionName) {
+      addCountdown({name: "trickattack"});
+    }
 
-      else if (["Raiton", "Hyosho Ranyu"].indexOf(actionMatch.groups.actionName) > -1) {
+    else if (["Raiton", "Hyosho Ranyu"].indexOf(actionMatch.groups.actionName) > -1) {
+      count.targets = 1;
+    }
+
+    else if (["Katon", "Goka Mekkyaku"].indexOf(actionMatch.groups.actionName) > -1) {
+      if (Date.now() - previous.katon > 1000) {
+        previous.katon = Date.now()
         count.targets = 1;
       }
+      else {
+        count.targets = count.targets + 1;
+      }
+    }
 
-      else if (["Katon", "Goka Mekkyaku"].indexOf(actionMatch.groups.actionName) > -1) {
-        if (Date.now() - previous.katon > 1000) {
-          previous.katon = Date.now()
+    else if ("Suiton" == actionMatch.groups.actionName) {
+      addStatus("suiton");
+    }
+
+    else if ("Kassatsu" == actionMatch.groups.actionName) {
+
+      removeIcon("kassatsu");
+      addStatus("kassatsu");
+
+      if (checkRecast("kassatsu2") < 0) {
+        addRecast("kassatsu2", recast.kassatsu);
+        addRecast("kassatsu1", -1);
+      }
+      else {
+        addRecast("kassatsu1", checkRecast("kassatsu2"));
+        addRecast("kassatsu2", checkRecast("kassatsu2") + recast.kassatsu);
+        addCountdown({name: "kassatsu", time: checkRecast("kassatsu1"), oncomplete: "addIcon"});
+      }
+
+      addCountdown({name: "ninjutsu", time: -1});
+      clearTimeout(timeout.ninjutsu);
+      ninNinjutsu();
+    }
+
+    else if ("Dream Within A Dream" == actionMatch.groups.actionName) {
+      removeIcon("dreamwithinadream");
+      addCountdown({name: "dreamwithinadream", time: recast.dreamwithinadream, oncomplete: "addIcon"});
+      addStatus("assassinateready");
+    }
+
+    else if ("Hellfrog Medium" == actionMatch.groups.actionName) {
+      if (Date.now() - previous.hellfrogmedium > 1000) {
+        previous.hellfrogmedium = Date.now()
+        count.targets = 1;
+      }
+      else {
+        count.targets = count.targets + 1;
+      }
+      ninNinki();
+    }
+
+    else if ("Bhavacakra" == actionMatch.groups.actionName) {
+      count.targets = 1;
+      ninNinki();
+    }
+
+    else if ("Ten Chi Jin" == actionMatch.groups.actionName) {
+      removeIcon("tenchijin");
+      addStatus("tenchijin");
+      addCountdown({name: "tenchijin"});
+      addRecast("ninjutsu", -1);
+      addCountdown({name: "ninjutsu", time: -1});
+      clearTimeout(timeout.ninjutsu);
+      ninNinjutsu();
+    }
+
+    else if ("Meisui" == actionMatch.groups.actionName) {
+      addCountdown({name: "meisui"});
+      ninNinki();
+    }
+
+    else { // Weaponskills and combos (hopefully)
+
+      if (actionMatch.groups.actionName == "Spinning Edge"
+      && actionMatch.groups.result.length >= 2) {
+
+        if ([1, 2, 3].indexOf(next.combo) == -1) {
+          if (player.level >= 38
+          && checkStatus("shadowfang", target.ID) < 9000) {
+            ninShadowFangCombo();
+          }
+          else if (player.level >= 54
+          && player.jobDetail.hutonMilliseconds > 6000
+          && player.jobDetail.hutonMilliseconds < 46000) {
+            ninArmorCrushCombo();
+          }
+          else {
+            ninAeolianEdgeCombo();
+          }
+        }
+        removeIcon("spinningedge");
+        toggle.combo = Date.now();
+      }
+
+      else if ("Gust Slash" == actionMatch.groups.actionName
+      && actionMatch.groups.result.length >= 8) {
+
+        if ([1, 2].indexOf(next.combo) == -1) {
+          if (player.level >= 54
+          && player.jobDetail.hutonMilliseconds > 6000
+          && player.jobDetail.hutonMilliseconds < 46000) {
+            ninArmorCrushCombo();
+          }
+          else {
+            ninAeolianEdgeCombo();
+          }
+        }
+        removeIcon("spinningedge");
+        removeIcon("gustslash");
+
+        if (player.level < 26) {
+          ninCombo();
+        }
+      }
+
+      else if ("Shadow Fang" == actionMatch.groups.actionName
+      && actionMatch.groups.result.length >= 8) {
+        addStatus("shadowfang", duration.shadowfang, actionMatch.groups.targetID);
+        ninCombo();
+      }
+
+      else if ("Death Blossom" == actionMatch.groups.actionName
+      && actionMatch.groups.result.length >= 2) {
+
+        if (Date.now() - previous.deathblossom > 1000) {
+          previous.deathblossom = Date.now()
           count.targets = 1;
+          if (next.combo != 4) {
+            ninHakkeMujinsatsuCombo();
+          }
+          removeIcon("deathblossom");
+          if (player.level < 52) {
+            ninCombo();
+          }
         }
         else {
           count.targets = count.targets + 1;
         }
       }
 
-      else if ("Suiton" == actionMatch.groups.actionName) {
-        addStatus("suiton");
-      }
+      else if ("Hakke Mujinsatsu" == actionMatch.groups.actionName
+      && actionMatch.groups.result.length == 8) {
 
-      else if ("Kassatsu" == actionMatch.groups.actionName) {
-
-        removeIcon("kassatsu");
-        addStatus("kassatsu");
-
-        if (checkRecast("kassatsu2") < 0) {
-          addRecast("kassatsu2", recast.kassatsu);
-          addRecast("kassatsu1", -1);
-        }
-        else {
-          addRecast("kassatsu1", checkRecast("kassatsu2"));
-          addRecast("kassatsu2", checkRecast("kassatsu2") + recast.kassatsu);
-          addCountdown({name: "kassatsu", time: checkRecast("kassatsu1"), oncomplete: "addIcon"});
-        }
-
-        addCountdown({name: "ninjutsu", time: -1});
-        clearTimeout(timeout.ninjutsu);
-        ninNinjutsu();
-      }
-
-      else if ("Dream Within A Dream" == actionMatch.groups.actionName) {
-        removeIcon("dreamwithinadream");
-        addCountdown({name: "dreamwithinadream", time: recast.dreamwithinadream, oncomplete: "addIcon"});
-        addStatus("assassinateready");
-      }
-
-      else if ("Hellfrog Medium" == actionMatch.groups.actionName) {
-        if (Date.now() - previous.hellfrogmedium > 1000) {
-          previous.hellfrogmedium = Date.now()
+        if (Date.now() - previous.hakkemujinsatsu > 1000) {
+          previous.hakkemujinsatsu = Date.now()
           count.targets = 1;
+          ninCombo();
         }
         else {
           count.targets = count.targets + 1;
         }
-        ninNinki();
       }
 
-      else if ("Bhavacakra" == actionMatch.groups.actionName) {
-        count.targets = 1;
-        ninNinki();
+      else {
+        ninCombo();
       }
 
-      else if ("Ten Chi Jin" == actionMatch.groups.actionName) {
-        removeIcon("tenchijin");
-        addStatus("tenchijin");
-        addCountdown({name: "tenchijin"});
-        addRecast("ninjutsu", -1);
-        addCountdown({name: "ninjutsu", time: -1});
-        clearTimeout(timeout.ninjutsu);
+      // Recalculate optimal Ninjutsu after every GCD
+      if (checkRecast("ninjutsu") < 1000) {
         ninNinjutsu();
       }
 
-      else if ("Meisui" == actionMatch.groups.actionName) {
-        addCountdown({name: "meisui"});
+      // Check Ninki after all GCD actions
+      if (player.level >= 62) {
         ninNinki();
       }
-
-      else { // Weaponskills and combos (hopefully)
-
-        if (actionMatch.groups.actionName == "Spinning Edge"
-        && actionMatch.groups.result.length >= 2) {
-
-          if ([1, 2, 3].indexOf(next.combo) == -1) {
-            if (player.level >= 38
-            && checkStatus("shadowfang", target.ID) < 9000) {
-              ninShadowFangCombo();
-            }
-            else if (player.level >= 54
-            && player.jobDetail.hutonMilliseconds > 6000
-            && player.jobDetail.hutonMilliseconds < 46000) {
-              ninArmorCrushCombo();
-            }
-            else {
-              ninAeolianEdgeCombo();
-            }
-          }
-          removeIcon("spinningedge");
-          toggle.combo = Date.now();
-        }
-
-        else if ("Gust Slash" == actionMatch.groups.actionName
-        && actionMatch.groups.result.length >= 8) {
-
-          if ([1, 2].indexOf(next.combo) == -1) {
-            if (player.level >= 54
-            && player.jobDetail.hutonMilliseconds > 6000
-            && player.jobDetail.hutonMilliseconds < 46000) {
-              ninArmorCrushCombo();
-            }
-            else {
-              ninAeolianEdgeCombo();
-            }
-          }
-          removeIcon("spinningedge");
-          removeIcon("gustslash");
-
-          if (player.level < 26) {
-            ninCombo();
-          }
-        }
-
-        else if ("Shadow Fang" == actionMatch.groups.actionName
-        && actionMatch.groups.result.length >= 8) {
-          addStatus("shadowfang", duration.shadowfang, actionMatch.groups.targetID);
-          ninCombo();
-        }
-
-        else if ("Death Blossom" == actionMatch.groups.actionName
-        && actionMatch.groups.result.length >= 2) {
-
-          if (Date.now() - previous.deathblossom > 1000) {
-            previous.deathblossom = Date.now()
-            count.targets = 1;
-            if (next.combo != 4) {
-              ninHakkeMujinsatsuCombo();
-            }
-            removeIcon("deathblossom");
-            if (player.level < 52) {
-              ninCombo();
-            }
-          }
-          else {
-            count.targets = count.targets + 1;
-          }
-        }
-
-        else if ("Hakke Mujinsatsu" == actionMatch.groups.actionName
-        && actionMatch.groups.result.length == 8) {
-
-          if (Date.now() - previous.hakkemujinsatsu > 1000) {
-            previous.hakkemujinsatsu = Date.now()
-            count.targets = 1;
-            ninCombo();
-          }
-          else {
-            count.targets = count.targets + 1;
-          }
-        }
-
-        else {
-          ninCombo();
-        }
-
-        // Recalculate optimal Ninjutsu after every GCD
-        if (checkRecast("ninjutsu") < 1000) {
-          ninNinjutsu();
-        }
-
-        // Check Ninki after all GCD actions
-        if (player.level >= 62) {
-          ninNinki();
-        }
-      }
     }
+  }
 }
 
 function ninStatus() {
 
-  if (effectLog.groups.targetID == player.ID) {
+  if (statusLog.groups.targetID == player.ID) {
 
-    if ("Mudra" == effectLog.groups.effectName) {
-      if ("gains" == effectLog.groups.gainsLoses) {
+    if ("Mudra" == statusLog.groups.statusName) {
+      if ("gains" == statusLog.groups.gainsLoses) {
         removeCountdownBar("ninjutsu");
       }
-      else if ("loses" == effectLog.groups.gainsLoses) {
+      else if ("loses" == statusLog.groups.gainsLoses) {
         removeIcon("ninjutsu1");
         removeIcon("ninjutsu2");
         removeIcon("ninjutsu3");
@@ -641,18 +655,18 @@ function ninStatus() {
       }
     }
 
-    // else if ("Doton" == effectLog.groups.effectName) {
-    //   if ("gains" == effectLog.groups.gainsLoses) {
-    //     addStatus("doton", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
+    // else if ("Doton" == statusLog.groups.statusName) {
+    //   if ("gains" == statusLog.groups.gainsLoses) {
+    //     addStatus("doton", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
     //   }
-    //   else if ("loses" == effectLog.groups.gainsLoses) {
-    //     removeStatus("doton", effectLog.groups.targetID);
+    //   else if ("loses" == statusLog.groups.gainsLoses) {
+    //     removeStatus("doton", statusLog.groups.targetID);
     //   }
     // }
 
-    else if ("Suiton" == effectLog.groups.effectName) {
-      if ("gains" == effectLog.groups.gainsLoses) {
-        addStatus("suiton", parseInt(effectLog.groups.effectDuration) * 1000);
+    else if ("Suiton" == statusLog.groups.statusName) {
+      if ("gains" == statusLog.groups.gainsLoses) {
+        addStatus("suiton", parseInt(statusLog.groups.effectDuration) * 1000);
         if (checkStatus("suiton") > checkRecast("trickattack")) {
 
         }
@@ -660,51 +674,51 @@ function ninStatus() {
 
         }
       }
-      else if ("loses" == effectLog.groups.gainsLoses) {
-        removeStatus("suiton", effectLog.groups.targetID);
+      else if ("loses" == statusLog.groups.gainsLoses) {
+        removeStatus("suiton", statusLog.groups.targetID);
       }
     }
 
-    else if ("Kassatsu" == effectLog.groups.effectName) {
-      if ("gains" == effectLog.groups.gainsLoses) {
-        addStatus("kassatsu", parseInt(effectLog.groups.effectDuration) * 1000);
+    else if ("Kassatsu" == statusLog.groups.statusName) {
+      if ("gains" == statusLog.groups.gainsLoses) {
+        addStatus("kassatsu", parseInt(statusLog.groups.effectDuration) * 1000);
         if (player.level >= 76) {
           icon.katon = icon.gokamekkyaku;
           icon.raiton = icon.hyoshoranyu;  // This isn't how it really upgrades, but  this happens in practice
           icon.hyoton = icon.hyoshoranyu;  // Just in case for later
         }
       }
-      else if ("loses" == effectLog.groups.gainsLoses) {
+      else if ("loses" == statusLog.groups.gainsLoses) {
         removeStatus("kassatsu");
         icon.katon = "002908";
         icon.raiton = "002912";
         icon.hyoton = "002909";
-        // addRecast("ninjutsu", effectLog.groups.targetID, recast.ninjutsu);
+        // addRecast("ninjutsu", statusLog.groups.targetID, recast.ninjutsu);
         // clearTimeout(timeout.ninjutsu);
         // timeout.ninjutsu = setTimeout(ninNinjutsu, recast.ninjutsu - 1000);
       }
     }
 
-    else if ("Ten Chi Jin" == effectLog.groups.effectName) {
-      if ("gains" == effectLog.groups.gainsLoses) {
-        addStatus("tenchijin", parseInt(effectLog.groups.effectDuration) * 1000);
+    else if ("Ten Chi Jin" == statusLog.groups.statusName) {
+      if ("gains" == statusLog.groups.gainsLoses) {
+        addStatus("tenchijin", parseInt(statusLog.groups.effectDuration) * 1000);
       }
-      else if ("loses" == effectLog.groups.gainsLoses) {
+      else if ("loses" == statusLog.groups.gainsLoses) {
         ninLosesMudra()
       }
     }
   }
 
   else {
-    if ("Shadow Fang" == effectLog.groups.effectName) {
-      if ("gains" == effectLog.groups.gainsLoses) {
-        addStatus("shadowfang", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
-        if (target.ID == effectLog.groups.targetID) {  // Might be possible to switch targets between application to target and log entry
+    if ("Shadow Fang" == statusLog.groups.statusName) {
+      if ("gains" == statusLog.groups.gainsLoses) {
+        addStatus("shadowfang", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
+        if (target.ID == statusLog.groups.targetID) {  // Might be possible to switch targets between application to target and log entry
           addCountdown({name: "shadowfang", time: checkStatus("shadowfang"), text: target.ID});
         }
       }
-      else if ("loses" == effectLog.groups.gainsLoses) {
-        removeStatus("shadowfang", effectLog.groups.targetID);
+      else if ("loses" == statusLog.groups.gainsLoses) {
+        removeStatus("shadowfang", statusLog.groups.targetID);
       }
     }
   }

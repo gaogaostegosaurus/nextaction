@@ -307,16 +307,16 @@ function dncAction() {
 
 function dncStatus() {
 
-  if (effectLog.groups.targetID == player.ID) {
+  if (statusLog.groups.targetID == player.ID) {
 
-    if ("Flourishing Cascade" == effectLog.groups.effectName) {
-      if (effectLog.groups.gainsLoses == "gains") {
+    if ("Flourishing Cascade" == statusLog.groups.statusName) {
+      if (statusLog.groups.gainsLoses == "gains") {
         addIcon({name: "reversecascade"});
-        // addCountdownBar({name: "reversecascade", time: parseInt(effectLog.groups.effectDuration) * 1000});
-        addStatus("flourishingcascade", player.ID, parseInt(effectLog.groups.effectDuration) * 1000);
+        // addCountdownBar({name: "reversecascade", time: parseInt(statusLog.groups.effectDuration) * 1000});
+        addStatus("flourishingcascade", player.ID, parseInt(statusLog.groups.effectDuration) * 1000);
         dncFlourishCheck();
       }
-      else if (effectLog.groups.gainsLoses == "loses") {
+      else if (statusLog.groups.gainsLoses == "loses") {
         removeIcon("reversecascade");
         // removeCountdownBar("reversecascade");
         removeStatus("flourishingcascade");
@@ -324,14 +324,14 @@ function dncStatus() {
       }
     }
 
-    else if ("Flourishing Fountain" == effectLog.groups.effectName) {
-      if (effectLog.groups.gainsLoses == "gains") {
+    else if ("Flourishing Fountain" == statusLog.groups.statusName) {
+      if (statusLog.groups.gainsLoses == "gains") {
         addIcon({name: "fountainfall"});
-        // addCountdownBar({name: "fountainfall", time: parseInt(effectLog.groups.effectDuration) * 1000});
-        addStatus("flourishingfountain", parseInt(effectLog.groups.effectDuration) * 1000);
+        // addCountdownBar({name: "fountainfall", time: parseInt(statusLog.groups.effectDuration) * 1000});
+        addStatus("flourishingfountain", parseInt(statusLog.groups.effectDuration) * 1000);
         dncFlourishCheck();
       }
-      else if (effectLog.groups.gainsLoses == "loses") {
+      else if (statusLog.groups.gainsLoses == "loses") {
         removeIcon("fountainfall");
         // removeCountdownBar("fountainfall");
         removeStatus("flourishingfountain");
@@ -339,14 +339,14 @@ function dncStatus() {
       }
     }
 
-    else if ("Flourishing Windmill" == effectLog.groups.effectName) {
-      if (effectLog.groups.gainsLoses == "gains") {
+    else if ("Flourishing Windmill" == statusLog.groups.statusName) {
+      if (statusLog.groups.gainsLoses == "gains") {
         addIcon({name: "risingwindmill"});
-        // addCountdownBar({name: "risingwindmill", time: parseInt(effectLog.groups.effectDuration) * 1000});
-        addStatus("flourishingwindmill", parseInt(effectLog.groups.effectDuration) * 1000);
+        // addCountdownBar({name: "risingwindmill", time: parseInt(statusLog.groups.effectDuration) * 1000});
+        addStatus("flourishingwindmill", parseInt(statusLog.groups.effectDuration) * 1000);
         dncFlourishCheck();
       }
-      else if (effectLog.groups.gainsLoses == "loses") {
+      else if (statusLog.groups.gainsLoses == "loses") {
         removeIcon("risingwindmill");
         // removeCountdownBar("risingwindmill");
         removeStatus("flourishingwindmill");
@@ -354,14 +354,14 @@ function dncStatus() {
       }
     }
 
-    else if ("Flourishing Shower" == effectLog.groups.effectName) {
-      if (effectLog.groups.gainsLoses == "gains") {
+    else if ("Flourishing Shower" == statusLog.groups.statusName) {
+      if (statusLog.groups.gainsLoses == "gains") {
         addIcon({name: "bloodshower"});
-        // addCountdownBar({name: "bloodshower", time: parseInt(effectLog.groups.effectDuration) * 1000});
-        addStatus("flourishingshower", parseInt(effectLog.groups.effectDuration) * 1000);
+        // addCountdownBar({name: "bloodshower", time: parseInt(statusLog.groups.effectDuration) * 1000});
+        addStatus("flourishingshower", parseInt(statusLog.groups.effectDuration) * 1000);
         dncFlourishCheck();
       }
-      else if (effectLog.groups.gainsLoses == "loses") {
+      else if (statusLog.groups.gainsLoses == "loses") {
         removeIcon("bloodshower");
         // removeCountdownBar("bloodshower");
         removeStatus("flourishingshower");
@@ -369,14 +369,14 @@ function dncStatus() {
       }
     }
 
-    else if ("Flourishing Fan Dance" == effectLog.groups.effectName) {
-      if (effectLog.groups.gainsLoses == "gains") {
+    else if ("Flourishing Fan Dance" == statusLog.groups.statusName) {
+      if (statusLog.groups.gainsLoses == "gains") {
         addIcon({name: "fandance3"});
-        // addCountdownBar({name: "fandance3", time: parseInt(effectLog.groups.effectDuration) * 1000});
-        addStatus("flourishingfandance", parseInt(effectLog.groups.effectDuration) * 1000);
+        // addCountdownBar({name: "fandance3", time: parseInt(statusLog.groups.effectDuration) * 1000});
+        addStatus("flourishingfandance", parseInt(statusLog.groups.effectDuration) * 1000);
         dncFlourishCheck();
       }
-      else if (effectLog.groups.gainsLoses == "loses") {
+      else if (statusLog.groups.gainsLoses == "loses") {
         removeIcon("fandance3");
         // removeCountdownBar("fandance3");
         removeStatus("flourishingfandance");
@@ -384,38 +384,38 @@ function dncStatus() {
       }
     }
 
-    else if ("Standard Step" == effectLog.groups.effectName) {
-      if (effectLog.groups.gainsLoses == "gains") {
-        addStatus("standardstep", parseInt(effectLog.groups.effectDuration) * 1000);
+    else if ("Standard Step" == statusLog.groups.statusName) {
+      if (statusLog.groups.gainsLoses == "gains") {
+        addStatus("standardstep", parseInt(statusLog.groups.effectDuration) * 1000);
       }
-      else if (effectLog.groups.gainsLoses == "loses") {
+      else if (statusLog.groups.gainsLoses == "loses") {
         removeStatus("standardstep");
       }
     }
 
-    else if ("Standard Finish" == effectLog.groups.effectName) {
-      if (effectLog.groups.gainsLoses == "gains") {
-        addStatus("standardfinish", parseInt(effectLog.groups.effectDuration) * 1000);
+    else if ("Standard Finish" == statusLog.groups.statusName) {
+      if (statusLog.groups.gainsLoses == "gains") {
+        addStatus("standardfinish", parseInt(statusLog.groups.effectDuration) * 1000);
       }
-      else if (effectLog.groups.gainsLoses == "loses") {
+      else if (statusLog.groups.gainsLoses == "loses") {
         removeStatus("standardfinish");
       }
     }
 
-    else if ("Technical Step" == effectLog.groups.effectName) {
-      if (effectLog.groups.gainsLoses == "gains") {
-        addStatus("technicalstep", parseInt(effectLog.groups.effectDuration) * 1000);
+    else if ("Technical Step" == statusLog.groups.statusName) {
+      if (statusLog.groups.gainsLoses == "gains") {
+        addStatus("technicalstep", parseInt(statusLog.groups.effectDuration) * 1000);
       }
-      else if (effectLog.groups.gainsLoses == "loses") {
+      else if (statusLog.groups.gainsLoses == "loses") {
         removeStatus("technicalstep");
       }
     }
 
-    else if ("Technical Finish" == effectLog.groups.effectName) {
-      if (effectLog.groups.gainsLoses == "gains") {
-        addStatus("technicalfinish", parseInt(effectLog.groups.effectDuration) * 1000);
+    else if ("Technical Finish" == statusLog.groups.statusName) {
+      if (statusLog.groups.gainsLoses == "gains") {
+        addStatus("technicalfinish", parseInt(statusLog.groups.effectDuration) * 1000);
       }
-      else if (effectLog.groups.gainsLoses == "loses") {
+      else if (statusLog.groups.gainsLoses == "loses") {
         removeStatus("technicalfinish");
       }
     }

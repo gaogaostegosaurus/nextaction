@@ -384,26 +384,26 @@ function brdAction() {
 
 function brdStatus() {
 
-  if (effectLog.groups.targetID == player.ID) {
+  if (statusLog.groups.targetID == player.ID) {
 
-    if (effectLog.groups.effectName == "Straight Shot Ready") {
-      if (effectLog.groups.gainsLoses == "gains") {
-        addStatus("straightshotready", parseInt(effectLog.groups.effectDuration) * 1000);
+    if (statusLog.groups.statusName == "Straight Shot Ready") {
+      if (statusLog.groups.gainsLoses == "gains") {
+        addStatus("straightshotready", parseInt(statusLog.groups.effectDuration) * 1000);
         addIcon({name: "straightshot"});
         // removeIcon("barrage");
       }
-      else if (effectLog.groups.gainsLoses == "loses") {
+      else if (statusLog.groups.gainsLoses == "loses") {
         removeStatus("straightshotready");
         removeIcon("straightshot");
         // addIconBlinkTimeout("barrage", checkRecast("barrage"), nextid.barrage, icon.barrage);
       }
     }
 
-    else if (effectLog.groups.effectName == "Raging Strikes") {
-      if (effectLog.groups.gainsLoses == "gains") {
-        addStatus("ragingstrikes", parseInt(effectLog.groups.effectDuration) * 1000);
+    else if (statusLog.groups.statusName == "Raging Strikes") {
+      if (statusLog.groups.gainsLoses == "gains") {
+        addStatus("ragingstrikes", parseInt(statusLog.groups.effectDuration) * 1000);
       }
-      else if (effectLog.groups.gainsLoses == "loses") {
+      else if (statusLog.groups.gainsLoses == "loses") {
         removeStatus("ragingstrikes");
       }
     }
@@ -411,10 +411,10 @@ function brdStatus() {
 
   else {
 
-    if (["Venomous Bite", "Caustic Bite"].indexOf(effectLog.groups.effectName) > -1) {
-      if (effectLog.groups.gainsLoses == "gains") {
-        addStatus("venomousbite", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
-        if (target.ID == effectLog.groups.targetID) {  // Might be possible to switch targets during this
+    if (["Venomous Bite", "Caustic Bite"].indexOf(statusLog.groups.statusName) > -1) {
+      if (statusLog.groups.gainsLoses == "gains") {
+        addStatus("venomousbite", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
+        if (target.ID == statusLog.groups.targetID) {  // Might be possible to switch targets during this
           if (player.level >= 54
           && checkStatus("windbite", target.ID) > 0) {
             removeCountdownBar("venomousbite");
@@ -428,7 +428,7 @@ function brdStatus() {
           }
         }
       }
-      else if (effectLog.groups.gainsLoses == "loses") {
+      else if (statusLog.groups.gainsLoses == "loses") {
         removeIcon("ironjaws");
         removeCountdownBar("ironjaws");
         addCountdownBar({name: "venomousbite", time: checkStatus("venomousbite", target.ID), oncomplete: "addIcon"});
@@ -436,10 +436,10 @@ function brdStatus() {
       }
     }
 
-    else if (["Windbite", "Stormbite"].indexOf(effectLog.groups.effectName) > -1) {
-      if (effectLog.groups.gainsLoses == "gains") {
-        addStatus("windbite", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
-        if (target.ID == effectLog.groups.targetID) {  // Might be possible to switch targets during this
+    else if (["Windbite", "Stormbite"].indexOf(statusLog.groups.statusName) > -1) {
+      if (statusLog.groups.gainsLoses == "gains") {
+        addStatus("windbite", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
+        if (target.ID == statusLog.groups.targetID) {  // Might be possible to switch targets during this
           if (player.level >= 54
           && checkStatus("venomousbite", target.ID) > 0) {
             removeCountdownBar("venomousbite");
@@ -454,7 +454,7 @@ function brdStatus() {
           }
         }
       }
-      else if (effectLog.groups.gainsLoses == "loses") {
+      else if (statusLog.groups.gainsLoses == "loses") {
         removeIcon("ironjaws");
         removeCountdownBar("ironjaws");
         addCountdownBar({name: "venomousbite", time: checkStatus("venomousbite", target.ID), oncomplete: "addIcon"});

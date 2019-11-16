@@ -13,7 +13,7 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
 
   const statsRegExp = new RegExp(' 0C:Player Stats: (?<jobID>[\\d]+):(?<strength>[\\d]+):(?<dexterity>[\\d]+):(?<vitality>[\\d]+):(?<intelligence>[\\d]+):(?<mind>[\\d]+):(?<piety>[\\d]+):(?<attackPower>[\\d]+):(?<directHitRate>[\\d]+):(?<criticalHit>[\\d]):(?<attackMagicPotency>[\\d]+):(?<healingMagicPotency>[\\d]+):(?<determination>[\\d]+):(?<skillSpeed>[\\d]+):(?<spellSpeed>[\\d]+):0:(?<tenacity>[\\d]+)');
   const actionRegExp = new RegExp(` (?<logType>1[56]):(?<sourceID>${player.ID}):(?<sourceName>${player.name}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${actionList}):(?<targetID>[\\dA-F]{8}):(?<targetName>[ -~]+?):(?<result>[\\dA-F]{1,8}):`);
-  const statusRegExp = new RegExp(` (?<logType>1[AE]):(?<targetID>[\\dA-F]{8}):(?<targetName>[ -~]+?) (?<gainsLoses>gains|loses) the effect of (?<effectName>${statusList}) from (?<sourceName>${player.name})(?: for )?(?<effectDuration>\\d*\\.\\d*)?(?: Seconds)?\\.`);
+  const statusRegExp = new RegExp(` (?<logType>1[AE]):(?<targetID>[\\dA-F]{8}):(?<targetName>[ -~]+?) (?<gainsLoses>gains|loses) the effect of (?<statusName>${statusList}) from (?<sourceName>${player.name})(?: for )?(?<statusDuration>\\d*\\.\\d*)?(?: Seconds)?\\.`);
   const castingRegExp = new RegExp(` 14:(?<actionID>[\\dA-F]{1,4}):(?<sourceName>${player.name}) starts using (?<actionName>${castingList}) on (?<targetName>[ -~]+?)\\.`);
   const cancelRegExp = new RegExp(` 17:(?<sourceID>[\\dA-F]{8}):(?<sourceName>${player.name}):(?<actionID>[\\dA-F]{1,4}):(?<actionName>${castingList}):Cancelled:`);
   const l = e.detail.logs.length;
@@ -88,6 +88,11 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
         // whmStatus();
       }
     } else if (castingMatch) {
+      // Display next if casting with an NPC target
+      if (target.ID.startsWith('4')) { // 0 = no target, 1... = player? E... = non-combat NPC?
+        document.getElementById('nextdiv').className = 'next next-show';
+      }
+
       if (player.job === 'BLM') {
         // blmStartsUsing();
       } else if (player.job === 'RDM') {

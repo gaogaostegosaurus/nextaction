@@ -1,3 +1,18 @@
+
+const getArrayColumn = ({
+  array,
+} = {}) => {
+  // Associate array with row
+  let row = 'countdown-a';
+  if (array === countdownArrayB) {
+    row = 'countdown-b';
+  } else if (array === countdownArrayC) {
+    row = 'countdown-c';
+  }
+  return row;
+};
+
+
 const removeOldCountdowns = ({
   column,
 } = {}) => {
@@ -12,12 +27,12 @@ const removeOldCountdowns = ({
 
 const addCountdown = ({
   name,
-  img = name,
+  property = name.replace(/[\s'-]/g, '').toLowerCase(),
   time = checkRecast({ name }),
   countdownArray = countdownArrayA,
   order = 10,
   onComplete = 'showText',
-  array = actionArray,
+  array = iconArrayB,
   text = 'READY',
 } = {}) => {
   // For some reason the time is slightly off... might not be much to be done about it
@@ -33,7 +48,7 @@ const addCountdown = ({
 
   removeOldCountdowns({ column });
 
-  const matchIndex = countdownArray.findIndex((action) => action.name === name);
+  const matchIndex = countdownArray.findIndex((entry) => entry.name === name);
   if (matchIndex > -1) {
     countdownArray.splice(matchIndex, 1);
   }
@@ -52,7 +67,7 @@ const addCountdown = ({
   const countdownOverlay = document.createElement('img');
 
   // Place into array and sort
-  countdownArray.push({ name, img, order });
+  countdownArray.push({ name, property, order });
   countdownArray.sort((a, b) => a.order - b.order);
 
   // Place into div with order
@@ -61,7 +76,7 @@ const addCountdown = ({
   countdownDiv.style.order = time;
   countdownImgDiv.className = 'smalliconimgdiv';
   countdownImg.className = 'smalliconimg';
-  countdownImg.src = `img/icon/${icon[img]}.png`;
+  countdownImg.src = `img/icon/${icon[property]}.png`;
   countdownOverlay.className = 'smalliconoverlay';
   countdownOverlay.src = 'img/icon/overlay.png';
   countdownBar.className = 'countdownbar';
@@ -76,30 +91,30 @@ const addCountdown = ({
   countdownDiv.className = 'countdown countdown-show';
 
   let displayTime = time;
-  let actionAdded = 0; // Prevent from being added multiple times
+  let iconAdded = 0; // Prevent from being added multiple times
 
-  clearInterval(interval[name]);
+  clearInterval(interval[property]);
 
   // Countdown animation function starts here
-  interval[name] = setInterval(() => {
+  interval[property] = setInterval(() => {
     // Div removal
     if (displayTime <= 0) {
       // Cleanup at 0
       if (onComplete.includes('removeCountdown')) {
         countdownDiv.className = 'countdown countdown-hide';
       }
-      if (onComplete.includes('addAction') && actionAdded === 0) {
+      if (onComplete.includes('addIcon') && iconAdded === 0) {
         // Show icons a little bit early
-        addAction({ name, array, order });
-        actionAdded = 1;
+        addIcon({ name, array, order });
+        iconAdded = 1;
       }
       countdownBar.style.width = '0px';
-      clearInterval(interval[name]);
+      clearInterval(interval[property]);
     } else if (displayTime < 1000) {
       // Show icons a little bit early
-      if (onComplete.includes('addAction') && actionAdded === 0) {
-        addAction({ name, array, order });
-        actionAdded = 1;
+      if (onComplete.includes('addIcon') && iconAdded === 0) {
+        addIcon({ name, array, order });
+        iconAdded = 1;
       }
     }
 
@@ -144,22 +159,24 @@ const addCountdown = ({
 
 const stopCountdown = ({
   name,
+  property = name.replace(/[\s'-]/g, '').toLowerCase(),
 } = {}) => {
-  clearInterval(interval[name]);
+  clearInterval(interval[property]);
 };
 
 const removeCountdown = ({
   name,
+  property = name.replace(/[\s'-]/g, '').toLowerCase(),
   countdownArray = countdownArrayA,
 } = {}) => {
   let column = 'countdown-a';
   if (countdownArray === countdownArrayB) {
     column = 'countdown-b';
   }
-  const removeTarget = countdownArray.findIndex((action) => action.name === name);
+  const removeTarget = countdownArray.findIndex((entry) => entry.name === name);
   if (removeTarget > -1) {
     countdownArray.splice(removeTarget, 1);
     document.getElementById(column).children[removeTarget].className = 'countdown countdown-hide';
   }
-  clearInterval(interval[name]);
+  clearInterval(interval[property]);
 };

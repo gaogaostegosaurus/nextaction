@@ -284,69 +284,69 @@ function samStatus() {
 
   // To anyone from anyone (non-stacking)
 
-  if (effectLog.groups.effectName == "Slashing Resistance Down") {
-    if (effectLog.groups.gainsLoses == "gains") {
+  if (statusLog.groups.statusName == "Slashing Resistance Down") {
+    if (statusLog.groups.gainsLoses == "gains") {
     }
-    else if (effectLog.groups.gainsLoses == "loses") {
+    else if (statusLog.groups.gainsLoses == "loses") {
     }
   }
 
   // To player from anyone
 
-  else if (effectLog.groups.targetID == player.ID) {
+  else if (statusLog.groups.targetID == player.ID) {
 
-    if (effectLog.groups.effectName == "Jinpu") {
-      if (effectLog.groups.gainsLoses == "gains") {
-        addStatus("jinpu", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
+    if (statusLog.groups.statusName == "Jinpu") {
+      if (statusLog.groups.gainsLoses == "gains") {
+        addStatus("jinpu", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
       }
-      else if (effectLog.groups.gainsLoses == "loses") {
-        removeStatus("jinpu", effectLog.groups.targetID);
+      else if (statusLog.groups.gainsLoses == "loses") {
+        removeStatus("jinpu", statusLog.groups.targetID);
       }
     }
 
-    else if (effectLog.groups.effectName == "Open Eyes") {
-      if (effectLog.groups.gainsLoses == "gains") {
-        addStatus("openeyes", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
+    else if (statusLog.groups.statusName == "Open Eyes") {
+      if (statusLog.groups.gainsLoses == "gains") {
+        addStatus("openeyes", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
       }
-      else if (effectLog.groups.gainsLoses == "loses") {
-        removeStatus("openeyes", effectLog.groups.targetID);
-      }
-    }
-
-    else if (effectLog.groups.effectName == "Shifu") {
-      if (effectLog.groups.gainsLoses == "gains") {
-        addStatus("shifu", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
-      }
-      else if (effectLog.groups.gainsLoses == "loses") {
-        removeStatus("shifu", effectLog.groups.targetID);
+      else if (statusLog.groups.gainsLoses == "loses") {
+        removeStatus("openeyes", statusLog.groups.targetID);
       }
     }
 
-    else if (effectLog.groups.effectName == "Meikyo Shisui") {
-      if (effectLog.groups.gainsLoses == "gains") {
-        addStatus("meikyoshisui", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
+    else if (statusLog.groups.statusName == "Shifu") {
+      if (statusLog.groups.gainsLoses == "gains") {
+        addStatus("shifu", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
       }
-      else if (effectLog.groups.gainsLoses == "loses") {
-        removeStatus("meikyoshisui", effectLog.groups.targetID);
+      else if (statusLog.groups.gainsLoses == "loses") {
+        removeStatus("shifu", statusLog.groups.targetID);
+      }
+    }
+
+    else if (statusLog.groups.statusName == "Meikyo Shisui") {
+      if (statusLog.groups.gainsLoses == "gains") {
+        addStatus("meikyoshisui", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
+      }
+      else if (statusLog.groups.gainsLoses == "loses") {
+        removeStatus("meikyoshisui", statusLog.groups.targetID);
         samCombo();
       }
     }
 
-    else if (effectLog.groups.effectName == "Hissatsu: Kaiten") {
-      if (effectLog.groups.gainsLoses == "gains") {
-        addStatus("kaiten", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
+    else if (statusLog.groups.statusName == "Hissatsu: Kaiten") {
+      if (statusLog.groups.gainsLoses == "gains") {
+        addStatus("kaiten", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
       }
-      else if (effectLog.groups.gainsLoses == "loses") {
-        removeStatus("kaiten", effectLog.groups.targetID);
+      else if (statusLog.groups.gainsLoses == "loses") {
+        removeStatus("kaiten", statusLog.groups.targetID);
       }
     }
 
-    else if (effectLog.groups.effectName == "Meditate") {
-      if (effectLog.groups.gainsLoses == "gains") {
-        addStatus("meditate", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
+    else if (statusLog.groups.statusName == "Meditate") {
+      if (statusLog.groups.gainsLoses == "gains") {
+        addStatus("meditate", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
       }
-      else if (effectLog.groups.gainsLoses == "loses") {
-        removeStatus("meditate", effectLog.groups.targetID);
+      else if (statusLog.groups.gainsLoses == "loses") {
+        removeStatus("meditate", statusLog.groups.targetID);
         samKenki();
       }
     }
@@ -354,14 +354,14 @@ function samStatus() {
 
   // To NOT player from player
 
-  else if (effectLog.groups.sourceName == player.name) {
+  else if (statusLog.groups.sourceName == player.name) {
 
-    if (effectLog.groups.effectName == "Higanbana") {
-      if (effectLog.groups.gainsLoses == "gains") {
-        addStatus("higanbana", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
+    if (statusLog.groups.statusName == "Higanbana") {
+      if (statusLog.groups.gainsLoses == "gains") {
+        addStatus("higanbana", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
       }
-      else if (effectLog.groups.gainsLoses == "loses") {
-        removeStatus("higanbana", effectLog.groups.targetID);
+      else if (statusLog.groups.gainsLoses == "loses") {
+        removeStatus("higanbana", statusLog.groups.targetID);
       }
     }
   }

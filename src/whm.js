@@ -207,55 +207,55 @@ function whmAction() {
 
 function whmStatus() {
 
-  if (effectLog.groups.effectName == "Freecure") {
-    if (effectLog.groups.gainsLoses == "gains") {
-      addStatus("freecure", parseInt(effectLog.groups.effectDuration) * 1000);
+  if (statusLog.groups.statusName == "Freecure") {
+    if (statusLog.groups.gainsLoses == "gains") {
+      addStatus("freecure", parseInt(statusLog.groups.effectDuration) * 1000);
       addIcon({name: "freecure"});
     }
-    else if (effectLog.groups.gainsLoses == "loses") {
+    else if (statusLog.groups.gainsLoses == "loses") {
       removeStatus("freecure");
       removeIcon("freecure");
     }
   }
 
-  else if (effectLog.groups.effectName == "Lucid Dreaming") {
-    if (effectLog.groups.gainsLoses == "gains") {
-      addStatus("luciddreaming", parseInt(effectLog.groups.effectDuration) * 1000);
+  else if (statusLog.groups.statusName == "Lucid Dreaming") {
+    if (statusLog.groups.gainsLoses == "gains") {
+      addStatus("luciddreaming", parseInt(statusLog.groups.effectDuration) * 1000);
     }
-    else if (effectLog.groups.gainsLoses == "loses") {
+    else if (statusLog.groups.gainsLoses == "loses") {
       removeStatus("luciddreaming");
     }
   }
 
-  else if (effectLog.groups.effectName == "Regen") {
-    if (effectLog.groups.gainsLoses == "gains") {
-      addStatus("regen", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
+  else if (statusLog.groups.statusName == "Regen") {
+    if (statusLog.groups.gainsLoses == "gains") {
+      addStatus("regen", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
       removeIcon("regen");
-      if (target.ID == effectLog.groups.targetID
+      if (target.ID == statusLog.groups.targetID
       && ["PLD", "WAR", "DRK", "GNB"].indexOf(target.job) > -1) {
         addCountdownBar({name: "regen", time: checkStatus("regen", target.ID), oncomplete: "addIcon"});
       }
     }
-    else if (effectLog.groups.gainsLoses == "loses") {
-      removeStatus("regen", effectLog.groups.targetID);
-      if (target.ID == effectLog.groups.targetID
+    else if (statusLog.groups.gainsLoses == "loses") {
+      removeStatus("regen", statusLog.groups.targetID);
+      if (target.ID == statusLog.groups.targetID
       && ["PLD", "WAR", "DRK", "GNB"].indexOf(target.job) > -1) {
         addIcon({name: "regen"});
       }
     }
   }
 
-  else if (["Aero", "Aero II", "Dia"].indexOf(effectLog.groups.effectName) > -1) {
-    if (effectLog.groups.gainsLoses == "gains") {
-      addStatus("aero", parseInt(effectLog.groups.effectDuration) * 1000, effectLog.groups.targetID);
+  else if (["Aero", "Aero II", "Dia"].indexOf(statusLog.groups.statusName) > -1) {
+    if (statusLog.groups.gainsLoses == "gains") {
+      addStatus("aero", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
       removeIcon("aero");
-      if (target.ID == effectLog.groups.targetID) {
+      if (target.ID == statusLog.groups.targetID) {
         addCountdownBar({name: "aero", time: checkStatus("aero", target.ID), oncomplete: "addIcon"});
       }
     }
-    else if (effectLog.groups.gainsLoses == "loses") {
-      removeStatus("aero", effectLog.groups.targetID);
-      if (target.ID == effectLog.groups.targetID) {
+    else if (statusLog.groups.gainsLoses == "loses") {
+      removeStatus("aero", statusLog.groups.targetID);
+      if (target.ID == statusLog.groups.targetID) {
         addIcon({name: "aero"});
       }
     }
