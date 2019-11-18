@@ -1,15 +1,15 @@
 
 const getArrayColumn = ({
-  array,
+  countdownArray,
 } = {}) => {
   // Associate array with row
-  let row = 'countdown-a';
-  if (array === countdownArrayB) {
-    row = 'countdown-b';
-  } else if (array === countdownArrayC) {
-    row = 'countdown-c';
+  let columnID = 'countdown-a';
+  if (countdownArray === countdownArrayB) {
+    columnID = 'countdown-b';
+  } else if (countdownArray === countdownArrayC) {
+    columnID = 'countdown-c';
   }
-  return row;
+  return columnID;
 };
 
 
@@ -32,7 +32,7 @@ const addCountdown = ({
   countdownArray = countdownArrayA,
   order = 10,
   onComplete = 'showText',
-  array = iconArrayB,
+  iconArray = iconArrayB,
   text = 'READY',
 } = {}) => {
   // For some reason the time is slightly off... might not be much to be done about it
@@ -105,7 +105,7 @@ const addCountdown = ({
       }
       if (onComplete.includes('addIcon') && iconAdded === 0) {
         // Show icons a little bit early
-        addIcon({ name, array, order });
+        addIcon({ name, iconArray, order });
         iconAdded = 1;
       }
       countdownBar.style.width = '0px';
@@ -113,7 +113,7 @@ const addCountdown = ({
     } else if (displayTime < 1000) {
       // Show icons a little bit early
       if (onComplete.includes('addIcon') && iconAdded === 0) {
-        addIcon({ name, array, order });
+        addIcon({ name, iconArray, order });
         iconAdded = 1;
       }
     }
@@ -164,19 +164,26 @@ const stopCountdown = ({
   clearInterval(interval[property]);
 };
 
-const removeCountdown = ({
+const hideCountdown = ({
   name,
   property = name.replace(/[\s'-]/g, '').toLowerCase(),
   countdownArray = countdownArrayA,
 } = {}) => {
-  let column = 'countdown-a';
-  if (countdownArray === countdownArrayB) {
-    column = 'countdown-b';
+  const columnID = getArrayColumn({ countdownArray });
+  const columnDiv = document.getElementById(columnID);
+
+  // Splice from array
+  const hideIndex = countdownArray.findIndex((entry) => entry.name === name);
+  if (hideIndex > -1) {
+    countdownArray.splice(hideIndex, 1);
   }
-  const removeTarget = countdownArray.findIndex((entry) => entry.name === name);
-  if (removeTarget > -1) {
-    countdownArray.splice(removeTarget, 1);
-    document.getElementById(column).children[removeTarget].className = 'countdown countdown-hide';
+
+  // Hide
+  const matchDiv = columnDiv.querySelector(`div[data-name="${name}"]`);
+  if (matchDiv) {
+    matchDiv.className += ' countdown-hide';
   }
+
+  // Stop interval
   clearInterval(interval[property]);
 };

@@ -27,3 +27,11 @@ const count = {}; // County things?
 let potency = {};
 let previous = {};
 let next = {};
+
+const onAction = {};
+const onCasting = {};
+const onCancel = {};
+const onStatus = {};
+
+const onTargetChanged = {};
+const onJobChange = {};

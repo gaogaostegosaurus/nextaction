@@ -1,62 +1,68 @@
-// Icon properties - list by alphabetical job then alphabetical action
+
+const icon = {};
 
 const getArrayRow = ({
-  array,
+  iconArray,
 } = {}) => {
   // Associate array with row
-  let row = 'icon-b';
-  if (array === iconArrayA) {
-    row = 'icon-a';
-  } else if (array === iconArrayC) {
-    row = 'icon-c';
+  let rowID = 'icon-b';
+  if (iconArray === iconArrayA) {
+    rowID = 'icon-a';
+  } else if (iconArray === iconArrayC) {
+    rowID = 'icon-c';
   }
-  return row;
+  return rowID;
 };
 
+delete previous.removeAction;
 
 const removeOldIcons = ({
-  row,
+  rowID,
 } = {}) => {
-  // Clear away old divs before adding more actions
+  // Removes already hidden divs
   // Called at beginning of other action functions
-  if (!previous.removeAction || Date.now() - previous.removeAction > 1000) {
+
+  const removeDelay = 1000; // Delay prevents function from messing things up visually... maybe
+  const rowDiv = document.getElementById(rowID);
+
+  if (!previous.removeAction || Date.now() - previous.removeAction > removeDelay) {
     previous.removeAction = Date.now();
-    document.getElementById(row).querySelectorAll('div[class~="icon-hide"]').forEach((e) => e.remove());
+    rowDiv.querySelectorAll('div[class~="icon-hide"]').forEach((e) => e.remove());
   }
 };
 
 
 const syncIcons = ({
-  array = iconArrayB,
+  iconArray = iconArrayB,
 } = {}) => {
   // Use this to reset entire row if array is reset somehow
   // i. e. on RNG procs that change rotation, missed/fatfingered combos, etc.
 
-  const row = getArrayRow({ array });
+  const rowID = getArrayRow({ iconArray });
+  const rowDiv = document.getElementById(rowID);
 
-  removeOldIcons({ row });
+  removeOldIcons({ rowID });
 
   // Find current row length
-  const rowDiv = document.getElementById(row);
   const rowLength = rowDiv.children.length;
-  const arrayLength = array.length;
+  const iconArrayLength = iconArray.length;
 
   let arrayIndex = 0;
 
   for (let i = 0; i < rowLength; i += 1) {
     const iconDiv = rowDiv.children[i];
-    if (array[arrayIndex] && array[arrayIndex].name === iconDiv.dataset.name
+    if (iconArray[arrayIndex] && iconArray[arrayIndex].name === iconDiv.dataset.name
     && !iconDiv.className.includes('icon-hide')) {
       arrayIndex += 1;
     } else {
       iconDiv.className += ' icon-hide';
       iconDiv.dataset.name = 'none';
     }
-  }
+  } // Should have only matching icons remaining now
 
-  // Should have only matching icons remaining now
-  if (arrayIndex < arrayLength) {
-    for (let i = arrayIndex; i < arrayLength; i += 1) {
+
+  if (arrayIndex < iconArrayLength) {
+    for (let i = arrayIndex; i < iconArrayLength; i += 1) {
       const iconDiv = document.createElement('div');
       const iconImg = document.createElement('img');
       const iconOverlay = document.createElement('img');
@@ -66,12 +72,12 @@ const syncIcons = ({
       iconDiv.className = 'icon icon-hide';
       iconImg.className = 'iconimg';
       iconOverlay.className = 'iconoverlay';
-      iconDiv.dataset.name = array[i].name;
-      iconImg.src = `img/icon/${icon[array[i].img]}.png`;
+      iconDiv.dataset.name = iconArray[i].name;
+      iconImg.src = `img/icon/${icon[iconArray[i].img]}.png`;
       iconOverlay.src = 'img/icon/overlay.png';
       void iconDiv.offsetWidth;
       iconDiv.className = 'icon icon-show';
-      if (array[i].size === 'small') {
+      if (iconArray[i].size === 'small') {
         iconDiv.className += ' icon-small';
       }
     }
@@ -81,15 +87,18 @@ const syncIcons = ({
 
 const addIcon = ({
   name,
-  property = name.replace(/[\s'-]/g,'').toLowerCase(),
-  array = iconArrayB,
+  img = name.replace(/[\s'-]/g, '').toLowerCase(),
+  iconArray = iconArrayB,
   size = 'normal',
   order = 10,
 } = {}) => {
   // Adds action to specified array and row
 
-  // Pick row using array
-  const row = getArrayRow({ array });
+  const rowID = getArrayRow({ iconArray });
+  const rowDiv = document.getElementById(rowID);
+  // console.log(name + rowID);
+
+  removeOldIcons({ rowID });
 
   // Create elements
   const iconDiv = document.createElement('div');
@@ -102,9 +111,9 @@ const addIcon = ({
   iconImg.className = 'iconimg';
   iconOverlay.className = 'iconoverlay';
   iconDiv.dataset.name = name;
-  iconImg.src = `img/icon/${icon[property]}.png`;
+  iconImg.src = `img/icon/${icon[img]}.png`;
   iconOverlay.src = 'img/icon/overlay.png';
-  document.getElementById(row).append(iconDiv);
+  rowDiv.append(iconDiv);
   iconDiv.append(iconImg);
   iconDiv.append(iconOverlay);
   void iconDiv.offsetWidth; // Reflow to make transition work
@@ -114,55 +123,35 @@ const addIcon = ({
   }
 
   // Add to array
-  array.push({
-    name, img: property, size, order,
+  iconArray.push({
+    name, img, size, order,
   });
-  array.sort((a, b) => a.order - b.order);
+  iconArray.sort((a, b) => a.order - b.order);
 };
 
 
 const fadeIcon = ({
   name,
   // size = 'normal',
-  array = iconArrayB,
+  iconArray = iconArrayB,
   match = 'exact',
 } = {}) => {
   // Sets an action to lower opacity, for casting or whatever
 
-  const rowDiv = getArrayRow({ array });
-  // removeOldIcons({ row });
+  const rowID = getArrayRow({ iconArray });
+  const rowDiv = document.getElementById(rowID);
+
+  removeOldIcons({ rowID });
 
   let matchDiv;
   if (match === 'contains') {
-    matchDiv = document.getElementById(rowDiv).querySelector(`div[data-name~="${name}"]`);
+    matchDiv = rowDiv.querySelector(`div[data-name~="${name}"]:not([class~="icon-hide"])`);
   } else {
-    matchDiv = document.getElementById(rowDiv).querySelector(`div[data-name="${name}"]`);
+    matchDiv = rowDiv.querySelector(`div[data-name="${name}"]:not([class~="icon-hide"])`);
   }
 
   if (matchDiv) {
-    matchDiv.className += ' icon-fade';
-  }
-};
-
-const fadeIconContaining = ({
-  name,
-  // size = 'normal',
-  array = iconArrayB,
-  match = 'exact',
-} = {}) => {
-  // Sets an action to lower opacity, for casting or whatever
-
-  const rowDiv = getArrayRow({ array });
-  // removeOldIcons({ row });
-
-  let matchDiv;
-  if (match === 'contains') {
-    matchDiv = document.getElementById(rowDiv).querySelector(`div[data-name~="${name}"]`);
-  } else {
-    matchDiv = document.getElementById(rowDiv).querySelector(`div[data-name="${name}"]`);
-  }
-
-  if (matchDiv) {
+    void matchDiv.offsetWidth;
     matchDiv.className += ' icon-fade';
   }
 };
@@ -170,42 +159,25 @@ const fadeIconContaining = ({
 
 const unfadeIcon = ({
   name,
-  array = iconArrayB,
+  iconArray = iconArrayB,
   match = 'exact',
 } = {}) => {
   // Undos fadeAction effect
 
-  const rowDiv = getArrayRow({ array });
+  const rowID = getArrayRow({ iconArray });
+  const rowDiv = document.getElementById(rowID);
+
+  removeOldIcons({ rowID });
 
   let matchDiv;
   if (match === 'contains') {
-    matchDiv = document.getElementById(rowDiv).querySelector(`div[data-name~="${name}"]`);
+    matchDiv = rowDiv.querySelector(`div[data-name~="${name}"]:not([class~="icon-hide"])`);
   } else {
-    matchDiv = document.getElementById(rowDiv).querySelector(`div[data-name="${name}"]`);
+    matchDiv = rowDiv.querySelector(`div[data-name="${name}"]:not([class~="icon-hide"])`);
   }
 
   if (matchDiv) {
-    matchDiv.className = matchDiv.className.replace(' icon-fade', '');
-  }
-};
-
-const unfadeIconContaining = ({
-  name,
-  array = iconArrayB,
-  match = 'exact',
-} = {}) => {
-  // Undos fadeAction effect
-
-  const row = getArrayRow({ array });
-
-  let matchDiv;
-  if (match === 'contains') {
-    matchDiv = document.getElementById(rowDiv).querySelector(`div[data-name~="${name}"]`);
-  } else {
-    matchDiv = document.getElementById(rowDiv).querySelector(`div[data-name="${name}"]`);
-  }
-
-  if (matchDiv) {
+    void matchDiv.offsetWidth;
     matchDiv.className = matchDiv.className.replace(' icon-fade', '');
   }
 };
@@ -213,21 +185,20 @@ const unfadeIconContaining = ({
 
 const removeIcon = ({
   name,
-  array = iconArrayB,
+  iconArray = iconArrayB,
   match = 'exact',
 } = {}) => {
-  // Removes action from display
+  // Removes specific icon from display
 
-  const row = getArrayRow({ array });
-  const rowDiv = document.getElementById(row);
+  const rowID = getArrayRow({ iconArray });
+  const rowDiv = document.getElementById(rowID);
+  removeOldIcons({ rowID });
 
-  removeOldIcons({ row });
   let matchDiv;
-
   if (match === 'contains') {
-    matchDiv = rowDiv.querySelector(`div[data-name~="${name}"]`);
+    matchDiv = rowDiv.querySelector(`div[data-name~="${name}"]:not([class~="icon-hide"])`);
   } else {
-    matchDiv = rowDiv.querySelector(`div[data-name="${name}"]`);
+    matchDiv = rowDiv.querySelector(`div[data-name="${name}"]:not([class~="icon-hide"])`);
   }
 
   if (matchDiv) {
@@ -235,9 +206,9 @@ const removeIcon = ({
     matchDiv.dataset.name = 'none';
   }
 
-  const matchIndex = array.findIndex((entry) => entry.name === name);
+  const matchIndex = iconArray.findIndex((entry) => entry.name === name);
   if (matchIndex > -1) {
-    array.splice(matchIndex, 1);
+    iconArray.splice(matchIndex, 1);
   }
 };
 
@@ -261,53 +232,17 @@ const removeIcon = ({
 //   }
 // };
 
-const removeToIcon = ({
-  name,
-  array = iconArrayB,
-} = {}) => {
-  // Removes all actions up to the first case of selected action from display
+// const removeToIcon = ({
+//   name,
+//   iconArray = iconArrayB,
+// } = {}) => {
+//   // Meh
+//   // Removes all actions up to the first case of selected action from display
+//   const rowID = getArrayRow({ iconArray });
+//   const rowDiv = document.getElementById(rowID);
+//   removeOldIcons({ rowID });
+// };
 
-  const row = getArrayRow({ array });
-  const rowDiv = document.getElementById(row);
-
-  removeOldIcons({ row });
-
-  // const actionName = action.replace(/\s/g,'').toLowerCase(); // Clean up action so that it can be matched
-
-  for (let i = 0; i < rowDiv.children.length; i += 1) {
-
-  }
-
-  let actionDivName = actionRow.children[0].dataset.name;
-
-  if (actionName === actionDivName) {
-    actionDivName.remove();
-  } else {
-
-  }
-
-  // Cannot do this because if you call this function multiple times, it acts weird
-  // Maybe make a previous variable to prevent that from happening if necessary
-  let actionDivData = rowDiv.children[0].dataset.action;
-
-  do {
-    actionDivData = rowDiv.children[0].dataset.action;
-    if (actionDivData !== name) {
-      rowDiv.children[0].remove();
-    } else {
-      break;
-    }
-  } while (divAction !== name);
-
-  const matchIndex = array.findIndex((action) => action.name === name);
-  if (matchIndex > -1) {
-    array.splice(0, matchIndex); // Remove all array entries to this point
-  }
-};
-
-
-
-const icon = {};
 
 icon.default = '000000';
 
@@ -672,6 +607,7 @@ icon.aetherflow = '000510';
 
 // SCH
 icon.energydrain = '000514';
+icon.aetherflowstack = icon.energydrain;
 icon.sacredsoil = '002804';
 icon.indomitability = '002806';
 icon.deploymenttactics = '002808';

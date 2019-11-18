@@ -138,18 +138,27 @@ const loadInitialState = () => {
 
 
 const clearUI = () => {
+
+  for (const property in timeout) {
+    if (timeout.hasOwnProperty(property)) {
+      clearTimeout(timeout[property]);
+    }
+  }
+  for (property in interval) {
+    if (interval.hasOwnProperty(property)) {
+      clearInterval(interval[property]);
+    }
+  }
+
   iconArrayA = [];
   iconArrayB = [];
   iconArrayC = [];
   countdownArrayA = [];
   countdownArrayB = [];
   countdownArrayC = [];
-  document.getElementById('icon-a').innerHTML = '';
-  document.getElementById('icon-b').innerHTML = '';
-  document.getElementById('icon-c').innerHTML = '';
-  document.getElementById('countdown-a').innerHTML = '';
-  document.getElementById('countdown-b').innerHTML = '';
-  document.getElementById('countdown-c').innerHTML = '';
+  syncIcons({ array: iconArrayA });
+  syncIcons({ array: iconArrayB });
+  syncIcons({ array: iconArrayC });
 };
 
 

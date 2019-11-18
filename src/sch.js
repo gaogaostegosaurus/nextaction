@@ -1,6 +1,5 @@
-'use strict';
 
-const schActionList = [
+actionList.SCH = [
   // Off-GCD
   'Aetherflow', 'Lustrate', 'Energy Drain', 'Sacred Soil',
   'Indomitability', 'Deployment Tactics', 'Emergency Tactics', 'Dissipation',
@@ -26,7 +25,7 @@ const schActionList = [
   'Swiftcast', 'Lucid Dreaming',
 ];
 
-const schCastingList = [
+castingList.SCH = [
   'Bio', 'Bio II', 'Biolysis',
   'Ruin', 'Broil', 'Broil II', 'Broil III',
   'Ruin II', 'Art Of War',
@@ -34,63 +33,55 @@ const schCastingList = [
   'Summon Eos', 'Summon Selene',
 ];
 
-const schStatusList = [
+statusList.SCH = [
   'Bio', 'Bio II', 'Biolysis',
   'Galvanize', 'Catalyze',
   // Probably more can go here but whatever for now?
 ];
 
 const schAetherflow = () => {
-  const array = iconArrayA; // Just in case I change it later I guess
   // Helps spend extra Aetherflow
+  // let iconArray = iconArrayA; // Just in case I change it later I guess
+
+  if (checkRecast({ name: 'Aetherflow' }) < 0 && toggle.aetherflow === 'Dissipation') {
+    removeIcon({ name: 'Dissipation', iconArray: iconArrayA });
+    addIcon({ name: 'Aetherflow', iconArray: iconArrayA });
+    toggle.aetherflow = 'Aetherflow';
+    // Refresh display if both are on cooldown
+  }
+
   if (toggle.aetherflow) {
-    return; // Already doing things
+    return; // Already displaying something, probably
   }
 
-  if (player.level >= 60
-  && Math.min(checkRecast({ name: 'Aetherflow' }), checkRecast({ name: 'Dissipation' }))
-  < recast.gcd * player.tempjobDetail.aetherflow) {
-    if (!toggle.aetherflow) {
-      for (let i = 1; i <= player.tempjobDetail.aetherflow; i += 1) {
-        addIcon({ name: 'Stack', img: 'energydrain', array });
-      }
-      toggle.aetherflow = Date.now();
-    }
-    if (checkRecast({ name: 'Aetherflow' }) <= checkRecast({ name: 'Dissipation' })) {
-      addIcon({ name: 'Aetherflow', array });
-    } else {
-      addIcon({ name: 'Dissipation', array });
-    }
-  } else if (player.level >= 45 && checkRecast({ name: 'Aetherflow' }) < recast.gcd * player.tempjobDetail.aetherflow) {
-    if (!toggle.aetherflow) {
-      for (let i = 1; i <= player.tempjobDetail.aetherflow; i += 1) {
-        addIcon({ name: 'Stack', img: 'energydrain', array });
-      }
-      toggle.aetherflow = Date.now();
-    }
-    addIcon({ name: 'Aetherflow', array });
-  }
-};
+  // Remove all Aetherflow Stack icons
+  iconArrayA = iconArrayA.filter((entry) => entry.name !== 'Energy Drain' && entry.name !== 'Aetherflow' && entry.name !== 'Dissipation');
+  syncIcons({ iconArray: iconArrayA });
+  // rowDiv.querySelectorAll('div[data-name="Aetherflow Stack"]').forEach(e => e.remove());
 
-
-const schLucidDreaming = () => {
-  if (toggle.luciddreaming) {
-    return;
-  }
-  if (player.level >= 24 && player.currentMP < 7500 && checkRecast({ name: 'luciddreaming' }) < 0) {
-    addIcon({ name: 'luciddreaming', array: iconArrayA });
-    toggle.luciddreaming = Date.now();
+  if (player.level >= 45 && checkRecast({ name: 'Aetherflow' }) < recast.gcd * (player.aetherflow + 1)) {
+    for (let i = 1; i <= player.aetherflow; i += 1) {
+      addIcon({ name: 'Energy Drain', iconArray: iconArrayA });
+    }
+    addIcon({ name: 'Aetherflow', iconArray: iconArrayA });
+    toggle.aetherflow = 'Aetherflow';
+    // console.log(`${player.aetherflow} ${checkRecast({ name: 'Aetherflow' })}`);
+  } else if (player.level >= 60 && checkRecast({ name: 'Dissipation' }) < recast.gcd * (player.aetherflow + 1)) {
+    for (let i = 1; i <= player.aetherflow; i += 1) {
+      addIcon({ name: 'Energy Drain', iconArray: iconArrayA });
+    }
+    addIcon({ name: 'Dissipation', iconArray: iconArrayA });
+    toggle.aetherflow = 'Dissipation';
   }
 };
 
 const schNext = () => {
   schAetherflow();
-  schLucidDreaming();
 };
 
-const schOnJobChange = () => {
+onJobChange.SCH = () => {
   // Icon setup
-
+  delete toggle.aetherflow;
 
   // Displays right away (probably)
   if (player.level >= 45) {
@@ -101,7 +92,7 @@ const schOnJobChange = () => {
   }
   if (player.level >= 66) {
     addCountdown({
-      name: 'Chain Stratagem', countdownArray: countdownArrayC, onComplete: 'addIcon', array: iconArrayC,
+      name: 'Chain Stratagem', countdownArray: countdownArrayC, onComplete: 'addIcon', iconArray: iconArrayC,
     });
   }
 
@@ -147,38 +138,38 @@ const schOnJobChange = () => {
   schNext();
 };
 
-const schOnCasting = (castingMatch) => {
+onCasting.SCH = (castingMatch) => {
   schNext();
 };
 
-const schOnCancel = (cancelMatch) => {
+onCancel.SCH = (cancelMatch) => {
   schNext();
 };
 
-const schOnTargetChangedEvent = () => {
+onTargetChanged.SCH = () => {
   if (player.level >= 72) {
-    player.bioSpell = 'Biolysis'
+    player.bioSpell = 'Biolysis';
   } else if (player.level >= 26) {
-    player.bioSpell = 'Bio II'
+    player.bioSpell = 'Bio II';
   } else {
-    player.bioSpell = 'Bio'
+    player.bioSpell = 'Bio';
   }
   // Check if target is a new target
   if (previous.targetID !== target.ID) {
     // Check Bio status if looking at new target
+    removeIcon({ name: player.bioSpell });
     if (target.ID.startsWith('4')) {
       // If not a target then clear things out
       // 0 = no target, 1... = player? E... = non-combat NPC?
       addCountdown({ name: player.bioSpell, time: checkStatus({ name: player.bioSpell, id: target.ID }), onComplete: 'addIcon removeCountdown' });
     } else {
-      removeIcon({ name: player.bioSpell });
-      removeCountdown({ name: player.bioSpell });
+      hideCountdown({ name: player.bioSpell });
     }
     previous.targetID = target.ID;
   }
 };
 
-const schOnAction = (actionMatch) => {
+onAction.SCH = (actionMatch) => {
   if (['Bio', 'Bio II', 'Biolysis'].indexOf(actionMatch.groups.actionName) > -1) {
     removeIcon({ name: actionMatch.groups.actionName });
     addStatus({ name: actionMatch.groups.actionName, id: actionMatch.groups.targetID });
@@ -187,45 +178,45 @@ const schOnAction = (actionMatch) => {
   // } else if (actionMatch.groups.actionName === 'Ruin II') {
     // ?
   } else if (['Whispering Dawn', 'Fey Illumination', 'Fey Blessing', 'Summon Seraph'].indexOf(actionMatch.groups.actionName) > -1) {
-    // removeIcon({ name: 'Whispering Dawn', array: iconArrayC });
+    // removeIcon({ name: 'Whispering Dawn', iconArray: iconArrayC });
     addRecast({ name: actionMatch.groups.actionName });
-    addCountdown({ name: actionMatch.groups.actionName, array: iconArrayC, countdownArray: countdownArrayB });
+    addCountdown({ name: actionMatch.groups.actionName, iconArray: iconArrayC, countdownArray: countdownArrayB });
   } else if (['Deployment Tactics', 'Recitation', 'Swiftcast'].indexOf(actionMatch.groups.actionName) > -1) {
-    // removeIcon({ name: 'Whispering Dawn', array: iconArrayC });
+    // removeIcon({ name: 'Whispering Dawn', iconArray: iconArrayC });
     addRecast({ name: actionMatch.groups.actionName });
-    addCountdown({ name: actionMatch.groups.actionName, array: iconArrayC });
+    addCountdown({ name: actionMatch.groups.actionName, iconArray: iconArrayC });
   } else if (['Energy Drain', 'Lustrate'].indexOf(actionMatch.groups.actionName) > -1) {
-    removeIcon({ name: 'Energy Drain', array: iconArrayA });
+    removeIcon({ name: 'Energy Drain', iconArray: iconArrayA });
   } else if (['Sacred Soil', 'Indomitability', 'Excogitation'].indexOf(actionMatch.groups.actionName) > -1) {
-    removeIcon({ name: 'Energy Drain', array: iconArrayA });
+    removeIcon({ name: 'Energy Drain', iconArray: iconArrayA });
     addRecast({ name: actionMatch.groups.actionName });
-    addCountdown({ name: actionMatch.groups.actionName, array: iconArrayC });
+    addCountdown({ name: actionMatch.groups.actionName, iconArray: iconArrayC });
   } else if (actionMatch.groups.actionName === 'Chain Stratagem') {
-    removeIcon({ name: actionMatch.groups.actionName, array: iconArrayC });
-    addRecast({ name: actionMatch.groups.actionName, array: iconArrayC });
+    removeIcon({ name: actionMatch.groups.actionName, iconArray: iconArrayC });
+    addRecast({ name: actionMatch.groups.actionName, iconArray: iconArrayC });
     addCountdown({
-      name: actionMatch.groups.actionName, countdownArray: countdownArrayC, onComplete: 'addIcon', array: iconArrayC,
+      name: actionMatch.groups.actionName, countdownArray: countdownArrayC, onComplete: 'addIcon', iconArray: iconArrayC,
     });
   } else if (actionMatch.groups.actionName === 'Aetherflow') {
-    removeIcon({ name: 'Aetherflow', array: iconArrayA });
+    removeIcon({ name: 'Aetherflow', iconArray: iconArrayA });
     addRecast({ name: 'Aetherflow' });
     addCountdown({ name: 'Aetherflow', order: -2 });
     delete toggle.aetherflow;
   } else if (actionMatch.groups.actionName === 'Dissipation') {
-    removeIcon({ name: 'Dissipation', array: iconArrayA });
+    removeIcon({ name: 'Dissipation', iconArray: iconArrayA });
     addRecast({ name: 'Dissipation' });
     addCountdown({ name: 'Dissipation', order: -1 });
     delete toggle.aetherflow;
   } else if (actionMatch.groups.actionName === 'Lucid Dreaming') {
-    removeIcon({ name: 'luciddreaming', array: iconArrayA });
+    removeIcon({ name: 'luciddreaming', iconArray: iconArrayA });
     addRecast({ name: 'luciddreaming' });
-    addCountdown({ name: 'luciddreaming', array: iconArrayA, onComplete: 'removeCountdown' });
+    addCountdown({ name: 'luciddreaming', iconArray: iconArrayA, onComplete: 'removeCountdown' });
     delete toggle.luciddreaming;
   }
   schNext();
 };
 
-const schOnStatus = (statusMatch) => {
+onStatus.SCH = (statusMatch) => {
   if (statusMatch.groups.gainsLoses === 'gains') {
     addStatus({ name: statusMatch.groups.statusName, time: parseFloat(statusMatch.groups.statusDuration) * 1000, id: statusMatch.groups.targetID });
 

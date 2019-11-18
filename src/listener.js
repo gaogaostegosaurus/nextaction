@@ -5,109 +5,106 @@
 // addOverlayListener('onInitializeOverlay', (e) => {
 // });
 
-let actionList = '';
-let statusList = '';
-let castingList = '';
+const actionList = {};
+const statusList = {};
+const castingList = {};
+
+let actionRegExp;
+let statusRegExp;
+let castingRegExp;
+let cancelRegExp;
+let addedRegExp;
+let statsRegExp;
+// onPlayerChangedEvent:
+// fires whenever player change detected (including HP, MP, other resources, positions, etc.)
+addOverlayListener('onPlayerChangedEvent', (e) => {
+  // console.log(JSON.stringify(e));
+  // player.id.toString(16) is lowercase; using 'ID' to designate uppercase lettering
+  player.ID = e.detail.id.toString(16).toUpperCase();
+  player.name = e.detail.name;
+  player.job = e.detail.job;
+  player.level = e.detail.level;
+
+  player.currentHP = e.detail.currentHP;
+  player.maxHP = e.detail.maxHP;
+  player.currentMP = e.detail.currentMP;
+  player.maxMP = e.detail.maxMP;
+  player.currentShield = e.detail.currentShield;
+
+  // Create 8 part array for unsupported jobs - use [0] to [7]
+  const debugJobArray = e.detail.debugJob.split(' ');
+
+  if (player.job === 'DNC') { // Temporary
+    player.fourfoldFeathers = parseInt(debugJobArray[0], 16); // 0-4
+    player.esprit = parseInt(debugJobArray[1], 16); // 0-100
+    // Steps - 1 is Emboite, 2 is Entrechat, 3 is Jete, 4 is Pirouette
+    player.step1 = parseInt(debugJobArray[2], 16);
+    player.step2 = parseInt(debugJobArray[3], 16);
+    player.step3 = parseInt(debugJobArray[4], 16);
+    player.step4 = parseInt(debugJobArray[5], 16);
+    player.stepTotal = debugJobArray[6]; // 0-4
+  } else if (player.job === 'GNB') {
+    player.cartridge = parseInt(debugJobArray[0], 16); // 0-2
+  } else if (player.job === 'NIN') {
+    player.huton = e.detail.jobDetail.hutonMilliseconds;
+    player.ninki = e.detail.jobDetail.ninkiAmount;
+  } else if (player.job === 'RDM') {
+    player.blackMana = e.detail.jobDetail.blackMana;
+    player.whiteMana = e.detail.jobDetail.whiteMana;
+  } else if (player.job === 'SCH') {
+    player.aetherflow = parseInt(debugJobArray[2], 16); // 0-3
+    player.faerieGauge = parseInt(debugJobArray[3], 16); // 0-100
+    healerLucidDreaming();
+  } else if (player.job === 'WHM') {
+    player.bloodlily = parseInt(debugJobArray[5], 16); // 0-3
+    healerLucidDreaming();
+  }
+
+  // Detects name/job/level change and clears elements
+  if (previous.job !== player.job || previous.level !== player.level) {
+    previous.job = player.job;
+    previous.level = player.level;
+
+    const action = actionList[player.job].join('|');
+    const status = statusList[player.job].join('|');
+    const casting = castingList[player.job].join('|');
+    actionRegExp = new RegExp(` (?<logType>1[56]):(?<sourceID>${player.ID}):(?<sourceName>${player.name}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${action}):(?<targetID>[\\dA-F]{8}):(?<targetName>[ -~]+?):(?<result>[\\dA-F]{1,8}):`);
+    statusRegExp = new RegExp(` (?<logType>1[AE]):(?<targetID>[\\dA-F]{8}):(?<targetName>[ -~]+?) (?<gainsLoses>gains|loses) the effect of (?<statusName>${status}) from (?<sourceName>${player.name})(?: for )?(?<statusDuration>\\d*\\.\\d*)?(?: Seconds)?\\.`);
+    castingRegExp = new RegExp(` 14:(?<actionID>[\\dA-F]{1,4}):(?<sourceName>${player.name}) starts using (?<actionName>${casting}) on (?<targetName>[ -~]+?)\\.`);
+    cancelRegExp = new RegExp(` 17:(?<sourceID>${player.ID}):(?<sourceName>${player.name}):(?<actionID>[\\dA-F]{1,4}):(?<actionName>${casting}):Cancelled:`);
+    addedRegExp = new RegExp(` 03:(?<sourceID>${player.ID}):Added new combatant (?<sourceName>${player.name})\\.  Job: (?<job>[A-z]{3}) `);
+    statsRegExp = new RegExp(' 0C:Player Stats: (?<jobID>[\\d]+):(?<strength>[\\d]+):(?<dexterity>[\\d]+):(?<vitality>[\\d]+):(?<intelligence>[\\d]+):(?<mind>[\\d]+):(?<piety>[\\d]+):(?<attackPower>[\\d]+):(?<directHitRate>[\\d]+):(?<criticalHit>[\\d]):(?<attackMagicPotency>[\\d]+):(?<healingMagicPotency>[\\d]+):(?<determination>[\\d]+):(?<skillSpeed>[\\d]+):(?<spellSpeed>[\\d]+):0:(?<tenacity>[\\d]+)');
+    clearUI();
+    onJobChange[player.job]();
+    console.log(`Changed to ${player.job}${player.level}`);
+    console.log(JSON.stringify(e));
+  }
+});
 
 addOverlayListener('onLogEvent', (e) => { // Fires on log event
+  const logLength = e.detail.logs.length;
 
-  const statsRegExp = new RegExp(' 0C:Player Stats: (?<jobID>[\\d]+):(?<strength>[\\d]+):(?<dexterity>[\\d]+):(?<vitality>[\\d]+):(?<intelligence>[\\d]+):(?<mind>[\\d]+):(?<piety>[\\d]+):(?<attackPower>[\\d]+):(?<directHitRate>[\\d]+):(?<criticalHit>[\\d]):(?<attackMagicPotency>[\\d]+):(?<healingMagicPotency>[\\d]+):(?<determination>[\\d]+):(?<skillSpeed>[\\d]+):(?<spellSpeed>[\\d]+):0:(?<tenacity>[\\d]+)');
-  const actionRegExp = new RegExp(` (?<logType>1[56]):(?<sourceID>${player.ID}):(?<sourceName>${player.name}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${actionList}):(?<targetID>[\\dA-F]{8}):(?<targetName>[ -~]+?):(?<result>[\\dA-F]{1,8}):`);
-  const statusRegExp = new RegExp(` (?<logType>1[AE]):(?<targetID>[\\dA-F]{8}):(?<targetName>[ -~]+?) (?<gainsLoses>gains|loses) the effect of (?<statusName>${statusList}) from (?<sourceName>${player.name})(?: for )?(?<statusDuration>\\d*\\.\\d*)?(?: Seconds)?\\.`);
-  const castingRegExp = new RegExp(` 14:(?<actionID>[\\dA-F]{1,4}):(?<sourceName>${player.name}) starts using (?<actionName>${castingList}) on (?<targetName>[ -~]+?)\\.`);
-  const cancelRegExp = new RegExp(` 17:(?<sourceID>[\\dA-F]{8}):(?<sourceName>${player.name}):(?<actionID>[\\dA-F]{1,4}):(?<actionName>${castingList}):Cancelled:`);
-  const l = e.detail.logs.length;
-
-  for (let i = 0; i < l; i += 1) {
+  for (let i = 0; i < logLength; i += 1) {
     const actionMatch = e.detail.logs[i].match(actionRegExp);
     const statusMatch = e.detail.logs[i].match(statusRegExp);
     const castingMatch = e.detail.logs[i].match(castingRegExp);
     const cancelMatch = e.detail.logs[i].match(cancelRegExp);
     const statsMatch = e.detail.logs[i].match(statsRegExp);
+    // const addedMatch = e.detail.logs[i].match(addedRegExp);
 
     if (actionMatch) { // Status source = player
-      if (player.job === 'BLM') {
-        // blmAction(actionMatch);
-      } else if (player.job === 'BLU') {
-        // bluOnAction(actionMatch);
-      } else if (player.job === 'BRD') {
-        // brdAction(actionMatch);
-      } else if (player.job === 'DNC') {
-        // dncAction(actionMatch);
-      } else if (player.job === 'DRK') {
-        // drkAction(actionMatch);
-      } else if (player.job === 'GNB') {
-        // gnbAction(actionMatch);
-      } else if (player.job === 'MCH') {
-        // mchAction(actionMatch);
-      } else if (player.job === 'MNK') {
-        // mnkAction(actionMatch);
-      } else if (player.job === 'NIN') {
-        // ninAction(actionMatch);
-      } else if (player.job === 'PLD') {
-        // pldAction(actionMatch);
-      } else if (player.job === 'RDM') {
-        rdmOnAction(actionMatch);
-      } else if (player.job === 'SAM') {
-        // samAction(actionMatch);
-      } else if (player.job === 'SCH') {
-        schOnAction(actionMatch);
-      } else if (player.job === 'WAR') {
-        // warAction(actionMatch);
-      } else if (player.job === 'WHM') {
-        // whmAction(actionMatch);
-      }
+      onAction[player.job](actionMatch);
     } else if (statusMatch) {
-      if (player.job === 'BLM') {
-        // blmStatus();
-      } else if (player.job === 'BRD') {
-        // brdStatus();
-      } else if (player.job === 'DNC') {
-        // dncStatus();
-      } else if (player.job === 'DRK') {
-        // drkStatus();
-      } else if (player.job === 'GNB') {
-        // gnbStatus();
-      } else if (player.job === 'MCH') {
-        // mchStatus();
-      } else if (player.job === 'MNK') {
-        // mnkStatus();
-      } else if (player.job === 'NIN') {
-        // ninStatus();
-      } else if (player.job === 'PLD') {
-        // pldStatus();
-      } else if (player.job === 'RDM') {
-        rdmOnStatus(statusMatch);
-      } else if (player.job === 'SAM') {
-        // samStatus();
-      } else if (player.job === 'SCH') {
-        schOnStatus(statusMatch);
-      } else if (player.job === 'WAR') {
-        // warStatus();
-      } else if (player.job === 'WHM') {
-        // whmStatus();
-      }
+      onStatus[player.job](statusMatch);
     } else if (castingMatch) {
+      onCasting[player.job](castingMatch);
+
       // Display next if casting with an NPC target
       if (target.ID.startsWith('4')) { // 0 = no target, 1... = player? E... = non-combat NPC?
         document.getElementById('nextdiv').className = 'next next-show';
       }
-
-      if (player.job === 'BLM') {
-        // blmStartsUsing();
-      } else if (player.job === 'RDM') {
-        rdmOnCasting(castingMatch);
-      } else if (player.job === 'SCH') {
-        schOnCasting(castingMatch);
-      }
     } else if (cancelMatch) {
-      if (player.job === 'BLM') {
-        // blmCancelled();
-      } else if (player.job === 'RDM') {
-        rdmOnCancel(cancelMatch);
-      } else if (player.job === 'SCH') {
-        schOnCancel(cancelMatch);
-      }
+      onCancel[player.job](cancelMatch);
     } else if (statsMatch) {
       gcdCalculation({
         speed: Math.max(statsMatch.groups.skillSpeed, statsMatch.groups.spellSpeed),
@@ -121,112 +118,9 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
   }
 });
 
-// onPlayerChangedEvent:
-// fires whenever player change detected (including HP, MP, other resources, positions, etc.)
-addOverlayListener('onPlayerChangedEvent', (e) => {
-  // console.log(JSON.stringify(player));
-  player = e.detail;
-  player.ID = player.id.toString(16).toUpperCase();
-  // player.id.toString(16) is lowercase; using 'ID' to designate uppercase lettering
+previous.job = 'NONE';
+previous.level = 0;
 
-  // Create 8 part array for unsupported jobs - use [0] to [7]
-  player.debugJobSplit = player.debugJob.split(' ');
-
-  player.tempjobDetail = {};
-
-  if (player.job === 'DNC') { // Temporary
-    player.tempjobDetail.fourfoldfeathers = parseInt(player.debugJobSplit[0], 16); // 0-4
-    player.tempjobDetail.esprit = parseInt(player.debugJobSplit[1], 16); // 0-100
-
-    // Steps
-    // 1 is  Emboite, 2 is Entrechat, 3 is Jete, 4 is Pirouette
-    player.tempjobDetail.step1 = parseInt(player.debugJobSplit[2], 16);
-    player.tempjobDetail.step2 = parseInt(player.debugJobSplit[3], 16);
-    player.tempjobDetail.step3 = parseInt(player.debugJobSplit[4], 16);
-    player.tempjobDetail.step4 = parseInt(player.debugJobSplit[5], 16);
-    player.tempjobDetail.totalsteps = parseInt(player.debugJobSplit[6], 16); // 0-4
-  } else if (player.job === 'GNB') {
-    player.tempjobDetail.cartridge = parseInt(player.debugJobSplit[0], 16); // 0-2
-  } else if (player.job === 'SCH') {
-    player.tempjobDetail.aetherflow = parseInt(player.debugJobSplit[2], 16); // 0-3
-    player.tempjobDetail.faerie = parseInt(player.debugJobSplit[3], 16); // 0-100
-  } else if (player.job === 'WHM') {
-    player.tempjobDetail.bloodlily = parseInt(player.debugJobSplit[5], 16); // 0-3
-  }
-
-  // Detects name/job/level change and clears elements
-  if (previous.job !== player.job || previous.level !== player.level) {
-    clearUI();
-    clearTimers();
-    loadInitialState();
-    previous.job = player.job;
-    previous.level = player.level;
-    // console.log(`Changed to ${player.job}${player.level}`);
-    // Maybe change this to an element later
-    if (player.job === 'AST') {
-      // actions = astActions.join('|');
-    } else if (player.job === 'BLM') {
-      // actions = blmActions.join('|');
-    } else if (player.job === 'BLU') {
-      // actions = bluActions.join('|');
-    } else if (player.job === 'BRD') {
-      // actions = brdActions.join('|');
-    } else if (player.job === 'DNC') {
-      // actions = dncActions.join('|');
-    } else if (player.job === 'DRG') {
-      // actions = drgActions.join('|');
-    } else if (player.job === 'DRK') {
-      // actions = drkActions.join('|');
-    } else if (player.job === 'GNB') {
-      // actions = gnbActions.join('|');
-    } else if (player.job === 'MCH') {
-      // actions = mchmActions.join('|');
-    } else if (player.job === 'MNK') {
-      // actions = mnkActions.join('|');
-    } else if (player.job === 'NIN') {
-      ninOnJobChange();
-    } else if (player.job === 'PLD') {
-      // actions = pldActions.join('|');
-    } else if (player.job === 'RDM') {
-      actionList = rdmActionList.join('|');
-      castingList = rdmCastingList.join('|');
-      statusList = rdmStatusList.join('|');
-      rdmOnJobChange();
-    } else if (player.job === 'SAM') {
-      // actions = samActions.join('|');
-    } else if (player.job === 'SCH') {
-      actionList = schActionList.join('|');
-      castingList = schCastingList.join('|');
-      statusList = schStatusList.join('|');
-      schOnJobChange();
-    } else if (player.job === 'SMN') {
-      // actions = smnActions.join('|');
-    } else if (player.job === 'WAR') {
-      // actions = warActions.join('|');
-    } else if (player.job === 'WHM') {
-      // actions = whmActions.join('|');
-    }
-  }
-
-  // This is probably only useful for jobs that need to watch things that 'tick' up or down
-  if (player.job === 'BLM') {
-    // blmPlayerChangedEvent();
-  } else if (player.job === 'BRD') {
-    // brdPlayerChangedEvent();
-  } else if (player.job === 'MCH') {
-    // mchPlayerChangedEvent();
-  } else if (player.job === 'MNK') {
-    // mnkPlayerChangedEvent();
-  } else if (player.job === 'WHM') {
-    // whmPlayerChangedEvent();
-  }
-
-  // Possible use for later
-  // else if (player.job == 'RDM') {
-  //   rdmPlayerChangedEvent();
-  // }
-  // console.log(JSON.stringify(player));
-});
 
 addOverlayListener('onTargetChangedEvent', (e) => {
   // console.log(`onTargetChangedEvent: ${JSON.stringify(e)}`);
@@ -236,13 +130,13 @@ addOverlayListener('onTargetChangedEvent', (e) => {
   // "pos":{"x":float,"y":float,"z":float},"distance":int}}
   target = e.detail;
   target.ID = e.detail.id.toString(16).toUpperCase(); // See player.ID above
+  onTargetChanged[player.job]();
 
   if (player.job === 'BLM') {
     // blmTargetChangedEvent();
   } else if (player.job === 'BRD') {
     // brdTargetChangedEvent();
   } else if (player.job === 'SCH') {
-    schOnTargetChangedEvent();
   } else if (player.job === 'WHM') {
     // whmTargetChangedEvent();
   }

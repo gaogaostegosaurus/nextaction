@@ -51,16 +51,7 @@
 
 function clearTimers() {
   let property = "";
-  for (property in timeout) {
-    if (timeout.hasOwnProperty(property)) {
-      clearTimeout(timeout[property]);
-    }
-  }
-  for (property in interval) {
-    if (interval.hasOwnProperty(property)) {
-      clearInterval(interval[property]);
-    }
-  }
+  
 }
 
 callOverlayHandler({ call: 'cactbotRequestState' });
