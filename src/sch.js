@@ -80,8 +80,17 @@ const schNext = () => {
 };
 
 onJobChange.SCH = () => {
-  // Icon setup
+  //
   delete toggle.aetherflow;
+  //  delete toggle.luciddreaming;
+
+  if (player.level >= 72) {
+    player.bioSpell = 'Biolysis';
+  } else if (player.level >= 26) {
+    player.bioSpell = 'Bio II';
+  } else {
+    player.bioSpell = 'Bio';
+  }
 
   // Displays right away (probably)
   if (player.level >= 45) {
@@ -147,13 +156,6 @@ onCancel.SCH = (cancelMatch) => {
 };
 
 onTargetChanged.SCH = () => {
-  if (player.level >= 72) {
-    player.bioSpell = 'Biolysis';
-  } else if (player.level >= 26) {
-    player.bioSpell = 'Bio II';
-  } else {
-    player.bioSpell = 'Bio';
-  }
   // Check if target is a new target
   if (previous.targetID !== target.ID) {
     // Check Bio status if looking at new target
@@ -170,50 +172,44 @@ onTargetChanged.SCH = () => {
 };
 
 onAction.SCH = (actionMatch) => {
+  // Currently no catch for Ruin/Ruin II and such - not needed?
   if (['Bio', 'Bio II', 'Biolysis'].indexOf(actionMatch.groups.actionName) > -1) {
     removeIcon({ name: actionMatch.groups.actionName });
     addStatus({ name: actionMatch.groups.actionName, id: actionMatch.groups.targetID });
-  // } else if (['Ruin', 'Broil', 'Broil II', 'Broil III'].indexOf(actionMatch.groups.actionName) > -1) {
-    // ?
-  // } else if (actionMatch.groups.actionName === 'Ruin II') {
-    // ?
   } else if (['Whispering Dawn', 'Fey Illumination', 'Fey Blessing', 'Summon Seraph'].indexOf(actionMatch.groups.actionName) > -1) {
     // removeIcon({ name: 'Whispering Dawn', iconArray: iconArrayC });
     addRecast({ name: actionMatch.groups.actionName });
     addCountdown({
       name: actionMatch.groups.actionName, iconArray: iconArrayC, countdownArray: countdownArrayB,
     });
-  } else if (['Deployment Tactics', 'Recitation', 'Swiftcast'].indexOf(actionMatch.groups.actionName) > -1) {
+  } else if (['Deployment Tactics', 'Chain Stratagem', 'Recitation', 'Swiftcast'].indexOf(actionMatch.groups.actionName) > -1) {
     // removeIcon({ name: 'Whispering Dawn', iconArray: iconArrayC });
     addRecast({ name: actionMatch.groups.actionName });
     addCountdown({ name: actionMatch.groups.actionName, iconArray: iconArrayC });
-  } else if (['Energy Drain', 'Lustrate'].indexOf(actionMatch.groups.actionName) > -1) {
+    if (actionMatch.groups.actionName === 'Chain Stratagem') {
+      addCountdown({
+        name: actionMatch.groups.actionName, countdownArray: countdownArrayC, onComplete: 'addIcon', iconArray: iconArrayC,
+      });
+    }
+  } else if (['Energy Drain', 'Lustrate', 'Sacred Soil', 'Indomitability', 'Excogitation'].indexOf(actionMatch.groups.actionName) > -1) {
     removeIcon({ name: 'Energy Drain', iconArray: iconArrayA });
-  } else if (['Sacred Soil', 'Indomitability', 'Excogitation'].indexOf(actionMatch.groups.actionName) > -1) {
-    removeIcon({ name: 'Energy Drain', iconArray: iconArrayA });
+    if (['Sacred Soil', 'Indomitability', 'Excogitation'].indexOf(actionMatch.groups.actionName) > -1) {
+      addRecast({ name: actionMatch.groups.actionName });
+      addCountdown({ name: actionMatch.groups.actionName, iconArray: iconArrayC });
+    }
+  } else if (['Aetherflow', 'Lucid Dreaming', 'Dissipation'].indexOf(actionMatch.groups.actionName) > -1) {
+    removeIcon({ name: actionMatch.groups.actionName, iconArray: iconArrayA });
     addRecast({ name: actionMatch.groups.actionName });
-    addCountdown({ name: actionMatch.groups.actionName, iconArray: iconArrayC });
-  } else if (actionMatch.groups.actionName === 'Chain Stratagem') {
-    removeIcon({ name: actionMatch.groups.actionName, iconArray: iconArrayC });
-    addRecast({ name: actionMatch.groups.actionName, iconArray: iconArrayC });
-    addCountdown({
-      name: actionMatch.groups.actionName, countdownArray: countdownArrayC, onComplete: 'addIcon', iconArray: iconArrayC,
-    });
-  } else if (actionMatch.groups.actionName === 'Aetherflow') {
-    removeIcon({ name: 'Aetherflow', iconArray: iconArrayA });
-    addRecast({ name: 'Aetherflow' });
-    addCountdown({ name: 'Aetherflow', order: -2 });
-    delete toggle.aetherflow;
-  } else if (actionMatch.groups.actionName === 'Dissipation') {
-    removeIcon({ name: 'Dissipation', iconArray: iconArrayA });
-    addRecast({ name: 'Dissipation' });
-    addCountdown({ name: 'Dissipation', order: -1 });
-    delete toggle.aetherflow;
-  } else if (actionMatch.groups.actionName === 'Lucid Dreaming') {
-    removeIcon({ name: 'Lucid Dreaming', iconArray: iconArrayA });
-    addRecast({ name: 'Lucid Dreaming' });
-    addCountdown({ name: 'Lucid Dreaming', iconArray: iconArrayA, onComplete: 'removeCountdown' });
-    delete toggle.luciddreaming;
+    if (actionMatch.groups.actionName === 'Aetherflow') {
+      addCountdown({ name: 'Aetherflow', order: -2 });
+      delete toggle.aetherflow;
+    } else if (actionMatch.groups.actionName === 'Dissipation') {
+      addCountdown({ name: 'Dissipation', order: -1 });
+      delete toggle.aetherflow;
+    } else if (actionMatch.groups.actionName === 'Lucid Dreaming') {
+      addCountdown({ name: 'Lucid Dreaming', iconArray: iconArrayA, onComplete: 'removeCountdown' });
+      delete toggle.luciddreaming;
+    }
   }
   schNext();
 };
