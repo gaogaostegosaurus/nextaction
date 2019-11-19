@@ -210,9 +210,9 @@ onAction.SCH = (actionMatch) => {
     addCountdown({ name: 'Dissipation', order: -1 });
     delete toggle.aetherflow;
   } else if (actionMatch.groups.actionName === 'Lucid Dreaming') {
-    removeIcon({ name: 'luciddreaming', iconArray: iconArrayA });
-    addRecast({ name: 'luciddreaming' });
-    addCountdown({ name: 'luciddreaming', iconArray: iconArrayA, onComplete: 'removeCountdown' });
+    removeIcon({ name: 'Lucid Dreaming', iconArray: iconArrayA });
+    addRecast({ name: 'Lucid Dreaming' });
+    addCountdown({ name: 'Lucid Dreaming', iconArray: iconArrayA, onComplete: 'removeCountdown' });
     delete toggle.luciddreaming;
   }
   schNext();

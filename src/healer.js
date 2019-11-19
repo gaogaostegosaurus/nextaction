@@ -6,11 +6,11 @@ const healerLucidDreaming = () => {
 
   if (player.level >= 24 && player.currentMP < addLucidMP && checkRecast({ name: 'Lucid Dreaming' }) < 0) {
     if (!toggle.luciddreaming) { // Toggle prevents Lucid from being added every check
-      addIcon({ name: 'Lucid Dreaming', array: iconArrayA });
+      addIcon({ name: 'Lucid Dreaming', iconArray: iconArrayA });
       toggle.luciddreaming = Date.now();
     }
   } else if (player.currentMP > removeLucidMP) {
-    removeIcon({ name: 'Lucid Dreaming', array: iconArrayA });
+    removeIcon({ name: 'Lucid Dreaming', iconArray: iconArrayA });
     delete toggle.luciddreaming;
   }
 };
