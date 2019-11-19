@@ -180,7 +180,9 @@ onAction.SCH = (actionMatch) => {
   } else if (['Whispering Dawn', 'Fey Illumination', 'Fey Blessing', 'Summon Seraph'].indexOf(actionMatch.groups.actionName) > -1) {
     // removeIcon({ name: 'Whispering Dawn', iconArray: iconArrayC });
     addRecast({ name: actionMatch.groups.actionName });
-    addCountdown({ name: actionMatch.groups.actionName, iconArray: iconArrayC, countdownArray: countdownArrayB });
+    addCountdown({
+      name: actionMatch.groups.actionName, iconArray: iconArrayC, countdownArray: countdownArrayB,
+    });
   } else if (['Deployment Tactics', 'Recitation', 'Swiftcast'].indexOf(actionMatch.groups.actionName) > -1) {
     // removeIcon({ name: 'Whispering Dawn', iconArray: iconArrayC });
     addRecast({ name: actionMatch.groups.actionName });
