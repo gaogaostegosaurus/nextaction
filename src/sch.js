@@ -183,10 +183,10 @@ onAction.SCH = (actionMatch) => {
       name: actionMatch.groups.actionName, iconArray: iconArrayC, countdownArray: countdownArrayB,
     });
   } else if (['Deployment Tactics', 'Chain Stratagem', 'Recitation', 'Swiftcast'].indexOf(actionMatch.groups.actionName) > -1) {
-    // removeIcon({ name: 'Whispering Dawn', iconArray: iconArrayC });
     addRecast({ name: actionMatch.groups.actionName });
     addCountdown({ name: actionMatch.groups.actionName, iconArray: iconArrayC });
     if (actionMatch.groups.actionName === 'Chain Stratagem') {
+      removeIcon({ name: actionMatch.groups.actionName, iconArray: iconArrayC });
       addCountdown({
         name: actionMatch.groups.actionName, countdownArray: countdownArrayC, onComplete: 'addIcon', iconArray: iconArrayC,
       });
