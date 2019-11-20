@@ -118,9 +118,6 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
   }
 });
 
-previous.job = 'NONE';
-previous.level = 0;
-
 
 addOverlayListener('onTargetChangedEvent', (e) => {
   // console.log(`onTargetChangedEvent: ${JSON.stringify(e)}`);

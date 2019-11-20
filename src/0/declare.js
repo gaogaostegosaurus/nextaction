@@ -4,6 +4,9 @@ let iconArrayC = [];
 let countdownArrayA = [];
 let countdownArrayB = [];
 let countdownArrayC = [];
+const cooldownListA = {};
+const cooldownListB = {};
+const cooldownListC = {};
 
 // Objects
 let recastTracker = {}; // Holds timestamps for cooldowns
@@ -35,4 +38,3 @@ const onStatus = {};
 
 const onTargetChanged = {};
 const onJobChange = {};
-const cooldownList = {};

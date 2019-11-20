@@ -37,10 +37,19 @@ statusList.WHM = [
   // Probably more can go here but whatever for now?
 ];
 
-cooldownList.WHM = [
-  'Presence Of Mind', 'Benediction', 'Asylum', 'Assize', 'Thin Air', 'Tetragrammaton',
-  'Divine Benison', 'Plenary Indulgence', 'Temperance', 'Swiftcast', 'Lucid Dreaming', 'Surecast',
+cooldownListA.WHM = [
+  'Benediction', 'Asylum', 'Assize', 'Tetragrammaton', 'Divine Benison',
 ];
+
+cooldownListB.WHM = [
+  'Presence Of Mind', 'Thin Air',
+  'Plenary Indulgence', 'Temperance', 'Swiftcast', 'Lucid Dreaming', 'Surecast',
+];
+
+cooldownListC.WHM = [
+  //
+];
+
 
 const whmNext = () => {
   // Anything?
@@ -69,15 +78,15 @@ onJobChange.WHM = () => {
   }
 
   if (player.level >= 50) {
-    addCountdown({ name: 'Benediction', time: checkRecast({ name: 'Benediction' }), countdownArray: countdownArrayB });
+    addCountdown({ name: 'Benediction', time: checkRecast({ name: 'Benediction' }) });
   }
 
   if (player.level >= 52) {
-    addCountdown({ name: 'Asylum', time: checkRecast({ name: 'Asylum' }), countdownArray: countdownArrayB });
+    addCountdown({ name: 'Asylum', time: checkRecast({ name: 'Asylum' }) });
   }
 
   if (player.level >= 56) {
-    addCountdown({ name: 'Assize', time: checkRecast({ name: 'Assize' }), countdownArray: countdownArrayB });
+    addCountdown({ name: 'Assize', time: checkRecast({ name: 'Assize' }) });
   }
 
   if (player.level >= 58) {
@@ -85,11 +94,11 @@ onJobChange.WHM = () => {
   }
 
   if (player.level >= 60) {
-    addCountdown({ name: 'Tetragrammaton', time: checkRecast({ name: 'Tetragrammaton' }), countdownArray: countdownArrayB });
+    addCountdown({ name: 'Tetragrammaton', time: checkRecast({ name: 'Tetragrammaton' }) });
   }
 
   if (player.level >= 66) {
-    addCountdown({ name: 'Divine Benison', time: checkRecast({ name: 'Divine Benison' }), countdownArray: countdownArrayB });
+    addCountdown({ name: 'Divine Benison', time: checkRecast({ name: 'Divine Benison' }) });
   }
 
   if (player.level >= 70) {
@@ -97,15 +106,15 @@ onJobChange.WHM = () => {
   }
 
   if (player.level >= 80) {
-    addCountdown({ name: 'Temperance', time: checkRecast({ name: 'Temperance' }), countdownArray: countdownArrayB });
+    addCountdown({ name: 'Temperance', time: checkRecast({ name: 'Temperance' }), countdownArray: countdownArrayC });
   }
 
   if (player.level >= 18) {
-    addCountdown({ name: 'Swiftcast', time: checkRecast({ name: 'Swiftcast' }), countdownArray: countdownArrayB });
+    addCountdown({ name: 'Swiftcast', time: checkRecast({ name: 'Swiftcast' }), countdownArray: countdownArrayC });
   }
 
   if (player.level >= 24) {
-    addCountdown({ name: 'Lucid Dreaming', time: checkRecast({ name: 'Lucid Dreaming' }), countdownArray: countdownArrayB });
+    addCountdown({ name: 'Lucid Dreaming', time: checkRecast({ name: 'Lucid Dreaming' }), countdownArray: countdownArrayC });
   }
 };
 
@@ -140,16 +149,28 @@ onTargetChanged.WHM = () => {
 
 onAction.WHM = (actionMatch) => {
 
-  if (cooldownList.WHM.indexOf(actionMatch.groups.actionName) > -1) {
+  if (cooldownListA.WHM.indexOf(actionMatch.groups.actionName) > -1) {
+    addRecast({ name: actionMatch.groups.actionName });
+    addCountdown({ name: actionMatch.groups.actionName, countdownArray: countdownArrayA });
+  } else if (cooldownListB.WHM.indexOf(actionMatch.groups.actionName) > -1) {
     addRecast({ name: actionMatch.groups.actionName });
     addCountdown({ name: actionMatch.groups.actionName, countdownArray: countdownArrayB });
   } else if (['Aero', 'Aero II', 'Dia', 'Regen'].indexOf(actionMatch.groups.actionName) > -1) {
     removeIcon({ name: actionMatch.groups.actionName });
     addStatus({ name: actionMatch.groups.actionName, id: actionMatch.groups.targetID });
     if (player.name === 'Zoot Zoots') {
-      addCountdown({ name: actionMatch.groups.actionName, time: checkStatus({ name: actionMatch.groups.actionName, id: target.ID }), onComplete: 'addIcon', text: `${actionMatch.groups.actionName.toUpperCase} U DUMMY`});
+      addCountdown({
+        name: actionMatch.groups.actionName,
+        time: checkStatus({ name: actionMatch.groups.actionName, id: target.ID }),
+        onComplete: 'addIcon',
+        text: `${actionMatch.groups.actionName.toUpperCase} U DUMMY`,
+      });
     } else {
-      addCountdown({ name: actionMatch.groups.actionName, time: checkStatus({ name: actionMatch.groups.actionName, id: target.ID }), onComplete: 'addIcon' });
+      addCountdown({
+        name: actionMatch.groups.actionName,
+        time: checkStatus({ name: actionMatch.groups.actionName, id: target.ID }),
+        onComplete: 'addIcon',
+      });
     }
   }
 };
