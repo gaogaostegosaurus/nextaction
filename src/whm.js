@@ -56,54 +56,56 @@ onJobChange.WHM = () => {
     player.aeroSpell = 'Aero';
   }
 
-  if (checkStatus('freecure') > 0) {
+  if (checkStatus({ name: 'Freecure' }) > 0 && !toggle.freecure) {
     addIcon({ name: 'Freecure' });
+    toggle.freecure;
   } else {
     removeIcon({ name: 'Freecure' });
+    delete toggle.freecure;
   }
 
   if (player.level >= 30) {
-    addCountdown({ name: 'Presence Of Mind', time: checkRecast({ name: 'Presence Of Mind' }) });
+    addCountdown({ name: 'Presence Of Mind', time: checkRecast({ name: 'Presence Of Mind' }), countdownArray: countdownArrayB });
   }
 
   if (player.level >= 50) {
-    addCountdown({ name: 'Benediction', time: checkRecast({ name: 'Benediction' }) });
+    addCountdown({ name: 'Benediction', time: checkRecast({ name: 'Benediction' }), countdownArray: countdownArrayB });
   }
 
   if (player.level >= 52) {
-    addCountdown({ name: 'Asylum', time: checkRecast({ name: 'Asylum' }) });
+    addCountdown({ name: 'Asylum', time: checkRecast({ name: 'Asylum' }), countdownArray: countdownArrayB });
   }
 
   if (player.level >= 56) {
-    addCountdown({ name: 'Assize', time: checkRecast({ name: 'Assize' }) });
+    addCountdown({ name: 'Assize', time: checkRecast({ name: 'Assize' }), countdownArray: countdownArrayB });
   }
 
   if (player.level >= 58) {
-    addCountdown({ name: 'Thin Air', time: checkRecast({ name: 'Thin Air' }) });
+    addCountdown({ name: 'Thin Air', time: checkRecast({ name: 'Thin Air' }), countdownArray: countdownArrayB });
   }
 
   if (player.level >= 60) {
-    addCountdown({ name: 'Tetragrammaton', time: checkRecast({ name: 'Tetragrammaton' }) });
+    addCountdown({ name: 'Tetragrammaton', time: checkRecast({ name: 'Tetragrammaton' }), countdownArray: countdownArrayB });
   }
 
   if (player.level >= 66) {
-    addCountdown({ name: 'Divine Benison', time: checkRecast({ name: 'Divine Benison' }) });
+    addCountdown({ name: 'Divine Benison', time: checkRecast({ name: 'Divine Benison' }), countdownArray: countdownArrayB });
   }
 
   if (player.level >= 70) {
-    addCountdown({ name: 'Plenary Indulgence', time: checkRecast({ name: 'Plenary Indulgence' }) });
+    addCountdown({ name: 'Plenary Indulgence', time: checkRecast({ name: 'Plenary Indulgence' }), countdownArray: countdownArrayB });
   }
 
   if (player.level >= 80) {
-    addCountdown({ name: 'Temperance', time: checkRecast({ name: 'Temperance' }) });
+    addCountdown({ name: 'Temperance', time: checkRecast({ name: 'Temperance' }), countdownArray: countdownArrayB });
   }
 
   if (player.level >= 18) {
-    addCountdown({ name: 'Swiftcast', time: checkRecast({ name: 'Swiftcast' }) });
+    addCountdown({ name: 'Swiftcast', time: checkRecast({ name: 'Swiftcast' }), countdownArray: countdownArrayB });
   }
 
   if (player.level >= 24) {
-    addCountdown({ name: 'Lucid Dreaming', time: checkRecast({ name: 'Lucid Dreaming' }) });
+    addCountdown({ name: 'Lucid Dreaming', time: checkRecast({ name: 'Lucid Dreaming' }), countdownArray: countdownArrayB });
   }
 };
 
@@ -118,17 +120,18 @@ onCancel.WHM = (cancelMatch) => {
 onTargetChanged.WHM = () => {
   // Check if target is a new target
   if (previous.targetID !== target.ID) {
-    // Check Bio status if looking at new target
     removeIcon({ name: player.aeroSpell });
     removeIcon({ name: 'Regen' });
     if (target.ID.startsWith('4')) {
       // If not a target then clear things out
       // 0 = no target, 1... = player? E... = non-combat NPC?
-      addCountdown({ name: player.bioSpell, time: checkStatus({ name: player.bioSpell, id: target.ID }), onComplete: 'addIcon removeCountdown' });
+      hideCountdown({ name: 'Regen' });
+      addCountdown({ name: player.aeroSpell, time: checkStatus({ name: player.aeroSpell, id: target.ID }), onComplete: 'addIcon' });
     } else if (target.ID.startsWith('1') && ['PLD', 'WAR', 'DRK', 'GNB'].indexOf(target.job) > -1) {
-      addCountdown({ name: 'Regen', time: checkStatus({ name: 'Regen', id: target.ID }), onComplete: 'addIcon removeCountdown' });
+      hideCountdown({ name: player.aeroSpell });
+      addCountdown({ name: 'Regen', time: checkStatus({ name: 'Regen', id: target.ID }), onComplete: 'addIcon' });
     } else {
-      hideCountdown({ name: player.bioSpell });
+      hideCountdown({ name: player.aeroSpell });
       hideCountdown({ name: 'Regen' });
     }
     previous.targetID = target.ID;
@@ -142,7 +145,7 @@ onAction.WHM = (actionMatch) => {
     addCountdown({ name: actionMatch.groups.actionName, countdownArray: countdownArrayB });
   } else if (['Aero', 'Aero II', 'Dia', 'Regen'].indexOf(actionMatch.groups.actionName) > -1) {
     removeIcon({ name: actionMatch.groups.actionName });
-    addStatus({ name: actionMatch.groups.actionName, id: actionLog.groups.targetID });
+    addStatus({ name: actionMatch.groups.actionName, id: actionMatch.groups.targetID });
     addCountdown({ name: actionMatch.groups.actionName, time: checkStatus({ name: actionMatch.groups.actionName, id: target.ID }), onComplete: 'addIcon' });
   }
 };
@@ -152,7 +155,7 @@ onStatus.WHM = (statusMatch) => {
   if (statusMatch.groups.gainsLoses === 'gains') {
     addStatus({
       name: statusMatch.groups.statusName,
-      time: parseFloat(statusMatch.groups.effectDuration) * 1000,
+      time: parseFloat(statusMatch.groups.statusDuration) * 1000,
       id: statusMatch.groups.targetID,
     });
     if (statusMatch.groups.statusName === 'Freecure') {

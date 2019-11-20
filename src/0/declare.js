@@ -35,3 +35,4 @@ const onStatus = {};
 
 const onTargetChanged = {};
 const onJobChange = {};
+const cooldownList = {};
