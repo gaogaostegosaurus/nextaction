@@ -3,24 +3,31 @@
 // To do: clearer indication of when TCJ / Mudra is active
 actionList.NIN = [
   // Off GCD
-  'Shade Shift', 'Hide', 'Mug', 'Trick Attack', 'Shukuchi', 'Kassatsu', 'Dream Within A Dream',
-  'Assassinate', 'Hellfrog Medium', 'Bhavacakra', 'Ten Chi Jin', 'Meisui', 'Bunshin',
+  'Shade Shift', 'Hide', 'Mug', 'Shukuchi', 'Dream Within A Dream', 'Assassinate',
+  'Kassatsu', 'Ten Chi Jin',
+  'Trick Attack', 'Meisui',
+  'Hellfrog Medium', 'Bhavacakra', 'Bunshin',
 
   // GCD
-  'Spinning Edge', 'Gust Slash', 'Shadow Fang', 'Throwing Dagger', 'Aeolian Edge', 'Armor Crush',
+  'Spinning Edge', 'Gust Slash', 'Shadow Fang', 'Aeolian Edge', 'Armor Crush',
   'Death Blossom', 'Hakke Mujinsatsu',
+  'Throwing Dagger',
 
   // Ninjutsu
-  'Ninjutsu', 'Fuma Shuriken', 'Katon', 'Raiton', 'Hyoton', 'Huton', 'Doton', 'Suiton',
+  'Fuma Shuriken',
+  'Katon', 'Raiton', 'Hyoton',
+  'Huton', 'Doton', 'Suiton',
   'Goka Mekkyaku', 'Hyosho Ranyu',
-  // Code currently doesn't use mudra or most ninjutsu for decision-making
-  // "Ten", "Chi", "Jin", "Fuma Shuriken",  "Hyoton", "Huton", "Doton",
 
   // Role
   'Second Wind', 'Leg Sweep', 'Bloodbath', 'Feint', 'Arm\'s Length', 'True North',
 ];
 
-statusList.NIN = [];
+statusList.NIN = [
+  'Shade Shift', 'Shadow Fang', 'Kassatsu', 'Assassinate Ready', 'Ten Chi Jin', 'Bunshin',
+  'Mudra', 'Doton', 'Suiton',
+  'Bloodbath', 'Feint', 'Arm\'s Length', 'True North',
+];
 
 castingList.NIN = [];
 
@@ -131,7 +138,7 @@ const ninPushWeave = ({
   }
 };
 
-const ninPushAeolianEdge = ({ array = iconArrayB } = {}) => {
+const ninAeolianEdge = ({ array = iconArrayB } = {}) => {
   array.push({ name: 'spinningedge', img: 'spinningedge' });
   next.ninki = Math.min(next.ninki + 5, 100);
   next.elapsedTime += recast.gcd;
@@ -148,20 +155,19 @@ const ninPushAeolianEdge = ({ array = iconArrayB } = {}) => {
       next.ninki = Math.min(next.ninki + 5, 100);
     }
     next.elapsedTime += recast.gcd;
-
   }
 };
 
-const ninPushArmorCrush = ({ array = iconArrayB } = {}) => {
-  array.push({ name: 'spinningedge', img: 'spinningedge' });
+const ninArmorCrush = ({ array = iconArrayB } = {}) => {
+  array.push({ name: 'Spinning Edge', img: 'spinningedge' });
   next.ninki = Math.min(next.ninki + 5, 100);
   next.elapsedTime += recast.gcd;
 
-  array.push({ name: 'gustslash', img: 'gustslash' });
+  array.push({ name: 'Gust Slash', img: 'gustslash' });
   next.ninki = Math.min(next.ninki + 5, 100);
   next.elapsedTime += recast.gcd;
 
-  array.push({ name: 'armorcrush', img: 'armorcrush' }); // Add Armor Crush
+  array.push({ name: 'Armor Crush', img: 'armorcrush' }); // Add Armor Crush
   if (player.level >= 78) {
     next.ninki = Math.min(next.ninki + 10, 100);
   } else {
@@ -170,11 +176,10 @@ const ninPushArmorCrush = ({ array = iconArrayB } = {}) => {
   next.hutonStatus = Math.min(next.hutonStatus + duration.armorcrush,
     duration.huton + next.elapsedTime);
   next.elapsedTime += recast.gcd;
-
 };
 
-const ninPushShadowFang = ({ array = iconArrayB } = {}) => {
-  array.push({ name: 'shadowfang', img: 'shadowfang' });
+const ninShadowFang = ({ array = iconArrayB } = {}) => {
+  array.push({ name: 'Shadow Fang', img: 'shadowfang' });
   next.shadowfangRecast = recast.shadowfang + next.elapsedTime;
   next.shadowfangStatus = duration.shadowfang + next.elapsedTime;
   if (player.level >= 78) {
@@ -183,7 +188,6 @@ const ninPushShadowFang = ({ array = iconArrayB } = {}) => {
     next.ninki = Math.min(next.ninki + 5, 100);
   }
   next.elapsedTime += recast.gcd;
-
 };
 
 const ninMudraUsed = ({ array = iconArrayB } = {}) => {
@@ -199,14 +203,14 @@ const ninMudraUsed = ({ array = iconArrayB } = {}) => {
   }
 };
 
-const ninPushFumaShuriken = ({ array = iconArrayB } = {}) => {
+const ninFumaShuriken = ({ array = iconArrayB } = {}) => {
   array.push({ name: 'Ten', img: 'ten' });
   array.push({ name: 'Fuma Shuriken', img: 'fumashuriken' });
   ninMudraUsed();
   next.elapsedTime += 500 * 1 + 1500;
 };
 
-const ninPushKaton = ({ array = iconArrayB } = {}) => {
+const ninKaton = ({ array = iconArrayB } = {}) => {
   if (next.kassatsuStatus - next.elapsedTime > 500 * 2) {
     array.push({ name: 'Chi', img: 'chi' });
     array.push({ name: 'Ten', img: 'ten' });
@@ -220,7 +224,7 @@ const ninPushKaton = ({ array = iconArrayB } = {}) => {
   next.elapsedTime += 500 * 2 + 1500;
 };
 
-const ninPushRaiton = ({ array = iconArrayB } = {}) => {
+const ninRaiton = ({ array = iconArrayB } = {}) => {
   // Covers Hyosho as well
   if (next.kassatsuStatus - next.elapsedTime > 500 * 2) {
     array.push({ name: 'Ten', img: 'ten' });
@@ -235,7 +239,7 @@ const ninPushRaiton = ({ array = iconArrayB } = {}) => {
   next.elapsedTime += 500 * 2 + 1500;
 };
 
-const ninPushHuton = ({ array = iconArrayB } = {}) => {
+const ninHuton = ({ array = iconArrayB } = {}) => {
   array.push({ name: 'Chi', img: 'chi' });
   array.push({ name: 'Jin', img: 'jin' });
   array.push({ name: 'Ten', img: 'ten' });
@@ -243,10 +247,9 @@ const ninPushHuton = ({ array = iconArrayB } = {}) => {
   ninMudraUsed();
   next.elapsedTime += 500 * 3 + 1500;
   next.hutonStatus = 70000 + next.elapsedTime;
-
 };
 
-const ninPushSuiton = ({ array = iconArrayB } = {}) => {
+const ninSuiton = ({ array = iconArrayB } = {}) => {
   array.push({ name: 'Ten', img: 'ten' });
   array.push({ name: 'Chi', img: 'chi' });
   array.push({ name: 'Jin', img: 'jin' });
@@ -261,63 +264,62 @@ const ninRotation = () => {
     // Use with TCJ
     if (next.trickattackRecast - next.elapsedTime < 20000 + 500 * 3 + 1500) {
       // Suiton for upcoming Trick
-      ninPushSuiton();
+      ninSuiton();
     } else if (player.level >= 72
       && next.meisuiRecast - next.elapsedTime < 20000 + 500 * 3 + 1500) {
       // Suiton for upcoming Meisui
-      ninPushSuiton();
+      ninSuiton();
     } else {
-      ninPushSuiton(); // Probably change this later...
+      ninSuiton(); // Probably change this later...
     }
   } else if (next.kassatsuStatus - next.elapsedTime > 0) {
     // Use with Kassatsu
     if (player.level >= 35 && count.targets > 1) {
       // Katon / Goka
-      ninPushKaton();
+      ninKaton();
     } else if (player.level >= 35 && next.trickattackStatus - next.elapsedTime > 0) {
       // Raiton / Hyosho during trick
-      ninPushRaiton();
+      ninRaiton();
     }
   } else if (player.level >= 45 && next.mudra1Recast - next.elapsedTime < 0
     && next.hutonStatus - next.elapsedTime < 500 * 3) {
-    ninPushHuton();
+    ninHuton();
   } else if (player.level >= 45
     && next.trickattackRecast - next.elapsedTime < 20000 + 500 * 3 + 1500
     && next.mudra1Recast - next.elapsedTime < 0) {
-    ninPushSuiton();
+    ninSuiton();
   } else if (player.level >= 72
     && next.meisuiRecast - next.elapsedTime < 20000 + 500 * 3 + 1500
     && next.mudra1Recast - next.elapsedTime < 0) {
-    ninPushSuiton();
+    ninSuiton();
   } else if (next.mudra2Recast - next.elapsedTime < 500 * 2 + 1500) {
     // Prevent capping
     if (player.level >= 35 && count.targets > 1) {
       // Katon
-      ninPushKaton();
+      ninKaton();
       next.elapsedTime += 500 * 2 + 1500;
     } else if (player.level >= 35) {
       // Raiton
-      ninPushRaiton();
+      ninRaiton();
       next.elapsedTime += 500 * 2 + 1500;
     } else {
       // Fuma
-      ninPushFumaShuriken();
+      ninFumaShuriken();
       next.elapsedTime += 500 * 2 + 1500;
-
     }
   // Weaponskills
   } else if (player.level >= 45 && next.trickattackStatus - next.elapsedTime > 0
   && next.shadowfangRecast - next.elapsedTime < 0) {
     // Apply Shadowfang while trick is up
-    ninPushShadowFang();
+    ninShadowFang();
   } else if (player.level >= 30 && player.level < 45
   && next.shadowfangRecast - next.elapsedTime < 0) {
-    ninPushShadowFang();
+    ninShadowFang();
   } else if (player.level >= 56 && next.hutonStatus - next.elapsedTime < 40000 + recast.gcd * 2
     && next.hutonStatus - next.elapsedTime > 0 + recast.gcd * 2) {
-    ninPushArmorCrush();
+    ninArmorCrush();
   } else {
-    ninPushAeolianEdge();
+    ninAeolianEdge();
   }
 };
 

@@ -1,263 +1,167 @@
-"use strict";
+'use strict';
 
-const whmActionList = [
-
+actionList.WHM = [
   // oGCD actions
-  "Presence Of Mind", "Benediction", "Asylum", "Assize", "Thin Air", "Tetragrammaton", "Divine Benison",
-
+  'Fluid Aura', 'Presence Of Mind', 'Benediction', 'Asylum', 'Assize', 'Thin Air', 'Tetragrammaton',
+  'Divine Benison', 'Plenary Indulgence', 'Temperance',
 
   // GCD actions
-  "Aero", "Regen", "Aero II", "Dia", "Afflatus Misery",
+  'Cure', 'Cure II', 'Cure III',
+  'Medica', 'Medica II',
+  'Regen',
+  'Raise',
+  'Stone', 'Stone II', 'Stone III', 'Stone IV', 'Glare',
+  'Holy',
+  'Aero', 'Aero II', 'Dia',
+  'Afflatus Solace', 'Afflatus Misery', 'Afflatus Rapture',
 
-  "Lucid Dreaming"
-
+  // Role actions
+  'Repose', 'Esuna', 'Swiftcast', 'Lucid Dreaming', 'Surecast', 'Rescue',
 ];
 
-function whmJobChange() {
+castingList.WHM = [
+  'Cure', 'Cure II', 'Cure III',
+  'Medica', 'Medica II',
+  'Raise',
+  'Stone', 'Stone II', 'Stone III', 'Stone IV', 'Glare',
+  'Holy',
+  // Role actions
+  'Repose', 'Esuna',
+];
 
-  // Set up UI
-  nextid.freecure = 0;
-  nextid.regen = 1;
-  nextid.aero = 2;
-  nextid.afflatusmisery = 3;
-  nextid.luciddreaming = 10;
-  nextid.thinair = nextid.luciddreaming;
+statusList.WHM = [
+  'Aero', 'Aero II', 'Dia',
+  'Regen',
+  'Divine Benison',
+  'Freecure',
+  // Probably more can go here but whatever for now?
+];
 
-  countdownid.regen = 0;
-  countdownid.aero = 0;
-  countdownid.assize = 1;
-  countdownid.divinebenison = 2;
-  countdownid.tetragrammaton = 3;
-  countdownid.benediction = 4;
-  countdownid.asylum = 5;
-  countdownid.presenceofmind = 6;
-  countdownid.thinair = 7;
-  countdownid.swiftcast = 8;
-  countdownid.plenaryindulgence = 10;
-  countdownid.temperance = 11;
+cooldownList.WHM = [
+  'Presence Of Mind', 'Benediction', 'Asylum', 'Assize', 'Thin Air', 'Tetragrammaton',
+  'Divine Benison', 'Plenary Indulgence', 'Temperance', 'Swiftcast', 'Lucid Dreaming', 'Surecast',
+];
 
-  // Set up icons
+const whmNext = () => {
+  // Anything?
+};
+
+onJobChange.WHM = () => {
+
   if (player.level >= 72) {
-    icon.aero = icon.dia;
-  }
-  else if (player.level >= 46) {
-    icon.aero = icon.aero2;
-  }
-  else {
-    icon.aero = "000401";
+    player.aeroSpell = 'Dia';
+  } else if (player.level >= 46) {
+    player.aeroSpell = 'Aero II';
+  } else {
+    player.aeroSpell = 'Aero';
   }
 
-  if (checkStatus("freecure") > 0) {
-    addIcon({name: "freecure"});
-  }
-  else {
-    removeIcon("freecure");
-  }
-
-  if (player.level >= 24
-  && player.currentMP / player.maxMP < 0.8
-  && checkRecast("luciddreaming") < 0) {
-    addIcon({name: "luciddreaming"});
-  }
-  else {
-    removeIcon("luciddreaming");
+  if (checkStatus('freecure') > 0) {
+    addIcon({ name: 'Freecure' });
+  } else {
+    removeIcon({ name: 'Freecure' });
   }
 
   if (player.level >= 30) {
-    addCountdownBar({name: "presenceofmind", time: -1});
+    addCountdown({ name: 'Presence Of Mind', time: checkRecast({ name: 'Presence Of Mind' }) });
   }
 
   if (player.level >= 50) {
-    addCountdownBar({name: "benediction", time: -1});
+    addCountdown({ name: 'Benediction', time: checkRecast({ name: 'Benediction' }) });
   }
 
   if (player.level >= 52) {
-    addCountdownBar({name: "asylum", time: -1});
+    addCountdown({ name: 'Asylum', time: checkRecast({ name: 'Asylum' }) });
   }
 
   if (player.level >= 56) {
-    addCountdownBar({name: "assize", time: -1});
+    addCountdown({ name: 'Assize', time: checkRecast({ name: 'Assize' }) });
   }
 
   if (player.level >= 58) {
-    addCountdownBar({name: "thinair", time: -1});
+    addCountdown({ name: 'Thin Air', time: checkRecast({ name: 'Thin Air' }) });
   }
 
   if (player.level >= 60) {
-    addCountdownBar({name: "tetragrammaton", time: -1});
+    addCountdown({ name: 'Tetragrammaton', time: checkRecast({ name: 'Tetragrammaton' }) });
   }
 
   if (player.level >= 66) {
-    addCountdownBar({name: "divinebenison", time: -1});
+    addCountdown({ name: 'Divine Benison', time: checkRecast({ name: 'Divine Benison' }) });
   }
 
   if (player.level >= 70) {
-    addCountdownBar({name: "plenaryindulgence", time: -1});
+    addCountdown({ name: 'Plenary Indulgence', time: checkRecast({ name: 'Plenary Indulgence' }) });
   }
 
   if (player.level >= 80) {
-    addCountdownBar({name: "temperance", time: -1});
+    addCountdown({ name: 'Temperance', time: checkRecast({ name: 'Temperance' }) });
   }
 
   if (player.level >= 18) {
-    addCountdownBar({name: "swiftcast", time: -1});
-  }
-}
-
-function whmPlayerChangedEvent() {
-
-  // MP recovery - Lucid and Thin Air share same spot
-  if (player.level >= 24
-  && player.currentMP / player.maxMP < 0.8
-  && checkRecast("luciddreaming") < 0) {
-    addIcon({name: "luciddreaming"});
-  }
-  else {
-    removeIcon("luciddreaming");
+    addCountdown({ name: 'Swiftcast', time: checkRecast({ name: 'Swiftcast' }) });
   }
 
-  if (player.tempjobDetail.bloodlily >= 3) {
-    addIcon({name: "afflatusmisery"});
+  if (player.level >= 24) {
+    addCountdown({ name: 'Lucid Dreaming', time: checkRecast({ name: 'Lucid Dreaming' }) });
   }
-  else {
-    removeIcon("afflatusmisery");
-  }
-}
+};
 
-function whmTargetChangedEvent() {
+onCasting.WHM = (castingMatch) => {
+  whmNext();
+};
 
-  if (previous.targetID != target.ID) {
+onCancel.WHM = (cancelMatch) => {
+  whmNext();
+};
 
-    // 0 = no target, 1... = player? E... = non-combat NPC?
-    if (target.ID.startsWith("1")
-    && ["PLD", "WAR", "DRK", "GNB"].indexOf(target.job) > -1) {
-      addCountdownBar({name: "regen", time: checkStatus("regen", target.ID), oncomplete: "addIcon"});
-    }
-    else if (target.ID.startsWith("4")) {
-      addCountdownBar({name: "aero", time: checkStatus("aero", target.ID), oncomplete: "addIcon"});
-    }
-    else {
-      removeCountdownBar("aero");
+onTargetChanged.WHM = () => {
+  // Check if target is a new target
+  if (previous.targetID !== target.ID) {
+    // Check Bio status if looking at new target
+    removeIcon({ name: player.aeroSpell });
+    removeIcon({ name: 'Regen' });
+    if (target.ID.startsWith('4')) {
+      // If not a target then clear things out
+      // 0 = no target, 1... = player? E... = non-combat NPC?
+      addCountdown({ name: player.bioSpell, time: checkStatus({ name: player.bioSpell, id: target.ID }), onComplete: 'addIcon removeCountdown' });
+    } else if (target.ID.startsWith('1') && ['PLD', 'WAR', 'DRK', 'GNB'].indexOf(target.job) > -1) {
+      addCountdown({ name: 'Regen', time: checkStatus({ name: 'Regen', id: target.ID }), onComplete: 'addIcon removeCountdown' });
+    } else {
+      hideCountdown({ name: player.bioSpell });
+      hideCountdown({ name: 'Regen' });
     }
     previous.targetID = target.ID;
   }
-}
+};
 
-function whmAction() {
+onAction.WHM = (actionMatch) => {
 
-  if (actionList.whm.indexOf(actionLog.groups.actionName) > -1) {
-
-    if (actionLog.groups.actionName == "Lucid Dreaming") {
-      addRecast("luciddreaming");
-      addCountdownBar({name: "luciddreaming"});
-    }
-
-    else if (actionLog.groups.actionName == "Presence Of Mind") {
-      addRecast("presenceofmind");
-      addCountdownBar({name: "presenceofmind"});
-    }
-
-    else if (actionLog.groups.actionName == "Benediction") {
-      addRecast("benediction");
-      addCountdownBar({name: "benediction"});
-    }
-
-    else if (actionLog.groups.actionName == "Asylum") {
-      addRecast("asylum");
-      addCountdownBar({name: "asylum"});
-    }
-
-    else if (actionLog.groups.actionName == "Assize") {
-      addRecast("assize");
-      addCountdownBar({name: "assize"});
-    }
-
-    else if (actionLog.groups.actionName == "Thin Air") {
-      addRecast("thinair");
-      addCountdownBar({name: "thinair"});
-    }
-
-    else if (actionLog.groups.actionName == "Tetragrammaton") {
-      addRecast("tetragrammaton");
-      addCountdownBar({name: "tetragrammaton"});
-    }
-
-    else if (actionLog.groups.actionName == "Divine Benison") {
-      addRecast("divinebenison");
-      addCountdownBar({name: "divinebenison"});
-    }
-
-    else if (actionLog.groups.actionName == "Regen") {
-      removeIcon("regen");
-      addCountdownBar({name: "regen", time: checkStatus("regen", target.ID), oncomplete: "addIcon"});
-      addStatus("regen", duration.regen, actionLog.groups.targetID);
-    }
-
-    else if (["Aero", "Aero II", "Dia"].indexOf(actionLog.groups.actionName) > -1) {
-      removeIcon("aero");
-      if (player.level >= 72) {
-        addStatus("aero", duration.dia, actionLog.groups.targetID);
-      }
-      else {
-        addStatus("aero", duration.aero, actionLog.groups.targetID);
-      }
-    }
+  if (cooldownList.WHM.indexOf(actionMatch.groups.actionName) > -1) {
+    addRecast({ name: actionMatch.groups.actionName });
+    addCountdown({ name: actionMatch.groups.actionName, countdownArray: countdownArrayB });
+  } else if (['Aero', 'Aero II', 'Dia', 'Regen'].indexOf(actionMatch.groups.actionName) > -1) {
+    removeIcon({ name: actionMatch.groups.actionName });
+    addStatus({ name: actionMatch.groups.actionName, id: actionLog.groups.targetID });
+    addCountdown({ name: actionMatch.groups.actionName, time: checkStatus({ name: actionMatch.groups.actionName, id: target.ID }), onComplete: 'addIcon' });
   }
-}
+};
 
-function whmStatus() {
+onStatus.WHM = (statusMatch) => {
 
-  if (statusLog.groups.statusName == "Freecure") {
-    if (statusLog.groups.gainsLoses == "gains") {
-      addStatus("freecure", parseInt(statusLog.groups.effectDuration) * 1000);
-      addIcon({name: "freecure"});
+  if (statusMatch.groups.gainsLoses === 'gains') {
+    addStatus({
+      name: statusMatch.groups.statusName,
+      time: parseFloat(statusMatch.groups.effectDuration) * 1000,
+      id: statusMatch.groups.targetID,
+    });
+    if (statusMatch.groups.statusName === 'Freecure') {
+      addIcon({ name: 'Freecure' });
     }
-    else if (statusLog.groups.gainsLoses == "loses") {
-      removeStatus("freecure");
-      removeIcon("freecure");
-    }
-  }
-
-  else if (statusLog.groups.statusName == "Lucid Dreaming") {
-    if (statusLog.groups.gainsLoses == "gains") {
-      addStatus("luciddreaming", parseInt(statusLog.groups.effectDuration) * 1000);
-    }
-    else if (statusLog.groups.gainsLoses == "loses") {
-      removeStatus("luciddreaming");
-    }
-  }
-
-  else if (statusLog.groups.statusName == "Regen") {
-    if (statusLog.groups.gainsLoses == "gains") {
-      addStatus("regen", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
-      removeIcon("regen");
-      if (target.ID == statusLog.groups.targetID
-      && ["PLD", "WAR", "DRK", "GNB"].indexOf(target.job) > -1) {
-        addCountdownBar({name: "regen", time: checkStatus("regen", target.ID), oncomplete: "addIcon"});
-      }
-    }
-    else if (statusLog.groups.gainsLoses == "loses") {
-      removeStatus("regen", statusLog.groups.targetID);
-      if (target.ID == statusLog.groups.targetID
-      && ["PLD", "WAR", "DRK", "GNB"].indexOf(target.job) > -1) {
-        addIcon({name: "regen"});
-      }
-    }
-  }
-
-  else if (["Aero", "Aero II", "Dia"].indexOf(statusLog.groups.statusName) > -1) {
-    if (statusLog.groups.gainsLoses == "gains") {
-      addStatus("aero", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
-      removeIcon("aero");
-      if (target.ID == statusLog.groups.targetID) {
-        addCountdownBar({name: "aero", time: checkStatus("aero", target.ID), oncomplete: "addIcon"});
-      }
-    }
-    else if (statusLog.groups.gainsLoses == "loses") {
-      removeStatus("aero", statusLog.groups.targetID);
-      if (target.ID == statusLog.groups.targetID) {
-        addIcon({name: "aero"});
-      }
+  } else if (statusMatch.groups.gainsLoses === 'loses') {
+    removeStatus({ name: statusMatch.groups.statusName });
+    if (statusMatch.groups.statusName === 'Freecure') {
+      removeIcon({ name: 'Freecure' });
     }
   }
 }

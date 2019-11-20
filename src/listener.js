@@ -56,7 +56,7 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
     player.faerieGauge = parseInt(debugJobArray[3], 16); // 0-100
     healerLucidDreaming();
   } else if (player.job === 'WHM') {
-    player.bloodlily = parseInt(debugJobArray[5], 16); // 0-3
+    player.bloodLily = parseInt(debugJobArray[5], 16); // 0-3
     healerLucidDreaming();
   }
 
@@ -128,18 +128,17 @@ addOverlayListener('onTargetChangedEvent', (e) => {
   // "id":int,"level":int,"name":"string","job":"string","currentHP":int,"maxHP":int,
   // "currentMP":int,"maxMP":int,"currentTP":int,"maxTP":int,
   // "pos":{"x":float,"y":float,"z":float},"distance":int}}
-  target = e.detail;
+  target.name = e.detail.name;
   target.ID = e.detail.id.toString(16).toUpperCase(); // See player.ID above
-  onTargetChanged[player.job]();
+  target.job = e.detail.job;
+  // target.level = e.detail.level;
+  target.currentHP = e.detail.currentHP;
+  target.currentMP = e.detail.currentMP;
+  target.maxHP = e.detail.maxHP;
+  target.maxMP = e.detail.maxMP;
+  // target.distance = e.detail.distance;
 
-  if (player.job === 'BLM') {
-    // blmTargetChangedEvent();
-  } else if (player.job === 'BRD') {
-    // brdTargetChangedEvent();
-  } else if (player.job === 'SCH') {
-  } else if (player.job === 'WHM') {
-    // whmTargetChangedEvent();
-  }
+  onTargetChanged[player.job]();
 });
 
 // Fires when character exits or enters combat

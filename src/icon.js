@@ -655,9 +655,9 @@ icon.innerchaos = '002568';
 
 // WHM
 icon.aero = '000401';
-icon.aero2 = '000402';
+icon.aeroii = '000402';
 icon.freecure = '000406';
-icon.medica2 = '000409';
+icon.medicaii = '000409';
 icon.presenceofmind = '002626';
 icon.benediction = '002627';
 icon.regen = '002628';
