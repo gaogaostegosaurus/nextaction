@@ -146,7 +146,11 @@ onAction.WHM = (actionMatch) => {
   } else if (['Aero', 'Aero II', 'Dia', 'Regen'].indexOf(actionMatch.groups.actionName) > -1) {
     removeIcon({ name: actionMatch.groups.actionName });
     addStatus({ name: actionMatch.groups.actionName, id: actionMatch.groups.targetID });
-    addCountdown({ name: actionMatch.groups.actionName, time: checkStatus({ name: actionMatch.groups.actionName, id: target.ID }), onComplete: 'addIcon' });
+    if (player.name === 'Zoot Zoots') {
+      addCountdown({ name: actionMatch.groups.actionName, time: checkStatus({ name: actionMatch.groups.actionName, id: target.ID }), onComplete: 'addIcon', text: `${actionMatch.groups.actionName.toUpperCase} U DUMMY`});
+    } else {
+      addCountdown({ name: actionMatch.groups.actionName, time: checkStatus({ name: actionMatch.groups.actionName, id: target.ID }), onComplete: 'addIcon' });
+    }
   }
 };
 
