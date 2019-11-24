@@ -1,6 +1,5 @@
 const gcdCalculation = ({
   speed,
-  time = 2500, // GCD in ms
 } = {}) => {
   // From theoryjerks site:
   // Math.floor(Math.floor(100 * 100 *
@@ -95,7 +94,10 @@ const gcdCalculation = ({
 
   // console.log(speed);
 
-  recast.gcd = Math.floor(Math.floor(10000 * (Math.floor((time * (1000 - Math.floor(130
+  recast.shadowfang = Math.floor(Math.floor(10000 * (Math.floor((70000 * (1000 - Math.floor(130
+    * (delta / levelMod)))) / 1000) / 1000)) / 100) * 10;
+
+  recast.gcd = Math.floor(Math.floor(10000 * (Math.floor((2500 * (1000 - Math.floor(130
     * (delta / levelMod)))) / 1000) / 1000)) / 100) * 10; // Modified to output in ms
   console.log(`calculated standard GCD as ${recast.gcd}`);
   return recast.gcd;
@@ -159,12 +161,15 @@ const clearUI = () => {
   syncIcons({ array: iconArrayA });
   syncIcons({ array: iconArrayB });
   syncIcons({ array: iconArrayC });
+  document.getElementById('countdown-a').innerHTML = '';
+  document.getElementById('countdown-b').innerHTML = '';
+  document.getElementById('countdown-c').innerHTML = '';
 };
 
 
 const countTargets = ({
   name,
-  property = name.replace(/[\s'-]/g, '').toLowerCase(),
+  property = name.replace(/[\s'-:]/g, '').toLowerCase(),
 } = {}) => {
   const countTargetsDelay = 1000;
   if (Date.now() - previous[property] > countTargetsDelay) {

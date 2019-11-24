@@ -73,7 +73,11 @@ const syncIcons = ({
       iconImg.className = 'iconimg';
       iconOverlay.className = 'iconoverlay';
       iconDiv.dataset.name = iconArray[i].name;
-      iconImg.src = `img/icon/${icon[iconArray[i].img]}.png`;
+      if (iconArray[i].img) {
+        iconImg.src = `img/icon/${icon[iconArray[i].img]}.png`;
+      } else {
+        iconImg.src = `img/icon/${icon[iconArray[i].name.replace(/[\s'-:]/g, '').toLowerCase()]}.png`;
+      }
       iconOverlay.src = 'img/icon/overlay.png';
       void iconDiv.offsetWidth;
       iconDiv.className = 'icon icon-show';
@@ -87,7 +91,7 @@ const syncIcons = ({
 
 const addIcon = ({
   name,
-  img = name.replace(/[\s'-]/g, '').toLowerCase(),
+  img = name.replace(/[\s'-:]/g, '').toLowerCase(),
   iconArray = iconArrayB,
   size = 'normal',
   order = 10,
@@ -188,6 +192,10 @@ const removeIcon = ({
   iconArray = iconArrayB,
   match = 'exact',
 } = {}) => {
+  if (Date.now() - previous.removeIcon < 10) {
+    return;
+  }
+  previous.removeIcon = Date.now();
   // Removes specific icon from display
 
   const rowID = getArrayRow({ iconArray });
@@ -480,6 +488,8 @@ icon.ten = '002901';
 icon.chi = '002902';
 icon.jin = '002903';
 icon.ninjutsu = '002904';
+icon.mudra1 = '002904';
+icon.mudra2 = '002904';
 icon.kassatsu = '002906';
 icon.fumashuriken = '002907';
 icon.katon = '002908';
@@ -497,7 +507,7 @@ icon.tenchijin = '002922';
 icon.hakkemujinsatsu = '002923';
 icon.meisui = '002924';
 icon.gokamekkyaku = '002925';
-icon.hyoshoranyu = '002926';
+icon.hyoshoranryu = '002926';
 icon.bunshin = '002927';
 
 // PLD

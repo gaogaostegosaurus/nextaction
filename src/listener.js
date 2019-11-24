@@ -13,8 +13,9 @@ let actionRegExp;
 let statusRegExp;
 let castingRegExp;
 let cancelRegExp;
-let addedRegExp;
-let statsRegExp;
+// let addedRegExp;
+const statsRegExp = new RegExp(' 0C:Player Stats: (?<jobID>[\\d]+):(?<strength>[\\d]+):(?<dexterity>[\\d]+):(?<vitality>[\\d]+):(?<intelligence>[\\d]+):(?<mind>[\\d]+):(?<piety>[\\d]+):(?<attackPower>[\\d]+):(?<directHitRate>[\\d]+):(?<criticalHit>[\\d]):(?<attackMagicPotency>[\\d]+):(?<healingMagicPotency>[\\d]+):(?<determination>[\\d]+):(?<skillSpeed>[\\d]+):(?<spellSpeed>[\\d]+):0:(?<tenacity>[\\d]+)');
+
 // onPlayerChangedEvent:
 // fires whenever player change detected (including HP, MP, other resources, positions, etc.)
 addOverlayListener('onPlayerChangedEvent', (e) => {
@@ -73,7 +74,6 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
     castingRegExp = new RegExp(` 14:(?<actionID>[\\dA-F]{1,4}):(?<sourceName>${player.name}) starts using (?<actionName>${casting}) on (?<targetName>[ -~]+?)\\.`);
     cancelRegExp = new RegExp(` 17:(?<sourceID>${player.ID}):(?<sourceName>${player.name}):(?<actionID>[\\dA-F]{1,4}):(?<actionName>${casting}):Cancelled:`);
     addedRegExp = new RegExp(` 03:(?<sourceID>${player.ID}):Added new combatant (?<sourceName>${player.name})\\.  Job: (?<job>[A-z]{3}) `);
-    statsRegExp = new RegExp(' 0C:Player Stats: (?<jobID>[\\d]+):(?<strength>[\\d]+):(?<dexterity>[\\d]+):(?<vitality>[\\d]+):(?<intelligence>[\\d]+):(?<mind>[\\d]+):(?<piety>[\\d]+):(?<attackPower>[\\d]+):(?<directHitRate>[\\d]+):(?<criticalHit>[\\d]):(?<attackMagicPotency>[\\d]+):(?<healingMagicPotency>[\\d]+):(?<determination>[\\d]+):(?<skillSpeed>[\\d]+):(?<spellSpeed>[\\d]+):0:(?<tenacity>[\\d]+)');
     clearUI();
     onJobChange[player.job]();
     console.log(`Changed to ${player.job}${player.level}`);
@@ -117,6 +117,11 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
     // }
   }
 });
+
+onAction.NONE = () => {};
+onCasting.NONE = () => {};
+onCancel.NONE = () => {};
+onStatus.NONE = () => {};
 
 
 addOverlayListener('onTargetChangedEvent', (e) => {

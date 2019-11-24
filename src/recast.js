@@ -193,6 +193,7 @@ recast.plenaryindulgence = 120000;
 recast.presenceofmind = 150000;
 recast.tetragrammaton = 60000;
 recast.thinair = 120000;
+recast.temperance = 120000;
 
 // Raid
 recast.raidbattlelitany = recast.battlelitany;

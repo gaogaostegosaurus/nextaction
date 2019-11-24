@@ -677,7 +677,6 @@ const rdmComboTimeout = () => {
   timeout.combo = setTimeout(rdmNext, 12500);
 };
 
-
 onJobChange.RDM = () => {
   player.dualcastRow = 'icon-b';
   if (player.level >= 62) {
@@ -732,3 +731,6 @@ onJobChange.RDM = () => {
   count.targets = 1;
   rdmNext();
 };
+
+// Unused functions
+onTargetChanged.RDM = () => {};
