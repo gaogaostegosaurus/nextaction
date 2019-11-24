@@ -43,11 +43,11 @@ cooldownListA.WHM = [
 
 cooldownListB.WHM = [
   'Presence Of Mind', 'Thin Air',
-  'Plenary Indulgence', 'Temperance', 'Swiftcast', 'Lucid Dreaming', 'Surecast',
+  'Plenary Indulgence',
 ];
 
 cooldownListC.WHM = [
-  //
+  'Temperance', 'Swiftcast', 'Lucid Dreaming', 'Surecast',
 ];
 
 
@@ -155,6 +155,9 @@ onAction.WHM = (actionMatch) => {
   } else if (cooldownListB.WHM.indexOf(actionMatch.groups.actionName) > -1) {
     addRecast({ name: actionMatch.groups.actionName });
     addCountdown({ name: actionMatch.groups.actionName, countdownArray: countdownArrayB });
+  } else if (cooldownListC.WHM.indexOf(actionMatch.groups.actionName) > -1) {
+    addRecast({ name: actionMatch.groups.actionName });
+    addCountdown({ name: actionMatch.groups.actionName, countdownArray: countdownArrayC });
   } else if (['Aero', 'Aero II', 'Dia', 'Regen'].indexOf(actionMatch.groups.actionName) > -1) {
     removeIcon({ name: actionMatch.groups.actionName });
     addStatus({ name: actionMatch.groups.actionName, id: actionMatch.groups.targetID });
