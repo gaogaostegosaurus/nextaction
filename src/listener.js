@@ -46,6 +46,8 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
     player.stepTotal = debugJobArray[6]; // 0-4
   } else if (player.job === 'GNB') {
     player.cartridge = parseInt(debugJobArray[0], 16); // 0-2
+  } else if (player.job === 'PLD') {
+    player.oath = e.detail.jobDetail.oath;
   } else if (player.job === 'NIN') {
     player.huton = e.detail.jobDetail.hutonMilliseconds;
     player.ninki = e.detail.jobDetail.ninkiAmount;
@@ -73,7 +75,7 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
     statusRegExp = new RegExp(` (?<logType>1[AE]):(?<targetID>[\\dA-F]{8}):(?<targetName>[ -~]+?) (?<gainsLoses>gains|loses) the effect of (?<statusName>${status}) from (?<sourceName>${player.name})(?: for )?(?<statusDuration>\\d*\\.\\d*)?(?: Seconds)?\\.`);
     castingRegExp = new RegExp(` 14:(?<actionID>[\\dA-F]{1,4}):(?<sourceName>${player.name}) starts using (?<actionName>${casting}) on (?<targetName>[ -~]+?)\\.`);
     cancelRegExp = new RegExp(` 17:(?<sourceID>${player.ID}):(?<sourceName>${player.name}):(?<actionID>[\\dA-F]{1,4}):(?<actionName>${casting}):Cancelled:`);
-    addedRegExp = new RegExp(` 03:(?<sourceID>${player.ID}):Added new combatant (?<sourceName>${player.name})\\.  Job: (?<job>[A-z]{3}) `);
+    // addedRegExp = new RegExp(` 03:(?<sourceID>${player.ID}):Added new combatant (?<sourceName>${player.name})\\.  Job: (?<job>[A-z]{3}) `);
     clearUI();
     onJobChange[player.job]();
     console.log(`Changed to ${player.job}${player.level}`);

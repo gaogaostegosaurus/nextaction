@@ -1,68 +1,157 @@
-"use strict";
+'use strict';
+
+
+toggle.combo = 0;
 
 // Define actions to watch for
 
-const pldActionList = [
+actionList.PLD = [
 
   // Non-GCD actions
-  "Fight Or Flight", "Spirits Within", "Sheltron", "Sentinel", "Cover",
-  "Divine Veil", "Intervention", "Requiescat", "Passage Of Arms",
-  "Intervene",
-  "Circle Of Scorn",
+  'Fight Or Flight', 'Spirits Within', 'Sheltron', 'Sentinel', 'Cover',
+  'Divine Veil', 'Intervention', 'Requiescat', 'Passage Of Arms',
+  'Intervene',
+  'Circle Of Scorn',
 
   // GCD actions
-  "Fast Blade", "Riot Blade", "Rage Of Halone", "Goring Blade",
-  "Royal Authority", "Atonement", "Holy Spirit",
-  "Total Eclipse", "Prominence", "Holy Circle", "Confiteor",
+  'Fast Blade', 'Riot Blade', 'Rage Of Halone', 'Goring Blade',
+  'Royal Authority', 'Atonement', 'Holy Spirit',
+  'Total Eclipse', 'Prominence', 'Holy Circle', 'Confiteor',
   // Total Eclipse => Prominence: 3 or more
   // Holy Circle: 2 or more
 
   // Role actions
-  "Rampart", "Arm\'s Length"
+  'Rampart', 'Arm\'s Length'
 
 ];
 
-function pldJobChange() {
+statusList.PLD = [
+  'Goring Blade', 'Requiescat', 'Sword Oath',
+];
 
-  nextid.ironwill = 0;
+castingList.PLD = [
+  'Clemency', 'Holy Spirit', 'Holy Circle',
+];
 
-  nextid.atonement1 = 1;
-  nextid.atonement2 = nextid.atonement1 + 1;
-  nextid.atonement3 = nextid.atonement1 + 2;
+const pldAreaOfEffect = [
+  'Total Eclipse', 'Prominence', 'Circle Of Scorn', 'Holy Circle', 'Confiteor',
+];
 
-  nextid.combo1 = nextid.atonement1 + 3;
-  nextid.combo2 = nextid.combo1 + 1;
-  nextid.combo3 = nextid.combo1 + 2;
+const pldSingleTarget = [
+  'Holy Spirit',
+];
 
-  nextid.holyspirit1 = nextid.combo1;
-  nextid.holyspirit2 = nextid.holyspirit1 + 1;
-  nextid.holyspirit3 = nextid.holyspirit1 + 2;
-  nextid.holyspirit4 = nextid.holyspirit1 + 3;
-  nextid.holyspirit5 = nextid.holyspirit1 + 4;
+const pldWeaponskills = [
+  'Fast Blade', 'Riot Blade', 'Rage Of Halone', 'Goring Blade',
+  'Royal Authority', 'Atonement',
+  'Total Eclipse', 'Prominence', 'Holy Spirit', 'Holy Circle', 'Confiteor',
+];
 
-  nextid.fastblade = nextid.combo1;
-  nextid.totaleclipse = nextid.combo1;
+const pldColumnA = [
+  'Fight Or Flight', 'Requiescat',
+];
 
-  nextid.riotblade = nextid.combo2;
-  nextid.prominence = nextid.combo2;
+const pldColumnB = [
+  'Rampart', 'Reprisal', 'Arm\'s Length', 'Sentinel', 'Hallowed Ground', 'Passage Of Arms',
+];
 
-  nextid.rageofhalone = nextid.combo3;
-  nextid.royalauthority = nextid.rageofhalone;
-  nextid.goringblade = nextid.combo3;
+const pldColumnC = [
+  'Low Blow', 'Provoke', 'Interject', 'Shirk',
+];
 
-  nextid.mitigation = 10;
-  nextid.rampart = nextid.mitigation;
-  nextid.sentinel = nextid.mitigation;
-  nextid.sheltron = nextid.mitigation;
-  nextid.fightorflight = 11;
-  nextid.requiescat = nextid.fightorflight;
+const pldNext = ({
+  time = recast.gcd,
+} = {}) => {
+  const pldArray = [];
 
-  countdownid.fightorflight = 0;
-  countdownid.requiescat = 1;
-  countdownid.intervene2 = 2;
-  countdownid.rampart = 11;
-  countdownid.sentinel = 12;
-  countdownid.hallowedground = 13;
+  next.MP = player.currentMP;
+  next.requiescatRecast = checkRecast({ name: 'Requiescat' });
+  next.requiescatStatus = checkStatus({ name: 'Requiescat' });
+  next.fightorflightRecast = checkRecast({ name: 'Fight Or Flight' });
+  next.fightorflightStatus = checkStatus({ name: 'Fight Or Flight' });
+  next.goringbladeStatus = checkStatus({ name: 'Goring Blade', id: target.ID });
+  next.swordoathStatus = checkStatus({ name: 'Sword Oath' });
+  next.comboToggle = toggle.combo;
+  next.swordoathCount = count.swordoath;
+
+  next.elapsedTime = time;
+  // console.log(next.comboToggle);
+
+  do {
+    if (next.fightorflightRecast - next.elapsedTime < 0
+    && (next.comboToggle === 0 || !next.comboToggle)) {
+      // Allows FoF to follow something while opening
+      pldArray.push({ name: 'Fast Blade' });
+      if (player.level >= 4) {
+        next.comboToggle = 1;
+      }
+      next.elapsedTime += recast.gcd;
+    } else if (next.fightorflightRecast - next.elapsedTime < 0
+    && next.requiescatStatus - next.elapsedTime < 0) {
+      pldArray.push({ name: 'Fight Or Flight', size: 'small' });
+      next.fightorflightRecast = 60000 + next.elapsedTime;
+      next.fightorflightStatus = 25000 + next.elapsedTime;
+    } else if (next.requiescatRecast - next.elapsedTime < 0
+    && next.fightorflightStatus - next.elapsedTime < 0
+    && next.comboToggle === 0 && next.swordoathCount === 0) {
+      pldArray.push({ name: 'Requiescat', size: 'small' });
+      next.requiescatRecast = 60000 + next.elapsedTime;
+      next.requiescatStatus = 12000 + next.elapsedTime;
+    } else if (next.requiescatStatus - next.elapsedTime > 0
+    && next.MP + Math.floor(next.elapsedTime / 3000) * 200 >= 2000) {
+      if (player.level >= 80
+      && (next.MP + Math.floor(next.elapsedTime / 3000) * 200 < 4000
+      || next.requiescatStatus - next.elapsedTime < 2500)) {
+        pldArray.push({ name: 'Confiteor' });
+      } else {
+        pldArray.push({ name: 'Holy Spirit' });
+      }
+      next.MP -= 2000;
+      next.elapsedTime += 2500;
+    } else if (player.level >= 76 && next.swordoathCount > 0) {
+      pldArray.push({ name: 'Atonement' });
+      next.swordoathCount -= 1;
+      next.MP += 400;
+      next.elapsedTime += recast.gcd;
+    } else if (player.level >= 54 && next.comboToggle === 2
+    && next.goringbladeStatus - next.elapsedTime < 0) {
+      pldArray.push({ name: 'Goring Blade' });
+      next.goringbladeStatus = 21000 + next.elapsedTime;
+      next.comboToggle = 0;
+      next.elapsedTime += recast.gcd;
+    } else if (player.level >= 60 && next.comboToggle === 2) {
+      pldArray.push({ name: 'Royal Authority' });
+      if (player.level >= 76) {
+        next.swordoathCount = 3;
+      }
+      next.comboToggle = 0;
+      next.elapsedTime += recast.gcd;
+    } else if (player.level >= 26 && next.comboToggle === 2) {
+      pldArray.push({ name: 'Rage Of Halone' });
+      next.comboToggle = 0;
+      next.elapsedTime += recast.gcd;
+    } else if (player.level >= 4 && next.comboToggle === 1) {
+      pldArray.push({ name: 'Riot Blade' });
+      if (player.level >= 26) {
+        next.comboToggle = 2;
+      } else {
+        next.comboToggle = 0;
+      }
+      next.MP += 1000;
+      next.elapsedTime += recast.gcd;
+    } else {
+      pldArray.push({ name: 'Fast Blade' });
+      next.elapsedTime += recast.gcd;
+      if (player.level >= 4) {
+        next.comboToggle = 1;
+      }
+    }
+  } while (next.elapsedTime < 15000);
+  iconArrayB = pldArray;
+  syncIcons();
+};
+
+onJobChange.PLD = () => {
 
   previous.totaleclipse = 0;
   previous.prominence = 0;
@@ -70,553 +159,100 @@ function pldJobChange() {
   previous.confiteor = 0;
   previous.circleofscorn = 0;
 
-  if (player.level >= 60) {
-    icon.rageofhalone = icon.royalauthority;
-  }
-  else {
-    icon.rageofhalone = "000155";
-  }
+  addCountdown({ name: 'Fight Or Flight', time: checkRecast({ name: 'Fight Or Flight' }) });
 
-  if (checkRecast("fightorflight") <= checkRecast("requiescat")) {
-    addCountdownBar({name: "fightorflight", time: checkRecast("fightorflight")});
-  }
-  else if (player.level >= 68) {
-    addCountdownBar({name: "requiescat", time: checkRecast("requiescat")});
+  if (player.level >= 68) {
+    addCountdown({ name: 'Requiescat', time: checkRecast({ name: 'Requiescat' }) });
   }
 
-  addCountdownBar({name: "rampart", time: checkRecast("rampart")});
-
-  // if (player.level >= 12) {
-  //   addCountdownBar({name: "lowblow", time: checkRecast("lowblow")});
-  // }
-
-  // if (player.level >= 18) {
-  //   addCountdownBar({name: "interject", time: checkRecast("interject")});
-  // }
-
-  // if (player.level >= 22) {
-  //   addCountdownBar({name: "reprisal", time: checkRecast("reprisal")});
-  // }
-
+  addCountdown({ name: 'Rampart', time: checkRecast({ name: 'Rampart' }), countdownArray: countdownArrayB });
+  if (player.level >= 22) {
+    addCountdown({ name: 'Reprisal', time: checkRecast({ name: 'Reprisal' }), countdownArray: countdownArrayB });
+  }
+  if (player.level >= 32) {
+    addCountdown({ name: 'Arm\'s Length', time: checkRecast({ name: 'Arm\'s Length' }), countdownArray: countdownArrayB });
+  }
   if (player.level >= 38) {
-    addCountdownBar({name: "sentinel", time: checkRecast("sentinel")});
+    addCountdown({ name: 'Sentinel', time: checkRecast({ name: 'Sentinel' }), countdownArray: countdownArrayB });
   }
-
-  // if (player.level >= 48) {
-  //   addCountdownBar({name: "shirk", time: checkRecast("shirk")});
-  // }
-
   if (player.level >= 50) {
-    addCountdownBar({name: "hallowedground", time: checkRecast("hallowedground")});
+    addCountdown({ name: 'Hallowed Ground', time: checkRecast({ name: 'Hallowed Ground' }), countdownArray: countdownArrayB });
+  }
+  if (player.level >= 70) {
+    addCountdown({ name: 'Passage Of Arms', time: checkRecast({ name: 'Passage Of Arms' }), countdownArray: countdownArrayB });
   }
 
-  if (player.level >= 74) {
-    addCountdownBar({name: "intervene2", time: checkRecast("intervene2")});
+  if (player.level >= 12) {
+    addCountdown({ name: 'Low Blow', time: checkRecast({ name: 'Low Blow' }), countdownArray: countdownArrayC });
+  }
+  if (player.level >= 15) {
+    addCountdown({ name: 'Provoke', time: checkRecast({ name: 'Provoke' }), countdownArray: countdownArrayC });
+  }
+  if (player.level >= 18) {
+    addCountdown({ name: 'Interject', time: checkRecast({ name: 'Interject' }), countdownArray: countdownArrayC });
+  }
+  if (player.level >= 48) {
+    addCountdown({ name: 'Shirk', time: checkRecast({ name: 'Shirk' }), countdownArray: countdownArrayC });
   }
 
-  pldCombo();
+  pldNext();
+};
 
-}
+onTargetChanged.PLD = () => {};
 
-function pldPlayerChangedEvent() {
-}
-
-function pldCastStart() {
-}
-
-
-function pldCastCancel() {
-}
-
-function pldAction() {
-
-  if (actionList.pld.indexOf(actionLog.groups.actionName) > -1) {
-
-    // Role actions
-
-    if ("Rampart" == actionLog.groups.actionName) {
-      addRecast("rampart");
-      removeIcon("rampart");
-    }
-
-    // PLD non-GCD
-
-    else if ("Fight Or Flight" == actionLog.groups.actionName) {
-      removeIcon("fightorflight");
-      addStatus("fightorflight");
-      addRecast("fightorflight");
-      addCountdownBar({name: "fightorflight"});
-    }
-
-    else if ("Spirits Within" == actionLog.groups.actionName) {
-      addRecast("spiritswithin");
-    }
-
-    else if ("Sheltron" == actionLog.groups.actionName) {
-      addRecast("sheltron");
-    }
-
-    else if ("Sentinel" == actionLog.groups.actionName) {
-      addRecast("sentinel");
-    }
-
-    else if ("Cover" == actionLog.groups.actionName) {
-      addRecast("cover");
-    }
-
-    else if ("Divine Veil" == actionLog.groups.actionName) {
-      addRecast("divineveil");
-    }
-
-    else if ("Intervention" == actionLog.groups.actionName) {
-      addRecast("intervention");
-    }
-
-    else if ("Requiescat" == actionLog.groups.actionName) {
-      removeIcon("requiescat");
-      addStatus("requiescat");
-      addRecast("requiescat");
-      addCountdownBar({name: "requiescat"});
-
-      pldRequiescatMP();
-    }
-
-    else if ("Passage Of Arms" == actionLog.groups.actionName) {
-      addRecast("passageofarms");
-    }
-
-    else if ("Intervene" == actionLog.groups.actionName) {
-      if (checkRecast("intervene2") < 0) {
-        addRecast("intervene1", -1);
-        addRecast("intervene2");
-      }
-      else {
-        addRecast("intervene1", checkRecast("intervene2"));
-        addRecast("intervene2", checkRecast("intervene2") + recast.intervene);
-      }
-    }
-
-    else if ("Circle Of Scorn" == actionLog.groups.actionName) {
-      if (Date.now() - previous.circleofscorn > 1000) {
-        previous.circleofscorn = Date.now();
-        count.targets = 1;
-        addRecast("circleofscorn");
-      }
-      else {
-        count.targets = count.targets + 1;
-      }
-    }
-
-    // GCD actions - affect combos
-
-    // else if ("Bloodspiller" == actionLog.groups.actionName) {
-    //   removeIcon("bloodspiller");
-    // }
-
-    // GCD actions - affect combos, catch all)
-
-    else {
-
-      if ("Fast Blade" == actionLog.groups.actionName
-      && actionLog.groups.result.length > 1) {
-        if (next.combo > 2) {
-          pldSingleTargetCombo();
-          toggle.combo = Date.now();
-        }
-        removeIcon("fastblade");
-        pldComboTimeout();
-      }
-
-      else if ("Riot Blade" == actionLog.groups.actionName
-      && actionLog.groups.result.length > 6) {
-        if (player.level < 26) {
-          pldCombo();
-        }
-        else {
-          removeIcon("fastblade");
-          removeIcon("riotblade");
-          pldComboTimeout();
-        }
-      }
-
-      else if ("Goring Blade" == actionLog.groups.actionName
-      && actionLog.groups.result.length > 6) {
-        addStatus("goringblade", duration.goringblade, actionLog.groups.targetID);
-        pldCombo();
-      }
-
-      else if ("Royal Authority" == actionLog.groups.actionName
-      && player.level >= 76
-      && actionLog.groups.result.length > 6) {
-        removeIcon("royalauthority");
-        count.atonement = 3;
-        addIcon({name: "atonement1"});
-        addIcon({name: "atonement2"});
-        addIcon({name: "atonement3"});
-        pldGoringBladeCombo();
-      }
-
-      else if ("Atonement" == actionLog.groups.actionName
-      && actionLog.groups.result.length > 1) {
-        count.atonement = count.atonement - 1;
-        if (count.atonement == 2) {
-          removeIcon("atonement1");
-        }
-        else if (count.atonement == 1) {
-          removeIcon("atonement2");
-        }
-        if (count.atonement == 0) {
-          removeIcon("atonement3");
-        }
-      }
-
-      else if ("Total Eclipse" == actionLog.groups.actionName
-      && actionLog.groups.result.length > 1) {
-
-        if (Date.now() - previous.totaleclipse > 1000) {
-          previous.totaleclipse = Date.now();
-          count.targets = 1;
-          if (next.combo < 3) {
-            pldAreaOfEffectCombo();
-          }
-          removeIcon("totaleclipse");
-          if (player.level < 40) {
-            pldCombo();
-          }
-          else {
-            toggle.combo = Date.now();
-            pldComboTimeout();
-          }
-        }
-        else {
-          count.targets = count.targets + 1;
-          pldCombo();
-        }
-      }
-
-      else if ("Prominence" == actionLog.groups.actionName
-      && actionLog.groups.result.length > 6) {
-
-        if (Date.now() - previous.prominence > 1000) {
-          previous.prominence = Date.now();
-          count.targets = 1;
-        }
-        else {
-          count.targets = count.targets + 1;
-        }
-        pldCombo();
-      }
-
-      else if ("Holy Spirit" == actionLog.groups.actionName
-      && actionLog.groups.result.length > 1) {
-        pldRequiescatMP();
-      }
-
-      else if ("Holy Circle" == actionLog.groups.actionName
-      && actionLog.groups.result.length > 1) {
-        if (Date.now() - previous.holycircle > 1000) {
-          previous.holycircle = Date.now();
-          count.targets = 1;
-        }
-        else {
-          count.targets = count.targets + 1;
-        }
-        pldRequiescatMP();
-      }
-
-      else if ("Confiteor" == actionLog.groups.actionName
-      && actionLog.groups.result.length > 1) {
-        if (Date.now() - previous.confiteor > 1000) {
-          previous.confiteor = Date.now();
-          count.targets = 1;
-        }
-        else {
-          count.targets = count.targets + 1;
-        }
-        pldRequiescatMP()
-      }
-
-      else {
-        pldCombo();
-      }
-    }
-  }
-}
-
-function pldStatus() {
-
-  if (statusLog.groups.targetID == player.ID) { // Target is self
-
-    if ("Rampart" == statusLog.groups.statusName) {
-      if (statusLog.groups.gainsLoses == "gains") {
-        if (checkStatus("mitigation", statusLog.groups.targetID) < parseInt(statusLog.groups.effectDuration) * 1000) {
-          addStatus("mitigation", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
-        }
-      }
-      else if (statusLog.groups.gainsLoses == "loses") {
-        if (checkStatus("mitigation", statusLog.groups.targetID) < 0 // Check for overlaps
-        && count.targets >= 3) {
-          drkMitigation();
-        }
-      }
-    }
-
-    else if ("Iron Will" == statusLog.groups.statusName) {
-      if (statusLog.groups.gainsLoses == "gains") {
-        removeIcon("ironwill");
-      }
-      else if (statusLog.groups.gainsLoses == "loses") {
-        addIcon({name: "ironwill"});
-      }
-    }
-
-    else if ("Sentinel" == statusLog.groups.statusName) {
-      if (statusLog.groups.gainsLoses == "gains") {
-        if (checkStatus("mitigation", statusLog.groups.targetID) < parseInt(statusLog.groups.effectDuration) * 1000) {
-          addStatus("mitigation", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
-        }
-      }
-      else if (statusLog.groups.gainsLoses == "loses") {
-        if (checkStatus("mitigation", statusLog.groups.targetID) < 0
-        && count.targets >= 3) {
-          drkMitigation();
-        }
-      }
-    }
-
-    else if ("Requiescat" == statusLog.groups.statusName) {
-      if (statusLog.groups.gainsLoses == "gains") {
-        addStatus("requiescat", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID)
-      }
-      else if (statusLog.groups.gainsLoses == "loses") {
-        removeStatus("requiescat");
-        removeIcon("holyspirit1");
-        removeIcon("holyspirit2");
-        removeIcon("holyspirit3");
-        removeIcon("holyspirit4");
-        removeIcon("holyspirit5");
-        pldCombo();
-      }
-    }
-
-    else if ("Sword Oath" == statusLog.groups.statusName) {
-      if (statusLog.groups.gainsLoses == "gains") {
-        addStatus("swordoath", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID)
-      }
-      else if (statusLog.groups.gainsLoses == "loses") {
-        removeIcon("atonement1");
-        removeIcon("atonement2");
-        removeIcon("atonement3");
-        removeStatus("swordoath");
-        pldCombo();
-      }
-    }
-
-  }
-}
-
-
-function pldMitigation() {
-
-  // Shows next mitigation cooldown
-
-}
-//
-// function pldMP() {
-//
-//   player.tempjobDetail.darkarts = player.debugJobSplit[4]; // 0 or 1
-//
-//   if (player.level >= 74) {
-//     if (count.targets >= 2) {
-//       icon.floodofdarkness = icon.floodofshadow;
-//     }
-//     else {
-//       icon.floodofdarkness = icon.edgeofshadow;
-//     }
-//   }
-//   else if (player.level >= 40
-//   && count.targets == 1) {
-//     icon.floodofdarkness = icon.edgeofdarkness;
-//   }
-//   else {
-//     icon.floodofdarkness = "003082";
-//   }
-//
-//   if (player.level >= 70) {
-//     if (player.currentMP >= 6000
-//     || player.tempjobDetail.darkarts == 1) {
-//       //addIcon({name: "floodofdarkness"});
-//     }
-//     else {
-//       removeIcon("floodofdarkness");
-//     }
-//   }
-//   else if (player.level >= 30) { // No TBN yet
-//     if (player.currentMP >= 3000) {
-//       addIcon({name: "floodofdarkness"});
-//     }
-//     else {
-//       removeIcon("floodofdarkness");
-//     }
-//   }
-// }
-
-// function pldGauge() {
-//
-//   let targetblood = 50; // Use spender at or above this number
-//
-//   if (player.level >= 64
-//   && count.targets >= 3) {
-//     icon.gaugespender = icon.quietus;
-//   }
-//   else {
-//     icon.gaugespender = icon.bloodspiller;
-//   }
-//
-//   if (checkStatus("delirium", player.ID) > 0) {
-//     targetblood = 0;
-//   }
-//   else if (player.level >= 80
-//   && checkRecast("livingshadow") < 20000) { // Is this enough?
-//     targetblood = 100; // Try to have a buffer for Living Shadow
-//   }
-//
-//   if (player.jobDetail.blood >= targetblood) {
-//     if (player.level >= 80
-//     && checkRecast("livingshadow") < 1000) {
-//       addIcon({name: "gaugespender"});
-//     }
-//     else if (player.level >= 62) {
-//       addIcon({name: "gaugespender"});
-//     }
-//   }
-//   else {
-//     removeIcon("gaugespender");
-//   }
-// }
-
-function pldCombo() {
-
-  delete toggle.combo;
-  delete next.combo;
-
-  removeIcon("combo1");
-  removeIcon("combo2");
-  removeIcon("combo3");
-
-  if (checkStatus("requiescat") < 0
-  || player.currentMP < 2000) {
-    if (count.targets >= 3) {
-      pldAreaOfEffectCombo();
-    }
-    else {
-      pldSingleTargetCombo();
-    }
+onAction.PLD = (actionMatch) => {
+  if (pldAreaOfEffect.indexOf(actionMatch.groups.actionName) > -1) {
+    countTargets({ name: actionMatch.groups.actionName });
+  } else if (pldSingleTarget.indexOf(actionMatch.groups.actionName) > -1) {
+    count.targets = 1;
   }
 
-}
+  if (['Fight Or Flight', 'Requiescat'].indexOf(actionMatch.groups.actionName) > -1) {
+    removeIcon({ name: actionMatch.groups.actionName });
+    addStatus({ name: actionMatch.groups.actionName });
+    addRecast({ name: actionMatch.groups.actionName });
+    addCountdown({ name: actionMatch.groups.actionName });
+  } else if (pldWeaponskills.indexOf(actionMatch.groups.actionName) > -1) {
+    if (actionMatch.groups.actionName === 'Goring Blade' && actionMatch.groups.result.length >= 6) {
+      addStatus({ name: 'Goring Blade', id: actionMatch.groups.targetID });
+    } else if (player.level >= 76 && actionMatch.groups.actionName === 'Royal Authority' && actionMatch.groups.result.length >= 6) {
+      count.swordoath = 3;
+    } else if (actionMatch.groups.actionName === 'Atonement') {
+      count.swordoath -= 1;
+    }
 
-function pldSingleTargetCombo() {
-  if (checkStatus("swordoath") > 2000) {
-    pldGoringBladeCombo();
+    if (['Rage Of Halone', 'Goring Blade', 'Royal Authority', 'Prominence'].indexOf(actionMatch.groups.actionName) > -1) {
+      toggle.combo = 0;
+      removeIcon({ name: actionMatch.groups.actionName });
+    } else if (player.level >= 40 && actionMatch.groups.actionName === 'Total Eclipse' && actionMatch.groups.result.length >= 6) {
+      toggle.combo = 11;
+      removeIcon({ name: actionMatch.groups.actionName });
+    } else if (player.level >= 26 && actionMatch.groups.actionName === 'Riot Blade' && actionMatch.groups.result.length >= 8) {
+      toggle.combo = 2;
+      removeIcon({ name: actionMatch.groups.actionName });
+    } else if (player.level >= 4 && actionMatch.groups.actionName === 'Fast Blade' && actionMatch.groups.result.length >= 6) {
+      toggle.combo = 1;
+      removeIcon({ name: actionMatch.groups.actionName });
+    } else {
+      toggle.combo = 0;
+    }
+    pldNext();
+  } else if (pldColumnB.indexOf(actionMatch.groups.actionName) > -1) {
+    addStatus({ name: actionMatch.groups.actionName });
+    addRecast({ name: actionMatch.groups.actionName });
+    addCountdown({ name: actionMatch.groups.actionName, countdownArray: countdownArrayB });
   }
-  else if (player.level >= 54
-  && checkStatus("goringblade", target.ID) < 5 * 2500) {
-    pldGoringBladeCombo();
-  }
-  else if (player.level >= 54
-  && checkRecast("fightorflight") < 2 * 2500) {
-    pldGoringBladeCombo();
-  }
-  else if (player.level >= 54
-  && checkStatus("fightorflight") > 3 * 2500
-  && checkStatus("fightorflight") < 6 * 2500) {
-    pldGoringBladeCombo();
-  }
-  else {
-    pldRageOfHaloneCombo();
-  }
-}
+};
 
-function pldAreaOfEffectCombo() {
-  pldProminenceCombo();
-}
+onCasting.PLD = () => {};
 
-function pldRageOfHaloneCombo() {
-  next.combo = 1;
-  addIcon({name: "fastblade"});
-  addIcon({name: "riotblade"});
-  if (player.level >= 26) {
-    addIcon({name: "rageofhalone"});
-  }
-}
+onCancel.PLD = () => {
+  pldNext();
+};
 
-function pldGoringBladeCombo() {
-  next.combo = 2;
-  addIcon({name: "fastblade"});
-  addIcon({name: "riotblade"});
-  addIcon({name: "goringblade"});
-}
+onStatus.PLD = () => {};
 
-
-function pldProminenceCombo() {
-  next.combo = 3;
-  addIcon({name: "totaleclipse"});
-  if (player.level >= 40) {
-    addIcon({name: "prominence"});
-  }
-}
-
-function pldComboTimeout() {
+const pldNextTimeout = () => {
   clearTimeout(timeout.combo);
-  timeout.combo = setTimeout(pldCombo, 12500);
-}
-
-function pldRequiescatMP() {
-
-  removeIcon("holyspirit1");
-  removeIcon("holyspirit2");
-  removeIcon("holyspirit3");
-  removeIcon("holyspirit4");
-  removeIcon("holyspirit5");
-
-  if (count.targets >= 2) {
-    icon.holyspirit1 = icon.holycircle;
-    icon.holyspirit2 = icon.holycircle;
-    icon.holyspirit3 = icon.holycircle;
-    icon.holyspirit4 = icon.holycircle;
-    icon.holyspirit5 = icon.holycircle;
-  }
-  else {
-    icon.holyspirit1 = icon.holyspirit;
-    icon.holyspirit2 = icon.holyspirit;
-    icon.holyspirit3 = icon.holyspirit;
-    icon.holyspirit4 = icon.holyspirit;
-    icon.holyspirit5 = icon.holyspirit;
-  }
-
-  if (player.level >= 80) {
-    icon.holyspirit5 = icon.confiteor;
-  }
-
-  if (Math.floor(player.currentMP / 2000) >= 5) {
-    addIcon({name: "holyspirit1"});
-  }
-  if (Math.floor(player.currentMP / 2000) >= 4) {
-    addIcon({name: "holyspirit2"});
-  }
-  if (Math.floor(player.currentMP / 2000) >= 3) {
-    addIcon({name: "holyspirit3"});
-  }
-  if (Math.floor(player.currentMP / 2000) >= 2) {
-    addIcon({name: "holyspirit4"});
-  }
-  if (Math.floor(player.currentMP / 2000) >= 1) {
-    addIcon({name: "holyspirit5"});
-  }
-
-  if (Math.floor(player.currentMP / 2000) == 0) {
-    pldCombo();
-  }
-
-}
+  timeout.combo = setTimeout(pldNext, 12500);
+};

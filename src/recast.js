@@ -54,8 +54,15 @@ recast.gcd = 2500;
 // Role actions
 recast.luciddreaming = 60000;
 recast.peloton = 5000;
-recast.rampart = 90000;
 recast.swiftcast = 60000;
+
+recast.rampart = 90000;
+recast.lowblow = 25000;
+recast.provoke = 30000;
+recast.interject = 30000;
+recast.reprisal = 60000;
+recast.armslength = 120000;
+recast.shirk = 120000;
 
 // BLM
 recast.enochian = 30000;
@@ -141,6 +148,21 @@ recast.dreamwithinadream = 60000;
 recast.tenchijin = 120000;
 recast.meisui = 120000;
 recast.bunshin = 90000;
+
+// PLD
+recast.fightorflight = 60000;
+recast.sentinel = 120000;
+recast.circleofscorn = 25000;
+recast.spiritswithin = 30000;
+recast.cover = 120000;
+recast.hallowedground = 420000;
+recast.divineveil = 90000;
+recast.intervention = 10000;
+recast.requiescat = 60000;
+recast.passageofarms = 120000;
+recast.intervene = 30000;
+recast.intervene1 = recast.intervene;
+recast.intervene2 = recast.intervene;
 
 // RDM
 recast.acceleration = 35000;
