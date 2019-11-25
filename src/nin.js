@@ -57,6 +57,18 @@ const ninWeave = () => {
   }
 }
 
+const ninColumnA = [
+  'Mudra'
+];
+
+const ninColumnB = [
+
+];
+
+const ninColumnC = [
+
+];
+
 
 next.hutonModifier = 1;
 
@@ -93,7 +105,7 @@ const ninNext = ({
   // next.hutonStatus = player.huton;
   next.elapsedTime = time;
 
-  // Calculate Ninki floor level to prevent overcap, maximize Bunshin
+  // // Calculate Ninki floor level to prevent overcap, maximize Bunshin
   // if (player.level >= 80) {
   //   if (next.bunshinRecast < next.meisuiRecast) {
   //     next.ninkiFloor = 0;
@@ -105,8 +117,8 @@ const ninNext = ({
   // } else {
   //   next.ninkiFloor = 0;
   // }
-
-  // Display Ninki spenders
+  //
+  // // Display Ninki spenders
   // if (player.ninki >= next.ninkiFloor + 50 && !toggle.ninkiSpender) {
   //   if (player.level >= 80 && next.bunshinRecast < 0) {
   //     removeIcon({ name: 'Bhavacakra', iconArray: iconArrayC });
@@ -146,7 +158,7 @@ const ninNext = ({
   //   }
   // }
   //
-  // // Show Kassatsu icon
+  // Show Kassatsu icon
   // if (player.level >= 50 && !toggle.kassatsu && next.kassatsuRecast < 0 && next.suitonStatus > 0
   // && next.trickattackRecast < 20000 - 500 * 2 - 1500 - recast.gcd * next.hutonModifier) {
   //   addIcon({ name: 'Kassatsu', iconArray: iconArrayA });
@@ -166,7 +178,8 @@ const ninNext = ({
       next.hutonModifier = 1;
     }
 
-    if (next.tenchijinRecast - next.elapsedTime < 0 && next.kassatsuStatus - next.elapsedTime < 0
+    if (player.level >= 70 && next.tenchijinRecast - next.elapsedTime < 0
+    && next.kassatsuStatus - next.elapsedTime < 0
     && next.trickattackStatus - next.elapsedTime > 0) {
       ninArray.push({ name: 'Ten Chi Jin', size: 'small' });
       if (count.targets > 1) {
@@ -190,7 +203,7 @@ const ninNext = ({
       next.tenchijinRecast = 120000 + next.elapsedTime;
       next.elapsedTime += 1500 * 3;
       // next.tenchijinStatus = -1;
-    } else if (next.kassatsuRecast - next.elapsedTime < 0
+    } else if (player.level >= 50 && next.kassatsuRecast - next.elapsedTime < 0
     && next.suitonStatus - next.elapsedTime > 0) {
       ninArray.push({ name: 'Kassatsu', size: 'small' });
       next.kassatsuRecast = 60000 + next.elapsedTime;
@@ -257,7 +270,7 @@ const ninNext = ({
     } else if (player.level >= 30 && next.shadowfangRecast - next.elapsedTime < 0
     && next.trickattackStatus - next.elapsedTime > 0) {
       ninArray.push({ name: 'Shadow Fang' });
-      next.shadowfangRecast = recast.shadowfang * next.hutonModifier + next.elapsedTime;
+      next.shadowfangRecast += recast.shadowfang * next.hutonModifier + next.elapsedTime;
       next.shadowfangStatus = duration.shadowfang + next.elapsedTime;
       if (player.level >= 78) {
         next.ninki = Math.min(next.ninki + 10, 100);
@@ -344,13 +357,13 @@ const ninNextTimeout = ({ time = 12500 } = {}) => {
 onJobChange.NIN = () => {
   addCountdown({ name: 'Mudra 1' });
   addCountdown({ name: 'Mudra 2' });
-  addCountdown({ name: 'Bunshin' });
   addCountdown({ name: 'Ten Chi Jin' });
   addCountdown({ name: 'Kassatsu' });
-  addCountdown({ name: 'Trick Attack' });
-  addCountdown({ name: 'Dream Within A Dream' });
-  addCountdown({ name: 'Meisui' });
-  addCountdown({ name: 'Mug' });
+  addCountdown({ name: 'Bunshin', countdownArray: countdownArrayB });
+  addCountdown({ name: 'Trick Attack', countdownArray: countdownArrayB });
+  addCountdown({ name: 'Dream Within A Dream', countdownArray: countdownArrayB });
+  addCountdown({ name: 'Meisui', countdownArray: countdownArrayB });
+  addCountdown({ name: 'Mug', countdownArray: countdownArrayB });
   ninNext();
 };
 
@@ -417,13 +430,13 @@ onAction.NIN = (actionMatch) => {
     addStatus({ name: 'Shadow Fang', id: actionMatch.groups.targetID });
     ninNext();
   } else if (actionMatch.groups.actionName === 'Kassatsu') {
-    removeIcon({ name: 'Kassatsu', iconArray: iconArrayA });
+    removeIcon({ name: 'Kassatsu' });
     addRecast({ name: 'Kassatsu' });
     addStatus({ name: 'Kassatsu' });
     delete toggle.kassatsu;
     ninNext({ time: 1000 });
   } else if (actionMatch.groups.actionName === 'Ten Chi Jin') {
-    removeIcon({ name: 'Ten Chi Jin', iconArray: iconArrayA });
+    removeIcon({ name: 'Ten Chi Jin' });
     addRecast({ name: 'Ten Chi Jin' });
     addStatus({ name: 'Ten Chi Jin' });
     delete toggle.tenchijin;
@@ -437,19 +450,19 @@ onAction.NIN = (actionMatch) => {
     }
     delete toggle.ninkiSpender;
     // ninNext({ time: 0 });
-  } else if (['Mug', 'Trick Attack', 'Dream Within A Dream', 'Meisui'].indexOf(actionMatch.groups.actionName) > -1) {
+  } else if (['Mug', 'Trick Attack', 'Dream Within A Dream', 'Meisui', 'Bunshin'].indexOf(actionMatch.groups.actionName) > -1) {
     // removeIcon({ name: actionMatch.groups.actionName, iconArray: iconArrayC });
     addRecast({ name: actionMatch.groups.actionName });
-    addCountdown({ name: actionMatch.groups.actionName });
-    if (actionMatch.groups.actionName === 'Hide') {
-      addRecast({ name: 'Mudra 1', time: -1 });
-      addRecast({ name: 'Mudra 2', time: -1 });
-      addCountdown({ name: 'Mudra 1' });
-      addCountdown({ name: 'Mudra 2' });
-    } else if (actionMatch.groups.actionName === 'Trick Attack') {
+    addCountdown({ name: actionMatch.groups.actionName, countdownArray: countdownArrayB });
+    if (actionMatch.groups.actionName === 'Trick Attack') {
       addStatus({ name: 'Trick Attack' });
     }
     ninNext({ time: 1000 });
+  } else if (actionMatch.groups.actionName === 'Hide') {
+    addRecast({ name: 'Mudra 1', time: -1 });
+    addRecast({ name: 'Mudra 2', time: -1 });
+    addCountdown({ name: 'Mudra 1' });
+    addCountdown({ name: 'Mudra 2' });
   }
 };
 
