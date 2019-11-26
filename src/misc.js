@@ -171,7 +171,7 @@ const countTargets = ({
   name,
   property = name.replace(/[\s'-:]/g, '').toLowerCase(),
 } = {}) => {
-  const countTargetsDelay = 1000;
+  const countTargetsDelay = 10;
   if (Date.now() - previous[property] > countTargetsDelay) {
     previous[property] = Date.now();
     count.targets = 1;

@@ -30,6 +30,10 @@ statusList.NIN = [
 
 castingList.NIN = []; // So it doesn't complain
 
+const ninSingleTarget = [
+  'Raiton', 'Bhavacakra', 'Hyosho Ranryu',
+];
+
 const ninComboWeaponskills = [
   'Spinning Edge', 'Gust Slash', 'Aeolian Edge', 'Armor Crush', 'Death Blossom', 'Hakke Mujinsatsu',
 ];
@@ -58,7 +62,7 @@ const ninWeave = () => {
 }
 
 const ninColumnA = [
-  'Mudra'
+  'Mudra',
 ];
 
 const ninColumnB = [
@@ -269,6 +273,7 @@ const ninNext = ({
       }
     } else if (player.level >= 30 && next.shadowfangRecast - next.elapsedTime < 0
     && next.trickattackStatus - next.elapsedTime > 0) {
+      // Assuming hitting everything and all ticks, SF is weaker than AoE at 9 targets (lol)
       ninArray.push({ name: 'Shadow Fang' });
       next.shadowfangRecast += recast.shadowfang * next.hutonModifier + next.elapsedTime;
       next.shadowfangStatus = duration.shadowfang + next.elapsedTime;
@@ -297,7 +302,7 @@ const ninNext = ({
         next.mudra2Recast = next.mudra2Recast + recast.mudra2 - next.elapsedTime;
         next.elapsedTime += 500 * 1 + 1500;
       }
-    } else if (player.level >= 52 && next.comboStep === 1 && count.targets >= 3) {
+    } else if (player.level >= 52 && next.comboStep === 11) {
       ninArray.push({ name: 'Hakke Mujinsatsu' });
       next.ninki = Math.min(next.ninki + 5, 100);
       next.comboStep = 0;
@@ -305,7 +310,7 @@ const ninNext = ({
     } else if (player.level >= 38 && count.targets >= 3) {
       ninArray.push({ name: 'Death Blossom' });
       next.ninki = Math.min(next.ninki + 5, 100);
-      next.comboStep = 1;
+      next.comboStep = 11;
       next.elapsedTime += recast.gcd * next.hutonModifier;
     } else if (player.level >= 56 && next.comboStep === 2
       && next.hutonStatus - next.elapsedTime < 40000 + recast.gcd * next.hutonModifier
@@ -355,8 +360,8 @@ const ninNextTimeout = ({ time = 12500 } = {}) => {
 };
 
 onJobChange.NIN = () => {
-  addCountdown({ name: 'Mudra 1' });
-  addCountdown({ name: 'Mudra 2' });
+  addCountdown({ name: 'Mudra 1', text: '#1 READY' });
+  addCountdown({ name: 'Mudra 2', text: '#2 READY' });
   addCountdown({ name: 'Ten Chi Jin' });
   addCountdown({ name: 'Kassatsu' });
   addCountdown({ name: 'Bunshin', countdownArray: countdownArrayB });
@@ -377,11 +382,9 @@ onAction.NIN = (actionMatch) => {
   removeIcon({ name: actionMatch.groups.actionName });
 
   // AoE checker
-  if (['Death Blossom', 'Hakke Mujinsatsu', 'Katon', 'Goka Mekkyaku', 'Hellfrog Medium'].indexOf(actionMatch.groups.actionName) > -1) {
+  if (actionMatch.groups.logType === '16') {
     countTargets({ name: actionMatch.groups.actionName });
-  } else if (['Spinning Edge', 'Gust Slash', 'Aeolian Edge', 'Armor Crush'].indexOf(actionMatch.groups.actionName) > -1 && count.targets > 2) {
-    count.targets = 2;
-  } else if (['Raiton', 'Bhavacakra', 'Hyosho Ranryu'].indexOf(actionMatch.groups.actionName) > -1) {
+  } else if (ninSingleTarget.indexOf(actionMatch.groups.actionName) > -1) {
     count.targets = 1;
   }
 
@@ -389,10 +392,10 @@ onAction.NIN = (actionMatch) => {
     if (count.mudra === 0 && checkStatus({ name: 'Kassatsu' }) < 0) {
       if (checkRecast({ name: 'Mudra 2' }) > 0) {
         addRecast({ name: 'Mudra 1', time: checkRecast({ name: 'Mudra 2' }) });
-        addCountdown({ name: 'Mudra 1' });
+        addCountdown({ name: 'Mudra 1', text: '#1 READY' });
       }
       addRecast({ name: 'Mudra 2', time: checkRecast({ name: 'Mudra 2' }) + 20000 });
-      addCountdown({ name: 'Mudra 2' });
+      addCountdown({ name: 'Mudra 2', text: '#2 READY' });
     }
     count.mudra += 1;
   } else if (ninNinjutsu.indexOf(actionMatch.groups.actionName) > -1) {
@@ -418,7 +421,7 @@ onAction.NIN = (actionMatch) => {
     } else if (actionMatch.groups.result.length < 6) {
       count.comboStep = 0;
     } else if (actionMatch.groups.actionName === 'Death Blossom') {
-      count.comboStep = 1;
+      count.comboStep = 11;
     } else if (actionMatch.groups.actionName === 'Spinning Edge') {
       count.comboStep = 1;
     } else if (actionMatch.groups.actionName === 'Gust Slash') {

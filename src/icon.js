@@ -14,8 +14,6 @@ const getArrayRow = ({
   return rowID;
 };
 
-delete previous.removeAction;
-
 const removeOldIcons = ({
   rowID,
 } = {}) => {
@@ -25,8 +23,8 @@ const removeOldIcons = ({
   const removeDelay = 1000; // Delay prevents function from messing things up visually... maybe
   const rowDiv = document.getElementById(rowID);
 
-  if (!previous.removeAction || Date.now() - previous.removeAction > removeDelay) {
-    previous.removeAction = Date.now();
+  if (!previous.removeIcon || Date.now() - previous.removeIcon > removeDelay) {
+    previous.removeIcon = Date.now();
     rowDiv.querySelectorAll('div[class~="icon-hide"]').forEach((e) => e.remove());
   }
 };
@@ -41,7 +39,7 @@ const syncIcons = ({
   const rowID = getArrayRow({ iconArray });
   const rowDiv = document.getElementById(rowID);
 
-  removeOldIcons({ rowID });
+  // removeOldIcons({ rowID });
 
   // Find current row length
   const rowLength = rowDiv.children.length;
@@ -57,6 +55,7 @@ const syncIcons = ({
     } else {
       iconDiv.className += ' icon-hide';
       iconDiv.dataset.name = 'none';
+      iconDiv.addEventListener('transitionend', () => { iconDiv.remove(); });
     }
   } // Should have only matching icons remaining now
 
@@ -189,34 +188,34 @@ const unfadeIcon = ({
 
 const removeIcon = ({
   name,
+  // property = name.replace(/[\s'-:]/g, '').toLowerCase(),
   iconArray = iconArrayB,
   match = 'exact',
 } = {}) => {
-  if (Date.now() - previous.removeIcon < 10) {
-    return;
-  }
-  previous.removeIcon = Date.now();
-  // Removes specific icon from display
+  const removeDelay = 1000;
+  // Prevents this from being called multiple times by AoEs
+  if (!previous.removeIcon || Date.now() - previous.removeIcon > removeDelay) {
+    console.log(name);
+    previous.removeIcon = Date.now();
+    const rowID = getArrayRow({ iconArray });
+    const rowDiv = document.getElementById(rowID);
+    let matchDiv;
+    if (match === 'contains') {
+      matchDiv = rowDiv.querySelector(`div[data-name~="${name}"]:not([class~="icon-hide"])`);
+    } else {
+      matchDiv = rowDiv.querySelector(`div[data-name="${name}"]:not([class~="icon-hide"])`);
+    }
 
-  const rowID = getArrayRow({ iconArray });
-  const rowDiv = document.getElementById(rowID);
-  removeOldIcons({ rowID });
+    if (matchDiv) {
+      // void matchDiv.offsetWidth; // Don't need this when removing... probably
+      matchDiv.className += ' icon-hide';
+      matchDiv.dataset.name = 'none';
+    }
 
-  let matchDiv;
-  if (match === 'contains') {
-    matchDiv = rowDiv.querySelector(`div[data-name~="${name}"]:not([class~="icon-hide"])`);
-  } else {
-    matchDiv = rowDiv.querySelector(`div[data-name="${name}"]:not([class~="icon-hide"])`);
-  }
-
-  if (matchDiv) {
-    matchDiv.className += ' icon-hide';
-    matchDiv.dataset.name = 'none';
-  }
-
-  const matchIndex = iconArray.findIndex((entry) => entry.name === name);
-  if (matchIndex > -1) {
-    iconArray.splice(matchIndex, 1);
+    const matchIndex = iconArray.findIndex((entry) => entry.name === name);
+    if (matchIndex > -1) {
+      iconArray.splice(matchIndex, 1);
+    }
   }
 };
 

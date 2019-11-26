@@ -2,7 +2,9 @@
 
 var maxEsprit;
 
-const dncActionList = [
+onTargetChanged.DNC = () => {};
+
+const actionList.DNC = [
 
   // Non-GCD
   "Fan Dance", "Fan Dance II", "Fan Dance III", "Devilment", "Flourish",
@@ -31,30 +33,78 @@ const dncPushWeave = ({
   }
 }
 
-const dncNext = () => {
-  next.flourishingcascadeStatus = checkStatus({ name: 'flourishingcascade' });
-  next.flourishingwindmillStatus = checkStatus({ name: 'flourishingwindmill' });
-  next.flourishingshowerStatus = checkStatus({ name: 'flourishingshower' });
-  next.flourishingfountainStatus = checkStatus({ name: 'flourishingfountain' });
-  next.devilmentStatus = checkStatus({ name: 'devilment' });
-  
-  next.devilmentRecast = checkRecast({ name: 'devilment' });
-  next.standardstepRecast = checkRecast({ name: 'standardstep' });
-  next.technicalstepRecast = checkRecast({ name: 'technicalstep' });
-  next.espirit = player.tempjobDetail.espirit;
-  next.steps = player.tempjobDetail.steps;
-  
-  next.elapsedTime = recast.gcd;
-  
+const dncNext = ({
+  time = recast.gcd,
+} = {}) => {
+  next.flourishingcascadeStatus = checkStatus({ name: 'Flourishing Cascade' });
+  next.flourishingwindmillStatus = checkStatus({ name: 'Flourishing Windmill' });
+  next.flourishingshowerStatus = checkStatus({ name: 'Flourishing Shower' });
+  next.flourishingfountainStatus = checkStatus({ name: 'Flourishing Fountain' });
+  next.devilmentRecast = checkRecast({ name: 'Devilment' });
+  next.devilmentStatus = checkStatus({ name: 'Devilment' });
+  next.standardstepRecast = checkRecast({ name: 'Standard Step' });
+  next.standardfinishStatus = checkStatus({ name: 'Standard Finish' });
+  next.technicalstepRecast = checkRecast({ name: 'Technical Step' });
+  next.technicalfinishStatus = checkStatus({ name: 'Technical Finish' });
+  next.flourishRecast = = checkRecast({ name: 'Flourish' });
+  next.steps = player.steps;
+  next.fourfoldFeathers = player.fourfoldFeathers;
+  next.esprit = player.esprit;
+
+  const dncArray = [];
   do {
+    if (player.level >= 15 && next.standardfinishStatus - next.elapsedTime < 0) {
+      dncArray.push({ name: 'Standard Step' });
+      next.elapsedTime += 1000 * 2;
+      dncArray.push({ name: 'Standard Finish' });
+      next.standardfinishStatus = 60000 + next.elapsedTime;
+      next.elapsedTime += recast.gcd;
+    } else if (player.level >= 70 && next.technicalfinishStatus - next.elapsedTime < 0) {
+      dncArray.push({ name: 'Technical Step' });
+      next.elapsedTime += 1000 * 4;
+      dncArray.push({ name: 'Technical Finish' });
+      next.standardfinishStatus = 60000 + next.elapsedTime;
+      next.elapsedTime += recast.gcd;
+    } else if (player.level >= 72 && next.devilmentStatus - next.elapsedTime > 4000) {
+      dncArray.push({ name: 'Standard Step' });
+      next.elapsedTime += 1000 * 2;
+      dncArray.push({ name: 'Standard Finish' });
+      next.standardfinishStatus = 60000 + next.elapsedTime;
+      next.elapsedTime += recast.gcd;
+    }
+  } while (next.elapsedTime < 15000);
+
+  // else if (player.level >= 72 && next.flourishRecast - next.elapsedTime < 0
+  // && Math.max(
+  //   next.flourishingcascadeStatus,
+  //   next.flourishingfountainStatus,
+  //   next.flourishingwindmillStatus,
+  //   next.flourishingshowerStatus,
+  // ) - next.elapsedTime < 0) {
+  //   dncArray.push({ name: 'Flourish', size: 'small' });
+  //   next.flourishingcascadeStatus = 20000 + next.elapsedTime;
+  //   next.flourishingfountainStatus = 20000 + next.elapsedTime;
+  //   next.flourishingwindmillStatus = 20000 + next.elapsedTime;
+  //   next.flourishingshowerStatus = 20000 + next.elapsedTime;
+  //   next.flourishRecast = recast.flourish + next.elapsedTime;
+  // } else if (player.level >= 62 && next.devilmentRecast - next.elapsedTime < 0) {
+  //   dncArray.push({ name: 'Devilment', size: 'small' });
+  //   next.devilmentRecast = recast.devilment + next.elapsedTime;
+  // }
+};
+
+  next.elapsedTime = recast.gcd;
+
+  do {
+    if
     if (next.technicalstepRecast - next.elapsedTime < 0) {
       // Technical Step
     } else if (next.standardstepRecast - next.elapsedTime < 0) {
       // Standard Step
     }
-    
-    
-  } while (next.elapsedTime < 15000); 
+
+
+  } while (next.elapsedTime < 15000);
 
 }
 

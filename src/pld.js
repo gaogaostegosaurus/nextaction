@@ -47,6 +47,10 @@ const pldWeaponskills = [
   'Total Eclipse', 'Prominence', 'Holy Spirit', 'Holy Circle', 'Confiteor',
 ];
 
+const pldFinisherWeaponskills = [
+  'Rage Of Halone', 'Goring Blade', 'Royal Authority', 'Prominence',
+];
+
 const pldColumnA = [
   'Fight Or Flight', 'Requiescat',
 ];
@@ -58,6 +62,11 @@ const pldColumnB = [
 const pldColumnC = [
   'Low Blow', 'Provoke', 'Interject', 'Shirk',
 ];
+
+const pldNextTimeout = () => {
+  clearTimeout(timeout.combo);
+  timeout.combo = setTimeout(pldNext, 12500);
+};
 
 const pldNext = ({
   time = recast.gcd,
@@ -79,7 +88,7 @@ const pldNext = ({
 
   do {
     if (next.fightorflightRecast - next.elapsedTime < 0
-    && (next.comboToggle === 0 || !next.comboToggle)) {
+    && !next.comboToggle) {
       // Allows FoF to follow something while opening
       pldArray.push({ name: 'Fast Blade' });
       if (player.level >= 4) {
@@ -91,7 +100,7 @@ const pldNext = ({
       pldArray.push({ name: 'Fight Or Flight', size: 'small' });
       next.fightorflightRecast = 60000 + next.elapsedTime;
       next.fightorflightStatus = 25000 + next.elapsedTime;
-    } else if (next.requiescatRecast - next.elapsedTime < 0
+    } else if (player.level >= 68 && next.requiescatRecast - next.elapsedTime < 0
     && next.fightorflightStatus - next.elapsedTime < 0
     && next.comboToggle === 0 && next.swordoathCount === 0) {
       pldArray.push({ name: 'Requiescat', size: 'small' });
@@ -149,6 +158,7 @@ const pldNext = ({
   } while (next.elapsedTime < 15000);
   iconArrayB = pldArray;
   syncIcons();
+  pldNextTimeout();
 };
 
 onJobChange.PLD = () => {
@@ -201,7 +211,7 @@ onJobChange.PLD = () => {
 onTargetChanged.PLD = () => {};
 
 onAction.PLD = (actionMatch) => {
-  if (pldAreaOfEffect.indexOf(actionMatch.groups.actionName) > -1) {
+  if (actionMatch.groups.logType === '16') {
     countTargets({ name: actionMatch.groups.actionName });
   } else if (pldSingleTarget.indexOf(actionMatch.groups.actionName) > -1) {
     count.targets = 1;
@@ -213,15 +223,15 @@ onAction.PLD = (actionMatch) => {
     addRecast({ name: actionMatch.groups.actionName });
     addCountdown({ name: actionMatch.groups.actionName });
   } else if (pldWeaponskills.indexOf(actionMatch.groups.actionName) > -1) {
-    if (actionMatch.groups.actionName === 'Goring Blade' && actionMatch.groups.result.length >= 6) {
-      addStatus({ name: 'Goring Blade', id: actionMatch.groups.targetID });
-    } else if (player.level >= 76 && actionMatch.groups.actionName === 'Royal Authority' && actionMatch.groups.result.length >= 6) {
-      count.swordoath = 3;
-    } else if (actionMatch.groups.actionName === 'Atonement') {
+    if (actionMatch.groups.actionName === 'Atonement') {
       count.swordoath -= 1;
-    }
-
-    if (['Rage Of Halone', 'Goring Blade', 'Royal Authority', 'Prominence'].indexOf(actionMatch.groups.actionName) > -1) {
+      removeIcon({ name: actionMatch.groups.actionName });
+    } else if (pldFinisherWeaponskills.indexOf(actionMatch.groups.actionName) > -1) {
+      if (actionMatch.groups.actionName === 'Goring Blade' && actionMatch.groups.result.length >= 6) {
+        addStatus({ name: 'Goring Blade', id: actionMatch.groups.targetID });
+      } else if (player.level >= 76 && actionMatch.groups.actionName === 'Royal Authority' && actionMatch.groups.result.length >= 6) {
+        count.swordoath = 3;
+      }
       toggle.combo = 0;
       removeIcon({ name: actionMatch.groups.actionName });
     } else if (player.level >= 40 && actionMatch.groups.actionName === 'Total Eclipse' && actionMatch.groups.result.length >= 6) {
@@ -250,9 +260,11 @@ onCancel.PLD = () => {
   pldNext();
 };
 
-onStatus.PLD = () => {};
-
-const pldNextTimeout = () => {
-  clearTimeout(timeout.combo);
-  timeout.combo = setTimeout(pldNext, 12500);
+onStatus.PLD = () => {
+  if (statusMatch.groups.logType === '1A') {
+    //
+  } else if (statusMatch.groups.statusName === 'Sword Oath') {
+    count.swordoath = 0;
+    pldNext();
+  }
 };
