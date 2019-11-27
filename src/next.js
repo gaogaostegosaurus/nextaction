@@ -51,10 +51,9 @@
 
 function clearTimers() {
   let property = "";
-  
+
 }
 
-callOverlayHandler({ call: 'cactbotRequestState' });
 
 // callOverlayHandler:
 // accepts an object so you can add more parameters which will be passed to the C# code.

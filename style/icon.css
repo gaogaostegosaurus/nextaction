@@ -22,7 +22,7 @@
 }
 
 .icon-hide {
-  transition: opacity 0.2s ease 0s, height 0.2s ease 0.2s, width 0.2s ease 0.2s;
+  transition: opacity 0.2s ease 0s, width 0.2s ease 0.2s, height 0.2s ease 0.4s;
   height: 0px;
   width: 0px;
   opacity: 0;

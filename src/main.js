@@ -1,9 +1,35 @@
 
-// https://github.com/quisquous/cactbot/blob/master/CactbotOverlay/JSEvents.cs shows all possible events
+const resetNext = () => {
+  /* Reset timeout and intervals */
+  Object.keys(timeout).forEach((property) => { clearTimeout(timeout[property]); });
+  Object.keys(interval).forEach((property) => { clearInterval(interval[property]); });
 
-// This seems useful to eventually add
-// addOverlayListener('onInitializeOverlay', (e) => {
-// });
+  document.getElementById('icon-a').innerHTML = '';
+  document.getElementById('icon-b').innerHTML = '';
+  document.getElementById('icon-c').innerHTML = '';
+  document.getElementById('countdown-a').innerHTML = '';
+  document.getElementById('countdown-b').innerHTML = '';
+  document.getElementById('countdown-c').innerHTML = '';
+};
+
+const countTargets = ({
+  name,
+  property = name.replace(/[\s'-:]/g, '').toLowerCase(),
+} = {}) => {
+  const countTargetsDelay = 10;
+  if (Date.now() - previous[property] > countTargetsDelay) {
+    previous[property] = Date.now();
+    count.targets = 1;
+  } else {
+    count.targets += 1;
+  }
+};
+
+/* https://github.com/quisquous/cactbot/blob/master/CactbotOverlay/JSEvents.cs shows all possible events */
+
+/* This seems useful to eventually add
+addOverlayListener('onInitializeOverlay', (e) => {
+}); */
 
 const actionList = {};
 const statusList = {};
@@ -16,11 +42,10 @@ let cancelRegExp;
 // let addedRegExp;
 const statsRegExp = new RegExp(' 0C:Player Stats: (?<jobID>[\\d]+):(?<strength>[\\d]+):(?<dexterity>[\\d]+):(?<vitality>[\\d]+):(?<intelligence>[\\d]+):(?<mind>[\\d]+):(?<piety>[\\d]+):(?<attackPower>[\\d]+):(?<directHitRate>[\\d]+):(?<criticalHit>[\\d]):(?<attackMagicPotency>[\\d]+):(?<healingMagicPotency>[\\d]+):(?<determination>[\\d]+):(?<skillSpeed>[\\d]+):(?<spellSpeed>[\\d]+):0:(?<tenacity>[\\d]+)');
 
-// onPlayerChangedEvent:
-// fires whenever player change detected (including HP, MP, other resources, positions, etc.)
 addOverlayListener('onPlayerChangedEvent', (e) => {
   // console.log(JSON.stringify(e));
-  // player.id.toString(16) is lowercase; using 'ID' to designate uppercase lettering
+  /* e.detail.id is a numeric ID, e.detail.id .toString(16) is lowercase.
+  Using 'ID' to designate uppercase lettering. */
   player.ID = e.detail.id.toString(16).toUpperCase();
   player.name = e.detail.name;
   player.job = e.detail.job;
@@ -32,20 +57,21 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
   player.maxMP = e.detail.maxMP;
   player.currentShield = e.detail.currentShield;
 
-  // Create 8 part array for unsupported jobs - use [0] to [7]
+  /* Create 8 part array for unsupported jobs - use [0] to [7].
+  Need to use parseInt because 04 is not the same as 4. */
   const debugJobArray = e.detail.debugJob.split(' ');
 
   if (player.job === 'DNC') { // Temporary
-    player.fourfoldFeathers = parseInt(debugJobArray[0], 16); // 0-4
-    player.esprit = parseInt(debugJobArray[1], 16); // 0-100
-    // Steps - 1 is Emboite, 2 is Entrechat, 3 is Jete, 4 is Pirouette
+    player.fourfoldFeathers = parseInt(debugJobArray[0], 16); /* 0-4 */
+    player.esprit = parseInt(debugJobArray[1], 16); /* 0-100 */
+    /* Steps - 1 is Emboite, 2 is Entrechat, 3 is Jete, 4 is Pirouette */
     player.step1 = parseInt(debugJobArray[2], 16);
     player.step2 = parseInt(debugJobArray[3], 16);
     player.step3 = parseInt(debugJobArray[4], 16);
     player.step4 = parseInt(debugJobArray[5], 16);
-    player.stepTotal = debugJobArray[6]; // 0-4
+    player.stepTotal = debugJobArray[6]; /* 0-4 */
   } else if (player.job === 'GNB') {
-    player.cartridge = parseInt(debugJobArray[0], 16); // 0-2
+    player.cartridge = parseInt(debugJobArray[0], 16); /* 0-2 */
   } else if (player.job === 'PLD') {
     player.oath = e.detail.jobDetail.oath;
   } else if (player.job === 'NIN') {
@@ -55,15 +81,15 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
     player.blackMana = e.detail.jobDetail.blackMana;
     player.whiteMana = e.detail.jobDetail.whiteMana;
   } else if (player.job === 'SCH') {
-    player.aetherflow = parseInt(debugJobArray[2], 16); // 0-3
-    player.faerieGauge = parseInt(debugJobArray[3], 16); // 0-100
+    player.aetherflow = parseInt(debugJobArray[2], 16); /* 0-3 */
+    player.faerieGauge = parseInt(debugJobArray[3], 16); /* 0-100 */
     healerLucidDreaming();
   } else if (player.job === 'WHM') {
-    player.bloodLily = parseInt(debugJobArray[5], 16); // 0-3
+    player.bloodLily = parseInt(debugJobArray[5], 16); /* 0-3 */
     healerLucidDreaming();
   }
 
-  // Detects name/job/level change and clears elements
+  /* Detects name/job/level change and clears elements */
   if (previous.job !== player.job || previous.level !== player.level) {
     previous.job = player.job;
     previous.level = player.level;
@@ -75,11 +101,12 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
     statusRegExp = new RegExp(` (?<logType>1[AE]):(?<targetID>[\\dA-F]{8}):(?<targetName>[ -~]+?) (?<gainsLoses>gains|loses) the effect of (?<statusName>${status}) from (?<sourceName>${player.name})(?: for )?(?<statusDuration>\\d*\\.\\d*)?(?: Seconds)?\\.`);
     castingRegExp = new RegExp(` 14:(?<actionID>[\\dA-F]{1,4}):(?<sourceName>${player.name}) starts using (?<actionName>${casting}) on (?<targetName>[ -~]+?)\\.`);
     cancelRegExp = new RegExp(` 17:(?<sourceID>${player.ID}):(?<sourceName>${player.name}):(?<actionID>[\\dA-F]{1,4}):(?<actionName>${casting}):Cancelled:`);
-    // addedRegExp = new RegExp(` 03:(?<sourceID>${player.ID}):Added new combatant (?<sourceName>${player.name})\\.  Job: (?<job>[A-z]{3}) `);
-    clearUI();
+    /* addedRegExp = new RegExp(` 03:(?<sourceID>${player.ID}):
+    Added new combatant (?<sourceName>${player.name})\\.  Job: (?<job>[A-z]{3}) `); */
+    resetNext();
     onJobChange[player.job]();
     console.log(`Changed to ${player.job}${player.level}`);
-    console.log(JSON.stringify(e));
+    // console.log(JSON.stringify(e));
   }
 });
 
@@ -101,9 +128,9 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
     } else if (castingMatch) {
       onCasting[player.job](castingMatch);
 
-      // Display next if casting with an NPC target
-      if (target.ID.startsWith('4')) { // 0 = no target, 1... = player? E... = non-combat NPC?
-        document.getElementById('nextdiv').className = 'next next-show';
+      /* Display next if casting with an NPC target */
+      if (target.ID.startsWith('4')) { /* 0 = no target, 1... = player? E... = non-combat NPC? */
+        document.getElementById('nextdiv').classList.replace('next-hide', 'next-show');
       }
     } else if (cancelMatch) {
       onCancel[player.job](cancelMatch);
@@ -112,26 +139,11 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
         speed: Math.max(statsMatch.groups.skillSpeed, statsMatch.groups.spellSpeed),
       });
     }
-
-    // else if (actionLog && actionLog.groups.sourceID != player.ID
-    // && actionLog.groups.sourceID.startsWith('1')) {  // Status source = other player
-    //   raidAction();
-    // }
   }
 });
 
-onAction.NONE = () => {};
-onCasting.NONE = () => {};
-onCancel.NONE = () => {};
-onStatus.NONE = () => {};
-
-
 addOverlayListener('onTargetChangedEvent', (e) => {
   // console.log(`onTargetChangedEvent: ${JSON.stringify(e)}`);
-  // {"type":"onTargetChangedEvent","detail":{
-  // "id":int,"level":int,"name":"string","job":"string","currentHP":int,"maxHP":int,
-  // "currentMP":int,"maxMP":int,"currentTP":int,"maxTP":int,
-  // "pos":{"x":float,"y":float,"z":float},"distance":int}}
   target.name = e.detail.name;
   target.ID = e.detail.id.toString(16).toUpperCase(); // See player.ID above
   target.job = e.detail.job;
@@ -141,43 +153,34 @@ addOverlayListener('onTargetChangedEvent', (e) => {
   target.maxHP = e.detail.maxHP;
   target.maxMP = e.detail.maxMP;
   // target.distance = e.detail.distance;
-
   onTargetChanged[player.job]();
 });
 
-// Fires when character exits or enters combat
 addOverlayListener('onInCombatChangedEvent', (e) => {
   // console.log(`onInCombatChangedEvent: ${JSON.stringify(e)}`);
-  // e.detail contains booleans e.detail.inACTCombat and e.detail.inGameCombat
+
+  /* Can't think of a good way to consistently reset AoE count other than this. Hopefully does not
+  have a race condition with starting with AoEs... */
   count.targets = 1;
-  // Can't think of a good way to consistently reset AoE count other than this
-  // Hopefully does not have a race condition with starting with AoEs...
 
   if (e.detail.inGameCombat) {
     toggle.combat = Date.now();
-    document.getElementById('nextdiv').className = 'next next-show';
+    document.getElementById('nextdiv').classList.replace('next-hide', 'next-show');
   } else {
     delete toggle.combat;
-    document.getElementById('nextdiv').className = 'next next-hide';
-    // next-hide class has a has a built in delay
+    document.getElementById('nextdiv').classList.replace('next-show', 'next-hide');
+    /* next-hide class has a built in delay */
   }
 });
 
-// Listens for zone changes
 addOverlayListener('onZoneChangedEvent', (e) => {
-  // console.log(`onPartyWipe: ${JSON.stringify(e)}`);
-  // e shows current zone in details
-  // console.log(`current zone: ${e.detail.zoneName}`);
-  clearUI();
-  clearTimers();
-  loadInitialState();
+  /* This fires extremely early upon load - careful of what you put here since it won't work if it
+  requires the character data to be loaded as well. */
+  // console.log(`onZoneChangedEvent: ${JSON.stringify(e)}`);
 });
 
-// Not sure how this works - only in raid where it resets? Bosses? Regular pulls?
 addOverlayListener('onPartyWipe', (e) => {
   // console.log(`onPartyWipe: ${JSON.stringify(e)}`);
-  // e only shows type (no details)
-  clearUI();
-  clearTimers();
-  loadInitialState();
 });
+
+callOverlayHandler({ call: 'cactbotRequestState' });

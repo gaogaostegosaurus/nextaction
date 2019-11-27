@@ -1,3 +1,4 @@
+
 const gcdCalculation = ({
   speed,
 } = {}) => {
@@ -101,81 +102,4 @@ const gcdCalculation = ({
     * (delta / levelMod)))) / 1000) / 1000)) / 100) * 10; // Modified to output in ms
   console.log(`calculated standard GCD as ${recast.gcd}`);
   return recast.gcd;
-};
-
-const loadInitialState = () => {
-
-  delete toggle.combo;
-  //
-  // if (player.job === 'BLM') {
-  //   blmJobChange();
-  // } else if (player.job === 'BRD') {
-  //   brdJobChange();
-  // } else if (player.job === 'DNC') {
-  //   dncJobChange();
-  // } else if (player.job === 'DRK') {
-  //   drkJobChange();
-  // } else if (player.job === 'GNB') {
-  //   gnbJobChange();
-  // } else if (player.job === 'MCH') {
-  //   mchJobChange();
-  // } else if (player.job === 'MNK') {
-  //   mnkJobChange();
-  // } else if (player.job === 'NIN') {
-  //   ninJobChange();
-  // } else if (player.job === 'PLD') {
-  //   pldJobChange();
-  // } else if (player.job === 'RDM') {
-  //   rdmOnJobChange();
-  // } else if (player.job === 'SAM') {
-  //   samJobChange();
-  // } else if (player.job === 'SCH') {
-  //   schJobChange();
-  // } else if (player.job === 'WAR') {
-  //   warJobChange();
-  // } else if (player.job === 'WHM') {
-  //   whmJobChange();
-  // }
-};
-
-
-const clearUI = () => {
-
-  for (const property in timeout) {
-    if (timeout.hasOwnProperty(property)) {
-      clearTimeout(timeout[property]);
-    }
-  }
-  for (property in interval) {
-    if (interval.hasOwnProperty(property)) {
-      clearInterval(interval[property]);
-    }
-  }
-
-  iconArrayA = [];
-  iconArrayB = [];
-  iconArrayC = [];
-  countdownArrayA = [];
-  countdownArrayB = [];
-  countdownArrayC = [];
-  syncIcons({ array: iconArrayA });
-  syncIcons({ array: iconArrayB });
-  syncIcons({ array: iconArrayC });
-  document.getElementById('countdown-a').innerHTML = '';
-  document.getElementById('countdown-b').innerHTML = '';
-  document.getElementById('countdown-c').innerHTML = '';
-};
-
-
-const countTargets = ({
-  name,
-  property = name.replace(/[\s'-:]/g, '').toLowerCase(),
-} = {}) => {
-  const countTargetsDelay = 10;
-  if (Date.now() - previous[property] > countTargetsDelay) {
-    previous[property] = Date.now();
-    count.targets = 1;
-  } else {
-    count.targets += 1;
-  }
 };

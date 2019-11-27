@@ -4,7 +4,7 @@ var maxEsprit;
 
 onTargetChanged.DNC = () => {};
 
-const actionList.DNC = [
+actionList.DNC = [
 
   // Non-GCD
   "Fan Dance", "Fan Dance II", "Fan Dance III", "Devilment", "Flourish",
@@ -40,125 +40,181 @@ const dncNext = ({
   next.flourishingwindmillStatus = checkStatus({ name: 'Flourishing Windmill' });
   next.flourishingshowerStatus = checkStatus({ name: 'Flourishing Shower' });
   next.flourishingfountainStatus = checkStatus({ name: 'Flourishing Fountain' });
+  next.flourishingfandanceStatus = checkStatus({ name: 'Flourishing Fan Dance' });
   next.devilmentRecast = checkRecast({ name: 'Devilment' });
   next.devilmentStatus = checkStatus({ name: 'Devilment' });
   next.standardstepRecast = checkRecast({ name: 'Standard Step' });
   next.standardfinishStatus = checkStatus({ name: 'Standard Finish' });
   next.technicalstepRecast = checkRecast({ name: 'Technical Step' });
   next.technicalfinishStatus = checkStatus({ name: 'Technical Finish' });
-  next.flourishRecast = = checkRecast({ name: 'Flourish' });
+  next.flourishRecast = checkRecast({ name: 'Flourish' });
   next.steps = player.steps;
   next.fourfoldFeathers = player.fourfoldFeathers;
   next.esprit = player.esprit;
 
   const dncArray = [];
   do {
-    if (player.level >= 15 && next.standardfinishStatus - next.elapsedTime < 0) {
+    if (next.oGCD && player.level >= 72 && next.flourishRecast - next.elapsedTime < 0
+    && Math.max(
+      next.flourishingcascadeStatus, next.flourishingfountainStatus, next.flourishingwindmillStatus,
+      next.flourishingshowerStatus, next.flourishingfandanceStatus,
+    ) - next.elapsedTime < 0) {
+      dncArray.push({ name: 'Flourish', size: 'small' });
+      delete next.oGCD;
+      next.flourishingcascadeStatus = 20000 + next.elapsedTime;
+      next.flourishingfountainStatus = 20000 + next.elapsedTime;
+      next.flourishingwindmillStatus = 20000 + next.elapsedTime;
+      next.flourishingshowerStatus = 20000 + next.elapsedTime;
+      next.flourishingfandanceStatus = 20000 + next.elapsedTime;
+      next.flourishRecast = recast.flourish + next.elapsedTime;
+    } else if (next.oGCD && player.level >= 62 && next.devilmentRecast - next.elapsedTime < 0) {
+      dncArray.push({ name: 'Devilment', size: 'small' });
+      delete next.oGCD;
+      next.devilmentRecast = recast.devilment + next.elapsedTime;
+    } else if (next.oGCD && next.fourfoldFeathers >= 4) {
+      if (next.flourishingfandanceStatus - next.elapsedTime > 0) {
+        dncArray.push({ name: 'Fan Dance III', size: 'small' });
+        next.flourishingfandanceStatus = -1;
+      } else if (player.level >= 50 && count.targets > 1) {
+        dncArray.push({ name: 'Fan Dance II', size: 'small' });
+      } else {
+        dncArray.push({ name: 'Fan Dance', size: 'small' });
+      }
+      delete next.oGCD;
+    } else if (player.level >= 15 && next.standardstepRecast - next.elapsedTime < 0
+    && !toggle.combat) { // Pre-pull stuff, maybe
       dncArray.push({ name: 'Standard Step' });
+      next.standardstepRecast = 30000 + next.elapsedTime;
       next.elapsedTime += 1000 * 2;
       dncArray.push({ name: 'Standard Finish' });
+      next.oGCD = 1;
       next.standardfinishStatus = 60000 + next.elapsedTime;
       next.elapsedTime += recast.gcd;
-    } else if (player.level >= 70 && next.technicalfinishStatus - next.elapsedTime < 0) {
+    } else if (player.level >= 70 && next.technicalstepRecast - next.elapsedTime < 0) {
       dncArray.push({ name: 'Technical Step' });
+      next.technicalstepRecast = 120000 + next.elapsedTime;
       next.elapsedTime += 1000 * 4;
       dncArray.push({ name: 'Technical Finish' });
-      next.standardfinishStatus = 60000 + next.elapsedTime;
+      next.technicalfinishStatus = 20000 + next.elapsedTime;
+      next.oGCD = 1;
       next.elapsedTime += recast.gcd;
-    } else if (player.level >= 72 && next.devilmentStatus - next.elapsedTime > 4000) {
+    } else if (next.technicalfinishStatus - next.elapsedTime > 0) {
+      if (player.level >= 76 && next.esprit >= 80) {
+        dncArray.push({ name: 'Saber Dance' });
+        next.esprit -= 50;
+        next.oGCD = 1;
+        next.elapsedTime += recast.gcd;
+      } else if (player.level >= 72 && next.standardstepRecast - next.elapsedTime < 0
+      && next.technicalfinishStatus - next.elapsedTime > 0
+      && next.devilmentStatus - next.elapsedTime > 4000) {
+        dncArray.push({ name: 'Standard Step' });
+        next.standardstepRecast = 30000 + next.elapsedTime;
+        next.elapsedTime += 1000 * 2;
+        dncArray.push({ name: 'Standard Finish' });
+        next.oGCD = 1;
+        next.standardfinishStatus = 60000 + next.elapsedTime;
+        next.elapsedTime += recast.gcd;
+      } else if (player.level >= 76 && next.esprit >= 50) {
+        dncArray.push({ name: 'Saber Dance' });
+        next.esprit -= 50;
+        next.oGCD = 1;
+        next.elapsedTime += recast.gcd;
+      }
+    } else if (player.level >= 15 && next.standardstepRecast - next.elapsedTime < 0
+    && count.targets < 2) {
       dncArray.push({ name: 'Standard Step' });
       next.elapsedTime += 1000 * 2;
       dncArray.push({ name: 'Standard Finish' });
+      next.oGCD = 1;
       next.standardfinishStatus = 60000 + next.elapsedTime;
+      next.elapsedTime += recast.gcd;
+    } else if (player.level >= 76 && next.esprit >= 80) {
+      dncArray.push({ name: 'Saber Dance' });
+      next.esprit -= 50;
+      next.oGCD = 1;
+      next.elapsedTime += recast.gcd;
+    } else if (player.level >= 15 && next.standardstepRecast - next.elapsedTime < 0
+    && count.targets <= 5) {
+      dncArray.push({ name: 'Standard Step' });
+      next.elapsedTime += 1000 * 2;
+      dncArray.push({ name: 'Standard Finish' });
+      next.oGCD = 1;
+      next.standardfinishStatus = 60000 + next.elapsedTime;
+      next.elapsedTime += recast.gcd;
+    } else if (next.flourishingfountainStatus - next.elapsedTime > 0 && count.targets <= 2) {
+      dncArray.push({ name: 'Fountainfall' });
+      next.flourishingfountainStatus = -1;
+      next.oGCD = 1;
+      next.elapsedTime += recast.gcd;
+    } else if (next.flourishingshowerStatus - next.elapsedTime > 0) {
+      dncArray.push({ name: 'Bloodshower' });
+      next.flourishingshowerStatus = -1;
+      next.oGCD = 1;
+      next.elapsedTime += recast.gcd;
+    } else if (next.flourishingcascadeStatus - next.elapsedTime > 0 && count.targets <= 2) {
+      dncArray.push({ name: 'Reverse Cascade' });
+      next.flourishingcascadeStatus = -1;
+      next.oGCD = 1;
+      next.elapsedTime += recast.gcd;
+    } else if (player.level >= 25 && next.comboStep === 11 && count.targets > 1) {
+      dncArray.push({ name: 'Bladeshower' });
+      next.comboStep = 0;
+      next.oGCD = 1;
+      next.elapsedTime += recast.gcd;
+    } else if (player.level >= 25 && next.comboStep === 0 && count.targets > 1) {
+      dncArray.push({ name: 'Windmill' });
+      next.comboStep = 11;
+      next.oGCD = 1;
+      next.elapsedTime += recast.gcd;
+    } else if (player.level >= 15 && next.standardstepRecast - next.elapsedTime < 0
+    && next.standardfinishStatus - next.elapsedTime < 4000) {
+      dncArray.push({ name: 'Standard Step' });
+      next.elapsedTime += 1000 * 2;
+      dncArray.push({ name: 'Standard Finish' });
+      next.oGCD = 1;
+      next.standardfinishStatus = 60000 + next.elapsedTime;
+      next.elapsedTime += recast.gcd;
+    } else if (next.flourishingwindmillStatus - next.elapsedTime > 0) {
+      dncArray.push({ name: 'Rising Windmill' });
+      next.flourishingwindmillStatus = -1;
+      next.oGCD = 1;
+      next.elapsedTime += recast.gcd;
+    } else if (player.level >= 2 && next.comboStep === 1) {
+      dncArray.push({ name: 'Fountain' });
+      next.comboStep = 0;
+      next.oGCD = 1;
+      next.elapsedTime += recast.gcd;
+    } else {
+      dncArray.push({ name: 'Cascade' });
+      next.comboStep = 1;
+      next.oGCD = 1;
       next.elapsedTime += recast.gcd;
     }
   } while (next.elapsedTime < 15000);
 
-  // else if (player.level >= 72 && next.flourishRecast - next.elapsedTime < 0
-  // && Math.max(
-  //   next.flourishingcascadeStatus,
-  //   next.flourishingfountainStatus,
-  //   next.flourishingwindmillStatus,
-  //   next.flourishingshowerStatus,
-  // ) - next.elapsedTime < 0) {
-  //   dncArray.push({ name: 'Flourish', size: 'small' });
-  //   next.flourishingcascadeStatus = 20000 + next.elapsedTime;
-  //   next.flourishingfountainStatus = 20000 + next.elapsedTime;
-  //   next.flourishingwindmillStatus = 20000 + next.elapsedTime;
-  //   next.flourishingshowerStatus = 20000 + next.elapsedTime;
-  //   next.flourishRecast = recast.flourish + next.elapsedTime;
-  // } else if (player.level >= 62 && next.devilmentRecast - next.elapsedTime < 0) {
-  //   dncArray.push({ name: 'Devilment', size: 'small' });
-  //   next.devilmentRecast = recast.devilment + next.elapsedTime;
-  // }
+  // else
 };
 
-  next.elapsedTime = recast.gcd;
-
-  do {
-    if
-    if (next.technicalstepRecast - next.elapsedTime < 0) {
-      // Technical Step
-    } else if (next.standardstepRecast - next.elapsedTime < 0) {
-      // Standard Step
-    }
-
-
-  } while (next.elapsedTime < 15000);
-
-}
-
-function dncJobChange() {
-
-  dncPriority();
-
-  nextid.step1 = 10;
-  nextid.step2 = 11;
-  nextid.step3 = 12;
-  nextid.step4 = 14;
-  nextid.fandance3 = 15;
-  nextid.fourfoldfeathers = 16;
-  nextid.devilment = 17;
-  nextid.flourish = 18;
-
-  countdownid.standardstep = 0;
-  countdownid.flourish = 1;
-  countdownid.technicalstep = 10;
-  countdownid.devilment = 11;
-
-  previous.fandance2 = 0;
-  previous.fandance3 = 0;
-  previous.windmill = 0;
-  previous.bladeshower = 0;
-  previous.risingwindmill = 0;
-  previous.bloodshower = 0;
-  previous.standardfinish = 0;
-  previous.saberdance = 0;
-  previous.technicalfinish = 0;
-
-  // Show available cooldowns
-
+onJobChange.DNC = () => {
   if (player.level >= 15) {
-    addCountdownBar({name: "standardstep", time: -1, oncomplete: "addIcon"});
+    addCountdown({name: "Standard Step" });
   }
 
   if (player.level >= 62) {
-    addCountdownBar({name: "devilment", time: -1});
+    addCountdown({name: "Devilment" });
   }
 
   if (player.level >= 70) {
-    addCountdownBar({name: "technicalstep", time: -1, oncomplete: "addIcon"});
+    addCountdown({name: "Technical Step" });
   }
 
   if (player.level >= 72) {
-    addCountdownBar({name: "flourish", time: -1});
+    addCountdown({name: "Flourish" });
   }
+  dncNext({ time: 0 });
+};
 
-  dncCombo();
-  dncEsprit();
-}
-
-function dncAction() {
+onAction.DNC = () => {
 
   // Set up icon changes from combat here
 
