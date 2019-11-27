@@ -129,21 +129,20 @@ onCancel.WHM = (cancelMatch) => {
 onTargetChanged.WHM = () => {
   // Check if target is a new target
   if (previous.targetID !== target.ID) {
-    removeIcon({ name: player.aeroSpell });
-    removeIcon({ name: 'Regen' });
+    const whmArray = [];
     if (target.ID.startsWith('4')) {
       // If not a target then clear things out
       // 0 = no target, 1... = player? E... = non-combat NPC?
-      hideCountdown({ name: 'Regen' });
       addCountdown({ name: player.aeroSpell, time: checkStatus({ name: player.aeroSpell, id: target.ID }), onComplete: 'addIcon' });
-    } else if (target.ID.startsWith('1') && ['PLD', 'WAR', 'DRK', 'GNB'].indexOf(target.job) > -1) {
-      hideCountdown({ name: player.aeroSpell });
+    } else if (target.ID.startsWith('1') && ['WHM', 'WAR', 'DRK', 'GNB'].indexOf(target.job) > -1) {
       addCountdown({ name: 'Regen', time: checkStatus({ name: 'Regen', id: target.ID }), onComplete: 'addIcon' });
     } else {
       hideCountdown({ name: player.aeroSpell });
       hideCountdown({ name: 'Regen' });
     }
     previous.targetID = target.ID;
+    iconArrayB = whmArray;
+    syncIcons();
   }
 };
 
