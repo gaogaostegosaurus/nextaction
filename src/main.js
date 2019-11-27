@@ -85,8 +85,9 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
     player.faerieGauge = parseInt(debugJobArray[3], 16); /* 0-100 */
     healerLucidDreaming();
   } else if (player.job === 'WHM') {
+    // player.lilies
     player.bloodLily = parseInt(debugJobArray[5], 16); /* 0-3 */
-    healerLucidDreaming();
+    // healerLucidDreaming();
   }
 
   /* Detects name/job/level change and clears elements */

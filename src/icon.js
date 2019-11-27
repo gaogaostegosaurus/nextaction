@@ -676,18 +676,23 @@ icon.innerchaos = '002568';
 // WHM
 icon.aero = '000401';
 icon.aeroii = '000402';
+icon.stone = '000403';
+icon.stoneii = '000404';
 icon.freecure = '000406';
 icon.medicaii = '000409';
 icon.presenceofmind = '002626';
 icon.benediction = '002627';
 icon.regen = '002628';
+icon.stoneiii = '002631';
 icon.asylum = '002632';
 icon.tetragrammaton = '002633';
 icon.assize = '002634';
 icon.thinair = '002636';
+icon.stoneiv = '002637';
 icon.divinebenison = '002638';
 icon.plenaryindulgence = '002639';
 icon.dia = '002641';
+icon.glare = '002642';
 icon.afflatusmisery = '002644';
 icon.temperance = '002645';
 
