@@ -134,7 +134,7 @@ onTargetChanged.WHM = () => {
       // If not a target then clear things out
       // 0 = no target, 1... = player? E... = non-combat NPC?
       addCountdown({ name: player.aeroSpell, time: checkStatus({ name: player.aeroSpell, id: target.ID }), onComplete: 'addIcon' });
-    } else if (target.ID.startsWith('1') && ['WHM', 'WAR', 'DRK', 'GNB'].indexOf(target.job) > -1) {
+    } else if (target.ID.startsWith('1') && ['PLD', 'WAR', 'DRK', 'GNB'].indexOf(target.job) > -1) {
       addCountdown({ name: 'Regen', time: checkStatus({ name: 'Regen', id: target.ID }), onComplete: 'addIcon' });
     } else {
       hideCountdown({ name: player.aeroSpell });
