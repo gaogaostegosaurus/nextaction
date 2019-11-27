@@ -83,6 +83,7 @@ statusList.SCH = [
 
 const schNext = ({
   time = recast.gcd,
+  casting,
 } = {}) => {
   next.aetherflow = player.aetherflow;
   next.MP = player.MP;
@@ -151,7 +152,7 @@ const schNext = ({
       next.ogcd -= 1;
       next.cooldown = 0;
       next.aetherflow = 3;
-      next.MP += 1000;
+      next.MP += 500;
       next.aetherflowRecast = 60000 + next.elapsedTime;
     } else if (next.ogcd > 0 && player.level >= 60 && next.aetherflow === 0
     && next.dissipationRecast - next.elapsedTime < 0) {
@@ -168,7 +169,8 @@ const schNext = ({
       next.ogcd -= 1;
       next.cooldown = 0;
       next.consolationCount -= 1;
-    } else if (next.ogcd > 0 && player.level >= 26 && next.MP < 8000
+    } else if (next.ogcd > 0 && player.level >= 26
+    && next.MP + Math.floor(next.elapsedTime / 3000) * 200 < 8000
     && next.luciddreamingRecast - next.elapsedTime < 0) {
       schArray.push({ name: 'Lucid Dreaming', size: 'small' });
       next.ogcd -= 1;
@@ -208,6 +210,11 @@ const schNext = ({
   } while (next.elapsedTime < 15000);
 
   iconArrayB = schArray;
+
+  if (casting) {
+    schArray.push({ name: player.ruinSpell });
+  }
+
   syncIcons();
 };
 
@@ -245,7 +252,7 @@ onJobChange.SCH = () => {
 
 onCasting.SCH = (castingMatch) => {
   toggle.ogcd = 0;
-  schNext({ time: 0 });
+  schNext();
 };
 
 onCancel.SCH = (cancelMatch) => {

@@ -17,7 +17,7 @@ let cancelRegExp;
 const statsRegExp = new RegExp(' 0C:Player Stats: (?<jobID>[\\d]+):(?<strength>[\\d]+):(?<dexterity>[\\d]+):(?<vitality>[\\d]+):(?<intelligence>[\\d]+):(?<mind>[\\d]+):(?<piety>[\\d]+):(?<attackPower>[\\d]+):(?<directHitRate>[\\d]+):(?<criticalHit>[\\d]):(?<attackMagicPotency>[\\d]+):(?<healingMagicPotency>[\\d]+):(?<determination>[\\d]+):(?<skillSpeed>[\\d]+):(?<spellSpeed>[\\d]+):0:(?<tenacity>[\\d]+)');
 
 addOverlayListener('onPlayerChangedEvent', (e) => {
-  // console.log(JSON.stringify(e));
+  console.log(JSON.stringify(e));
   /* e.detail.id is a numeric ID, e.detail.id .toString(16) is lowercase.
   Using 'ID' to designate uppercase lettering. */
   player.ID = e.detail.id.toString(16).toUpperCase();
@@ -100,12 +100,14 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
       if (actionMatch.groups.logType === '16') {
         /* fix for heals */
         const property = actionMatch.groups.actionName.replace(/[\s'-:]/g, '').toLowerCase();
-        if (previous.aoeMatch - Date.now() > 100) {
+        if (!previous[`${property}Match`] || previous[`${property}Match`] - Date.now() > 10) {
+          previous[`${property}Match`] = Date.now();
           count.targets = 1;
+          timeout[`${property}Match`] = setTimeout(onAction[player.job], 100, actionMatch);
         } else {
-          clearTimeout(timeout[property]);
+          clearTimeout(timeout[`${property}Match`]);
           count.targets += 1;
-          timeout[property] = setTimeout(onAction[player.job], 100, actionMatch);
+          timeout[`${property}Match`] = setTimeout(onAction[player.job], 100, actionMatch);
         }
       } else {
         onAction[player.job](actionMatch);

@@ -196,35 +196,32 @@ const removeIcon = ({
   const removeDelay = 100;
 
   // Prevents this from being called multiple times by AoEs
-  if (!previous.removeIcon || Date.now() - previous.removeIcon > removeDelay) {
-    previous.removeIcon = Date.now();
-    const rowID = getArrayRow({ iconArray });
-    const rowDiv = document.getElementById(rowID);
+  const rowID = getArrayRow({ iconArray });
+  const rowDiv = document.getElementById(rowID);
 
-    let matchDiv;
-    if (match === 'contains') {
-      matchDiv = rowDiv.querySelector(`div[data-name~="${name}"]:not([class~="icon-hide"])`);
-    } else {
-      matchDiv = rowDiv.querySelector(`div[data-name="${name}"]:not([class~="icon-hide"])`);
+  let matchDiv;
+  if (match === 'contains') {
+    matchDiv = rowDiv.querySelector(`div[data-name~="${name}"]:not([class~="icon-hide"])`);
+  } else {
+    matchDiv = rowDiv.querySelector(`div[data-name="${name}"]:not([class~="icon-hide"])`);
+  }
+
+  if (matchDiv) {
+    // void matchDiv.offsetWidth; // Don't need this when removing... probably
+    matchDiv.dataset.name = 'none';
+    if (!matchDiv.classList.contains('icon-hide')) {
+      matchDiv.classList.replace('icon-show', 'icon-hide');
     }
-
-    if (matchDiv) {
-      // void matchDiv.offsetWidth; // Don't need this when removing... probably
-      matchDiv.dataset.name = 'none';
-      if (!matchDiv.classList.contains('icon-hide')) {
-        matchDiv.classList.replace('icon-show', 'icon-hide');
+    matchDiv.addEventListener('transitionend', () => {
+      if (matchDiv.propertyName === 'height' || matchDiv.propertyName === 'width') {
+        matchDiv.remove();
       }
-      matchDiv.addEventListener('transitionend', () => {
-        if (matchDiv.propertyName === 'height' || matchDiv.propertyName === 'width') {
-          matchDiv.remove();
-        }
-      });
-    }
+    });
+  }
 
-    const matchIndex = iconArray.findIndex((entry) => entry.name === name);
-    if (matchIndex > -1) {
-      iconArray.splice(matchIndex, 1);
-    }
+  const matchIndex = iconArray.findIndex((entry) => entry.name === name);
+  if (matchIndex > -1) {
+    iconArray.splice(matchIndex, 1);
   }
 };
 
