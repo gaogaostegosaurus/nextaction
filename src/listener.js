@@ -1,30 +1,4 @@
 
-const resetNext = () => {
-  /* Reset timeout and intervals */
-  Object.keys(timeout).forEach((property) => { clearTimeout(timeout[property]); });
-  Object.keys(interval).forEach((property) => { clearInterval(interval[property]); });
-
-  document.getElementById('icon-a').innerHTML = '';
-  document.getElementById('icon-b').innerHTML = '';
-  document.getElementById('icon-c').innerHTML = '';
-  document.getElementById('countdown-a').innerHTML = '';
-  document.getElementById('countdown-b').innerHTML = '';
-  document.getElementById('countdown-c').innerHTML = '';
-};
-
-const countTargets = ({
-  name,
-  property = name.replace(/[\s'-:]/g, '').toLowerCase(),
-} = {}) => {
-  const countTargetsDelay = 10;
-  if (Date.now() - previous[property] > countTargetsDelay) {
-    previous[property] = Date.now();
-    count.targets = 1;
-  } else {
-    count.targets += 1;
-  }
-};
-
 /* https://github.com/quisquous/cactbot/blob/master/CactbotOverlay/JSEvents.cs shows all possible events */
 
 /* This seems useful to eventually add
@@ -53,7 +27,7 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
 
   player.currentHP = e.detail.currentHP;
   player.maxHP = e.detail.maxHP;
-  player.currentMP = e.detail.currentMP;
+  player.MP = e.detail.currentMP;
   player.maxMP = e.detail.maxMP;
   player.currentShield = e.detail.currentShield;
 
@@ -83,7 +57,7 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
   } else if (player.job === 'SCH') {
     player.aetherflow = parseInt(debugJobArray[2], 16); /* 0-3 */
     player.faerieGauge = parseInt(debugJobArray[3], 16); /* 0-100 */
-    healerLucidDreaming();
+    // healerLucidDreaming();
   } else if (player.job === 'WHM') {
     // player.lilies
     player.bloodLily = parseInt(debugJobArray[5], 16); /* 0-3 */
@@ -91,7 +65,7 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
   }
 
   /* Detects name/job/level change and clears elements */
-  if (previous.job !== player.job || previous.level !== player.level) {
+  if (player.job && (previous.job !== player.job || previous.level !== player.level)) {
     previous.job = player.job;
     previous.level = player.level;
 
@@ -122,8 +96,20 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
     const statsMatch = e.detail.logs[i].match(statsRegExp);
     // const addedMatch = e.detail.logs[i].match(addedRegExp);
 
-    if (actionMatch) { // Status source = player
-      onAction[player.job](actionMatch);
+    if (actionMatch) {
+      if (actionMatch.groups.logType === '16') {
+        /* fix for heals */
+        const property = actionMatch.groups.actionName.replace(/[\s'-:]/g, '').toLowerCase();
+        if (previous.aoeMatch - Date.now() > 100) {
+          count.targets = 1;
+        } else {
+          clearTimeout(timeout[property]);
+          count.targets += 1;
+          timeout[property] = setTimeout(onAction[player.job], 100, actionMatch);
+        }
+      } else {
+        onAction[player.job](actionMatch);
+      }
     } else if (statusMatch) {
       onStatus[player.job](statusMatch);
     } else if (castingMatch) {

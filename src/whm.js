@@ -38,6 +38,29 @@ statusList.WHM = [
   // Probably more can go here but whatever for now?
 ];
 
+const whmCastActions = [
+  'Stone', 'Cure', 'Medica', 'Raise', 'Stone II', 'Cure II', 'Medica II', 'Cure III', 'Holy',
+  'Stone III', 'Stone IV', 'Glare',
+];
+
+const whmInstantActions = [
+  'Aero', 'Aero II', 'Regen', 'Afflatus Solace', 'Dia', 'Afflatus Misery', 'Afflatus Rapture',
+];
+
+
+const whmCooldownActions = [
+  'Fluid Aura', 'Presence Of Mind', 'Benediction', 'Asylum', 'Assize', 'Thin Air', 'Tetragrammaton',
+  'Divine Benison', 'Plenary Indulgence', 'Temperance',
+];
+
+const whmMultiTarget = [
+  'Holy', 'Assize', 'Afflatus Misery',
+];
+
+const whmSingleTarget = [
+  'Stone', 'Stone II', 'Stone III', 'Stone IV', 'Glare',
+];
+
 const whmCountdownA = [
   'Benediction', 'Asylum', 'Assize', 'Tetragrammaton', 'Divine Benison', 'Temperance',
 ];
@@ -54,7 +77,6 @@ const whmCountdownC = [
 
 const whmNext = ({
   time = recast.gcd,
-  ogcd = 0,
 } = {}) => {
   if (target.ID && target.ID.startsWith('4')) {
     next.aeroStatus = checkStatus({ name: player.aeroSpell, id: target.ID });
@@ -77,11 +99,19 @@ const whmNext = ({
   next.presenceofmindRecast = checkRecast({ name: 'Presence Of Mind' });
 
   next.combatToggle = toggle.combat;
-  next.MP = player.currentMP;
+  next.MP = player.MP;
   next.bloodLily = player.bloodLily;
 
   next.elapsedTime = time;
-  next.ogcd = ogcd;
+  next.ogcdCount = count.ogcd;
+
+  if (checkStatus({ name: 'Freecure' }) > 0 && !toggle.freecure) {
+    addIcon({ name: 'Freecure' });
+    toggle.freecure = 1;
+  } else {
+    removeIcon({ name: 'Freecure' });
+    toggle.freecure = 0;
+  }
 
   const whmArray = [];
 
@@ -90,39 +120,41 @@ const whmNext = ({
       whmArray.push({ name: player.stoneSpell });
       next.elapsedTime += recast.gcd;
       next.combatToggle = 1;
-    } else if (player.level >= 56 && next.assizeRecast - next.elapsedTime < 0 && next.ogcd >= 1) {
+    } else if (player.level >= 56 && next.assizeRecast - next.elapsedTime < 0
+    && next.ogcdCount >= 1) {
       whmArray.push({ name: 'Assize', size: 'small' });
       next.assizeRecast = 45000 + next.elapsedTime;
-      next.ogcd -= 1;
+      next.ogcdCount -= 1;
     } else if (player.level >= 66 && next.divinebenisonRecast - next.elapsedTime < 0
-    && next.ogcd >= 1) {
+    && next.ogcdCount >= 1) {
       whmArray.push({ name: 'Divine Benison', size: 'small' });
       next.divinebenisonRecast = 30000 + next.elapsedTime;
-      next.ogcd -= 1;
+      next.ogcdCount -= 1;
     } else if (player.level >= 80 && next.luciddreamingRecast - next.elapsedTime < 0
-    && next.MP < 8000 && next.ogcd >= 1) {
+    && next.MP < 8000 && next.ogcdCount >= 1) {
       whmArray.push({ name: 'Lucid Dreaming', size: 'small' });
       next.luciddreamingRecast = 60000 + next.elapsedTime;
-      next.ogcd -= 1;
+      next.ogcdCount -= 1;
     } else if (player.level >= 80 && next.thinairRecast - next.elapsedTime < 0
-    && next.ogcd >= 1) {
+    && next.ogcdCount >= 1) {
       whmArray.push({ name: 'Thin Air', size: 'small' });
       next.thinairRecast = 120000 + next.elapsedTime;
-      next.ogcd -= 1;
-    } else if (player.level >= 80 && next.asylumRecast - next.elapsedTime < 0 && next.ogcd >= 1) {
+      next.ogcdCount -= 1;
+    } else if (player.level >= 80 && next.asylumRecast - next.elapsedTime < 0
+    && next.ogcdCount >= 1) {
       whmArray.push({ name: 'Asylum', size: 'small' });
       next.asylumRecast = 90000 + next.elapsedTime;
-      next.ogcd -= 1;
+      next.ogcdCount -= 1;
     } else if (player.level >= 80 && next.temperanceRecast - next.elapsedTime < 0
-    && next.ogcd >= 1) {
+    && next.ogcdCount >= 1) {
       whmArray.push({ name: 'Temperance', size: 'small' });
       next.temperanceRecast = 120000 + next.elapsedTime;
-      next.ogcd -= 1;
+      next.ogcdCount -= 1;
     } else if (player.level >= 80 && next.presenceofmindRecast - next.elapsedTime < 0
-    && next.ogcd >= 1) {
+    && next.ogcdCount >= 1) {
       whmArray.push({ name: 'Presence Of Mind', size: 'small' });
       next.presenceofmindRecast = 150000 + next.elapsedTime;
-      next.ogcd -= 1;
+      next.ogcdCount -= 1;
     } else if (next.aeroStatus - next.elapsedTime < 0) {
       whmArray.push({ name: player.aeroSpell });
       if (next.thinairStatus - next.elapsedTime < 0) {
@@ -130,7 +162,7 @@ const whmNext = ({
       }
       next.aeroStatus = player.aeroDuration + next.elapsedTime;
       next.elapsedTime += recast.gcd;
-      next.ogcd = 2;
+      next.ogcdCount = 2;
     } else if (next.regenStatus - next.elapsedTime < 0) {
       whmArray.push({ name: 'Regen' });
       if (next.thinairStatus - next.elapsedTime < 0) {
@@ -138,12 +170,12 @@ const whmNext = ({
       }
       next.regenStatus = 18000 + next.elapsedTime;
       next.elapsedTime += recast.gcd;
-      next.ogcd = 2;
+      next.ogcdCount = 2;
     } else if (next.bloodLily >= 3) {
       whmArray.push({ name: 'Afflatus Misery' });
       next.bloodLily = 0;
       next.elapsedTime += recast.gcd;
-      next.ogcd = 2;
+      next.ogcdCount = 2;
     } else if (player.level >= 72 && count.targets >= 3) {
       whmArray.push({ name: 'Holy' });
       next.elapsedTime += recast.gcd;
@@ -197,14 +229,6 @@ onJobChange.WHM = () => {
     player.aeroDuration = 30000;
   } else {
     player.aeroDuration = 18000;
-  }
-
-  if (checkStatus({ name: 'Freecure' }) > 0 && !toggle.freecure) {
-    addIcon({ name: 'Freecure' });
-    toggle.freecure = 1;
-  } else {
-    removeIcon({ name: 'Freecure' });
-    toggle.freecure = 0;
   }
 
   if (player.level >= 56) {
@@ -264,21 +288,42 @@ onTargetChanged.WHM = () => {
 
 onAction.WHM = (actionMatch) => {
   removeIcon({ name: actionMatch.groups.actionName });
+
   if (whmCountdownA.indexOf(actionMatch.groups.actionName) > -1) {
     addRecast({ name: actionMatch.groups.actionName });
-    addCountdown({ name: actionMatch.groups.actionName, countdownArray: countdownArrayA });
+    if (player.name === 'Zoot Zoots') {
+      addCountdown({ name: actionMatch.groups.actionName, countdownArray: countdownArrayA, text: 'READY DUMMY' });
+    } else {
+      addCountdown({ name: actionMatch.groups.actionName, countdownArray: countdownArrayA });
+    }
   } else if (whmCountdownB.indexOf(actionMatch.groups.actionName) > -1) {
     addRecast({ name: actionMatch.groups.actionName });
-    addCountdown({ name: actionMatch.groups.actionName, countdownArray: countdownArrayB });
+    if (player.name === 'Zoot Zoots') {
+      addCountdown({ name: actionMatch.groups.actionName, countdownArray: countdownArrayB, text: 'READY DUMMY' });
+    } else {
+      addCountdown({ name: actionMatch.groups.actionName, countdownArray: countdownArrayB });
+    }
   } else if (whmCountdownC.indexOf(actionMatch.groups.actionName) > -1) {
-    addRecast({ name: actionMatch.groups.actionName });
-    addCountdown({ name: actionMatch.groups.actionName, countdownArray: countdownArrayC });
-  } else if (['Dia', 'Regen'].indexOf(actionMatch.groups.actionName) > -1) {
+    if (player.name === 'Zoot Zoots') {
+      addCountdown({ name: actionMatch.groups.actionName, countdownArray: countdownArrayC, text: 'READY DUMMY' });
+    } else {
+      addCountdown({ name: actionMatch.groups.actionName, countdownArray: countdownArrayC });
+    }
+  } else if ([player.aeroSpell, 'Regen'].indexOf(actionMatch.groups.actionName) > -1) {
     addStatus({ name: actionMatch.groups.actionName, id: actionMatch.groups.targetID });
     addStatus({ name: actionMatch.groups.actionName }); /* This helps with calculations */
-    whmNext({ ogcd: 2 });
-  } else if (actionMatch.groups.actionName === player.stoneSpell) {
+  }
+
+  /* Check oGCD slots from last action before calling next function */
+  if (whmCastActions.indexOf(actionMatch.groups.actionName) > -1) {
+    count.ogcd = 0;
+    whmNext({ time: 0 });
+  } else if (whmInstantActions.indexOf(actionMatch.groups.actionName) > -1) {
+    count.ogcd = 2;
     whmNext();
+  } else if (whmCooldownActions.indexOf(actionMatch.groups.actionName) > -1) {
+    count.ogcd -= 1;
+    whmNext({ time: 0 });
   }
 };
 
@@ -290,13 +335,7 @@ onStatus.WHM = (statusMatch) => {
       time: parseFloat(statusMatch.groups.statusDuration) * 1000,
       id: statusMatch.groups.targetID,
     });
-    if (statusMatch.groups.statusName === 'Freecure') {
-      addIcon({ name: 'Freecure' });
-    }
   } else if (statusMatch.groups.gainsLoses === 'loses') {
     removeStatus({ name: statusMatch.groups.statusName });
-    if (statusMatch.groups.statusName === 'Freecure') {
-      removeIcon({ name: 'Freecure' });
-    }
   }
 };

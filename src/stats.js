@@ -103,3 +103,17 @@ const gcdCalculation = ({
   console.log(`calculated standard GCD as ${recast.gcd}`);
   return recast.gcd;
 };
+
+
+const countTargets = ({
+  name,
+  property = name.replace(/[\s'-:]/g, '').toLowerCase(),
+} = {}) => {
+  const countTargetsDelay = 10;
+  if (Date.now() - previous[property] > countTargetsDelay) {
+    previous[property] = Date.now();
+    count.targets = 1;
+  } else {
+    count.targets += 1;
+  }
+};

@@ -73,7 +73,7 @@ const pldNext = ({
 } = {}) => {
   const pldArray = [];
 
-  next.MP = player.currentMP;
+  next.MP = player.MP;
   next.requiescatRecast = checkRecast({ name: 'Requiescat' });
   next.requiescatStatus = checkStatus({ name: 'Requiescat' });
   next.fightorflightRecast = checkRecast({ name: 'Fight Or Flight' });

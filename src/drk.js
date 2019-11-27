@@ -340,7 +340,7 @@ function drkMP() {
   }
 
   if (player.level >= 70) {
-    if (player.currentMP >= 6000
+    if (player.MP >= 6000
     || player.tempjobDetail.darkarts == 1) {
       addIcon({name: "floodofdarkness"});
     }
@@ -349,7 +349,7 @@ function drkMP() {
     }
   }
   else if (player.level >= 30) { // No TBN yet
-    if (player.currentMP >= 3000) {
+    if (player.MP >= 3000) {
       addIcon({name: "floodofdarkness"});
     }
     else {
