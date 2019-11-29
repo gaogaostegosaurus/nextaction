@@ -34,7 +34,7 @@ const dncPushWeave = ({
 }
 
 const dncNext = ({
-  time = recast.gcd,
+  time = player.gcd,
 } = {}) => {
   next.ogcd = toggle.ogcd;
 
@@ -53,19 +53,21 @@ const dncNext = ({
   next.steps = player.steps;
   next.fourfoldFeathers = player.fourfoldFeathers;
   next.esprit = player.esprit;
+  next.combat = toggle.combat;
 
   const dncArray = [];
   do {
     if (player.level >= 15 && next.standardstepRecast - next.elapsedTime < 0
-    && !toggle.combat) { /* Pre-pull stuff, maybe */
+    && !next.combat) { /* Pre-pull stuff, maybe */
       dncArray.push({ name: 'Standard Step' });
       next.standardstepRecast = 30000 + next.elapsedTime;
       next.elapsedTime += 1000 * 2;
       dncArray.push({ name: 'Standard Finish' });
+      next.combat = 1;
       next.ogcd = 1;
       next.standardfinishStatus = 60000 + next.elapsedTime;
-      next.elapsedTime += recast.gcd;
-    } else if (next.ogcd >= 1 && player.level >= 72 && next.flourishRecast - next.elapsedTime < 0
+      next.elapsedTime += player.gcd;
+    } else if (next.ogcd > 0 && player.level >= 72 && next.flourishRecast - next.elapsedTime < 0
     && Math.max(
       next.flourishingcascadeStatus, next.flourishingfountainStatus, next.flourishingwindmillStatus,
       next.flourishingshowerStatus, next.flourishingfandanceStatus,
@@ -78,11 +80,11 @@ const dncNext = ({
       next.flourishingshowerStatus = 20000 + next.elapsedTime;
       next.flourishingfandanceStatus = 20000 + next.elapsedTime;
       next.flourishRecast = recast.flourish + next.elapsedTime;
-    } else if (next.ogcd >= 1 && player.level >= 62 && next.devilmentRecast - next.elapsedTime < 0) {
+    } else if (next.ogcd > 0 && player.level >= 62 && next.devilmentRecast - next.elapsedTime < 0) {
       dncArray.push({ name: 'Devilment', size: 'small' });
       next.ogcd -= 1;
       next.devilmentRecast = recast.devilment + next.elapsedTime;
-    } else if (next.ogcd >= 1 && next.fourfoldFeathers >= 4) {
+    } else if (next.ogcd > 0 && next.fourfoldFeathers >= 4) {
       if (next.flourishingfandanceStatus - next.elapsedTime > 0) {
         dncArray.push({ name: 'Fan Dance III', size: 'small' });
         next.flourishingfandanceStatus = -1;
@@ -92,15 +94,6 @@ const dncNext = ({
         dncArray.push({ name: 'Fan Dance', size: 'small' });
       }
       next.ogcd -= 1;
-    } else if (player.level >= 15 && next.standardstepRecast - next.elapsedTime < 0
-    && !toggle.combat) { // Pre-pull stuff, maybe
-      dncArray.push({ name: 'Standard Step' });
-      next.standardstepRecast = 30000 + next.elapsedTime;
-      next.elapsedTime += 1000 * 2;
-      dncArray.push({ name: 'Standard Finish' });
-      next.ogcd = 1;
-      next.standardfinishStatus = 60000 + next.elapsedTime;
-      next.elapsedTime += recast.gcd;
     } else if (player.level >= 70 && next.technicalstepRecast - next.elapsedTime < 0) {
       dncArray.push({ name: 'Technical Step' });
       next.technicalstepRecast = 120000 + next.elapsedTime;
@@ -108,13 +101,14 @@ const dncNext = ({
       dncArray.push({ name: 'Technical Finish' });
       next.technicalfinishStatus = 20000 + next.elapsedTime;
       next.ogcd = 1;
-      next.elapsedTime += recast.gcd;
+      next.elapsedTime += player.gcd;
     } else if (next.technicalfinishStatus - next.elapsedTime > 0) {
+
       if (player.level >= 76 && next.esprit >= 80) {
         dncArray.push({ name: 'Saber Dance' });
         next.esprit -= 50;
         next.ogcd = 1;
-        next.elapsedTime += recast.gcd;
+        next.elapsedTime += player.gcd;
       } else if (player.level >= 72 && next.standardstepRecast - next.elapsedTime < 0
       && next.technicalfinishStatus - next.elapsedTime > 0
       && next.devilmentStatus - next.elapsedTime > 4000) {
@@ -124,42 +118,42 @@ const dncNext = ({
         dncArray.push({ name: 'Standard Finish' });
         next.ogcd = 1;
         next.standardfinishStatus = 60000 + next.elapsedTime;
-        next.elapsedTime += recast.gcd;
+        next.elapsedTime += player.gcd;
       } else if (player.level >= 76 && next.esprit >= 50) {
         dncArray.push({ name: 'Saber Dance' });
         next.esprit -= 50;
         next.ogcd = 1;
-        next.elapsedTime += recast.gcd;
+        next.elapsedTime += player.gcd;
       } else if (next.flourishingfountainStatus - next.elapsedTime > 0 && count.targets <= 2) {
         dncArray.push({ name: 'Fountainfall' });
         next.flourishingfountainStatus = -1;
         next.ogcd = 1;
-        next.elapsedTime += recast.gcd;
+        next.elapsedTime += player.gcd;
       } else if (next.flourishingshowerStatus - next.elapsedTime > 0) {
         dncArray.push({ name: 'Bloodshower' });
         next.flourishingshowerStatus = -1;
         next.ogcd = 1;
-        next.elapsedTime += recast.gcd;
+        next.elapsedTime += player.gcd;
       } else if (next.flourishingcascadeStatus - next.elapsedTime > 0 && count.targets <= 2) {
         dncArray.push({ name: 'Reverse Cascade' });
         next.flourishingcascadeStatus = -1;
         next.ogcd = 1;
-        next.elapsedTime += recast.gcd;
-      } } else if (next.flourishingwindmillStatus - next.elapsedTime > 0) {
+        next.elapsedTime += player.gcd;
+      } else if (next.flourishingwindmillStatus - next.elapsedTime > 0) {
         dncArray.push({ name: 'Rising Windmill' });
         next.flourishingwindmillStatus = -1;
         next.ogcd = 1;
-        next.elapsedTime += recast.gcd;
+        next.elapsedTime += player.gcd;
       } else if (player.level >= 2 && next.comboStep === 1) {
         dncArray.push({ name: 'Fountain' });
         next.comboStep = 0;
         next.ogcd = 1;
-        next.elapsedTime += recast.gcd;
+        next.elapsedTime += player.gcd;
       } else {
         dncArray.push({ name: 'Cascade' });
         next.comboStep = 1;
         next.ogcd = 1;
-        next.elapsedTime += recast.gcd;
+        next.elapsedTime += player.gcd;
       }
     } else if (player.level >= 15 && next.standardstepRecast - next.elapsedTime < 0
     && count.targets < 2) {
@@ -168,12 +162,12 @@ const dncNext = ({
       dncArray.push({ name: 'Standard Finish' });
       next.ogcd = 1;
       next.standardfinishStatus = 60000 + next.elapsedTime;
-      next.elapsedTime += recast.gcd;
+      next.elapsedTime += player.gcd;
     } else if (player.level >= 76 && next.esprit >= 80) {
       dncArray.push({ name: 'Saber Dance' });
       next.esprit -= 50;
       next.ogcd = 1;
-      next.elapsedTime += recast.gcd;
+      next.elapsedTime += player.gcd;
     } else if (player.level >= 15 && next.standardstepRecast - next.elapsedTime < 0
     && count.targets <= 5) {
       dncArray.push({ name: 'Standard Step' });
@@ -181,32 +175,32 @@ const dncNext = ({
       dncArray.push({ name: 'Standard Finish' });
       next.ogcd = 1;
       next.standardfinishStatus = 60000 + next.elapsedTime;
-      next.elapsedTime += recast.gcd;
+      next.elapsedTime += player.gcd;
     } else if (next.flourishingfountainStatus - next.elapsedTime > 0 && count.targets <= 2) {
       dncArray.push({ name: 'Fountainfall' });
       next.flourishingfountainStatus = -1;
       next.ogcd = 1;
-      next.elapsedTime += recast.gcd;
+      next.elapsedTime += player.gcd;
     } else if (next.flourishingshowerStatus - next.elapsedTime > 0) {
       dncArray.push({ name: 'Bloodshower' });
       next.flourishingshowerStatus = -1;
       next.ogcd = 1;
-      next.elapsedTime += recast.gcd;
+      next.elapsedTime += player.gcd;
     } else if (next.flourishingcascadeStatus - next.elapsedTime > 0 && count.targets <= 2) {
       dncArray.push({ name: 'Reverse Cascade' });
       next.flourishingcascadeStatus = -1;
       next.ogcd = 1;
-      next.elapsedTime += recast.gcd;
+      next.elapsedTime += player.gcd;
     } else if (player.level >= 25 && next.comboStep === 11 && count.targets > 1) {
       dncArray.push({ name: 'Bladeshower' });
       next.comboStep = 0;
       next.ogcd = 1;
-      next.elapsedTime += recast.gcd;
+      next.elapsedTime += player.gcd;
     } else if (player.level >= 25 && next.comboStep === 0 && count.targets > 1) {
       dncArray.push({ name: 'Windmill' });
       next.comboStep = 11;
       next.ogcd = 1;
-      next.elapsedTime += recast.gcd;
+      next.elapsedTime += player.gcd;
     } else if (player.level >= 15 && next.standardstepRecast - next.elapsedTime < 0
     && next.standardfinishStatus - next.elapsedTime < 4000) {
       dncArray.push({ name: 'Standard Step' });
@@ -214,22 +208,22 @@ const dncNext = ({
       dncArray.push({ name: 'Standard Finish' });
       next.ogcd = 1;
       next.standardfinishStatus = 60000 + next.elapsedTime;
-      next.elapsedTime += recast.gcd;
+      next.elapsedTime += player.gcd;
     } else if (next.flourishingwindmillStatus - next.elapsedTime > 0) {
       dncArray.push({ name: 'Rising Windmill' });
       next.flourishingwindmillStatus = -1;
       next.ogcd = 1;
-      next.elapsedTime += recast.gcd;
+      next.elapsedTime += player.gcd;
     } else if (player.level >= 2 && next.comboStep === 1) {
       dncArray.push({ name: 'Fountain' });
       next.comboStep = 0;
       next.ogcd = 1;
-      next.elapsedTime += recast.gcd;
+      next.elapsedTime += player.gcd;
     } else {
       dncArray.push({ name: 'Cascade' });
       next.comboStep = 1;
       next.ogcd = 1;
-      next.elapsedTime += recast.gcd;
+      next.elapsedTime += player.gcd;
     }
   } while (next.elapsedTime < 15000);
 

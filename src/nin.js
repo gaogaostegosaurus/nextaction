@@ -34,50 +34,38 @@ const ninSingleTarget = [
   'Raiton', 'Bhavacakra', 'Hyosho Ranryu',
 ];
 
-const ninComboWeaponskills = [
-  'Spinning Edge', 'Gust Slash', 'Aeolian Edge', 'Armor Crush', 'Death Blossom', 'Hakke Mujinsatsu',
+const ninWeaponskills = [
+  'Spinning Edge', 'Gust Slash', 'Aeolian Edge', 'Shadow Fang', 'Armor Crush', 'Death Blossom',
+  'Hakke Mujinsatsu',
 ];
 
 const ninFinisherWeaponskills = [
   'Aeolian Edge', 'Armor Crush', 'Hakke Mujinsatsu',
 ];
 
+const ninMudra = [
+  'Ten', 'Chi', 'Jin',
+];
+
 const ninNinjutsu = [
-  'Fuma Shuriken', 'Katon', 'Raiton', 'Hyoton', 'Huton', 'Doton', 'Suiton', 'Goka Mekkyaku',
-  'Hyosho Ranryu', 'Rabbit Medium',
+  'Fuma Shuriken', 'Katon', 'Raiton', 'Hyoton', 'Huton', 'Doton', 'Suiton',
+  'Rabbit Medium',
+  'Goka Mekkyaku', 'Hyosho Ranryu',
 ];
 
-const ninWeave = () => {
-  if (player.level >= 45 && next.trickattackRecast - next.elapsedTime < 0
-  && next.suitonStatus - next.elapsedTime > 0) {
-    ninArray.push({ name: 'Trick Attack', size: 'small' });
-    next.suitonStatus = -1;
-    next.trickattackRecast = 60000 + next.elapsedTime;
-  } else if (player.level >= 72 && next.meisuiRecast - next.elapsedTime < 0
-  && next.suitonStatus - next.elapsedTime > 0) {
-    ninArray.push({ name: 'Meisui', size: 'small' });
-    next.suitonStatus = -1;
-    next.meisuiRecast = 120000 + next.elapsedTime;
-  }
-}
-
-const ninColumnA = [
-  'Mudra',
-];
-
-const ninColumnB = [
-
-];
-
-const ninColumnC = [
-
+const ninCooldowns = [
+  'Shade Shift', 'Hide', 'Mug', 'Shukuchi', 'Dream Within A Dream', 'Assassinate',
+  'Kassatsu', 'Ten Chi Jin',
+  'Trick Attack', 'Meisui',
+  'Hellfrog Medium', 'Bhavacakra', 'Bunshin',
+  'Second Wind', 'Leg Sweep', 'Bloodbath', 'Feint', 'Arm\'s Length', 'True North',
 ];
 
 
 next.hutonModifier = 1;
 
 const ninNext = ({
-  time = recast.gcd * next.hutonModifier,
+  time = player.gcd * next.hutonModifier,
 } = {}) => {
   // if (Date.now() - previous.ninNext < 100) {
   //   return;
@@ -106,22 +94,23 @@ const ninNext = ({
   next.hutonStatus = player.huton;
   next.ninki = player.ninki;
   next.comboStep = count.comboStep;
+  next.ogcd = toggle.ogcd;
   // next.hutonStatus = player.huton;
   next.elapsedTime = time;
 
-  // // Calculate Ninki floor level to prevent overcap, maximize Bunshin
-  // if (player.level >= 80) {
-  //   if (next.bunshinRecast < next.meisuiRecast) {
-  //     next.ninkiFloor = 0;
-  //   } else if (next.bunshinRecast < next.mugRecast) {
-  //     next.ninkiFloor = 10;
-  //   } else {
-  //     next.ninkiFloor = 50;
-  //   }
-  // } else {
-  //   next.ninkiFloor = 0;
-  // }
-  //
+  /* Calculate Ninki floor level to prevent overcap, maximize Bunshin */
+  if (player.level >= 80) {
+    if (next.bunshinRecast > next.meisuiRecast) {
+      next.ninkiTarget = 50;
+    } else if (next.bunshinRecast > next.mugRecast) {
+      next.ninkiTarget = 55;
+    } else {
+      next.ninkiTarget = 95;
+    }
+  } else {
+    next.ninkiTarget = 50;
+  }
+
   // // Display Ninki spenders
   // if (player.ninki >= next.ninkiFloor + 50 && !toggle.ninkiSpender) {
   //   if (player.level >= 80 && next.bunshinRecast < 0) {
@@ -150,7 +139,7 @@ const ninNext = ({
   // Show TCJ icon
   // if (player.level >= 70 && next.tenchijinRecast < 0 && !toggle.tenchijin) {
   //   if (player.level >= 72
-  //   && next.meisuiRecast < 20000 + 1500 * 3 - recast.gcd * next.hutonModifier) {
+  //   && next.meisuiRecast < 20000 + 1500 * 3 - player.gcd * next.hutonModifier) {
   //     addIcon({ name: 'Ten Chi Jin', iconArray: iconArrayA });
   //     toggle.tenchijin = 2;
   //   } else if (player.level < 72) {
@@ -164,7 +153,7 @@ const ninNext = ({
   //
   // Show Kassatsu icon
   // if (player.level >= 50 && !toggle.kassatsu && next.kassatsuRecast < 0 && next.suitonStatus > 0
-  // && next.trickattackRecast < 20000 - 500 * 2 - 1500 - recast.gcd * next.hutonModifier) {
+  // && next.trickattackRecast < 20000 - 500 * 2 - 1500 - player.gcd * next.hutonModifier) {
   //   addIcon({ name: 'Kassatsu', iconArray: iconArrayA });
   //   toggle.kassatsu = 1;
   // } else {
@@ -177,144 +166,209 @@ const ninNext = ({
   // console.log(`Meisui: ${next.meisuiRecast - next.elapsedTime}`);
   do {
     if (next.hutonStatus - next.elapsedTime > 0) {
-      next.hutonModifier = 85 / 100;
+      next.hutonModifier = 0.85;
     } else {
       next.hutonModifier = 1;
     }
 
-    if (player.level >= 70 && next.tenchijinRecast - next.elapsedTime < 0
+    if (next.ogcd > 0 && player.level >= 70 && next.tenchijinRecast - next.elapsedTime < 0
     && next.kassatsuStatus - next.elapsedTime < 0
     && next.trickattackStatus - next.elapsedTime > 0) {
       ninArray.push({ name: 'Ten Chi Jin', size: 'small' });
+      next.tenchijinRecast = recast.tenchijin + next.elapsedTime;
+      next.tenchijinStatus = duration.tenchijin + next.elapsedTime;
+
       if (count.targets > 1) {
         // Suiton for upcoming Meisui
         ninArray.push({ name: 'Fuma Shuriken' });
         ninArray.push({ name: 'Katon' });
         ninArray.push({ name: 'Doton' });
-      } else if (player.level >= 72 && next.meisuiRecast - next.elapsedTime < 20000) {
+      } else if (player.level >= 72
+      && next.meisuiRecast - next.elapsedTime < 20000 - player.gcd) {
         // Suiton for upcoming Meisui
         ninArray.push({ name: 'Fuma Shuriken' });
         ninArray.push({ name: 'Raiton' });
         ninArray.push({ name: 'Suiton' });
-        next.suitonStatus = 20000 - 4500 + next.elapsedTime;
+        next.suitonStatus = duration.suiton + next.elapsedTime;
       } else {
         // Suiton for whatevs
         ninArray.push({ name: 'Fuma Shuriken' });
         ninArray.push({ name: 'Raiton' });
         ninArray.push({ name: 'Suiton' });
-        next.suitonStatus = 20000 - 4500 + next.elapsedTime;
+        next.suitonStatus = duration.suiton + next.elapsedTime;
       }
-      next.tenchijinRecast = 120000 + next.elapsedTime;
-      next.elapsedTime += 1500 * 3;
-      // next.tenchijinStatus = -1;
-    } else if (player.level >= 50 && next.kassatsuRecast - next.elapsedTime < 0
+      next.elapsedTime += 1000 * 2 + 1500;
+      next.ogcd = 1;
+    } else if (next.ogcd > 0 && player.level >= 50 && next.kassatsuRecast - next.elapsedTime < 0
     && next.suitonStatus - next.elapsedTime > 0) {
       ninArray.push({ name: 'Kassatsu', size: 'small' });
-      next.kassatsuRecast = 60000 + next.elapsedTime;
-      next.kassatsuStatus = 20000 + next.elapsedTime;
+      next.ogcd -= 1;
+      next.kassatsuRecast = recast.kassatsu + next.elapsedTime;
+      next.kassatsuStatus = duration.kassatsu + next.elapsedTime;
+    } else if (next.ogcd > 0 && next.suitonStatus - next.elapsedTime > 0
+    && next.trickattackRecast - next.elapsedTime < 0) {
+      ninArray.push({ name: 'Trick Attack', size: 'small' });
+      next.suitonStatus = -1;
+      next.ogcd -= 1;
+      next.trickattackRecast = 60000 + next.elapsedTime;
+      next.trickattackStatus = 15000 + next.elapsedTime;
+    } else if (next.ogcd > 0 && player.level >= 72 && next.suitonStatus - next.elapsedTime > 0
+    && next.ninki <= 45 && next.meisuiRecast - next.elapsedTime < 0) {
+      ninArray.push({ name: 'Meisui', size: 'small' });
+      next.suitonStatus = -1;
+      next.ogcd -= 1;
+      next.ninki += 50;
+      next.meisuiRecast = 120000 + next.elapsedTime;
+    } else if (next.ogcd > 0 && player.level >= 80 && next.ninki >= 50
+    && next.bunshinRecast - next.elapsedTime < 0) {
+      ninArray.push({ name: 'Bunshin', size: 'small' });
+      next.ninki -= 50;
+      next.ogcd -= 1;
+      next.bunshinRecast = 90000 + next.elapsedTime;
+    } else if (next.ogcd > 0 && player.level >= 62 && count.targets >= 2
+    && next.ninki >= next.ninkiTarget) {
+      ninArray.push({ name: 'Hellfrog Medium', size: 'small' });
+      next.ninki -= 50;
+      next.ogcd -= 1;
+    } else if (next.ogcd > 0 && player.level >= 68 && next.ninki >= next.ninkiTarget) {
+      ninArray.push({ name: 'Bhavacakra', size: 'small' });
+      next.ninki -= 50;
+      next.ogcd -= 1;
+    } else if (next.ogcd > 0 && next.assassinatereadyStatus - next.elapsedTime > 0) {
+      ninArray.push({ name: 'Assassinate', size: 'small' });
+      next.assassinatereadyStatus = -1;
+      next.ogcd -= 1;
+    } else if (next.ogcd > 0 && player.level >= 56
+    && next.dreamwithinadreamRecast - next.elapsedTime < 0) {
+      ninArray.push({ name: 'Dream Within A Dream', size: 'small' });
+      next.ogcd -= 1;
+      next.dreamwithinadreamRecast = recast.dreamwithinadream + next.elapsedTime;
+      if (player.level >= 60) {
+        next.assassinatereadyStatus = duration.assassinateready + next.elapsedTime;
+      }
+    } else if (next.ogcd > 0 && player.level >= 15 && next.ninki <= 50
+      && next.mugRecast - next.elapsedTime < 0) {
+      ninArray.push({ name: 'Mug', size: 'small' });
+      next.ogcd -= 1;
+      next.mugRecast = recast.mug + next.elapsedTime;
+      if (player.level >= 66) {
+        next.ninki += 40;
+      }
     } else if (next.kassatsuStatus - next.elapsedTime > 0
     && next.trickattackStatus - next.elapsedTime > 0) {
-      // console.log(next.kassatsuStatus - next.elapsedTime);
       if (player.level >= 76) {
         if (count.targets > 1) {
-          // Katon / Goka
           ninArray.push({ name: 'Goka Mekkyaku' });
         } else {
           ninArray.push({ name: 'Hyosho Ranryu' });
         }
       } else if (count.targets > 1) {
-        // Katon / Goka
         ninArray.push({ name: 'Katon' });
       } else {
-        // Raiton / Hyosho during trick
         ninArray.push({ name: 'Raiton' });
       }
       next.elapsedTime += 500 * 2 + 1500;
       next.kassatsuStatus = -1;
+      next.ogcd = 1;
     } else if (player.level >= 45 && next.mudra1Recast - next.elapsedTime < 0
     && next.hutonStatus - next.elapsedTime - 500 * 3 < 0) {
       ninArray.push({ name: 'Huton' });
-      next.mudra1Recast = next.mudra2Recast - next.elapsedTime;
-      next.mudra2Recast = next.mudra2Recast + recast.mudra2 - next.elapsedTime;
-      next.elapsedTime += 500 * 3 + 1500;
-      next.hutonStatus = 70000 - 1500 + next.elapsedTime;
+      next.mudra1Recast = next.mudra2Recast + next.elapsedTime;
+      next.mudra2Recast = next.mudra2Recast + recast.mudra2 + next.elapsedTime;
+      next.elapsedTime += 500 * 3;
+      next.hutonStatus = duration.huton + next.elapsedTime;
+      next.elapsedTime += 1500;
+      next.ogcd = 1;
     } else if (player.level >= 45 && next.mudra1Recast - next.elapsedTime < 0
     && next.suitonStatus - next.elapsedTime < 0
-    && next.trickattackRecast - next.elapsedTime < 20000) { // Lower seems periodically mess up
+    && next.trickattackRecast - next.elapsedTime < 20000 - player.gcd) {
       ninArray.push({ name: 'Suiton' });
-      next.mudra1Recast = next.mudra2Recast - next.elapsedTime;
-      next.mudra2Recast = next.mudra2Recast + recast.mudra2 - next.elapsedTime;
-      next.elapsedTime += 500 * 3 + 1500;
-      next.suitonStatus = 20000 - 1500 + next.elapsedTime;
-      next.trickattackRecast += 60000 + next.elapsedTime;
+      next.mudra1Recast = next.mudra2Recast + next.elapsedTime;
+      next.mudra2Recast = next.mudra2Recast + recast.mudra2 + next.elapsedTime;
+      next.elapsedTime += 500 * 3;
+      next.suitonStatus = duration.suiton + next.elapsedTime;
+      next.elapsedTime += 1500;
+      next.ogcd = 1;
     } else if (player.level >= 72 && next.mudra1Recast - next.elapsedTime < 0
     && next.suitonStatus - next.elapsedTime < 0
-    && next.meisuiRecast - next.elapsedTime < 20000) {
+    && next.meisuiRecast - next.elapsedTime < 20000 - player.gcd) {
       ninArray.push({ name: 'Suiton' });
-      next.mudra1Recast = next.mudra2Recast - next.elapsedTime;
-      next.mudra2Recast = next.mudra2Recast + recast.mudra2 - next.elapsedTime;
-      next.elapsedTime += 500 * 3 + 1500;
-      next.suitonStatus = 20000 - 1500 + next.elapsedTime;
-      next.meisuiRecast += 120000 + next.elapsedTime;
+      next.mudra1Recast = next.mudra2Recast + next.elapsedTime;
+      next.mudra2Recast = next.mudra2Recast + recast.mudra2 + next.elapsedTime;
+      next.elapsedTime += 500 * 3;
+      next.suitonStatus = duration.suiton + next.elapsedTime;
+      next.elapsedTime += 1500;
+      next.ogcd = 1;
     } else if (player.level >= 45 && next.mudra2Recast - next.elapsedTime < 2500) {
-      // Use other ninjutsu while keeping one charge active for Suiton actions
+      /* Use other ninjutsu while keeping one charge active for Suiton actions */
       if (count.targets > 1) {
-        // Katon
         ninArray.push({ name: 'Katon' });
-        next.mudra1Recast = next.mudra2Recast - next.elapsedTime;
-        next.mudra2Recast = next.mudra2Recast + recast.mudra2 - next.elapsedTime;
+        next.mudra1Recast = next.mudra2Recast + next.elapsedTime;
+        next.mudra2Recast = next.mudra2Recast + recast.mudra2 + next.elapsedTime;
         next.elapsedTime += 500 * 2 + 1500;
       } else {
-        // Raiton
         ninArray.push({ name: 'Raiton' });
-        next.mudra1Recast = next.mudra2Recast - next.elapsedTime;
-        next.mudra2Recast = next.mudra2Recast + recast.mudra2 - next.elapsedTime;
+        next.mudra1Recast = next.mudra2Recast + next.elapsedTime;
+        next.mudra2Recast = next.mudra2Recast + recast.mudra2 + next.elapsedTime;
         next.elapsedTime += 500 * 2 + 1500;
       }
-    } else if (player.level >= 30 && next.shadowfangRecast - next.elapsedTime < 0
-    && next.trickattackStatus - next.elapsedTime > 0) {
-      // Assuming hitting everything and all ticks, SF is weaker than AoE at 9 targets (lol)
+      next.ogcd = 1;
+    } else if (player.level >= 45 && next.trickattackStatus - next.elapsedTime > 0
+    && next.shadowfangRecast - next.elapsedTime < 0) {
+      /* Assuming hitting everything and all ticks, SF is weaker than AoE at 9 targets (lol) */
       ninArray.push({ name: 'Shadow Fang' });
-      next.shadowfangRecast += recast.shadowfang * next.hutonModifier + next.elapsedTime;
       next.shadowfangStatus = duration.shadowfang + next.elapsedTime;
+      next.shadowfangRecast = recast.shadowfang * next.hutonModifier + next.elapsedTime;
       if (player.level >= 78) {
         next.ninki = Math.min(next.ninki + 10, 100);
       } else {
         next.ninki = Math.min(next.ninki + 5, 100);
       }
-      next.elapsedTime += recast.gcd * next.hutonModifier;
+      next.elapsedTime += player.gcd * next.hutonModifier;
+      next.ogcd = 1;
+    } else if (player.level >= 30 && player.level < 45
+    && next.shadowfangRecast - next.elapsedTime < 0) {
+      /* Assuming hitting everything and all ticks, SF is weaker than AoE at 9 targets (lol) */
+      ninArray.push({ name: 'Shadow Fang' });
+      next.shadowfangStatus = duration.shadowfang + next.elapsedTime;
+      next.shadowfangRecast = recast.shadowfang * next.hutonModifier + next.elapsedTime;
+      next.ninki = Math.min(next.ninki + 5, 100);
+      next.elapsedTime += player.gcd * next.hutonModifier;
+      next.ogcd = 1;
     } else if (player.level < 45 && next.mudra1Recast - next.elapsedTime < 0) {
-      // Use on cooldown prior to 45
+      /* Use on cooldown prior to 45 */
       if (player.level >= 35 && count.targets > 1) {
         ninArray.push({ name: 'Katon' });
-        next.mudra1Recast = next.mudra2Recast - next.elapsedTime;
-        next.mudra2Recast = next.mudra2Recast + recast.mudra2 - next.elapsedTime;
+        next.mudra1Recast = next.mudra2Recast + next.elapsedTime;
+        next.mudra2Recast = next.mudra2Recast + recast.mudra2 + next.elapsedTime;
         next.elapsedTime += 500 * 2 + 1500;
       } else if (player.level >= 35) {
-        // Raiton
         ninArray.push({ name: 'Raiton' });
-        next.mudra1Recast = next.mudra2Recast - next.elapsedTime;
-        next.mudra2Recast = next.mudra2Recast + recast.mudra2 - next.elapsedTime;
+        next.mudra1Recast = next.mudra2Recast + next.elapsedTime;
+        next.mudra2Recast = next.mudra2Recast + recast.mudra2 + next.elapsedTime;
         next.elapsedTime += 500 * 2 + 1500;
-      } else if (player.level >= 30) {
+      } else {
         ninArray.push({ name: 'Fuma Shuriken' });
-        next.mudra1Recast = next.mudra2Recast - next.elapsedTime;
-        next.mudra2Recast = next.mudra2Recast + recast.mudra2 - next.elapsedTime;
+        next.mudra1Recast = next.mudra2Recast + next.elapsedTime;
+        next.mudra2Recast = next.mudra2Recast + recast.mudra2 + next.elapsedTime;
         next.elapsedTime += 500 * 1 + 1500;
       }
-    } else if (player.level >= 52 && next.comboStep === 11) {
+      next.ogcd = 1;
+    } else if (player.level >= 52 && count.targets >= 3 && next.comboStep === 11) {
       ninArray.push({ name: 'Hakke Mujinsatsu' });
       next.ninki = Math.min(next.ninki + 5, 100);
       next.comboStep = 0;
-      next.elapsedTime += recast.gcd * next.hutonModifier;
+      next.elapsedTime += player.gcd * next.hutonModifier;
+      next.ogcd = 1;
     } else if (player.level >= 38 && count.targets >= 3) {
       ninArray.push({ name: 'Death Blossom' });
       next.ninki = Math.min(next.ninki + 5, 100);
       next.comboStep = 11;
-      next.elapsedTime += recast.gcd * next.hutonModifier;
+      next.elapsedTime += player.gcd * next.hutonModifier;
+      next.ogcd = 1;
     } else if (player.level >= 56 && next.comboStep === 2
-      && next.hutonStatus - next.elapsedTime < 40000 + recast.gcd * next.hutonModifier
-      && next.hutonStatus - next.elapsedTime > 0 + recast.gcd * next.hutonModifier) {
+      && next.hutonStatus - next.elapsedTime < 40000 + player.gcd * next.hutonModifier
+      && next.hutonStatus - next.elapsedTime > 0 + player.gcd * next.hutonModifier) {
       ninArray.push({ name: 'Armor Crush' });
       next.hutonStatus = Math.min(
         next.hutonStatus + duration.armorcrush, duration.huton + next.elapsedTime,
@@ -325,7 +379,8 @@ const ninNext = ({
         next.ninki = Math.min(next.ninki + 5, 100);
       }
       next.comboStep = 0;
-      next.elapsedTime += recast.gcd * next.hutonModifier;
+      next.elapsedTime += player.gcd * next.hutonModifier;
+      next.ogcd = 1;
     } else if (player.level >= 26 && next.comboStep === 2) {
       ninArray.push({ name: 'Aeolian Edge' });
       if (player.level >= 78) {
@@ -334,20 +389,23 @@ const ninNext = ({
         next.ninki = Math.min(next.ninki + 5, 100);
       }
       next.comboStep = 0;
-      next.elapsedTime += recast.gcd * next.hutonModifier;
-    } else if (next.comboStep === 1) {
+      next.elapsedTime += player.gcd * next.hutonModifier;
+      next.ogcd = 1;
+    } else if (player.level >= 4 && next.comboStep === 1) {
       ninArray.push({ name: 'Gust Slash' });
       next.ninki = Math.min(next.ninki + 5, 100);
       next.comboStep = 2;
-      next.elapsedTime += recast.gcd * next.hutonModifier;
+      next.elapsedTime += player.gcd * next.hutonModifier;
+      next.ogcd = 1;
     } else {
       ninArray.push({ name: 'Spinning Edge' });
       next.ninki = Math.min(next.ninki + 5, 100);
       next.comboStep = 1;
-      next.elapsedTime += recast.gcd * next.hutonModifier;
+      next.elapsedTime += player.gcd * next.hutonModifier;
+      next.ogcd = 1;
     }
     // Adjust all cooldown/status info
-  } while (next.elapsedTime < 20000);
+  } while (next.elapsedTime < 15000);
   // console.log(JSON.stringify(iconArrayB));
   iconArrayB = ninArray;
   syncIcons();
@@ -362,13 +420,13 @@ const ninNextTimeout = ({ time = 12500 } = {}) => {
 onJobChange.NIN = () => {
   addCountdown({ name: 'Mudra 1', text: '#1 READY' });
   addCountdown({ name: 'Mudra 2', text: '#2 READY' });
-  addCountdown({ name: 'Ten Chi Jin' });
-  addCountdown({ name: 'Kassatsu' });
-  addCountdown({ name: 'Bunshin', countdownArray: countdownArrayB });
-  addCountdown({ name: 'Trick Attack', countdownArray: countdownArrayB });
-  addCountdown({ name: 'Dream Within A Dream', countdownArray: countdownArrayB });
-  addCountdown({ name: 'Meisui', countdownArray: countdownArrayB });
-  addCountdown({ name: 'Mug', countdownArray: countdownArrayB });
+  // addCountdown({ name: 'Ten Chi Jin' });
+  // addCountdown({ name: 'Kassatsu' });
+  // addCountdown({ name: 'Bunshin', countdownArray: countdownArrayB });
+  // addCountdown({ name: 'Trick Attack', countdownArray: countdownArrayB });
+  // addCountdown({ name: 'Dream Within A Dream', countdownArray: countdownArrayB });
+  // addCountdown({ name: 'Meisui', countdownArray: countdownArrayB });
+  // addCountdown({ name: 'Mug', countdownArray: countdownArrayB });
   ninNext();
 };
 
@@ -381,14 +439,13 @@ count.mudra = 0;
 onAction.NIN = (actionMatch) => {
   removeIcon({ name: actionMatch.groups.actionName });
 
-  // AoE checker
-  if (actionMatch.groups.logType === '16') {
-    countTargets({ name: actionMatch.groups.actionName });
-  } else if (ninSingleTarget.indexOf(actionMatch.groups.actionName) > -1) {
+  if (ninSingleTarget.indexOf(actionMatch.groups.actionName) > -1) {
     count.targets = 1;
+  } else if (actionMatch.groups.logType === '15' && count.targets > 2) {
+    count.targets = 2;
   }
 
-  if (['Ten', 'Chi', 'Jin'].indexOf(actionMatch.groups.actionName) > -1) {
+  if (ninMudra.indexOf(actionMatch.groups.actionName) > -1) {
     if (count.mudra === 0 && checkStatus({ name: 'Kassatsu' }) < 0) {
       if (checkRecast({ name: 'Mudra 2' }) > 0) {
         addRecast({ name: 'Mudra 1', time: checkRecast({ name: 'Mudra 2' }) });
@@ -398,74 +455,62 @@ onAction.NIN = (actionMatch) => {
       addCountdown({ name: 'Mudra 2', text: '#2 READY' });
     }
     count.mudra += 1;
+    // console.log(count.mudra);
   } else if (ninNinjutsu.indexOf(actionMatch.groups.actionName) > -1) {
-    count.mudra = 0;
     removeStatus({ name: 'Kassatsu' });
-    if (actionMatch.groups.actionName === 'Suiton') {
+
+    if (actionMatch.groups.actionName === 'Doton') {
+      addStatus({ name: 'Doton' });
+    } else if (actionMatch.groups.actionName === 'Suiton') {
       addStatus({ name: 'Suiton' });
     }
+
     if (checkStatus({ name: 'Ten Chi Jin' }) > 0 && count.tenchijin < 3) {
       count.tenchijin += 1;
     } else {
+      removeStatus({ name: 'Ten Chi Jin' });
+      toggle.ogcd = 1;
       ninNext({ time: 1500 });
     }
-  } else if (ninComboWeaponskills.indexOf(actionMatch.groups.actionName) > -1) {
-    if (ninFinisherWeaponskills.indexOf(actionMatch.groups.actionName) > -1) {
-      count.comboStep = 0;
-    } else if (actionMatch.groups.actionName === 'Gust Slash' && player.level < 26) {
-      count.comboStep = 0;
-    } else if (actionMatch.groups.actionName === 'Gust Slash' && actionMatch.groups.result.length <= 6) {
-      count.comboStep = 0;
-    } else if (actionMatch.groups.actionName === 'Death Blossom' && player.level < 52) {
-      count.comboStep = 0;
-    } else if (actionMatch.groups.result.length < 6) {
-      count.comboStep = 0;
-    } else if (actionMatch.groups.actionName === 'Death Blossom') {
+  } else if (ninWeaponskills.indexOf(actionMatch.groups.actionName) > -1) {
+    if (actionMatch.groups.actionName === 'Death Blossom' && player.level >= 52 && actionMatch.groups.result.length >= 6) {
       count.comboStep = 11;
-    } else if (actionMatch.groups.actionName === 'Spinning Edge') {
-      count.comboStep = 1;
-    } else if (actionMatch.groups.actionName === 'Gust Slash') {
+    } else if (actionMatch.groups.actionName === 'Gust Slash' && player.level >= 26 && actionMatch.groups.result.length >= 8) {
       count.comboStep = 2;
+    } else if (actionMatch.groups.actionName === 'Spinning Edge' && player.level >= 4 && actionMatch.groups.result.length >= 6) {
+      count.comboStep = 1;
+    } else if (actionMatch.groups.actionName === 'Shadow Fang') {
+      if (player.huton > 0) {
+        addRecast({ name: 'Shadow Fang', time: recast.shadowfang * 0.85 });
+      } else {
+        addRecast({ name: 'Shadow Fang' });
+      }
+      addStatus({ name: 'Shadow Fang', id: actionMatch.groups.targetID });
+      addStatus({ name: 'Shadow Fang' }); /* to ease calculations */
+    } else {
+      count.comboStep = 0;
     }
+    toggle.ogcd = 1;
     ninNext();
-  } else if (actionMatch.groups.actionName === 'Shadow Fang') {
-    addRecast({ name: 'Shadow Fang' });
-    addStatus({ name: 'Shadow Fang', id: actionMatch.groups.targetID });
-    ninNext();
-  } else if (actionMatch.groups.actionName === 'Kassatsu') {
-    removeIcon({ name: 'Kassatsu' });
-    addRecast({ name: 'Kassatsu' });
-    addStatus({ name: 'Kassatsu' });
-    delete toggle.kassatsu;
-    ninNext({ time: 1000 });
-  } else if (actionMatch.groups.actionName === 'Ten Chi Jin') {
-    removeIcon({ name: 'Ten Chi Jin' });
-    addRecast({ name: 'Ten Chi Jin' });
-    addStatus({ name: 'Ten Chi Jin' });
-    delete toggle.tenchijin;
-    count.tenchijin = 0;
-  } else if (['Hellfrog Medium', 'Bhavacakra', 'Bunshin'].indexOf(actionMatch.groups.actionName) > -1) {
-    removeIcon({ name: 'Hellfrog Medium', iconArray: iconArrayC });
-    removeIcon({ name: 'Bhavacakra', iconArray: iconArrayC });
-    removeIcon({ name: 'Bunshin', iconArray: iconArrayC });
-    if (actionMatch.groups.actionName === 'Bunshin') {
-      addRecast({ name: 'Bunshin' });
-    }
-    delete toggle.ninkiSpender;
-    // ninNext({ time: 0 });
-  } else if (['Mug', 'Trick Attack', 'Dream Within A Dream', 'Meisui', 'Bunshin'].indexOf(actionMatch.groups.actionName) > -1) {
-    // removeIcon({ name: actionMatch.groups.actionName, iconArray: iconArrayC });
+  } else if (ninCooldowns.indexOf(actionMatch.groups.actionName) > -1) {
+    removeIcon({ name: actionMatch.groups.actionName });
     addRecast({ name: actionMatch.groups.actionName });
-    addCountdown({ name: actionMatch.groups.actionName, countdownArray: countdownArrayB });
     if (actionMatch.groups.actionName === 'Trick Attack') {
+      addStatus({ name: 'Trick Attack', id: actionMatch.groups.targetID });
       addStatus({ name: 'Trick Attack' });
+    } else if (actionMatch.groups.actionName === 'Kassatsu') {
+      addStatus({ name: 'Kassatsu' });
+    } else if (actionMatch.groups.actionName === 'Ten Chi Jin') {
+      addStatus({ name: 'Ten Chi Jin' });
+      count.tenchijin = 0;
+    } else if (actionMatch.groups.actionName === 'Hide') {
+      addRecast({ name: 'Mudra 1', time: -1 });
+      addRecast({ name: 'Mudra 2', time: -1 });
+      addCountdown({ name: 'Mudra 1' });
+      addCountdown({ name: 'Mudra 2' });
     }
+    toggle.ogcd -= 1;
     ninNext({ time: 1000 });
-  } else if (actionMatch.groups.actionName === 'Hide') {
-    addRecast({ name: 'Mudra 1', time: -1 });
-    addRecast({ name: 'Mudra 2', time: -1 });
-    addCountdown({ name: 'Mudra 1' });
-    addCountdown({ name: 'Mudra 2' });
   }
 };
 
@@ -494,7 +539,11 @@ onStatus.NIN = (statusMatch) => {
     // }
   } else {
     removeStatus({ name: statusMatch.groups.statusName, id: statusMatch.groups.targetID });
-    // if (statusMatch.groups.statusName === 'Mudra') {
+    if (statusMatch.groups.statusName === 'Mudra') {
+      count.mudra = 0;
+    } else if (statusMatch.groups.statusName === 'Ten Chi Jin') {
+      count.tenchijin = 0;
+    }
     //   count.mudra = 0;
     //   ninNext({ time: 1500 });
     // }
@@ -994,11 +1043,11 @@ onStatus.NIN = (statusMatch) => {
 // const ninAeolianEdge = ({ array = iconArrayB } = {}) => {
 //   array.push({ name: 'Spinning Edge', img: 'spinningedge' });
 //   next.ninki = Math.min(next.ninki + 5, 100);
-//   next.elapsedTime += recast.gcd * next.hutonModifier;
+//   next.elapsedTime += player.gcd * next.hutonModifier;
 //   ninNinjutsu();
 //   array.push({ name: 'Gust Slash', img: 'gustslash' });
 //   next.ninki = Math.min(next.ninki + 5, 100);
-//   next.elapsedTime += recast.gcd * next.hutonModifier;
+//   next.elapsedTime += player.gcd * next.hutonModifier;
 //   ninNinjutsu();
 //   if (player.level >= 26) {
 //     array.push({ name: 'Aeolian Edge', img: 'aeolianedge' }); // Add Armor Crush
@@ -1007,7 +1056,7 @@ onStatus.NIN = (statusMatch) => {
 //     } else {
 //       next.ninki = Math.min(next.ninki + 5, 100);
 //     }
-//     next.elapsedTime += recast.gcd * next.hutonModifier;
+//     next.elapsedTime += player.gcd * next.hutonModifier;
 //     ninNinjutsu();
 //   }
 // };
@@ -1021,7 +1070,7 @@ onStatus.NIN = (statusMatch) => {
 //   }
 //   next.hutonStatus = Math.min(next.hutonStatus + duration.armorcrush,
 //     duration.huton + next.elapsedTime);
-//   next.elapsedTime += recast.gcd * next.hutonModifier;
+//   next.elapsedTime += player.gcd * next.hutonModifier;
 //   ninNinjutsu();
 // };
 //
@@ -1034,6 +1083,6 @@ onStatus.NIN = (statusMatch) => {
 //   } else {
 //     next.ninki = Math.min(next.ninki + 5, 100);
 //   }
-//   next.elapsedTime += recast.gcd * next.hutonModifier;
+//   next.elapsedTime += player.gcd * next.hutonModifier;
 //   ninNinjutsu();
 // };

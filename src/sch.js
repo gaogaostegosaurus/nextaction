@@ -82,7 +82,7 @@ statusList.SCH = [
 ];
 
 const schNext = ({
-  time = recast.gcd,
+  time = player.gcd,
   casting,
 } = {}) => {
   next.aetherflow = player.aetherflow;
@@ -124,7 +124,7 @@ const schNext = ({
     /* Check if Ruin II is necessary */
     if (Math.min(
       /* Energy Drain/Aetherflow/Dissipation */
-      Math.min(next.aetherflowRecast, next.dissipationRecast) - recast.gcd * (1 + next.aetherflow),
+      Math.min(next.aetherflowRecast, next.dissipationRecast) - player.gcd * (1 + next.aetherflow),
 
       /* Chain Stratagem */
       next.chainstratagemRecast,
@@ -143,7 +143,7 @@ const schNext = ({
 
     if (!next.combat && next.MP >= 400) {
       schArray.push({ name: player.ruinSpell });
-      next.elapsedTime += recast.gcd;
+      next.elapsedTime += player.gcd;
       next.MP -= 400;
       next.combat = 1;
     } else if (next.ogcd > 0 && player.level >= 45 && next.aetherflow === 0
@@ -163,7 +163,7 @@ const schNext = ({
       next.dissipationStatus = 30000 + next.elapsedTime;
       next.dissipationRecast = 180000 + next.elapsedTime;
     } else if (next.ogcd > 0 && next.summonseraphStatus - next.elapsedTime > 0
-    && next.summonseraphStatus - next.consolationCount * recast.gcd - next.elapsedTime < 0) {
+    && next.summonseraphStatus - next.consolationCount * player.gcd - next.elapsedTime < 0) {
       /* should be less than 0 or gcd? */
       schArray.push({ name: 'Consolation', size: 'small' });
       next.ogcd -= 1;
@@ -178,7 +178,7 @@ const schNext = ({
       next.luciddreamingRecast = 120000 + next.elapsedTime;
     } else if (next.ogcd > 0 && player.level >= 45 && next.aetherflow > 0
     && Math.min(next.aetherflowRecast, next.dissipationRecast)
-    - next.elapsedTime - recast.gcd * (1 + next.aetherflow) < 0) {
+    - next.elapsedTime - player.gcd * (1 + next.aetherflow) < 0) {
       schArray.push({ name: 'Energy Drain', size: 'small' });
       next.ogcd -= 1;
       next.cooldown = 0;
@@ -194,18 +194,18 @@ const schNext = ({
     } else if (player.level >= 2 && next.MP >= 400 && next.bioStatus - next.elapsedTime < 0) {
       schArray.push({ name: player.bioSpell });
       next.bioStatus = 30000 + next.elapsedTime;
-      next.elapsedTime += recast.gcd;
+      next.elapsedTime += player.gcd;
       next.ogcd = 1;
       next.MP -= 400;
     } else if (player.level >= 38 && next.MP >= 400 && next.cooldown > 0) {
       schArray.push({ name: 'Ruin II' });
       next.MP -= 400;
       next.ogcd = 1;
-      next.elapsedTime += recast.gcd;
+      next.elapsedTime += player.gcd;
     } else {
       schArray.push({ name: player.ruinSpell });
       next.MP -= 400;
-      next.elapsedTime += recast.gcd;
+      next.elapsedTime += player.gcd;
     }
   } while (next.elapsedTime < 15000);
 

@@ -76,7 +76,7 @@ const whmCountdownC = [
 
 
 const whmNext = ({
-  time = recast.gcd,
+  time = player.gcd,
 } = {}) => {
   if (target.ID && target.ID.startsWith('4')) {
     next.aeroStatus = checkStatus({ name: player.aeroSpell, id: target.ID });
@@ -118,7 +118,7 @@ const whmNext = ({
   do {
     if (!next.combatToggle) {
       whmArray.push({ name: player.stoneSpell });
-      next.elapsedTime += recast.gcd;
+      next.elapsedTime += player.gcd;
       next.combatToggle = 1;
     } else if (player.level >= 56 && next.assizeRecast - next.elapsedTime < 0
     && next.ogcdCount >= 1) {
@@ -161,7 +161,7 @@ const whmNext = ({
         next.MP -= 400;
       }
       next.aeroStatus = player.aeroDuration + next.elapsedTime;
-      next.elapsedTime += recast.gcd;
+      next.elapsedTime += player.gcd;
       next.ogcdCount = 2;
     } else if (next.regenStatus - next.elapsedTime < 0) {
       whmArray.push({ name: 'Regen' });
@@ -169,28 +169,28 @@ const whmNext = ({
         next.MP -= 500;
       }
       next.regenStatus = 18000 + next.elapsedTime;
-      next.elapsedTime += recast.gcd;
+      next.elapsedTime += player.gcd;
       next.ogcdCount = 2;
     } else if (next.bloodLily >= 3) {
       whmArray.push({ name: 'Afflatus Misery' });
       next.bloodLily = 0;
-      next.elapsedTime += recast.gcd;
+      next.elapsedTime += player.gcd;
       next.ogcdCount = 2;
     } else if (player.level >= 72 && count.targets >= 3) {
       whmArray.push({ name: 'Holy' });
-      next.elapsedTime += recast.gcd;
+      next.elapsedTime += player.gcd;
       if (next.thinairStatus - next.elapsedTime < 0) {
         next.MP -= 400;
       }
     } else if (player.level >= 50 && count.targets >= 2) {
       whmArray.push({ name: 'Holy' });
-      next.elapsedTime += recast.gcd;
+      next.elapsedTime += player.gcd;
       if (next.thinairStatus - next.elapsedTime < 0) {
         next.MP -= 400;
       }
     } else {
       whmArray.push({ name: player.stoneSpell });
-      next.elapsedTime += recast.gcd;
+      next.elapsedTime += player.gcd;
       if (next.thinairStatus - next.elapsedTime < 0) {
         next.MP -= 400;
       }

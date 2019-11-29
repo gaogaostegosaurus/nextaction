@@ -1,7 +1,7 @@
 
 /* https://github.com/quisquous/cactbot/blob/master/CactbotOverlay/JSEvents.cs shows all possible events */
 
-/* This seems useful to eventually add
+/* This seems useful to eventually add ?
 addOverlayListener('onInitializeOverlay', (e) => {
 }); */
 
@@ -14,10 +14,10 @@ let statusRegExp;
 let castingRegExp;
 let cancelRegExp;
 // let addedRegExp;
-const statsRegExp = new RegExp(' 0C:Player Stats: (?<jobID>[\\d]+):(?<strength>[\\d]+):(?<dexterity>[\\d]+):(?<vitality>[\\d]+):(?<intelligence>[\\d]+):(?<mind>[\\d]+):(?<piety>[\\d]+):(?<attackPower>[\\d]+):(?<directHitRate>[\\d]+):(?<criticalHit>[\\d]):(?<attackMagicPotency>[\\d]+):(?<healingMagicPotency>[\\d]+):(?<determination>[\\d]+):(?<skillSpeed>[\\d]+):(?<spellSpeed>[\\d]+):0:(?<tenacity>[\\d]+)');
+const statsRegExp = new RegExp(' 0C:Player Stats: (?<jobID>[\\d]+):(?<strength>[\\d]+):(?<dexterity>[\\d]+):(?<vitality>[\\d]+):(?<intelligence>[\\d]+):(?<mind>[\\d]+):(?<piety>[\\d]+):(?<attackPower>[\\d]+):(?<directHitRate>[\\d]+):(?<criticalHit>[\\d]+):(?<attackMagicPotency>[\\d]+):(?<healingMagicPotency>[\\d]+):(?<determination>[\\d]+):(?<skillSpeed>[\\d]+):(?<spellSpeed>[\\d]+):0:(?<tenacity>[\\d]+)');
 
 addOverlayListener('onPlayerChangedEvent', (e) => {
-  console.log(JSON.stringify(e));
+  // console.log(JSON.stringify(e));
   /* e.detail.id is a numeric ID, e.detail.id .toString(16) is lowercase.
   Using 'ID' to designate uppercase lettering. */
   player.ID = e.detail.id.toString(16).toUpperCase();
@@ -68,6 +68,9 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
   if (player.job && (previous.job !== player.job || previous.level !== player.level)) {
     previous.job = player.job;
     previous.level = player.level;
+    player.gcd = 2500;
+    player.mpRegen = 200;
+
 
     const action = actionList[player.job].join('|');
     const status = statusList[player.job].join('|');
@@ -127,6 +130,9 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
       gcdCalculation({
         speed: Math.max(statsMatch.groups.skillSpeed, statsMatch.groups.spellSpeed),
       });
+      mpRegenCalculation({ piety: statsMatch.groups.piety });
+      console.log(`GCD: ${player.gcd}`);
+      console.log(`MP regen: ${player.mpRegen}`);
     }
   }
 });
@@ -142,7 +148,9 @@ addOverlayListener('onTargetChangedEvent', (e) => {
   target.maxHP = e.detail.maxHP;
   target.maxMP = e.detail.maxMP;
   // target.distance = e.detail.distance;
-  onTargetChanged[player.job]();
+  if (player.job) {
+    onTargetChanged[player.job]();
+  }
 });
 
 addOverlayListener('onInCombatChangedEvent', (e) => {

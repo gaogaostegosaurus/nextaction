@@ -84,7 +84,7 @@ const rdmCheckCombo = () => {
   // const manaMax = Math.max(blackMana, whiteMana);
   const verfireStatus = checkStatus({ name: 'Verfire Ready' });
   const verstoneStatus = checkStatus({ name: 'Verstone Ready' });
-  const statusBuffer = recast.gcd * 2;
+  const statusBuffer = player.gcd * 2;
   const accelerationStatus = checkStatus({ name: 'Acceleration' });
   // console.log(blackMana);
 
@@ -347,7 +347,7 @@ const rdmDualcast = () => {
   let whiteMana = player.whiteMana;
   let manaCap = 100; // Define outside for loop conditions
   let manaTarget = 80;
-  let elapsedTime = recast.gcd;
+  let elapsedTime = player.gcd;
 
   // console.log(`Verfire Ready: ${verfireStatus}  Verstone Ready: ${verstoneStatus}`);
   // console.log(JSON.stringify(dualcastArray));
@@ -386,7 +386,7 @@ const rdmDualcast = () => {
 
         if (player.level >= 72) {
           for (let i = 1; i <= 5; i += 1) {
-            // console.log(recast.gcd);
+            // console.log(player.gcd);
             if (manaficationRecast - elapsedTime - 2200 * i < 0
             && Math.min(blackMana - 5 * i, whiteMana - 5 * i) >= 50) {
               for (let j = 1; j <= i; j += 1) {
@@ -426,7 +426,7 @@ const rdmDualcast = () => {
     } else if (player.level >= 52 && count.targets > 1) {
       // Moulinet only
       for (let i = 1; i <= 5; i += 1) {
-        // console.log(recast.gcd);
+        // console.log(player.gcd);
         if (Math.min(blackMana - 20 * i, whiteMana - 20 * i) >= 0) {
           for (let j = 1; j <= i; j += 1) {
             dualcastArray.unshift({ name: 'Enchanted Moulinet', img: 'enchantedmoulinet' });
@@ -502,7 +502,7 @@ const rdmDualcast = () => {
     // Add to action array
     dualcastArray.push({ name: `Hardcast ${bestCombo.hardcastAction}`, img: bestCombo.hardcastAction.replace(/[\s'-]/g, '').toLowerCase() });
     dualcastArray.push({ name: `Dualcast ${bestCombo.dualcastAction}`, img: bestCombo.dualcastAction.replace(/[\s'-]/g, '').toLowerCase() });
-    elapsedTime += recast.gcd * 2;
+    elapsedTime += player.gcd * 2;
     blackMana = Math.min(blackMana + bestCombo.blackManaGain, 100);
     whiteMana = Math.min(whiteMana + bestCombo.whiteManaGain, 100);
 
@@ -555,8 +555,10 @@ const rdmNext = () => { // Main function
   rdmDualcast();
 };
 
-onCasting.RDM = () => {
+onCasting.RDM = (castingMatch) => {
   // Clear out combo stuff
+  next.casting = Date.now();
+  console.log(`Starts casting ${castingMatch.groups.actionName}: ${Date.now()}`);
   iconArrayA.length = 0;
   syncIcons({ iconArray: iconArrayA });
 
@@ -565,6 +567,8 @@ onCasting.RDM = () => {
 
 onAction.RDM = (actionMatch) => {
   // Action log
+  next.uses = Date.now();
+  console.log(`Uses ${actionMatch.groups.actionName}: ${next.uses - next.casting}`);
 
   // Target number calculations
   if (['Verthunder II', 'Veraero II', 'Scatter', 'Impact', 'Moulinet', 'Enchanted Moulinet', 'Contre Sixte'].indexOf(actionMatch.groups.actionName) > -1) {
@@ -639,6 +643,7 @@ onAction.RDM = (actionMatch) => {
 
 // 17: NetworkCancelAbility
 onCancel.RDM = (cancelledMatch) => {
+  console.log(`Canceled: ${Date.now()}`);
   // const row = document.getElementById('action-row');
   // const match = row.querySelector('div[data-name~="Hardcast"]');
   unfadeIcon({ name: 'Hardcast', match: 'contains' });

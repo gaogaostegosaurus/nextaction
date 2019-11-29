@@ -96,12 +96,12 @@ const gcdCalculation = ({
   const levelMod = levelMods[player.level][4];
 
   // console.log(speed);
-  recast.gcd = Math.floor(Math.floor(10000 * (Math.floor((2500 * (1000 - Math.floor(130
+  player.gcd = Math.floor(Math.floor(10000 * (Math.floor((2500 * (1000 - Math.floor(130
     * (delta / levelMod)))) / 1000) / 1000)) / 100) * 10; // Modified to output in ms
 
   recast.shadowfang = Math.floor(Math.floor(10000 * (Math.floor((70000 * (1000 - Math.floor(130
     * (delta / levelMod)))) / 1000) / 1000)) / 100) * 10;
-  console.log(`Standard GCD calculated as ${recast.gcd}ms`);
+  console.log(`Standard GCD calculated as ${player.gcd}ms`);
 };
 
 const mpRegenCalculation = ({

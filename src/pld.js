@@ -69,7 +69,7 @@ const pldNextTimeout = () => {
 };
 
 const pldNext = ({
-  time = recast.gcd,
+  time = player.gcd,
 } = {}) => {
   const pldArray = [];
 
@@ -94,7 +94,7 @@ const pldNext = ({
       if (player.level >= 4) {
         next.comboToggle = 1;
       }
-      next.elapsedTime += recast.gcd;
+      next.elapsedTime += player.gcd;
     } else if (next.fightorflightRecast - next.elapsedTime < 0
     && next.requiescatStatus - next.elapsedTime < 0) {
       pldArray.push({ name: 'Fight Or Flight', size: 'small' });
@@ -121,24 +121,24 @@ const pldNext = ({
       pldArray.push({ name: 'Atonement' });
       next.swordoathCount -= 1;
       next.MP += 400;
-      next.elapsedTime += recast.gcd;
+      next.elapsedTime += player.gcd;
     } else if (player.level >= 54 && next.comboToggle === 2
     && next.goringbladeStatus - next.elapsedTime < 0) {
       pldArray.push({ name: 'Goring Blade' });
       next.goringbladeStatus = 21000 + next.elapsedTime;
       next.comboToggle = 0;
-      next.elapsedTime += recast.gcd;
+      next.elapsedTime += player.gcd;
     } else if (player.level >= 60 && next.comboToggle === 2) {
       pldArray.push({ name: 'Royal Authority' });
       if (player.level >= 76) {
         next.swordoathCount = 3;
       }
       next.comboToggle = 0;
-      next.elapsedTime += recast.gcd;
+      next.elapsedTime += player.gcd;
     } else if (player.level >= 26 && next.comboToggle === 2) {
       pldArray.push({ name: 'Rage Of Halone' });
       next.comboToggle = 0;
-      next.elapsedTime += recast.gcd;
+      next.elapsedTime += player.gcd;
     } else if (player.level >= 4 && next.comboToggle === 1) {
       pldArray.push({ name: 'Riot Blade' });
       if (player.level >= 26) {
@@ -147,10 +147,10 @@ const pldNext = ({
         next.comboToggle = 0;
       }
       next.MP += 1000;
-      next.elapsedTime += recast.gcd;
+      next.elapsedTime += player.gcd;
     } else {
       pldArray.push({ name: 'Fast Blade' });
-      next.elapsedTime += recast.gcd;
+      next.elapsedTime += player.gcd;
       if (player.level >= 4) {
         next.comboToggle = 1;
       }
