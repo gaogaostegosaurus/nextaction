@@ -86,10 +86,10 @@ const schNext = ({
   casting,
 } = {}) => {
   next.aetherflow = player.aetherflow;
-  next.MP = player.MP;
+  next.MP = player.mp;
 
-  if (target.ID && target.ID.startsWith('4')) {
-    next.bioStatus = checkStatus({ name: player.bioSpell, id: target.ID });
+  if (target.id && target.id.startsWith('4')) {
+    next.bioStatus = checkStatus({ name: player.bioSpell, id: target.id });
   } else {
     next.bioStatus = checkStatus({ name: player.bioSpell });
   }

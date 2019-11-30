@@ -90,12 +90,12 @@ function drgJobChange() {
   }
 
   if (player.level >= 30) {
-    addCountdownBar({name: "jump", time: checkRecast("jump")});
+    addCountdownBar({ name: "jump", time: checkRecast("jump")});
   }
 
   if (player.level >= 54
   && Math.max(player.jobDetail.bloodMilliseconds, player.jobDetail.lifeMilliseconds) < 500) {
-    addCountdownBar({name: "bloodofthedragon", time: checkRecast("bloodofthedragon"), oncomplete: "addIcon"});
+    addCountdownBar({ name: "bloodofthedragon", time: checkRecast("bloodofthedragon"), oncomplete: "addIcon"});
   }
 
 }
@@ -115,7 +115,7 @@ function drgPlayerChangedEvent() {
     removeIcon("wheelingthrust");
     removeIcon("geirskogul");
     removeIcon("stardiver");
-    addCountdownBar({name: "bloodofthedragon", time: checkRecast("bloodofthedragon"), oncomplete: "addIcon"});
+    addCountdownBar({ name: "bloodofthedragon", time: checkRecast("bloodofthedragon"), oncomplete: "addIcon"});
   }
 
 }
@@ -163,7 +163,7 @@ function drgAction() {
       removeIcon("requiescat");
       addStatus("requiescat");
       addRecast("requiescat");
-      addCountdownBar({name: "requiescat"});
+      addCountdownBar({ name: "requiescat"});
 
       pldRequiescatMP();
     }
@@ -237,9 +237,9 @@ function drgAction() {
       && actionLog.groups.result.length > 6) {
         removeIcon("royalauthority");
         count.atonement = 3;
-        addIcon({name: "atonement1"});
-        addIcon({name: "atonement2"});
-        addIcon({name: "atonement3"});
+        addIcon({ name: "atonement1"});
+        addIcon({ name: "atonement2"});
+        addIcon({ name: "atonement3"});
         pldGoringBladeCombo();
       }
 
@@ -333,7 +333,7 @@ function drgAction() {
 
 function drgStatus() {
 
-  if (statusLog.groups.targetID == player.ID) { // Target is self
+  if (statusLog.groups.targetID == player.id) { // Target is self
 
     if ("Life Surge" == statusLog.groups.statusName) {
       if (statusLog.groups.gainsLoses == "gains") {
@@ -403,7 +403,7 @@ function drgStatus() {
     else if ("Dive Ready" == statusLog.groups.statusName) {
       if (statusLog.groups.gainsLoses == "gains") {
         addStatus("diveready", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
-        addIcon({name: "miragedive"});
+        addIcon({ name: "miragedive"});
       }
       else if (statusLog.groups.gainsLoses == "loses") {
         removeStatus("diveready");
@@ -459,31 +459,31 @@ function drgCombo() {
 
 function drgSingleTargetCombo() {
   if (player.level >= 64
-  && checkStatus("chaosthrust", target.ID) < 8 * 2500) {
+  && checkStatus("chaosthrust", target.id) < 8 * 2500) {
     drgChaosThrustCombo();
   }
   else if (player.level >= 56
-  && checkStatus("chaosthrust", target.ID) < 7 * 2500) {
+  && checkStatus("chaosthrust", target.id) < 7 * 2500) {
     drgChaosThrustCombo();
   }
   else if (player.level >= 50
-  && checkStatus("chaosthrust", target.ID) < 6 * 2500) {
+  && checkStatus("chaosthrust", target.id) < 6 * 2500) {
     drgChaosThrustCombo();
   }
   else if (player.level >= 64
-  && checkStatus("disembowel", player.ID) < 7 * 2500) {
+  && checkStatus("disembowel", player.id) < 7 * 2500) {
     drgChaosThrustCombo();
   }
   else if (player.level >= 56
-  && checkStatus("disembowel", player.ID) < 6 * 2500) {
+  && checkStatus("disembowel", player.id) < 6 * 2500) {
     drgChaosThrustCombo();
   }
   else if (player.level >= 26
-  && checkStatus("disembowel", player.ID) < 5 * 2500) {
+  && checkStatus("disembowel", player.id) < 5 * 2500) {
     drgChaosThrustCombo();
   }
   else if (player.level >= 18
-  && checkStatus("disembowel", player.ID) < 4 * 2500) {
+  && checkStatus("disembowel", player.id) < 4 * 2500) {
     drgChaosThrustCombo();
   }
   else {
@@ -494,15 +494,15 @@ function drgSingleTargetCombo() {
 
 function drgAreaOfEffectCombo() {
   if (player.level >= 72
-  && checkStatus("disembowel", player.ID) < 5 * 2500) {
+  && checkStatus("disembowel", player.id) < 5 * 2500) {
     drgDisembowelCombo();
   }
   else if (player.level >= 62
-  && checkStatus("disembowel", player.ID) < 4 * 2500) {
+  && checkStatus("disembowel", player.id) < 4 * 2500) {
     drgDisembowelCombo();
   }
   else if (player.level >= 40
-  && checkStatus("disembowel", player.ID) < 3 * 2500) {
+  && checkStatus("disembowel", player.id) < 3 * 2500) {
     drgDisembowelCombo();
   }
   else {
@@ -513,55 +513,55 @@ function drgAreaOfEffectCombo() {
 
 function drgFullThrustCombo() {
   next.combo = 1;
-  addIcon({name: "truethrust"});
-  addIcon({name: "vorpalthrust"});
+  addIcon({ name: "truethrust"});
+  addIcon({ name: "vorpalthrust"});
   if (player.level >= 26) {
-    addIcon({name: "fullthrust"});
+    addIcon({ name: "fullthrust"});
   }
   if (player.level >= 56) {
     nextid.combo4 = nextid.fangandclaw;
-    addIcon({name: "fangandclaw"});
+    addIcon({ name: "fangandclaw"});
   }
   if (player.level >= 64) {
     nextid.combo5 = nextid.wheelingthrust;
-    addIcon({name: "wheelingthrust"});
+    addIcon({ name: "wheelingthrust"});
   }
 }
 
 
 function drgChaosThrustCombo() {
   next.combo = 2;
-  addIcon({name: "truethrust"});
-  addIcon({name: "disembowel"});
+  addIcon({ name: "truethrust"});
+  addIcon({ name: "disembowel"});
   if (player.level >= 50) {
-    addIcon({name: "chaosthrust"});
+    addIcon({ name: "chaosthrust"});
   }
   if (player.level >= 58) {
     nextid.combo4 = nextid.fangandclaw;
-    addIcon({name: "wheelingthrust"});
+    addIcon({ name: "wheelingthrust"});
   }
   if (player.level >= 64) {
     nextid.combo5 = nextid.wheelingthrust;
-    addIcon({name: "fangandclaw"});
+    addIcon({ name: "fangandclaw"});
   }
 }
 
 function drgCoerthanTormentCombo() {
   next.combo = 11;
-  addIcon({name: "doomspike"});
+  addIcon({ name: "doomspike"});
   if (player.level >= 62) {
-    addIcon({name: "sonicthrust"});
+    addIcon({ name: "sonicthrust"});
   }
   if (player.level >= 72) {
-    addIcon({name: "coerthantorment"});
+    addIcon({ name: "coerthantorment"});
   }
 }
 
 
 function drgDisembowelCombo() {
   next.combo = 12;
-  addIcon({name: "truethrust"});
-  addIcon({name: "disembowel"});
+  addIcon({ name: "truethrust"});
+  addIcon({ name: "disembowel"});
 }
 
 

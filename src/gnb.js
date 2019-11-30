@@ -60,7 +60,7 @@ function gnbJobChange() {
     icon.dangerzone = icon.blastingzone;
   }
 
-  addCountdownBar({name: "nomercy", time: checkRecast("nomercy"), oncomplete: "addIcon"});
+  addCountdownBar({ name: "nomercy", time: checkRecast("nomercy"), oncomplete: "addIcon"});
 
   gnbCartridge();
   gnbCombo();
@@ -73,7 +73,7 @@ function gnbAction() {
     if ("No Mercy" == actionLog.groups.actionName) {
       addStatus("nomercy");
       addRecast("nomercy");
-      addCountdownBar({name: "nomercy", time: checkRecast("nomercy"), oncomplete: "addIcon"});
+      addCountdownBar({ name: "nomercy", time: checkRecast("nomercy"), oncomplete: "addIcon"});
       gnbCartridge();
     }
 
@@ -167,7 +167,7 @@ function gnbAction() {
           recast.gnashingfang = Date.now() - previous.gnashingfang; // Adjusts cooldown
         }
         previous.gnashingfang = Date.now();
-        addCountdownBar({name: "gnashingfang", time: recast.gnashingfang});
+        addCountdownBar({ name: "gnashingfang", time: recast.gnashingfang});
         addRecast("gnashingfang");
       }
 
@@ -204,12 +204,12 @@ function gnbAction() {
 
 function gnbStatus() {
 
-  if (statusLog.groups.targetID == player.ID) {
+  if (statusLog.groups.targetID == player.id) {
 
     if ("No Mercy" == statusLog.groups.statusName) {
       if (statusLog.groups.gainsLoses == "gains") {
         addStatus("nomercy", parseInt(statusLog.groups.effectDuration) * 1000);
-        addCountdownBar({name: "sonicbreak", time: checkRecast("sonicbreak"), oncomplete: "addIcon"});
+        addCountdownBar({ name: "sonicbreak", time: checkRecast("sonicbreak"), oncomplete: "addIcon"});
         gnbCartridge();
       }
       else if (statusLog.groups.gainsLoses == "loses") {
@@ -222,7 +222,7 @@ function gnbStatus() {
     else if ("Ready To Rip" == statusLog.groups.statusName) {
       if (statusLog.groups.gainsLoses == "gains") {
         icon.continuation = icon.jugularrip;
-        addIcon({name: "continuation"});
+        addIcon({ name: "continuation"});
         addStatus("readytorip", parseInt(statusLog.groups.effectDuration) * 1000);
       }
       else if (statusLog.groups.gainsLoses == "loses") {
@@ -234,7 +234,7 @@ function gnbStatus() {
     else if ("Ready To Tear" == statusLog.groups.statusName) {
       if (statusLog.groups.gainsLoses == "gains") {
         icon.continuation = icon.abdomentear;
-        addIcon({name: "continuation"});
+        addIcon({ name: "continuation"});
         addStatus("readytotear", parseInt(statusLog.groups.effectDuration) * 1000);
       }
       else if (statusLog.groups.gainsLoses == "loses") {
@@ -246,7 +246,7 @@ function gnbStatus() {
     else if ("Ready To Gouge" == statusLog.groups.statusName) {
       if (statusLog.groups.gainsLoses == "gains") {
         icon.continuation = icon.eyegouge;
-        addIcon({name: "continuation"});
+        addIcon({ name: "continuation"});
         addStatus("readytogouge", parseInt(statusLog.groups.effectDuration) * 1000);
       }
       else if (statusLog.groups.gainsLoses == "loses") {
@@ -272,17 +272,17 @@ function gnbCombo() {
 }
 
 function gnbSolidBarrelCombo() {
-  addIcon({name: "keenedge"});
-  addIcon({name: "brutalshell"});
+  addIcon({ name: "keenedge"});
+  addIcon({ name: "brutalshell"});
   if (player.level >= 26) {
-    addIcon({name: "solidbarrel"});
+    addIcon({ name: "solidbarrel"});
   }
 }
 
 function gnbDemonSlaughterCombo() {
-  addIcon({name: "demonslice"});
+  addIcon({ name: "demonslice"});
   if (player.level >= 40) {
-    addIcon({name: "demonslaughter"});
+    addIcon({ name: "demonslaughter"});
   }
 }
 
@@ -316,23 +316,23 @@ function gnbCartridge() {
     if (player.level >= 60
     && checkRecast("gnashingfang") < 3000
     && checkRecast("nomercy") + 10000 > recast.gnashingfang) {
-      addIcon({name: "gnashingfang"});
-      addIcon({name: "savageclaw"});
-      addIcon({name: "wickedtalon"});
+      addIcon({ name: "gnashingfang"});
+      addIcon({ name: "savageclaw"});
+      addIcon({ name: "wickedtalon"});
     }
-    addIcon({name: "burststrike"});
+    addIcon({ name: "burststrike"});
   }
 
   else if (player.tempjobDetail.cartridge - cartridgeFloor >= 1) {
     if (player.level >= 60
     && checkRecast("gnashingfang") < 3000
     && checkRecast("nomercy") + 10000 > recast.gnashingfang) {
-      addIcon({name: "gnashingfang"});
-      addIcon({name: "savageclaw"});
-      addIcon({name: "wickedtalon"});
+      addIcon({ name: "gnashingfang"});
+      addIcon({ name: "savageclaw"});
+      addIcon({ name: "wickedtalon"});
     }
     else {
-      addIcon({name: "burststrike"});
+      addIcon({ name: "burststrike"});
     }
   }
 }

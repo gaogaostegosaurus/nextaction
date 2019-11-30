@@ -78,13 +78,13 @@ const whmCountdownC = [
 const whmNext = ({
   time = player.gcd,
 } = {}) => {
-  if (target.ID && target.ID.startsWith('4')) {
-    next.aeroStatus = checkStatus({ name: player.aeroSpell, id: target.ID });
+  if (target.id && target.id.startsWith('4')) {
+    next.aeroStatus = checkStatus({ name: player.aeroSpell, id: target.id });
   } else {
     next.aeroStatus = checkStatus({ name: player.aeroSpell });
   }
-  if (target.ID && target.ID.startsWith('1') && ['PLD', 'WAR', 'DRK', 'GNB'].indexOf(target.job) > -1) {
-    next.regenStatus = checkStatus({ name: 'Regen', id: target.ID });
+  if (target.id && target.id.startsWith('1') && ['PLD', 'WAR', 'DRK', 'GNB'].indexOf(target.job) > -1) {
+    next.regenStatus = checkStatus({ name: 'Regen', id: target.id });
   } else {
     next.regenStatus = checkStatus({ name: 'Regen' });
   }
@@ -99,7 +99,7 @@ const whmNext = ({
   next.presenceofmindRecast = checkRecast({ name: 'Presence Of Mind' });
 
   next.combatToggle = toggle.combat;
-  next.MP = player.MP;
+  next.MP = player.mp;
   next.bloodLily = player.bloodLily;
 
   next.elapsedTime = time;
@@ -280,9 +280,9 @@ onCancel.WHM = (cancelMatch) => {
 
 onTargetChanged.WHM = () => {
   // Check if target is a new target
-  if (previous.targetID !== target.ID) {
+  if (previous.targetID !== target.id) {
     whmNext();
-    previous.targetID = target.ID;
+    previous.targetID = target.id;
   }
 };
 

@@ -9,6 +9,36 @@ const actionList = {};
 const statusList = {};
 const castingList = {};
 
+// Objects
+let recastTracker = {}; // Holds timestamps for cooldowns
+let cooldowntime = {}; // Holds timestamps for cooldowns
+
+const player = {};
+player.gcd = 2500;
+
+const target = {};
+
+// RegEx matching strings
+
+
+const removeAnimationTime = 1000;
+
+const timeout = {}; // For timeout variables
+const toggle = {}; // Toggley things
+const count = {}; // County things?
+let potency = {};
+let previous = {};
+let next = {};
+
+const onAction = {};
+const onCasting = {};
+const onCancel = {};
+const onStatus = {};
+
+const onTargetChanged = {};
+const onJobChange = {};
+
+
 let actionRegExp;
 let statusRegExp;
 let castingRegExp;
@@ -18,18 +48,16 @@ const statsRegExp = new RegExp(' 0C:Player Stats: (?<jobID>[\\d]+):(?<strength>[
 
 addOverlayListener('onPlayerChangedEvent', (e) => {
   // console.log(JSON.stringify(e));
-  /* e.detail.id is a numeric ID, e.detail.id .toString(16) is lowercase.
-  Using 'ID' to designate uppercase lettering. */
-  player.ID = e.detail.id.toString(16).toUpperCase();
+  player.id = e.detail.id.toString(16).toUpperCase();
   player.name = e.detail.name;
   player.job = e.detail.job;
   player.level = e.detail.level;
 
-  player.currentHP = e.detail.currentHP;
-  player.maxHP = e.detail.maxHP;
-  player.MP = e.detail.currentMP;
-  player.maxMP = e.detail.maxMP;
-  player.currentShield = e.detail.currentShield;
+  // player.currentHP = e.detail.currentHP;
+  // player.maxHP = e.detail.maxHP;
+  player.mp = e.detail.currentMP;
+  // player.maxMP = e.detail.maxMP;
+  // player.currentShield = e.detail.currentShield;
 
   /* Create 8 part array for unsupported jobs - use [0] to [7].
   Need to use parseInt because 04 is not the same as 4. */
@@ -56,10 +84,10 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
     player.whiteMana = e.detail.jobDetail.whiteMana;
   } else if (player.job === 'SCH') {
     player.aetherflow = parseInt(debugJobArray[2], 16); /* 0-3 */
-    player.faerieGauge = parseInt(debugJobArray[3], 16); /* 0-100 */
+    // player.faerie = parseInt(debugJobArray[3], 16); /* 0-100 */
     // healerLucidDreaming();
   } else if (player.job === 'WHM') {
-    // player.lilies
+    // player.lilies = parseInt(debugJobArray[4], 16);
     player.bloodLily = parseInt(debugJobArray[5], 16); /* 0-3 */
     // healerLucidDreaming();
   }
@@ -71,15 +99,14 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
     player.gcd = 2500;
     player.mpRegen = 200;
 
-
     const action = actionList[player.job].join('|');
     const status = statusList[player.job].join('|');
     const casting = castingList[player.job].join('|');
-    actionRegExp = new RegExp(` (?<logType>1[56]):(?<sourceID>${player.ID}):(?<sourceName>${player.name}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${action}):(?<targetID>[\\dA-F]{8}):(?<targetName>[ -~]+?):(?<result>[\\dA-F]{1,8}):`);
+    actionRegExp = new RegExp(` (?<logType>1[56]):(?<sourceID>${player.id}):(?<sourceName>${player.name}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${action}):(?<targetID>[\\dA-F]{8}):(?<targetName>[ -~]+?):(?<result>[\\dA-F]{1,8}):`);
     statusRegExp = new RegExp(` (?<logType>1[AE]):(?<targetID>[\\dA-F]{8}):(?<targetName>[ -~]+?) (?<gainsLoses>gains|loses) the effect of (?<statusName>${status}) from (?<sourceName>${player.name})(?: for )?(?<statusDuration>\\d*\\.\\d*)?(?: Seconds)?\\.`);
     castingRegExp = new RegExp(` 14:(?<actionID>[\\dA-F]{1,4}):(?<sourceName>${player.name}) starts using (?<actionName>${casting}) on (?<targetName>[ -~]+?)\\.`);
-    cancelRegExp = new RegExp(` 17:(?<sourceID>${player.ID}):(?<sourceName>${player.name}):(?<actionID>[\\dA-F]{1,4}):(?<actionName>${casting}):Cancelled:`);
-    /* addedRegExp = new RegExp(` 03:(?<sourceID>${player.ID}):
+    cancelRegExp = new RegExp(` 17:(?<sourceID>${player.id}):(?<sourceName>${player.name}):(?<actionID>[\\dA-F]{1,4}):(?<actionName>${casting}):Cancelled:`);
+    /* addedRegExp = new RegExp(` 03:(?<sourceID>${player.id}):
     Added new combatant (?<sourceName>${player.name})\\.  Job: (?<job>[A-z]{3}) `); */
     resetNext();
     onJobChange[player.job]();
@@ -101,16 +128,28 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
 
     if (actionMatch) {
       if (actionMatch.groups.logType === '16') {
-        /* fix for heals */
-        const property = actionMatch.groups.actionName.replace(/[\s'-:]/g, '').toLowerCase();
-        if (!previous[`${property}Match`] || previous[`${property}Match`] - Date.now() > 10) {
-          previous[`${property}Match`] = Date.now();
-          count.targets = 1;
-          timeout[`${property}Match`] = setTimeout(onAction[player.job], 100, actionMatch);
-        } else {
-          clearTimeout(timeout[`${property}Match`]);
-          count.targets += 1;
-          timeout[`${property}Match`] = setTimeout(onAction[player.job], 100, actionMatch);
+        if (actionMatch.groups.targetID.startsWith('4')) {
+          if (!previous.aoe || Date.now() - previous.aoe > 100) {
+            clearTimeout(timeout.aoe);
+            previous.aoe = Date.now();
+            count.targets = 1;
+            timeout.aoe = setTimeout(onAction[player.job], 100, actionMatch);
+          } else {
+            clearTimeout(timeout.aoe);
+            count.targets += 1;
+            timeout.aoe = setTimeout(onAction[player.job], 100, actionMatch);
+          }
+          /* This is slightly more complicated... for no reason? Was there a reason? */
+          // const property = actionMatch.groups.actionName.replace(/[\s'-:]/g, '').toLowerCase();
+          // if (!previous[`${property}Match`] || Date.now() - previous[`${property}Match`] > 10) {
+          //   previous[`${property}Match`] = Date.now();
+          //   count.targets = 1;
+          //   timeout[`${property}Match`] = setTimeout(onAction[player.job], 100, actionMatch);
+          // } else {
+          //   clearTimeout(timeout[`${property}Match`]);
+          //   count.targets += 1;
+          //   timeout[`${property}Match`] = setTimeout(onAction[player.job], 100, actionMatch);
+          // }
         }
       } else {
         onAction[player.job](actionMatch);
@@ -121,7 +160,7 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
       onCasting[player.job](castingMatch);
 
       /* Display next if casting with an NPC target */
-      if (target.ID.startsWith('4')) { /* 0 = no target, 1... = player? E... = non-combat NPC? */
+      if (target.id.startsWith('4')) { /* 0 = no target, 1... = player? E... = non-combat NPC? */
         document.getElementById('nextdiv').classList.replace('next-hide', 'next-show');
       }
     } else if (cancelMatch) {
@@ -140,13 +179,13 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
 addOverlayListener('onTargetChangedEvent', (e) => {
   // console.log(`onTargetChangedEvent: ${JSON.stringify(e)}`);
   target.name = e.detail.name;
-  target.ID = e.detail.id.toString(16).toUpperCase(); // See player.ID above
+  target.id = e.detail.id.toString(16).toUpperCase(); // See player.id above
   target.job = e.detail.job;
   // target.level = e.detail.level;
-  target.currentHP = e.detail.currentHP;
-  target.currentMP = e.detail.currentMP;
-  target.maxHP = e.detail.maxHP;
-  target.maxMP = e.detail.maxMP;
+  // target.currentHP = e.detail.currentHP;
+  // target.currentMP = e.detail.currentMP;
+  // target.maxHP = e.detail.maxHP;
+  // target.maxMP = e.detail.maxMP;
   // target.distance = e.detail.distance;
   if (player.job) {
     onTargetChanged[player.job]();
@@ -161,10 +200,10 @@ addOverlayListener('onInCombatChangedEvent', (e) => {
   count.targets = 1;
 
   if (e.detail.inGameCombat) {
-    toggle.combat = Date.now();
+    toggle.combat = 1;
     document.getElementById('nextdiv').classList.replace('next-hide', 'next-show');
   } else {
-    delete toggle.combat;
+    toggle.combat = 0;
     document.getElementById('nextdiv').classList.replace('next-show', 'next-hide');
     /* next-hide class has a built in delay */
   }

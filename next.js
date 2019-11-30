@@ -304,8 +304,8 @@ function blmPlayerChangedEvent() {
   }
 
   // Find server MP ticks
-  if (previous.currentMP < player.MP) {
-    previous.currentMP = player.MP;
+  if (previous.currentMP < player.mp) {
+    previous.currentMP = player.mp;
     previous.serverTick = Date.now();
   }
 
@@ -313,20 +313,20 @@ function blmPlayerChangedEvent() {
 
 function blmTargetChangedEvent() {
 
-  // if (previous.targetID != target.ID) {
+  // if (previous.targetID != target.id) {
   //
-  //   // console.log("Target changed: " + target.ID);
+  //   // console.log("Target changed: " + target.id);
   //   if (player.jobDetail.umbralStacks > 0) {
-  //     blmThunder(player.MP, player.jobDetail.umbralMilliseconds, player.jobDetail.umbralStacks, blmAstralMinimumMP);
+  //     blmThunder(player.mp, player.jobDetail.umbralMilliseconds, player.jobDetail.umbralStacks, blmAstralMinimumMP);
   //   }
   //   else if (player.jobDetail.umbralStacks < 0) {
-  //     blmThunder(player.MP, player.jobDetail.umbralMilliseconds, player.jobDetail.umbralStacks, blmUmbralMinimumMP);
+  //     blmThunder(player.mp, player.jobDetail.umbralMilliseconds, player.jobDetail.umbralStacks, blmUmbralMinimumMP);
   //   }
   //   else {
-  //     blmThunder(player.MP, player.jobDetail.umbralMilliseconds, player.jobDetail.umbralStacks, 0);
+  //     blmThunder(player.mp, player.jobDetail.umbralMilliseconds, player.jobDetail.umbralStacks, 0);
   //   }
   //
-  //   previous.targetID = target.ID;
+  //   previous.targetID = target.id;
   // }
 
 }
@@ -457,12 +457,12 @@ function blmCancelled() {
 
 function blmStatus() {
 
-  if (statusLog.groups.targetID == player.ID) {
+  if (statusLog.groups.targetID == player.id) {
 
     if (statusLog.groups.statusName == "Thundercloud") {
       if (statusLog.groups.gainsLoses == "gains") {
         addStatus("thundercloud", parseInt(statusLog.groups.effectDuration) * 1000);
-        addCountdownBar({name: "thundercloud", time: checkStatus("thundercloud"), oncomplete: "removeCountdownBar"});
+        addCountdownBar({ name: "thundercloud", time: checkStatus("thundercloud"), oncomplete: "removeCountdownBar"});
       }
       else if (statusLog.groups.gainsLoses == "loses") {
         removeStatus("thundercloud", statusLog.groups.targetID);
@@ -472,7 +472,7 @@ function blmStatus() {
     else if (statusLog.groups.statusName == "Firestarter") {
       if (statusLog.groups.gainsLoses == "gains") {
         addStatus("firestarter", parseInt(statusLog.groups.effectDuration) * 1000);
-        addCountdownBar({name: "firestarter", time: checkStatus("firestarter"), oncomplete: "removeCountdownBar"});
+        addCountdownBar({ name: "firestarter", time: checkStatus("firestarter"), oncomplete: "removeCountdownBar"});
       }
       else if (statusLog.groups.gainsLoses == "loses") {
         removeStatus("firestarter", statusLog.groups.targetID);
@@ -489,7 +489,7 @@ function blmStatus() {
     if (["Thunder", "Thunder II", "Thunder III", "Thunder IV"].indexOf(statusLog.groups.statusName) > -1) {
       if (statusLog.groups.gainsLoses == "gains") {
         addStatus("thunder", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
-        addCountdownBar({name: "thunder", time: checkStatus("thunder", statusLog.groups.targetID), oncomplete: "removeCountdownBar"});
+        addCountdownBar({ name: "thunder", time: checkStatus("thunder", statusLog.groups.targetID), oncomplete: "removeCountdownBar"});
       }
       else if (statusLog.groups.gainsLoses == "loses") {
         removeStatus("thunder", statusLog.groups.targetID);
@@ -503,29 +503,29 @@ function blmNext() {
 
   if ("Fire" == blmCasting) {
     if (player.jobDetail.umbralStacks < 0) {
-      blmAstralRotation(player.MP - 800 * blmFireCostModifier, 15000, 0);
+      blmAstralRotation(player.mp - 800 * blmFireCostModifier, 15000, 0);
     }
     else {
-      blmAstralRotation(player.MP - 800 * blmFireCostModifier, 15000, Math.min(player.jobDetail.umbralStacks + 1, 3));
+      blmAstralRotation(player.mp - 800 * blmFireCostModifier, 15000, Math.min(player.jobDetail.umbralStacks + 1, 3));
     }
   }
 
   else if ("Fire II" == blmCasting) {
     if (player.jobDetail.umbralStacks < 0) {
-      blmAstralRotation(player.MP - 1500 * blmFireCostModifier, 15000, 0);
+      blmAstralRotation(player.mp - 1500 * blmFireCostModifier, 15000, 0);
     }
     else {
-      blmAstralRotation(player.MP - 1500 * blmFireCostModifier, 15000, Math.min(player.jobDetail.umbralStacks + 1, 3));
+      blmAstralRotation(player.mp - 1500 * blmFireCostModifier, 15000, Math.min(player.jobDetail.umbralStacks + 1, 3));
     }
   }
 
   else if ("Fire III" == blmCasting) {
-    blmAstralRotation(player.MP - 2000 * blmFireCostModifier, 15000, 3 );
+    blmAstralRotation(player.mp - 2000 * blmFireCostModifier, 15000, 3 );
   }
 
   else if ("Flare" == blmCasting) {
     if (player.jobDetail.umbralHearts > 0) {
-      blmAstralRotation(player.MP * 0.34, 15000, 3);
+      blmAstralRotation(player.mp * 0.34, 15000, 3);
     }
     else {
       blmAstralRotation(0, 15000, 3);
@@ -534,7 +534,7 @@ function blmNext() {
 
   else if ("Despair" == blmCasting) {
     if (player.jobDetail.umbralHearts > 0) {
-      blmAstralRotation(player.MP * 0.34, 15000, 3);
+      blmAstralRotation(player.mp * 0.34, 15000, 3);
     }
     else {
       blmAstralRotation(0, 15000, 3);
@@ -543,36 +543,36 @@ function blmNext() {
 
   else if ("Blizzard" == blmCasting) {
     if (player.jobDetail.umbralStacks > 0) {
-      blmUmbralRotation(player.MP - 400 * blmBlizzardCostModifier, 15000, 0);
+      blmUmbralRotation(player.mp - 400 * blmBlizzardCostModifier, 15000, 0);
     }
     else {
-      blmUmbralRotation(player.MP - 400 * blmBlizzardCostModifier, 15000, Math.max(player.jobDetail.umbralStacks - 1, -3));
+      blmUmbralRotation(player.mp - 400 * blmBlizzardCostModifier, 15000, Math.max(player.jobDetail.umbralStacks - 1, -3));
     }
   }
 
   else if ("Blizzard II" == blmCasting) {
     if (player.jobDetail.umbralStacks > 0) {
-      blmUmbralRotation(player.MP - 800 * blmBlizzardCostModifier, 15000, 0);
+      blmUmbralRotation(player.mp - 800 * blmBlizzardCostModifier, 15000, 0);
     }
     else {
-      blmUmbralRotation(player.MP - 800 * blmBlizzardCostModifier, 15000, Math.max(player.jobDetail.umbralStacks - 1, -3));
+      blmUmbralRotation(player.mp - 800 * blmBlizzardCostModifier, 15000, Math.max(player.jobDetail.umbralStacks - 1, -3));
     }
   }
 
   else if ("Freeze" == blmCasting) {
-    blmUmbralRotation(player.MP - 1000 * blmBlizzardCostModifier, 15000, -3);
+    blmUmbralRotation(player.mp - 1000 * blmBlizzardCostModifier, 15000, -3);
   }
 
   else if ("Blizzard III" == blmCasting) {
-    blmUmbralRotation(player.MP - 800 * blmBlizzardCostModifier, 15000, -3);
+    blmUmbralRotation(player.mp - 800 * blmBlizzardCostModifier, 15000, -3);
   }
 
   // All other cases
   else if (player.jobDetail.umbralStacks < 0) { // In Umbral
-    blmUmbralRotation(player.MP, player.jobDetail.umbralMilliseconds, player.jobDetail.umbralStacks);
+    blmUmbralRotation(player.mp, player.jobDetail.umbralMilliseconds, player.jobDetail.umbralStacks);
   }
   else { // Starting out or in Astral
-    blmAstralRotation(player.MP, player.jobDetail.umbralMilliseconds, player.jobDetail.umbralStacks);
+    blmAstralRotation(player.mp, player.jobDetail.umbralMilliseconds, player.jobDetail.umbralStacks);
   }
 
 }
@@ -668,7 +668,7 @@ function blmAstralRotation(currentMP, blmAstralTime, blmAstralStacks) {
       });
     }
     else if (blmCasting == blmFireSpam) {
-      fadeIcon({name: "firespam"});
+      fadeIcon({ name: "firespam"});
     }
     else {
       removeIcon("firespam");
@@ -680,18 +680,18 @@ function blmAstralRotation(currentMP, blmAstralTime, blmAstralStacks) {
     if (player.level >= 50
     && count.targets >= 3
     && currentMP >= 800) {
-      addIcon({name: "flare"});
+      addIcon({ name: "flare"});
     }
     else if (player.level >= 72
     && currentMP - count.firespam * 1600 >= blmAstralMinimumMP
     && currentMP - count.firespam * 1600 < 1600 + blmAstralMinimumMP) {
-      addIcon({name: "despair"});
+      addIcon({ name: "despair"});
     }
     else if (blmCasting == "Flare") {
-      fadeIcon({name: "flare"});
+      fadeIcon({ name: "flare"});
     }
     else if (blmCasting == "Despair") {
-      fadeIcon({name: "despair"});
+      fadeIcon({ name: "despair"});
     }
     else {
       removeIcon("flare");
@@ -705,27 +705,27 @@ function blmAstralRotation(currentMP, blmAstralTime, blmAstralStacks) {
   if (count.targets >= 3) {
     if (player.level >= 72) {
       if (blmCasting != "Freeze") {
-        addIcon({name: "freezeUmbral3"});
+        addIcon({ name: "freezeUmbral3"});
       }
       else {
-        fadeIcon({name: "freezeUmbral3"});
+        fadeIcon({ name: "freezeUmbral3"});
       }
     }
     else {
-      addIcon({name: "transpose"});
+      addIcon({ name: "transpose"});
     }
   }
   else {
     if (player.level >= 60
     && blmAstralStacks == 3
     && (currentMP + player.jobDetail.umbralHearts * 800 - 1600 - blmAstralMinimumMP) / 1600 > (blmAstralTime - blmRotationBufferTime) / 2800) {
-      addIcon({name: "fire"});
+      addIcon({ name: "fire"});
     }
     else if (blmCasting == "Blizzard III") {
-      fadeIcon({name: "blizzard3"});
+      fadeIcon({ name: "blizzard3"});
     }
     else {
-      addIcon({name: "blizzard3"});
+      addIcon({ name: "blizzard3"});
     }
   }
 }
@@ -776,24 +776,24 @@ function blmUmbralRotation(currentMP, blmUmbralTime, blmUmbralStacks) {
       }
       // AoE uses Freeze to transition to Umbral III
       else if (player.jobDetail.umbralStacks != -3) {
-        addIcon({name: "freeze"});
+        addIcon({ name: "freeze"});
       }
       else {
         removeIcon("freeze");
       }
     }
     else if (player.level >= 35) {
-      addIcon({name: "freeze"});
+      addIcon({ name: "freeze"});
     }
     else {
-      if (player.MP == 10000) {
+      if (player.mp == 10000) {
         removeIcon("blizzard2");
       }
-      else if (player.MP >= blmUmbralMinimumMP && Date.now() - previous.serverTick > 3000 - 2500) {
+      else if (player.mp >= blmUmbralMinimumMP && Date.now() - previous.serverTick > 3000 - 2500) {
         removeIcon("blizzard2");
       }
       else {
-        addIcon({name: "blizzard2"});
+        addIcon({ name: "blizzard2"});
       }
     }
   }
@@ -810,7 +810,7 @@ function blmUmbralRotation(currentMP, blmUmbralTime, blmUmbralStacks) {
         removeIcon("blizzard4");
       }
       else if (player.jobDetail.enochian || checkRecast("enochian") < 0) {
-        addIcon({name: "blizzard4"});
+        addIcon({ name: "blizzard4"});
       }
       else {
         removeIcon("blizzard4");
@@ -819,34 +819,34 @@ function blmUmbralRotation(currentMP, blmUmbralTime, blmUmbralStacks) {
 
     // Blizzard spam (pre 58)
     else {
-      if (player.MP == 10000) {
+      if (player.mp == 10000) {
         removeIcon("blizzard");
       }
-      else if (player.MP >= blmUmbralMinimumMP && Date.now() - previous.serverTick > 3000 - 2500) {
+      else if (player.mp >= blmUmbralMinimumMP && Date.now() - previous.serverTick > 3000 - 2500) {
         removeIcon("blizzard");
       }
       else {
-        addIcon({name: "blizzard"});
+        addIcon({ name: "blizzard"});
       }
     }
   }
 
   // Transition spell (Fire III, etc.)
   // Only show transitions at full MP
-  if (player.MP == 10000 ||
-  (player.MP >= blmUmbralMinimumMP && Date.now() - previous.serverTick > 1500)) {
+  if (player.mp == 10000 ||
+  (player.mp >= blmUmbralMinimumMP && Date.now() - previous.serverTick > 1500)) {
 
     if (player.level >= 72
     && count.targets >= 5
     && player.jobDetail.umbralHearts > 0) {
-      addIcon({name: "coldflare"});  // "Cold flare"
+      addIcon({ name: "coldflare"});  // "Cold flare"
     }
     else {
       if (player.level >= 40) {
-        addIcon({name: "fire3"});
+        addIcon({ name: "fire3"});
       }
       else if (player.level < 34) {
-        addIcon({name: "transpose"});
+        addIcon({ name: "transpose"});
       }
     }
   }
@@ -861,7 +861,7 @@ function blmEnochian(rotationTime) {
   && player.level >= 56
   && checkRecast("enochian") <= 0
   && rotationTime > blmRotationBufferTime) {
-    addIcon({name: "enochian"});
+    addIcon({ name: "enochian"});
   }
   else {
     removeIcon("enochian");
@@ -878,7 +878,7 @@ function blmInstantFiller(currentMP, rotationTime, rotationStacks) {
     if (checkStatus("thundercloud") > 0
     && rotationTime > 2500 + blmRotationBufferTime) {
       blmInstant = "Thundercloud";
-      addIcon({name: "thundercloud", img: blmThunderIcon});
+      addIcon({ name: "thundercloud", img: blmThunderIcon});
       removeIcon("thunder");
     }
     else {
@@ -891,18 +891,18 @@ function blmInstantFiller(currentMP, rotationTime, rotationStacks) {
   && checkStatus("thundercloud") < blmProcBufferTime
   && rotationTime > 2500 + blmRotationBufferTime) {
     blmInstant = "Thundercloud";
-    addIcon({name: "thundercloud", img: blmThunderIcon});
+    addIcon({ name: "thundercloud", img: blmThunderIcon});
     removeIcon("thunder");
   }
 
   // Use Thundercloud if Thunder effect is about to expire
   else if (checkStatus("thundercloud") > 0
-  && target.ID.length == 8
-  && target.ID.startsWith("4")
-  && checkStatus("thunder", target.ID) <= 0
+  && target.id.length == 8
+  && target.id.startsWith("4")
+  && checkStatus("thunder", target.id) <= 0
   && rotationTime > 2500 + blmRotationBufferTime) {
     blmInstant = "Thundercloud";
-    addIcon({name: "thundercloud", img: blmThunderIcon});
+    addIcon({ name: "thundercloud", img: blmThunderIcon});
     removeIcon("thunder");
   }
 
@@ -910,7 +910,7 @@ function blmInstantFiller(currentMP, rotationTime, rotationStacks) {
   else if (player.level >= 80
   && player.jobDetail.foulCount > 1
   && rotationTime > 2500 + blmRotationBufferTime) {
-    addIcon({name: "xenoglossy"});
+    addIcon({ name: "xenoglossy"});
     blmInstant = "Xenoglossy";
   }
 
@@ -957,15 +957,15 @@ function blmInstantFiller(currentMP, rotationTime, rotationStacks) {
     && checkRecast("manafont") < 1000
     && rotationStacks >= 3
     && currentMP <= 7000) {
-      addIcon({name: "instantAction", img: blmInstantIcon});
-      addIcon({name: "weaveAction", img: "manafont"});
+      addIcon({ name: "instantAction", img: blmInstantIcon});
+      addIcon({ name: "weaveAction", img: "manafont"});
     }
 
     // Sharpcast
     else if (player.level >= 54
     && checkRecast("sharpcast") < 1000) {
-      addIcon({name: "instantAction", img: blmInstantIcon});
-      addIcon({name: "weaveAction", img: "sharpcast"});
+      addIcon({ name: "instantAction", img: blmInstantIcon});
+      addIcon({ name: "weaveAction", img: "sharpcast"});
     }
 
     // Triplecast
@@ -973,23 +973,23 @@ function blmInstantFiller(currentMP, rotationTime, rotationStacks) {
     && checkRecast("triplecast") < 1000
     && rotationStacks >= 3
     && currentMP >= 1600 * 3 + 800) {
-      addIcon({name: "instantAction", img: blmInstantIcon});
-      addIcon({name: "weaveAction", img: "triplecast"});
+      addIcon({ name: "instantAction", img: blmInstantIcon});
+      addIcon({ name: "weaveAction", img: "triplecast"});
     }
 
     // Leylines
     else if (player.level >= 52
     && checkRecast("leylines") < 1000) {
-      addIcon({name: "instantAction", img: blmInstantIcon});
-      addIcon({name: "weaveAction", img: "leylines"});
+      addIcon({ name: "instantAction", img: blmInstantIcon});
+      addIcon({ name: "weaveAction", img: "leylines"});
     }
 
     // Swiftcast
     else if (player.level >= 18
     && checkRecast("swiftcast") < 1000
     && rotationStacks >= 3) {
-      addIcon({name: "instantAction", img: blmInstantIcon});
-      addIcon({name: "weaveAction", img: "swiftcast"});
+      addIcon({ name: "instantAction", img: blmInstantIcon});
+      addIcon({ name: "weaveAction", img: "swiftcast"});
     }
 
     else {
@@ -1052,13 +1052,13 @@ function blmThunder(currentMP, rotationTime, rotationStacks, rotationMinimumMP) 
   }
 
   // Hardcast Thunder
-  else if (target.ID) {
+  else if (target.id) {
     if (checkStatus("thundercloud") < 0
-    && target.ID.length == 8
-    && target.ID.startsWith("4")
-    && checkStatus("thunder", target.ID) <= 2500
+    && target.id.length == 8
+    && target.id.startsWith("4")
+    && checkStatus("thunder", target.id) <= 2500
     && rotationTime > 2500 + blmRotationBufferTime) {
-      addIcon({name: "thunder", img: blmThunderIcon});
+      addIcon({ name: "thunder", img: blmThunderIcon});
     }
   }
 
@@ -1145,11 +1145,11 @@ function brdPlayerChangedEvent() {
   // Pitch Perfect
   if (previous.song == "minuet") {
     if (player.jobDetail.songProcs == 3) {
-      addIcon({name: "pitchperfect"});
+      addIcon({ name: "pitchperfect"});
     }
     else if (player.jobDetail.songProcs > 0
     && player.jobDetail.songMilliseconds < 3000) {
-      addIcon({name: "pitchperfect"});
+      addIcon({ name: "pitchperfect"});
     }
     else {
       removeIcon("pitchperfect");
@@ -1167,19 +1167,19 @@ function brdPlayerChangedEvent() {
 }
 
 function brdTargetChangedEvent() { // Checks DoTs after switching targets
-  if (previous.targetID != target.ID) { // Prevent this from repeatedly being called on movement or whatever
+  if (previous.targetID != target.id) { // Prevent this from repeatedly being called on movement or whatever
 
     // If not a target then clear things out
-    if (target.ID.startsWith("4")) {
+    if (target.id.startsWith("4")) {
       if (player.level >= 54
-      && checkStatus("venomousbite", target.ID) > 0
-      && checkStatus("windbite", target.ID) > 0) {
-        addCountdownBar({name: "ironjaws", time: Math.min(checkStatus("venomousbite", target.ID), checkStatus("windbite", target.ID)) - 5000, oncomplete: "addIcon"});
+      && checkStatus("venomousbite", target.id) > 0
+      && checkStatus("windbite", target.id) > 0) {
+        addCountdownBar({ name: "ironjaws", time: Math.min(checkStatus("venomousbite", target.id), checkStatus("windbite", target.id)) - 5000, oncomplete: "addIcon"});
       }
       else {
-        addCountdownBar({name: "venomousbite", time: checkStatus("venomousbite", target.ID), oncomplete: "addIcon"});
+        addCountdownBar({ name: "venomousbite", time: checkStatus("venomousbite", target.id), oncomplete: "addIcon"});
         if (player.level >= 18) {
-          addCountdownBar({name: "windbite", time: checkStatus("windbite", target.ID), oncomplete: "addIcon"});
+          addCountdownBar({ name: "windbite", time: checkStatus("windbite", target.id), oncomplete: "addIcon"});
         }
       }
     }
@@ -1192,7 +1192,7 @@ function brdTargetChangedEvent() { // Checks DoTs after switching targets
       removeCountdownBar("windbite");
     }
 
-    previous.targetID = target.ID;
+    previous.targetID = target.id;
   }
 }
 
@@ -1213,11 +1213,11 @@ function brdAction() {
     && checkStatus("windbite", actionLog.groups.targetID) > 0) {
       removeCountdownBar("venomousbite");
       removeCountdownBar("windbite");
-      addCountdownBar({name: "ironjaws", time: Math.min(checkStatus("venomousbite", actionLog.groups.targetID), checkStatus("windbite", actionLog.groups.targetID)) - 5000, oncomplete: "addIcon"});
+      addCountdownBar({ name: "ironjaws", time: Math.min(checkStatus("venomousbite", actionLog.groups.targetID), checkStatus("windbite", actionLog.groups.targetID)) - 5000, oncomplete: "addIcon"});
     }
     else {
       removeCountdownBar("ironjaws");
-      addCountdownBar({name: "venomousbite", time: checkStatus("venomousbite", actionLog.groups.targetID), oncomplete: "addIcon"});
+      addCountdownBar({ name: "venomousbite", time: checkStatus("venomousbite", actionLog.groups.targetID), oncomplete: "addIcon"});
     }
   }
 
@@ -1230,11 +1230,11 @@ function brdAction() {
     && checkStatus("venomousbite", actionLog.groups.targetID) > 0) {
       removeCountdownBar("venomousbite");
       removeCountdownBar("windbite");
-      addCountdownBar({name: "ironjaws", time: Math.min(checkStatus("venomousbite", actionLog.groups.targetID), checkStatus("windbite", actionLog.groups.targetID)) - 5000, oncomplete: "addIcon"});
+      addCountdownBar({ name: "ironjaws", time: Math.min(checkStatus("venomousbite", actionLog.groups.targetID), checkStatus("windbite", actionLog.groups.targetID)) - 5000, oncomplete: "addIcon"});
     }
     else {
       removeCountdownBar("ironjaws");
-      addCountdownBar({name: "windbite", time: checkStatus("windbite", actionLog.groups.targetID), oncomplete: "addIcon"});
+      addCountdownBar({ name: "windbite", time: checkStatus("windbite", actionLog.groups.targetID), oncomplete: "addIcon"});
     }
     // if (player.level >= 54
     // && checkStatus("venomousbite", actionLog.groups.targetID) > 0) {
@@ -1260,7 +1260,7 @@ function brdAction() {
       removeCountdownBar("windbite");
       addStatus("venomousbite", duration.venomousbite, actionLog.groups.targetID);
       addStatus("windbite", duration.windbite, actionLog.groups.targetID);
-      addCountdownBar({name: "ironjaws", time: Math.min(checkStatus("venomousbite", actionLog.groups.targetID), checkStatus("windbite", actionLog.groups.targetID)) - 5000, oncomplete: "addIcon"});
+      addCountdownBar({ name: "ironjaws", time: Math.min(checkStatus("venomousbite", actionLog.groups.targetID), checkStatus("windbite", actionLog.groups.targetID)) - 5000, oncomplete: "addIcon"});
       // removeIcon("venomousbite");
       // clearTimeout(timeout.ironjaws);
       // addIconBlinkTimeout("venomousbite", 30000, nextid.venomousbite, icon.venomousbite);
@@ -1269,14 +1269,14 @@ function brdAction() {
       removeIcon("venomousbite");
       addStatus("venomousbite", duration.venomousbite, actionLog.groups.targetID);
       removeCountdownBar("ironjaws");
-      addCountdownBar({name: "venomousbite", time: checkStatus("venomousbite", actionLog.groups.targetID), oncomplete: "addIcon"});
+      addCountdownBar({ name: "venomousbite", time: checkStatus("venomousbite", actionLog.groups.targetID), oncomplete: "addIcon"});
     }
 
     else if (checkStatus("windbite", actionLog.groups.targetID) > 0) {
       removeIcon("windbite");
       addStatus("windbite", duration.windbite, actionLog.groups.targetID);
       removeCountdownBar("ironjaws");
-      addCountdownBar({name: "windbite", time: checkStatus("windbite", actionLog.groups.targetID), oncomplete: "addIcon"});
+      addCountdownBar({ name: "windbite", time: checkStatus("windbite", actionLog.groups.targetID), oncomplete: "addIcon"});
     }
 
   }
@@ -1302,7 +1302,7 @@ function brdAction() {
   }
 
   else if ("Raging Strikes" == actionLog.groups.actionName) {
-    addCountdownBar({name: "ragingstrikes"});
+    addCountdownBar({ name: "ragingstrikes"});
     // addIconBlinkTimeout("ragingstrikes",recast.ragingstrikes,nextid.ragingstrikes,icon.ragingstrikes);
     // if (player.level >= 38
     // && checkStatus("straightshotready") < 0) {
@@ -1311,25 +1311,25 @@ function brdAction() {
   }
 
   else if ("Barrage" == actionLog.groups.actionName) {
-    addCountdownBar({name: "barrage"});
+    addCountdownBar({ name: "barrage"});
   }
 
   else if ("Battle Voice" == actionLog.groups.actionName) {
-    addCountdownBar({name: "battlevoice"});
+    addCountdownBar({ name: "battlevoice"});
     // addRecast("battlevoice");
     // removeIcon("battlevoice");
     // addIconBlinkTimeout("battlevoice",recast.battlevoice,nextid.battlevoice,icon.battlevoice);
   }
 
   else if ("Sidewinder" == actionLog.groups.actionName) {
-    addCountdownBar({name: "sidewinder"});
+    addCountdownBar({ name: "sidewinder"});
     // addRecast("sidewinder");
     // removeIcon("sidewinder");
     // addIconBlinkTimeout("sidewinder",recast.sidewinder,nextid.sidewinder,icon.sidewinder);
   }
 
   else if ("Shadowbite" == actionLog.groups.actionName) {
-    addCountdownBar({name: "sidewinder"});
+    addCountdownBar({ name: "sidewinder"});
     // addRecast("sidewinder"); // Same cooldown as SW
     // removeIcon("sidewinder");
     // addIconBlinkTimeout("sidewinder",recast.sidewinder,nextid.sidewinder,icon.sidewinder);
@@ -1343,7 +1343,7 @@ function brdAction() {
   }
 
   else if ("Mage's Ballad" == actionLog.groups.actionName) {
-    addCountdownBar({name: "ballad"});
+    addCountdownBar({ name: "ballad"});
     // removeIcon("ballad");
     // addRecast("ballad");
     // addStatus("song", 30000);
@@ -1373,13 +1373,13 @@ function brdAction() {
     //   addIconBlinkTimeout("ballad", checkRecast("ballad"), nextid.ballad, icon.ballad);
     // }
     if (player.level >= 68) {
-      addCountdownBar({name: "empyrealarrow", time: checkRecast("empyrealarrow")});
+      addCountdownBar({ name: "empyrealarrow", time: checkRecast("empyrealarrow")});
       // addIconTimeout("empyrealarrow",checkRecast("empyrealarrow"),nextid.empyrealarrow,icon.empyrealarrow);
     }
   }
 
   else if ("Army's Paeon" == actionLog.groups.actionName) {
-    addCountdownBar({name: "paeon"});
+    addCountdownBar({ name: "paeon"});
     // removeIcon("paeon");
     // addRecast("paeon");
     // addStatus("song", 30000);
@@ -1411,12 +1411,12 @@ function brdAction() {
     //   addIconBlinkTimeout("ballad", Math.max(checkRecast("ballad"), 30000), nextid.ballad, icon.ballad);
     // }
     if (player.level >= 68) {
-      addCountdownBar({name: "empyrealarrow", time: checkRecast("empyrealarrow")});
+      addCountdownBar({ name: "empyrealarrow", time: checkRecast("empyrealarrow")});
     }
   }
 
   else if ("The Wanderer's Minuet" == actionLog.groups.actionName) {
-    addCountdownBar({name: "paeon"});
+    addCountdownBar({ name: "paeon"});
     // removeIcon("minuet");
     // addRecast("minuet");
     // addStatus("song", 30000);
@@ -1428,7 +1428,7 @@ function brdAction() {
     //   addIconBlinkTimeout("paeon", Math.max(checkRecast("paeon"), 30000), nextid.paeon, icon.paeon);
     // }
     if (player.level >= 68) {
-      addCountdownBar({name: "empyrealarrow", time: checkRecast("empyrealarrow")});
+      addCountdownBar({ name: "empyrealarrow", time: checkRecast("empyrealarrow")});
     }
   }
 
@@ -1439,9 +1439,9 @@ function brdAction() {
     previous.empyrealarrow = Date.now();
     // removeIcon("empyrealarrow");
     // addRecast("empyrealarrow");
-    addCountdownBar({name: "empyrealarrow"});
+    addCountdownBar({ name: "empyrealarrow"});
     // if (player.level >= 68) {
-    //   if (checkStatus("song", player.ID) > recast.empyrealarrow) { // Check if EA should be reused within song duration
+    //   if (checkStatus("song", player.id) > recast.empyrealarrow) { // Check if EA should be reused within song duration
     //     addIconTimeout("empyrealarrow",recast.empyrealarrow,nextid.empyrealarrow,icon.empyrealarrow);
     //   }
     // }
@@ -1454,12 +1454,12 @@ function brdAction() {
 
 function brdStatus() {
 
-  if (statusLog.groups.targetID == player.ID) {
+  if (statusLog.groups.targetID == player.id) {
 
     if (statusLog.groups.statusName == "Straight Shot Ready") {
       if (statusLog.groups.gainsLoses == "gains") {
         addStatus("straightshotready", parseInt(statusLog.groups.effectDuration) * 1000);
-        addIcon({name: "straightshot"});
+        addIcon({ name: "straightshot"});
         // removeIcon("barrage");
       }
       else if (statusLog.groups.gainsLoses == "loses") {
@@ -1484,51 +1484,51 @@ function brdStatus() {
     if (["Venomous Bite", "Caustic Bite"].indexOf(statusLog.groups.statusName) > -1) {
       if (statusLog.groups.gainsLoses == "gains") {
         addStatus("venomousbite", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
-        if (target.ID == statusLog.groups.targetID) {  // Might be possible to switch targets during this
+        if (target.id == statusLog.groups.targetID) {  // Might be possible to switch targets during this
           if (player.level >= 54
-          && checkStatus("windbite", target.ID) > 0) {
+          && checkStatus("windbite", target.id) > 0) {
             removeCountdownBar("venomousbite");
             removeCountdownBar("windbite");
-            addCountdownBar({name: "ironjaws", time: Math.min(checkStatus("venomousbite", target.ID), checkStatus("windbite", target.ID)) - 5000, oncomplete: "addIcon"});
+            addCountdownBar({ name: "ironjaws", time: Math.min(checkStatus("venomousbite", target.id), checkStatus("windbite", target.id)) - 5000, oncomplete: "addIcon"});
           }
           else {
             removeCountdownBar("ironjaws");
-            addCountdownBar({name: "venomousbite", time: checkStatus("venomousbite", target.ID), oncomplete: "addIcon"});
-            addCountdownBar({name: "windbite", time: checkStatus("windbite", target.ID), oncomplete: "addIcon"});
+            addCountdownBar({ name: "venomousbite", time: checkStatus("venomousbite", target.id), oncomplete: "addIcon"});
+            addCountdownBar({ name: "windbite", time: checkStatus("windbite", target.id), oncomplete: "addIcon"});
           }
         }
       }
       else if (statusLog.groups.gainsLoses == "loses") {
         removeIcon("ironjaws");
         removeCountdownBar("ironjaws");
-        addCountdownBar({name: "venomousbite", time: checkStatus("venomousbite", target.ID), oncomplete: "addIcon"});
-        addCountdownBar({name: "windbite", time: checkStatus("windbite", target.ID), oncomplete: "addIcon"});
+        addCountdownBar({ name: "venomousbite", time: checkStatus("venomousbite", target.id), oncomplete: "addIcon"});
+        addCountdownBar({ name: "windbite", time: checkStatus("windbite", target.id), oncomplete: "addIcon"});
       }
     }
 
     else if (["Windbite", "Stormbite"].indexOf(statusLog.groups.statusName) > -1) {
       if (statusLog.groups.gainsLoses == "gains") {
         addStatus("windbite", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
-        if (target.ID == statusLog.groups.targetID) {  // Might be possible to switch targets during this
+        if (target.id == statusLog.groups.targetID) {  // Might be possible to switch targets during this
           if (player.level >= 54
-          && checkStatus("venomousbite", target.ID) > 0) {
+          && checkStatus("venomousbite", target.id) > 0) {
             removeCountdownBar("venomousbite");
             removeCountdownBar("windbite");
-            addCountdownBar({name: "ironjaws", time: Math.min(checkStatus("venomousbite", target.ID), checkStatus("windbite", target.ID)) - 5000, oncomplete: "addIcon"});
+            addCountdownBar({ name: "ironjaws", time: Math.min(checkStatus("venomousbite", target.id), checkStatus("windbite", target.id)) - 5000, oncomplete: "addIcon"});
           }
           else {
             removeIcon("ironjaws");
             removeCountdownBar("ironjaws");
-            addCountdownBar({name: "venomousbite", time: checkStatus("venomousbite", target.ID), oncomplete: "addIcon"});
-            addCountdownBar({name: "windbite", time: checkStatus("windbite", target.ID), oncomplete: "addIcon"});
+            addCountdownBar({ name: "venomousbite", time: checkStatus("venomousbite", target.id), oncomplete: "addIcon"});
+            addCountdownBar({ name: "windbite", time: checkStatus("windbite", target.id), oncomplete: "addIcon"});
           }
         }
       }
       else if (statusLog.groups.gainsLoses == "loses") {
         removeIcon("ironjaws");
         removeCountdownBar("ironjaws");
-        addCountdownBar({name: "venomousbite", time: checkStatus("venomousbite", target.ID), oncomplete: "addIcon"});
-        addCountdownBar({name: "windbite", time: checkStatus("windbite", target.ID), oncomplete: "addIcon"});
+        addCountdownBar({ name: "venomousbite", time: checkStatus("venomousbite", target.id), oncomplete: "addIcon"});
+        addCountdownBar({ name: "windbite", time: checkStatus("windbite", target.id), oncomplete: "addIcon"});
       }
     }
   }
@@ -1737,19 +1737,19 @@ function dncJobChange() {
   // Show available cooldowns
 
   if (player.level >= 15) {
-    addCountdownBar({name: "standardstep", time: -1, oncomplete: "addIcon"});
+    addCountdownBar({ name: "standardstep", time: -1, oncomplete: "addIcon"});
   }
 
   if (player.level >= 62) {
-    addCountdownBar({name: "devilment", time: -1});
+    addCountdownBar({ name: "devilment", time: -1});
   }
 
   if (player.level >= 70) {
-    addCountdownBar({name: "technicalstep", time: -1, oncomplete: "addIcon"});
+    addCountdownBar({ name: "technicalstep", time: -1, oncomplete: "addIcon"});
   }
 
   if (player.level >= 72) {
-    addCountdownBar({name: "flourish", time: -1});
+    addCountdownBar({ name: "flourish", time: -1});
   }
 
   dncCombo();
@@ -1792,12 +1792,12 @@ function dncAction() {
 
     else if ("Devilment" == actionLog.groups.actionName) {
       removeIcon("devilment");
-      addCountdownBar({name: "devilment"});
+      addCountdownBar({ name: "devilment"});
     }
 
     else if ("Flourish" == actionLog.groups.actionName) {
       removeIcon("flourish");
-      addCountdownBar({name: "flourish"});
+      addCountdownBar({ name: "flourish"});
     }
 
     else {  // GCD Action
@@ -1805,7 +1805,7 @@ function dncAction() {
       if ("Cascade" == actionLog.groups.actionName) {
         removeIcon("cascade");
         if (next.combo != 1) {
-          addIcon({name: "fountain"});
+          addIcon({ name: "fountain"});
         }
       }
 
@@ -1818,7 +1818,7 @@ function dncAction() {
         removeIcon("windmill");
         if (next.combo != 2
         && player.level >= 25) {
-          addIcon({name: "bladeshower"});
+          addIcon({ name: "bladeshower"});
         }
       }
 
@@ -1849,7 +1849,7 @@ function dncAction() {
 
       else if ("Standard Step" == actionLog.groups.actionName) {
         removeIcon("standardstep");
-        addCountdownBar({name: "standardstep", time: recast.standardstep, oncomplete: "addIcon"});
+        addCountdownBar({ name: "standardstep", time: recast.standardstep, oncomplete: "addIcon"});
         let step = 1;
         for (step = 1; step <= 2; step++) {
           console.log(player.tempjobDetail["step" + step]);
@@ -1865,7 +1865,7 @@ function dncAction() {
           else if (player.tempjobDetail["step" + step] == 4) {
             icon["step" + step] = icon.pirouette;
           }
-          addIcon({name: "step" + step});
+          addIcon({ name: "step" + step});
         }
       }
 
@@ -1886,13 +1886,13 @@ function dncAction() {
         }
         if (player.level < 70
         && checkRecast("devilment") < 0) {
-          addIcon({name: "devilment"});  // Not sure if this is best use before 70 but whatever
+          addIcon({ name: "devilment"});  // Not sure if this is best use before 70 but whatever
         }
       }
 
       else if ("Technical Step" == actionLog.groups.actionName) {
         removeIcon("technicalstep");
-        addCountdownBar({name: "technicalstep", time: recast.technicalstep, oncomplete: "addIcon"});
+        addCountdownBar({ name: "technicalstep", time: recast.technicalstep, oncomplete: "addIcon"});
       }
 
       else if (
@@ -1914,7 +1914,7 @@ function dncAction() {
           }
         }
         if (checkRecast("devilment") < 0) {
-          addIcon({name: "devilment"});  // Heck not sure if this best use after 70
+          addIcon({ name: "devilment"});  // Heck not sure if this best use after 70
         }
       }
 
@@ -1936,11 +1936,11 @@ function dncAction() {
 
         if (checkStatus("standardstep") > 0
         && player.tempjobDetail.steps >= 2) {
-          addIcon({name: "standardfinish"});
+          addIcon({ name: "standardfinish"});
         }
         else if (checkStatus("technicalstep") > 0
         && player.tempjobDetail.steps >= 4) {
-          addIcon({name: "technicalfinish"});
+          addIcon({ name: "technicalfinish"});
         }
       }
 
@@ -1955,13 +1955,13 @@ function dncAction() {
 
 function dncStatus() {
 
-  if (statusLog.groups.targetID == player.ID) {
+  if (statusLog.groups.targetID == player.id) {
 
     if ("Flourishing Cascade" == statusLog.groups.statusName) {
       if (statusLog.groups.gainsLoses == "gains") {
-        addIcon({name: "reversecascade"});
-        // addCountdownBar({name: "reversecascade", time: parseInt(statusLog.groups.effectDuration) * 1000});
-        addStatus("flourishingcascade", player.ID, parseInt(statusLog.groups.effectDuration) * 1000);
+        addIcon({ name: "reversecascade"});
+        // addCountdownBar({ name: "reversecascade", time: parseInt(statusLog.groups.effectDuration) * 1000});
+        addStatus("flourishingcascade", player.id, parseInt(statusLog.groups.effectDuration) * 1000);
         dncFlourishCheck();
       }
       else if (statusLog.groups.gainsLoses == "loses") {
@@ -1974,8 +1974,8 @@ function dncStatus() {
 
     else if ("Flourishing Fountain" == statusLog.groups.statusName) {
       if (statusLog.groups.gainsLoses == "gains") {
-        addIcon({name: "fountainfall"});
-        // addCountdownBar({name: "fountainfall", time: parseInt(statusLog.groups.effectDuration) * 1000});
+        addIcon({ name: "fountainfall"});
+        // addCountdownBar({ name: "fountainfall", time: parseInt(statusLog.groups.effectDuration) * 1000});
         addStatus("flourishingfountain", parseInt(statusLog.groups.effectDuration) * 1000);
         dncFlourishCheck();
       }
@@ -1989,8 +1989,8 @@ function dncStatus() {
 
     else if ("Flourishing Windmill" == statusLog.groups.statusName) {
       if (statusLog.groups.gainsLoses == "gains") {
-        addIcon({name: "risingwindmill"});
-        // addCountdownBar({name: "risingwindmill", time: parseInt(statusLog.groups.effectDuration) * 1000});
+        addIcon({ name: "risingwindmill"});
+        // addCountdownBar({ name: "risingwindmill", time: parseInt(statusLog.groups.effectDuration) * 1000});
         addStatus("flourishingwindmill", parseInt(statusLog.groups.effectDuration) * 1000);
         dncFlourishCheck();
       }
@@ -2004,8 +2004,8 @@ function dncStatus() {
 
     else if ("Flourishing Shower" == statusLog.groups.statusName) {
       if (statusLog.groups.gainsLoses == "gains") {
-        addIcon({name: "bloodshower"});
-        // addCountdownBar({name: "bloodshower", time: parseInt(statusLog.groups.effectDuration) * 1000});
+        addIcon({ name: "bloodshower"});
+        // addCountdownBar({ name: "bloodshower", time: parseInt(statusLog.groups.effectDuration) * 1000});
         addStatus("flourishingshower", parseInt(statusLog.groups.effectDuration) * 1000);
         dncFlourishCheck();
       }
@@ -2019,8 +2019,8 @@ function dncStatus() {
 
     else if ("Flourishing Fan Dance" == statusLog.groups.statusName) {
       if (statusLog.groups.gainsLoses == "gains") {
-        addIcon({name: "fandance3"});
-        // addCountdownBar({name: "fandance3", time: parseInt(statusLog.groups.effectDuration) * 1000});
+        addIcon({ name: "fandance3"});
+        // addCountdownBar({ name: "fandance3", time: parseInt(statusLog.groups.effectDuration) * 1000});
         addStatus("flourishingfandance", parseInt(statusLog.groups.effectDuration) * 1000);
         dncFlourishCheck();
       }
@@ -2077,14 +2077,14 @@ function dncCombo() {
 
   if (count.targets >= 2
   && player.level >= 15) {
-    addIcon({name: "windmill"});
+    addIcon({ name: "windmill"});
     if (player.level >= 25) {
-      addIcon({name: "bladeshower"});
+      addIcon({ name: "bladeshower"});
     }
   }
   else {
-    addIcon({name: "cascade"});
-    addIcon({name: "fountain"});
+    addIcon({ name: "cascade"});
+    addIcon({ name: "fountain"});
   }
 }
 
@@ -2096,9 +2096,9 @@ function dncFlourishCheck() {
     checkStatus("flourishingwindmill"),
     checkStatus("flourishingshower"),
     checkStatus("flourishingfandance")) < 0) {
-      addCountdownBar({name: "flourish", time: checkRecast("flourish"), text: "OK"})
+      addCountdownBar({ name: "flourish", time: checkRecast("flourish"), text: "OK"})
       if (checkRecast("flourish") < 0) {
-        addIcon({name: "flourish"});
+        addIcon({ name: "flourish"});
       }
       else {
         removeIcon("flourish");
@@ -2106,7 +2106,7 @@ function dncFlourishCheck() {
     }
     else {
       removeIcon("flourish");
-      addCountdownBar({name: "flourish", time: checkRecast("flourish"), text: "WAIT"});
+      addCountdownBar({ name: "flourish", time: checkRecast("flourish"), text: "WAIT"});
     }
   }
 }
@@ -2122,7 +2122,7 @@ function dncFeathers() {
   }
 
   if (player.tempjobDetail.tempfourfoldfeathers == 4) {
-    addIcon({name: "fourfoldfeathers"});
+    addIcon({ name: "fourfoldfeathers"});
   }
   else {
     removeIcon("fourfoldfeathers");
@@ -2137,7 +2137,7 @@ function dncEsprit() {
     maxEsprit = 80;
   }
   if (player.tempjobDetail.tempesprit >= maxEsprit) {
-    addIcon({name: "saberdance"});
+    addIcon({ name: "saberdance"});
   }
   else {
     removeIcon("saberdance");
@@ -2282,12 +2282,12 @@ function drgJobChange() {
   }
 
   if (player.level >= 30) {
-    addCountdownBar({name: "jump", time: checkRecast("jump")});
+    addCountdownBar({ name: "jump", time: checkRecast("jump")});
   }
 
   if (player.level >= 54
   && Math.max(player.jobDetail.bloodMilliseconds, player.jobDetail.lifeMilliseconds) < 500) {
-    addCountdownBar({name: "bloodofthedragon", time: checkRecast("bloodofthedragon"), oncomplete: "addIcon"});
+    addCountdownBar({ name: "bloodofthedragon", time: checkRecast("bloodofthedragon"), oncomplete: "addIcon"});
   }
 
 }
@@ -2307,7 +2307,7 @@ function drgPlayerChangedEvent() {
     removeIcon("wheelingthrust");
     removeIcon("geirskogul");
     removeIcon("stardiver");
-    addCountdownBar({name: "bloodofthedragon", time: checkRecast("bloodofthedragon"), oncomplete: "addIcon"});
+    addCountdownBar({ name: "bloodofthedragon", time: checkRecast("bloodofthedragon"), oncomplete: "addIcon"});
   }
 
 }
@@ -2355,7 +2355,7 @@ function drgAction() {
       removeIcon("requiescat");
       addStatus("requiescat");
       addRecast("requiescat");
-      addCountdownBar({name: "requiescat"});
+      addCountdownBar({ name: "requiescat"});
 
       pldRequiescatMP();
     }
@@ -2429,9 +2429,9 @@ function drgAction() {
       && actionLog.groups.result.length > 6) {
         removeIcon("royalauthority");
         count.atonement = 3;
-        addIcon({name: "atonement1"});
-        addIcon({name: "atonement2"});
-        addIcon({name: "atonement3"});
+        addIcon({ name: "atonement1"});
+        addIcon({ name: "atonement2"});
+        addIcon({ name: "atonement3"});
         pldGoringBladeCombo();
       }
 
@@ -2525,7 +2525,7 @@ function drgAction() {
 
 function drgStatus() {
 
-  if (statusLog.groups.targetID == player.ID) { // Target is self
+  if (statusLog.groups.targetID == player.id) { // Target is self
 
     if ("Life Surge" == statusLog.groups.statusName) {
       if (statusLog.groups.gainsLoses == "gains") {
@@ -2595,7 +2595,7 @@ function drgStatus() {
     else if ("Dive Ready" == statusLog.groups.statusName) {
       if (statusLog.groups.gainsLoses == "gains") {
         addStatus("diveready", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
-        addIcon({name: "miragedive"});
+        addIcon({ name: "miragedive"});
       }
       else if (statusLog.groups.gainsLoses == "loses") {
         removeStatus("diveready");
@@ -2651,31 +2651,31 @@ function drgCombo() {
 
 function drgSingleTargetCombo() {
   if (player.level >= 64
-  && checkStatus("chaosthrust", target.ID) < 8 * 2500) {
+  && checkStatus("chaosthrust", target.id) < 8 * 2500) {
     drgChaosThrustCombo();
   }
   else if (player.level >= 56
-  && checkStatus("chaosthrust", target.ID) < 7 * 2500) {
+  && checkStatus("chaosthrust", target.id) < 7 * 2500) {
     drgChaosThrustCombo();
   }
   else if (player.level >= 50
-  && checkStatus("chaosthrust", target.ID) < 6 * 2500) {
+  && checkStatus("chaosthrust", target.id) < 6 * 2500) {
     drgChaosThrustCombo();
   }
   else if (player.level >= 64
-  && checkStatus("disembowel", player.ID) < 7 * 2500) {
+  && checkStatus("disembowel", player.id) < 7 * 2500) {
     drgChaosThrustCombo();
   }
   else if (player.level >= 56
-  && checkStatus("disembowel", player.ID) < 6 * 2500) {
+  && checkStatus("disembowel", player.id) < 6 * 2500) {
     drgChaosThrustCombo();
   }
   else if (player.level >= 26
-  && checkStatus("disembowel", player.ID) < 5 * 2500) {
+  && checkStatus("disembowel", player.id) < 5 * 2500) {
     drgChaosThrustCombo();
   }
   else if (player.level >= 18
-  && checkStatus("disembowel", player.ID) < 4 * 2500) {
+  && checkStatus("disembowel", player.id) < 4 * 2500) {
     drgChaosThrustCombo();
   }
   else {
@@ -2686,15 +2686,15 @@ function drgSingleTargetCombo() {
 
 function drgAreaOfEffectCombo() {
   if (player.level >= 72
-  && checkStatus("disembowel", player.ID) < 5 * 2500) {
+  && checkStatus("disembowel", player.id) < 5 * 2500) {
     drgDisembowelCombo();
   }
   else if (player.level >= 62
-  && checkStatus("disembowel", player.ID) < 4 * 2500) {
+  && checkStatus("disembowel", player.id) < 4 * 2500) {
     drgDisembowelCombo();
   }
   else if (player.level >= 40
-  && checkStatus("disembowel", player.ID) < 3 * 2500) {
+  && checkStatus("disembowel", player.id) < 3 * 2500) {
     drgDisembowelCombo();
   }
   else {
@@ -2705,55 +2705,55 @@ function drgAreaOfEffectCombo() {
 
 function drgFullThrustCombo() {
   next.combo = 1;
-  addIcon({name: "truethrust"});
-  addIcon({name: "vorpalthrust"});
+  addIcon({ name: "truethrust"});
+  addIcon({ name: "vorpalthrust"});
   if (player.level >= 26) {
-    addIcon({name: "fullthrust"});
+    addIcon({ name: "fullthrust"});
   }
   if (player.level >= 56) {
     nextid.combo4 = nextid.fangandclaw;
-    addIcon({name: "fangandclaw"});
+    addIcon({ name: "fangandclaw"});
   }
   if (player.level >= 64) {
     nextid.combo5 = nextid.wheelingthrust;
-    addIcon({name: "wheelingthrust"});
+    addIcon({ name: "wheelingthrust"});
   }
 }
 
 
 function drgChaosThrustCombo() {
   next.combo = 2;
-  addIcon({name: "truethrust"});
-  addIcon({name: "disembowel"});
+  addIcon({ name: "truethrust"});
+  addIcon({ name: "disembowel"});
   if (player.level >= 50) {
-    addIcon({name: "chaosthrust"});
+    addIcon({ name: "chaosthrust"});
   }
   if (player.level >= 58) {
     nextid.combo4 = nextid.fangandclaw;
-    addIcon({name: "wheelingthrust"});
+    addIcon({ name: "wheelingthrust"});
   }
   if (player.level >= 64) {
     nextid.combo5 = nextid.wheelingthrust;
-    addIcon({name: "fangandclaw"});
+    addIcon({ name: "fangandclaw"});
   }
 }
 
 function drgCoerthanTormentCombo() {
   next.combo = 11;
-  addIcon({name: "doomspike"});
+  addIcon({ name: "doomspike"});
   if (player.level >= 62) {
-    addIcon({name: "sonicthrust"});
+    addIcon({ name: "sonicthrust"});
   }
   if (player.level >= 72) {
-    addIcon({name: "coerthantorment"});
+    addIcon({ name: "coerthantorment"});
   }
 }
 
 
 function drgDisembowelCombo() {
   next.combo = 12;
-  addIcon({name: "truethrust"});
-  addIcon({name: "disembowel"});
+  addIcon({ name: "truethrust"});
+  addIcon({ name: "disembowel"});
 }
 
 
@@ -2822,7 +2822,7 @@ function drkJobChange() {
   previous.abyssaldrain = 0;
 
     if (player.level >= 68) {
-      addCountdownBar({name: "delirium", time: checkRecast("delirium"), oncomplete: "addIcon"});
+      addCountdownBar({ name: "delirium", time: checkRecast("delirium"), oncomplete: "addIcon"});
     }
   drkCombo();
   drkGauge();
@@ -2844,7 +2844,7 @@ function drkAction() {
       removeIcon("delirium");
       addStatus("delirium");
       addRecast("delirium");
-      addCountdownBar({name: "delirium", time: recast.delirium, oncomplete: "addIcon"});
+      addCountdownBar({ name: "delirium", time: recast.delirium, oncomplete: "addIcon"});
       drkGauge();
     }
 
@@ -2887,15 +2887,15 @@ function drkAction() {
 
     else if ("Plunge" == actionLog.groups.actionName) { // Code treats Infuriate like two different skills to juggle the charges.
       if (player.level >= 78) {
-        if (checkRecast("plunge2", player.ID) < 0) {
-          addRecast("plunge1", player.ID, -1);
+        if (checkRecast("plunge2", player.id) < 0) {
+          addRecast("plunge1", player.id, -1);
           addRecast("plunge2");
         }
         else {
           removeIcon("plunge");
-          addRecast("plunge1", player.ID, checkRecast("plunge2", player.ID));
-          addRecast("plunge2", player.ID, checkRecast("plunge2", player.ID) + recast.plunge);
-          addIconBlinkTimeout("plunge", checkRecast("plunge1", player.ID), nextid.plunge, icon.plunge);
+          addRecast("plunge1", player.id, checkRecast("plunge2", player.id));
+          addRecast("plunge2", player.id, checkRecast("plunge2", player.id) + recast.plunge);
+          addIconBlinkTimeout("plunge", checkRecast("plunge1", player.id), nextid.plunge, icon.plunge);
         }
       }
       else {
@@ -3023,7 +3023,7 @@ function drkAction() {
 
 function drkStatus() {
 
-  if (statusLog.groups.targetID == player.ID) { // Target is self
+  if (statusLog.groups.targetID == player.id) { // Target is self
 
     if ("Delirium" == statusLog.groups.statusName) {
       if (statusLog.groups.gainsLoses == "gains") {
@@ -3104,17 +3104,17 @@ function drkMP() {
   }
 
   if (player.level >= 70) {
-    if (player.MP >= 6000
+    if (player.mp >= 6000
     || player.tempjobDetail.darkarts == 1) {
-      addIcon({name: "floodofdarkness"});
+      addIcon({ name: "floodofdarkness"});
     }
     else {
       removeIcon("floodofdarkness");
     }
   }
   else if (player.level >= 30) { // No TBN yet
-    if (player.MP >= 3000) {
-      addIcon({name: "floodofdarkness"});
+    if (player.mp >= 3000) {
+      addIcon({ name: "floodofdarkness"});
     }
     else {
       removeIcon("floodofdarkness");
@@ -3134,7 +3134,7 @@ function drkGauge() {
     icon.gaugespender = icon.bloodspiller;
   }
 
-  if (checkStatus("delirium", player.ID) > 0) {
+  if (checkStatus("delirium", player.id) > 0) {
     targetblood = 0;
   }
   else if (player.level >= 80
@@ -3145,10 +3145,10 @@ function drkGauge() {
   if (player.jobDetail.blood >= targetblood) {
     if (player.level >= 80
     && checkRecast("livingshadow") < 1000) {
-      addIcon({name: "gaugespender"});
+      addIcon({ name: "gaugespender"});
     }
     else if (player.level >= 62) {
-      addIcon({name: "gaugespender"});
+      addIcon({ name: "gaugespender"});
     }
   }
   else {
@@ -3175,18 +3175,18 @@ function drkCombo() {
 
 function drkSouleaterCombo() {
   next.combo = 1;
-  addIcon({name: "hardslash"});
-  addIcon({name: "syphonstrike"});
+  addIcon({ name: "hardslash"});
+  addIcon({ name: "syphonstrike"});
   if (player.level >= 26) {
-    addIcon({name: "souleater"});
+    addIcon({ name: "souleater"});
   }
 }
 
 function drkStalwartSoulCombo() {
   next.combo = 2;
-  addIcon({name: "unleash"});
+  addIcon({ name: "unleash"});
   if (player.level >= 74) {
-    addIcon({name: "stalwartsoul"});
+    addIcon({ name: "stalwartsoul"});
   }
 }
 
@@ -3332,7 +3332,7 @@ function gnbJobChange() {
     icon.dangerzone = icon.blastingzone;
   }
 
-  addCountdownBar({name: "nomercy", time: checkRecast("nomercy"), oncomplete: "addIcon"});
+  addCountdownBar({ name: "nomercy", time: checkRecast("nomercy"), oncomplete: "addIcon"});
 
   gnbCartridge();
   gnbCombo();
@@ -3345,7 +3345,7 @@ function gnbAction() {
     if ("No Mercy" == actionLog.groups.actionName) {
       addStatus("nomercy");
       addRecast("nomercy");
-      addCountdownBar({name: "nomercy", time: checkRecast("nomercy"), oncomplete: "addIcon"});
+      addCountdownBar({ name: "nomercy", time: checkRecast("nomercy"), oncomplete: "addIcon"});
       gnbCartridge();
     }
 
@@ -3439,7 +3439,7 @@ function gnbAction() {
           recast.gnashingfang = Date.now() - previous.gnashingfang; // Adjusts cooldown
         }
         previous.gnashingfang = Date.now();
-        addCountdownBar({name: "gnashingfang", time: recast.gnashingfang});
+        addCountdownBar({ name: "gnashingfang", time: recast.gnashingfang});
         addRecast("gnashingfang");
       }
 
@@ -3476,12 +3476,12 @@ function gnbAction() {
 
 function gnbStatus() {
 
-  if (statusLog.groups.targetID == player.ID) {
+  if (statusLog.groups.targetID == player.id) {
 
     if ("No Mercy" == statusLog.groups.statusName) {
       if (statusLog.groups.gainsLoses == "gains") {
         addStatus("nomercy", parseInt(statusLog.groups.effectDuration) * 1000);
-        addCountdownBar({name: "sonicbreak", time: checkRecast("sonicbreak"), oncomplete: "addIcon"});
+        addCountdownBar({ name: "sonicbreak", time: checkRecast("sonicbreak"), oncomplete: "addIcon"});
         gnbCartridge();
       }
       else if (statusLog.groups.gainsLoses == "loses") {
@@ -3494,7 +3494,7 @@ function gnbStatus() {
     else if ("Ready To Rip" == statusLog.groups.statusName) {
       if (statusLog.groups.gainsLoses == "gains") {
         icon.continuation = icon.jugularrip;
-        addIcon({name: "continuation"});
+        addIcon({ name: "continuation"});
         addStatus("readytorip", parseInt(statusLog.groups.effectDuration) * 1000);
       }
       else if (statusLog.groups.gainsLoses == "loses") {
@@ -3506,7 +3506,7 @@ function gnbStatus() {
     else if ("Ready To Tear" == statusLog.groups.statusName) {
       if (statusLog.groups.gainsLoses == "gains") {
         icon.continuation = icon.abdomentear;
-        addIcon({name: "continuation"});
+        addIcon({ name: "continuation"});
         addStatus("readytotear", parseInt(statusLog.groups.effectDuration) * 1000);
       }
       else if (statusLog.groups.gainsLoses == "loses") {
@@ -3518,7 +3518,7 @@ function gnbStatus() {
     else if ("Ready To Gouge" == statusLog.groups.statusName) {
       if (statusLog.groups.gainsLoses == "gains") {
         icon.continuation = icon.eyegouge;
-        addIcon({name: "continuation"});
+        addIcon({ name: "continuation"});
         addStatus("readytogouge", parseInt(statusLog.groups.effectDuration) * 1000);
       }
       else if (statusLog.groups.gainsLoses == "loses") {
@@ -3544,17 +3544,17 @@ function gnbCombo() {
 }
 
 function gnbSolidBarrelCombo() {
-  addIcon({name: "keenedge"});
-  addIcon({name: "brutalshell"});
+  addIcon({ name: "keenedge"});
+  addIcon({ name: "brutalshell"});
   if (player.level >= 26) {
-    addIcon({name: "solidbarrel"});
+    addIcon({ name: "solidbarrel"});
   }
 }
 
 function gnbDemonSlaughterCombo() {
-  addIcon({name: "demonslice"});
+  addIcon({ name: "demonslice"});
   if (player.level >= 40) {
-    addIcon({name: "demonslaughter"});
+    addIcon({ name: "demonslaughter"});
   }
 }
 
@@ -3588,23 +3588,23 @@ function gnbCartridge() {
     if (player.level >= 60
     && checkRecast("gnashingfang") < 3000
     && checkRecast("nomercy") + 10000 > recast.gnashingfang) {
-      addIcon({name: "gnashingfang"});
-      addIcon({name: "savageclaw"});
-      addIcon({name: "wickedtalon"});
+      addIcon({ name: "gnashingfang"});
+      addIcon({ name: "savageclaw"});
+      addIcon({ name: "wickedtalon"});
     }
-    addIcon({name: "burststrike"});
+    addIcon({ name: "burststrike"});
   }
 
   else if (player.tempjobDetail.cartridge - cartridgeFloor >= 1) {
     if (player.level >= 60
     && checkRecast("gnashingfang") < 3000
     && checkRecast("nomercy") + 10000 > recast.gnashingfang) {
-      addIcon({name: "gnashingfang"});
-      addIcon({name: "savageclaw"});
-      addIcon({name: "wickedtalon"});
+      addIcon({ name: "gnashingfang"});
+      addIcon({ name: "savageclaw"});
+      addIcon({ name: "wickedtalon"});
     }
     else {
-      addIcon({name: "burststrike"});
+      addIcon({ name: "burststrike"});
     }
   }
 }
@@ -4072,7 +4072,7 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
     const cancelledMatch = e.detail.logs[i].match(cancelledRegExp);
     const statsMatch = e.detail.logs[i].match(statsRegExp);
 
-    if (actionMatch && actionMatch.groups.sourceID === player.ID) { // Status source = player
+    if (actionMatch && actionMatch.groups.sourceID === player.id) { // Status source = player
       if (player.job === 'BLM') {
         blmAction(actionMatch);
       } else if (player.job === 'BRD') {
@@ -4138,7 +4138,7 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
       } else if (player.job === 'RDM') {
         rdmOnStartsUsing(startsMatch);
       }
-    } else if (cancelledMatch && cancelledMatch.groups.sourceID === player.ID) {
+    } else if (cancelledMatch && cancelledMatch.groups.sourceID === player.id) {
       if (player.job === 'BLM') {
         blmCancelled();
       } else if (player.job === 'RDM') {
@@ -4152,7 +4152,7 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
       console.log(whatever);
     }
 
-    // else if (actionLog && actionLog.groups.sourceID != player.ID
+    // else if (actionLog && actionLog.groups.sourceID != player.id
     // && actionLog.groups.sourceID.startsWith('1')) {  // Status source = other player
     //   raidAction();
     // }
@@ -4163,7 +4163,7 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
 // fires whenever player change detected (including HP, MP, other resources, positions, etc.)
 addOverlayListener('onPlayerChangedEvent', (e) => {
   player = e.detail;
-  player.ID = e.detail.id.toString(16).toUpperCase();
+  player.id = e.detail.id.toString(16).toUpperCase();
   // player.id.toString(16) is lowercase; using 'ID' to designate uppercase lettering
   player.debugJobSplit = player.debugJob.split(' '); // Creates 8 part array - use [0] to [7]
 
@@ -4222,7 +4222,7 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
 
 addOverlayListener('onTargetChangedEvent', (e) => {
   target = e.detail;
-  target.ID = e.detail.id.toString(16).toUpperCase(); // See player.ID above
+  target.id = e.detail.id.toString(16).toUpperCase(); // See player.id above
 
   if (player.job === 'BLM') {
     blmTargetChangedEvent();
@@ -4384,22 +4384,22 @@ function mchJobChange() {
 
   // Show available cooldowns
 
-  addCountdownBar({name: "hotshot", time: checkRecast("hotshot"), oncomplete: "addIcon"});
+  addCountdownBar({ name: "hotshot", time: checkRecast("hotshot"), oncomplete: "addIcon"});
 
   if (player.level >= 15) {
-    addCountdownBar({name: "gaussround", time: checkRecast("gaussround1")});
+    addCountdownBar({ name: "gaussround", time: checkRecast("gaussround1")});
   }
 
   if (player.level >= 50) {
-    addCountdownBar({name: "ricochet", time: checkRecast("ricochet1")});
+    addCountdownBar({ name: "ricochet", time: checkRecast("ricochet1")});
   }
 
   if (player.level >= 10) {
-    addCountdownBar({name: "reassemble", time: checkRecast("reassemble")});
+    addCountdownBar({ name: "reassemble", time: checkRecast("reassemble")});
   }
 
   if (player.level >= 58) {
-    addCountdownBar({name: "drill", time: checkRecast("drill"), oncomplete: "addIcon"});
+    addCountdownBar({ name: "drill", time: checkRecast("drill"), oncomplete: "addIcon"});
   }
 
   mchHeat();
@@ -4420,7 +4420,7 @@ function mchPlayerChangedEvent() {
   }
 
   if (player.jobDetail.overheatMilliseconds > 0) {
-    addIcon({name: "heatblast"});
+    addIcon({ name: "heatblast"});
   }
   else {
     removeIcon("heatblast");
@@ -4440,7 +4440,7 @@ function mchAction() {
       }
       previous.hotshot = Date.now();
       addRecast("hotshot");
-      addCountdownBar({name: "hotshot", time: recast.hotshot, oncomplete: "addIcon"});
+      addCountdownBar({ name: "hotshot", time: recast.hotshot, oncomplete: "addIcon"});
       mchBattery();
       mchHeat();  // Why? Check later
     }
@@ -4453,7 +4453,7 @@ function mchAction() {
       previous.drill = Date.now();
       addRecast("drill");
       //removeIcon("drill");
-      addCountdownBar({name: "drill", time: recast.drill, oncomplete: "addIcon"});
+      addCountdownBar({ name: "drill", time: recast.drill, oncomplete: "addIcon"});
       // if (checkRecast("reassemble") < checkRecast("drill")) {
       //   addIconBlinkTimeout("drill", recast.drill - 1000, nextid.drill, icon.reassemble);
       // }
@@ -4483,13 +4483,13 @@ function mchAction() {
 
     else if ("Heat Blast" == actionLog.groups.actionName) {
 
-      addRecast("gaussround1", player.ID, checkRecast("gaussround1", player.ID) - 15000);
-      addRecast("gaussround2", player.ID, checkRecast("gaussround2", player.ID) - 15000);
-      addRecast("ricochet1", player.ID, checkRecast("ricochet1", player.ID) - 15000);
-      addRecast("ricochet2", player.ID, checkRecast("ricochet2", player.ID) - 15000);
+      addRecast("gaussround1", player.id, checkRecast("gaussround1", player.id) - 15000);
+      addRecast("gaussround2", player.id, checkRecast("gaussround2", player.id) - 15000);
+      addRecast("ricochet1", player.id, checkRecast("ricochet1", player.id) - 15000);
+      addRecast("ricochet2", player.id, checkRecast("ricochet2", player.id) - 15000);
       if (player.level >= 74) {
-        addRecast("gaussround3", player.ID, checkRecast("gaussround3", player.ID) - 15000);
-        addRecast("ricochet3", player.ID, checkRecast("ricochet3", player.ID) - 15000);
+        addRecast("gaussround3", player.id, checkRecast("gaussround3", player.id) - 15000);
+        addRecast("ricochet3", player.id, checkRecast("ricochet3", player.id) - 15000);
       }
     }
 
@@ -4516,30 +4516,30 @@ function mchAction() {
 
     else if ("Gauss Round" == actionLog.groups.actionName) {
       if (player.level >= 74) {
-        if (checkRecast("gaussround3", player.ID) < 0) {
-          addRecast("gaussround3", player.ID, recast.gaussround);
+        if (checkRecast("gaussround3", player.id) < 0) {
+          addRecast("gaussround3", player.id, recast.gaussround);
         }
-        else if (checkRecast("gaussround2", player.ID) < 0) {
-          addRecast("gaussround2", player.ID, checkRecast("gaussround3", player.ID));
-          addRecast("gaussround3", player.ID, checkRecast("gaussround3", player.ID) + recast.gaussround);
+        else if (checkRecast("gaussround2", player.id) < 0) {
+          addRecast("gaussround2", player.id, checkRecast("gaussround3", player.id));
+          addRecast("gaussround3", player.id, checkRecast("gaussround3", player.id) + recast.gaussround);
         }
-        else if (checkRecast("gaussround1", player.ID) < 0) {
-          addRecast("gaussround1", player.ID, checkRecast("gaussround2", player.ID));
-          addRecast("gaussround2", player.ID, checkRecast("gaussround2", player.ID) + recast.gaussround);
-          addRecast("gaussround3", player.ID, checkRecast("gaussround3", player.ID) + recast.gaussround);
+        else if (checkRecast("gaussround1", player.id) < 0) {
+          addRecast("gaussround1", player.id, checkRecast("gaussround2", player.id));
+          addRecast("gaussround2", player.id, checkRecast("gaussround2", player.id) + recast.gaussround);
+          addRecast("gaussround3", player.id, checkRecast("gaussround3", player.id) + recast.gaussround);
           removeIcon("gaussround");
-          addIconBlinkTimeout("gaussround", checkRecast("gaussround1", player.ID), nextid.gaussround, icon.gaussround);
+          addIconBlinkTimeout("gaussround", checkRecast("gaussround1", player.id), nextid.gaussround, icon.gaussround);
         }
       }
       else {
-        if (checkRecast("gaussround2", player.ID) < 0) {
-          addRecast("gaussround2", player.ID, recast.gaussround);
+        if (checkRecast("gaussround2", player.id) < 0) {
+          addRecast("gaussround2", player.id, recast.gaussround);
         }
-        else if (checkRecast("gaussround1", player.ID) < 0) {
-          addRecast("gaussround1", player.ID, checkRecast("gaussround2", player.ID));
-          addRecast("gaussround2", player.ID, checkRecast("gaussround2", player.ID) + recast.gaussround);
+        else if (checkRecast("gaussround1", player.id) < 0) {
+          addRecast("gaussround1", player.id, checkRecast("gaussround2", player.id));
+          addRecast("gaussround2", player.id, checkRecast("gaussround2", player.id) + recast.gaussround);
           removeIcon("gaussround");
-          addIconBlinkTimeout("gaussround", checkRecast("gaussround1", player.ID), nextid.gaussround, icon.gaussround);
+          addIconBlinkTimeout("gaussround", checkRecast("gaussround1", player.id), nextid.gaussround, icon.gaussround);
         }
       }
     }
@@ -4553,39 +4553,39 @@ function mchAction() {
         count.targets = count.targets + 1;
       }
       if (player.level >= 74) {
-        if (checkRecast("ricochet3", player.ID) < 0) {
-          addRecast("ricochet3", player.ID, recast.ricochet);
+        if (checkRecast("ricochet3", player.id) < 0) {
+          addRecast("ricochet3", player.id, recast.ricochet);
         }
-        else if (checkRecast("ricochet2", player.ID) < 0) {
-          addRecast("ricochet2", player.ID, checkRecast("ricochet3", player.ID));
-          addRecast("ricochet3", player.ID, checkRecast("ricochet3", player.ID) + recast.ricochet);
+        else if (checkRecast("ricochet2", player.id) < 0) {
+          addRecast("ricochet2", player.id, checkRecast("ricochet3", player.id));
+          addRecast("ricochet3", player.id, checkRecast("ricochet3", player.id) + recast.ricochet);
         }
-        else if (checkRecast("ricochet1", player.ID) < 0) {
-          addRecast("ricochet1", player.ID, checkRecast("ricochet2", player.ID));
-          addRecast("ricochet2", player.ID, checkRecast("ricochet2", player.ID) + recast.ricochet);
-          addRecast("ricochet3", player.ID, checkRecast("ricochet3", player.ID) + recast.ricochet);
+        else if (checkRecast("ricochet1", player.id) < 0) {
+          addRecast("ricochet1", player.id, checkRecast("ricochet2", player.id));
+          addRecast("ricochet2", player.id, checkRecast("ricochet2", player.id) + recast.ricochet);
+          addRecast("ricochet3", player.id, checkRecast("ricochet3", player.id) + recast.ricochet);
           removeIcon("ricochet");
-          addIconBlinkTimeout("ricochet", checkRecast("ricochet1", player.ID), nextid.ricochet, icon.ricochet);
+          addIconBlinkTimeout("ricochet", checkRecast("ricochet1", player.id), nextid.ricochet, icon.ricochet);
         }
       }
       else {
-        if (checkRecast("ricochet2", player.ID) < 0) {
-          addRecast("ricochet2", player.ID, recast.ricochet);
+        if (checkRecast("ricochet2", player.id) < 0) {
+          addRecast("ricochet2", player.id, recast.ricochet);
         }
-        else if (checkRecast("ricochet1", player.ID) < 0) {
-          addRecast("ricochet1", player.ID, checkRecast("ricochet2", player.ID));
-          addRecast("ricochet2", player.ID, checkRecast("ricochet2", player.ID) + recast.ricochet);
+        else if (checkRecast("ricochet1", player.id) < 0) {
+          addRecast("ricochet1", player.id, checkRecast("ricochet2", player.id));
+          addRecast("ricochet2", player.id, checkRecast("ricochet2", player.id) + recast.ricochet);
           removeIcon("ricochet");
-          addIconBlinkTimeout("ricochet", checkRecast("ricochet1", player.ID), nextid.ricochet, icon.ricochet);
+          addIconBlinkTimeout("ricochet", checkRecast("ricochet1", player.id), nextid.ricochet, icon.ricochet);
         }
       }
     }
 
     else if ("Reassemble" == actionLog.groups.actionName) {
-      addCountdownBar({name: "reassemble"});
+      addCountdownBar({ name: "reassemble"});
       if (player.level >= 58
       && checkRecast("drill") < 0) {
-        addIcon({name: "drill"});
+        addIcon({ name: "drill"});
       }
     }
 
@@ -4669,7 +4669,7 @@ function mchAction() {
     if (player.level >= 70
     && checkRecast("flamethrower") < 0
     && count.targets >= 2) {
-      addIcon({name: "flamethrower"});
+      addIcon({ name: "flamethrower"});
     }
     else {
       removeIcon("flamethrower");
@@ -4704,21 +4704,21 @@ function mchCombo() {
   if (player.level >= 80
   && count.targets >= 3) {
     next.combo = 2;
-    addIcon({name: "spreadshot"});
+    addIcon({ name: "spreadshot"});
   }
   else if (player.level < 80
   && count.targets == 2) {
     next.combo = 2;
-    addIcon({name: "spreadshot"});
+    addIcon({ name: "spreadshot"});
   }
   else {
     next.combo = 1;
-    addIcon({name: "splitshot"});
+    addIcon({ name: "splitshot"});
     if (player.level >= 2) {
-      addIcon({name: "slugshot"});
+      addIcon({ name: "slugshot"});
     }
     if (player.level >= 26) {
-      addIcon({name: "cleanshot"});
+      addIcon({ name: "cleanshot"});
     }
   }
 }
@@ -4733,13 +4733,13 @@ function mchHeat() {
   if (player.jobDetail.heat >= 50
   && (player.level < 58 || checkRecast("drill") > 9000)
   && (player.level < 76 || checkRecast("hotshot") > 9000)) {
-    addIcon({name: "hypercharge"});
+    addIcon({ name: "hypercharge"});
     // if (player.level >= 45
     // && checkRecast("wildfire") < 1000) {
-    //   addIcon({name: "wildfire"});
+    //   addIcon({ name: "wildfire"});
     // }
     // else {
-    //   addIcon({name: "hypercharge"});
+    //   addIcon({ name: "hypercharge"});
     // }
     console.log("Go");
   }
@@ -4751,7 +4751,7 @@ function mchHeat() {
 
 function mchBattery() {
   if (player.jobDetail.battery >= 50) {
-    addIcon({name: "rookautoturret"});
+    addIcon({ name: "rookautoturret"});
   }
   else {
     removeIcon("rookautoturret");
@@ -4868,15 +4868,15 @@ function mnkJobChange() {
   countdownid.brotherhood = 10;
 
   if (player.level >= 50) {
-    addCountdownBar({name: "perfectbalance", time: checkRecast("perfectbalance"), oncomplete: "addIcon"});
+    addCountdownBar({ name: "perfectbalance", time: checkRecast("perfectbalance"), oncomplete: "addIcon"});
   }
 
   if (player.level >= 68) {
-    addCountdownBar({name: "riddleoffire", time: checkRecast("riddleoffire"), oncomplete: "addIcon"});
+    addCountdownBar({ name: "riddleoffire", time: checkRecast("riddleoffire"), oncomplete: "addIcon"});
   }
 
   if (player.level >= 70) {
-    addCountdownBar({name: "brotherhood", time: checkRecast("brotherhood"), oncomplete: "addIcon"});
+    addCountdownBar({ name: "brotherhood", time: checkRecast("brotherhood"), oncomplete: "addIcon"});
   }
 
   mnkCombo();
@@ -4885,7 +4885,7 @@ function mnkJobChange() {
 
 function mnkPlayerChangedEvent(e) {
   if (player.jobDetail.chakraStacks >= 5) {
-    addIcon({name: "theforbiddenchakra"});
+    addIcon({ name: "theforbiddenchakra"});
   }
   else {
     removeIcon("theforbiddenchakra");
@@ -4897,19 +4897,19 @@ function mnkAction(logLine) {
   if (actionList.mnk.indexOf(actionLog.groups.actionName) > -1) {
 
     if ("Perfect Balance" == actionLog.groups.actionName) {
-      addCountdownBar({name: "perfectbalance", time: recast.perfectbalance, oncomplete: "addIcon"});
+      addCountdownBar({ name: "perfectbalance", time: recast.perfectbalance, oncomplete: "addIcon"});
     }
 
     else if ("Riddle Of Earth" == actionLog.groups.actionName) {
-      addCountdownBar({name: "riddleofearth", time: recast.riddleofearth, oncomplete: "addIcon"});
+      addCountdownBar({ name: "riddleofearth", time: recast.riddleofearth, oncomplete: "addIcon"});
     }
 
     else if ("Riddle Of Fire" == actionLog.groups.actionName) {
-      addCountdownBar({name: "riddleoffire", time: recast.riddleoffire, oncomplete: "addIcon"});
+      addCountdownBar({ name: "riddleoffire", time: recast.riddleoffire, oncomplete: "addIcon"});
     }
 
     else if ("Brotherhood" == actionLog.groups.actionName) {
-      addCountdownBar({name: "brotherhood", time: recast.brotherhood, oncomplete: "addIcon"});
+      addCountdownBar({ name: "brotherhood", time: recast.brotherhood, oncomplete: "addIcon"});
     }
 
     else {
@@ -5001,7 +5001,7 @@ function mnkStatus(logLine) {
   else if (statusLog.groups.statusName == "Fists Of Earth") {
     if (statusLog.groups.gainsLoses == "gains") {
       addStatus("fistsofearth", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
-      addIcon({name: "fistsoffire"});
+      addIcon({ name: "fistsoffire"});
     }
     else if (statusLog.groups.gainsLoses == "loses") {
       removeStatus("fistsofearth", statusLog.groups.targetID);
@@ -5011,7 +5011,7 @@ function mnkStatus(logLine) {
   else if (statusLog.groups.statusName == "Fists Of Wind") {
     if (statusLog.groups.gainsLoses == "gains") {
       addStatus("fistsofwind", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
-      addIcon({name: "fistsoffire"});
+      addIcon({ name: "fistsoffire"});
     }
     else if (statusLog.groups.gainsLoses == "loses") {
       removeStatus("fistsofwind", statusLog.groups.targetID);
@@ -5025,7 +5025,7 @@ function mnkStatus(logLine) {
     }
     else if (statusLog.groups.gainsLoses == "loses") {
       removeStatus("fistsoffire", statusLog.groups.targetID);
-      addIcon({name: "fistsoffire"});
+      addIcon({ name: "fistsoffire"});
     }
   }
 
@@ -5116,7 +5116,7 @@ function mnkCombo() {
     icon.combo3 = icon.rockbreaker;
   }
   else if (player.level >= 30
-  && checkStatus("demolish", target.ID) < 12000) {
+  && checkStatus("demolish", target.id) < 12000) {
     icon.combo3 = icon.demolish;
   }
 
@@ -5124,9 +5124,9 @@ function mnkCombo() {
     icon.combo3 = icon.snappunch;
   }
 
-  addIcon({name: "combo1"});
-  addIcon({name: "combo2"});
-  addIcon({name: "combo3"});
+  addIcon({ name: "combo1"});
+  addIcon({ name: "combo2"});
+  addIcon({ name: "combo3"});
 
 }
 
@@ -5264,7 +5264,7 @@ function ninJobChange() {
   previous.hellfrogmedium = 0;
 
   if (player.level >= 56) {
-    addCountdownBar({name: "dreamwithinadream", time: -1});
+    addCountdownBar({ name: "dreamwithinadream", time: -1});
   }
 
   ninNinjutsu();
@@ -5272,17 +5272,17 @@ function ninJobChange() {
 }
 
 function ninTargetChangedEvent() {
-  if (previous.targetID != target.ID
+  if (previous.targetID != target.id
   && !toggle.combo) { // Prevent this from repeatedly being called on movement, target change-mid combo
 
     // If not a target then clear things out
-    if (target.ID == 0 || target.ID.startsWith("1") || target.ID.startsWith("E")) {  // 0 = no target, 1... = player? E... = non-combat NPC?
+    if (target.id == 0 || target.id.startsWith("1") || target.id.startsWith("E")) {  // 0 = no target, 1... = player? E... = non-combat NPC?
       removeCountdownBar("shadowfang");
     }
     else {
-      addCountdownBar({name: "shadowfang", time: checkStatus("shadowfang"), text: target.ID});
+      addCountdownBar({ name: "shadowfang", time: checkStatus("shadowfang"), text: target.id});
     }
-    previous.targetID = target.ID;
+    previous.targetID = target.id;
   }
 }
 
@@ -5316,7 +5316,7 @@ function ninAction(logLine) {
         removeIcon("tenchijin");
         addRecast("hide");
         addRecast("ninjutsu", -1);
-        addCountdownBar({name: "ninjutsu", time: -1});
+        addCountdownBar({ name: "ninjutsu", time: -1});
         clearTimeout(timeout.ninjutsu);
         ninNinjutsu();
       }
@@ -5326,7 +5326,7 @@ function ninAction(logLine) {
       }
 
       else if ("Trick Attack" == actionLog.groups.actionName) {
-        addCountdownBar({name: "trickattack"});
+        addCountdownBar({ name: "trickattack"});
       }
 
       else if (["Raiton", "Hyosho Ranyu"].indexOf(actionLog.groups.actionName) > -1) {
@@ -5359,17 +5359,17 @@ function ninAction(logLine) {
         else {
           addRecast("kassatsu1", checkRecast("kassatsu2"));
           addRecast("kassatsu2", checkRecast("kassatsu2") + recast.kassatsu);
-          addCountdownBar({name: "kassatsu", time: checkRecast("kassatsu1"), oncomplete: "addIcon"});
+          addCountdownBar({ name: "kassatsu", time: checkRecast("kassatsu1"), oncomplete: "addIcon"});
         }
 
-        addCountdownBar({name: "ninjutsu", time: -1});
+        addCountdownBar({ name: "ninjutsu", time: -1});
         clearTimeout(timeout.ninjutsu);
         ninNinjutsu();
       }
 
       else if ("Dream Within A Dream" == actionLog.groups.actionName) {
         removeIcon("dreamwithinadream");
-        addCountdownBar({name: "dreamwithinadream", time: recast.dreamwithinadream, oncomplete: "addIcon"});
+        addCountdownBar({ name: "dreamwithinadream", time: recast.dreamwithinadream, oncomplete: "addIcon"});
         addStatus("assassinateready");
       }
 
@@ -5392,15 +5392,15 @@ function ninAction(logLine) {
       else if ("Ten Chi Jin" == actionLog.groups.actionName) {
         removeIcon("tenchijin");
         addStatus("tenchijin");
-        addCountdownBar({name: "tenchijin"});
+        addCountdownBar({ name: "tenchijin"});
         addRecast("ninjutsu", -1);
-        addCountdownBar({name: "ninjutsu", time: -1});
+        addCountdownBar({ name: "ninjutsu", time: -1});
         clearTimeout(timeout.ninjutsu);
         ninNinjutsu();
       }
 
       else if ("Meisui" == actionLog.groups.actionName) {
-        addCountdownBar({name: "meisui"});
+        addCountdownBar({ name: "meisui"});
         ninNinki();
       }
 
@@ -5411,7 +5411,7 @@ function ninAction(logLine) {
 
           if ([1, 2, 3].indexOf(next.combo) == -1) {
             if (player.level >= 38
-            && checkStatus("shadowfang", target.ID) < 9000) {
+            && checkStatus("shadowfang", target.id) < 9000) {
               ninShadowFangCombo();
             }
             else if (player.level >= 54
@@ -5506,7 +5506,7 @@ function ninAction(logLine) {
 
 function ninStatus() {
 
-  if (statusLog.groups.targetID == player.ID) {
+  if (statusLog.groups.targetID == player.id) {
 
     if ("Mudra" == statusLog.groups.statusName) {
       if ("gains" == statusLog.groups.gainsLoses) {
@@ -5516,13 +5516,13 @@ function ninStatus() {
         removeIcon("ninjutsu1");
         removeIcon("ninjutsu2");
         removeIcon("ninjutsu3");
-        addCountdownBar({name: "ninjutsu"});
+        addCountdownBar({ name: "ninjutsu"});
         clearTimeout(timeout.ninjutsu);
         timeout.ninjutsu = setTimeout(ninNinjutsu, recast.ninjutsu - 1000);
         if (player.level >= 70
         && checkRecast("trickattack") < 21000
         && checkRecast("tenchijin") < 1000) {
-          addIcon({name: "tenchijin"});
+          addIcon({ name: "tenchijin"});
         }
       }
     }
@@ -5585,8 +5585,8 @@ function ninStatus() {
     if ("Shadow Fang" == statusLog.groups.statusName) {
       if ("gains" == statusLog.groups.gainsLoses) {
         addStatus("shadowfang", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
-        if (target.ID == statusLog.groups.targetID) {  // Might be possible to switch targets between application to target and log entry
-          addCountdownBar({name: "shadowfang", time: checkStatus("shadowfang"), text: target.ID});
+        if (target.id == statusLog.groups.targetID) {  // Might be possible to switch targets between application to target and log entry
+          addCountdownBar({ name: "shadowfang", time: checkStatus("shadowfang"), text: target.id});
         }
       }
       else if ("loses" == statusLog.groups.gainsLoses) {
@@ -5611,7 +5611,7 @@ function ninCombo() {
   }
   else if (player.level >= 38
   && count.targets <= 3
-  && checkStatus("shadowfang", target.ID) < 9000) {
+  && checkStatus("shadowfang", target.id) < 9000) {
     ninShadowFangCombo();
   }
   else if (player.level >= 38
@@ -5626,31 +5626,31 @@ function ninCombo() {
 
 function ninAeolianEdgeCombo() {
   next.combo = 1;
-  addIcon({name: "spinningedge"});
-  addIcon({name: "gustslash"});
+  addIcon({ name: "spinningedge"});
+  addIcon({ name: "gustslash"});
   if (player.level >= 26) {
-    addIcon({name: "aeolianedge"});
+    addIcon({ name: "aeolianedge"});
   }
 }
 
 function ninArmorCrushCombo() {
   next.combo = 2;
-  addIcon({name: "spinningedge"});
-  addIcon({name: "gustslash"});
-  addIcon({name: "armorcrush"});
+  addIcon({ name: "spinningedge"});
+  addIcon({ name: "gustslash"});
+  addIcon({ name: "armorcrush"});
 }
 
 function ninShadowFangCombo() {
   next.combo = 3;
-  addIcon({name: "spinningedge"});
-  addIcon({name: "shadowfang"});
+  addIcon({ name: "spinningedge"});
+  addIcon({ name: "shadowfang"});
 }
 
 function ninHakkeMujinsatsuCombo() {
   next.combo = 4;
-  addIcon({name: "deathblossom"});
+  addIcon({ name: "deathblossom"});
   if (player.level >= 52) {
-    addIcon({name: "hakkemujinsatsu"});
+    addIcon({ name: "hakkemujinsatsu"});
   }
 }
 
@@ -5658,14 +5658,14 @@ function ninLosesMudra() {
   removeIcon("ninjutsu1");
   removeIcon("ninjutsu2");
   removeIcon("ninjutsu3");
-  addCountdownBar({name: "ninjutsu"});
+  addCountdownBar({ name: "ninjutsu"});
   clearTimeout(timeout.ninjutsu);
   timeout.ninjutsu = setTimeout(ninNinjutsu, recast.ninjutsu - 1000);
   if (checkRecast("kassatsu1") < 0) {
-    addIcon({name: "kassatsu"});
+    addIcon({ name: "kassatsu"});
   }
   if (checkRecast("tenchijin") < 0) {
-    addIcon({name: "tenchijin"});
+    addIcon({ name: "tenchijin"});
   }
 }
 
@@ -5673,7 +5673,7 @@ function ninNinjutsu() {
 
   if (player.level >= 70) {
     if (checkRecast("trickattack") < checkRecast("tenchijin") + 25000) {
-      addCountdownBar({name: "tenchijin", time: checkRecast("tenchijin"), text: "SUITON"});
+      addCountdownBar({ name: "tenchijin", time: checkRecast("tenchijin"), text: "SUITON"});
     }
     else {
       removeCountdownBar("tenchijin");  // Maybe explore this another day
@@ -5685,14 +5685,14 @@ function ninNinjutsu() {
   && checkStatus("kassatsu")
   && checkStatus("tenchijin") < 0) {
     icon.ninjutsu3 = icon.huton;
-    addIcon({name: "ninjutsu3"}); // Huton if down and no damage buffs
+    addIcon({ name: "ninjutsu3"}); // Huton if down and no damage buffs
   }
   else if (player.level >= 45
   && player.level < 54  // No AC
   && player.jobDetail.hutonMilliseconds < 25000
   && checkStatus("kassatsu") < 0) {
     icon.ninjutsu3 = icon.huton;
-    addIcon({name: "ninjutsu3"});  // Huton if Huton is low (and no AC yet)
+    addIcon({ name: "ninjutsu3"});  // Huton if Huton is low (and no AC yet)
   }
 
   else if (checkStatus("tenchijin") > 0) {
@@ -5706,9 +5706,9 @@ function ninNinjutsu() {
       icon.ninjutsu2 = icon.raiton;
       icon.ninjutsu3 = icon.suiton;
     }
-    addIcon({name: "ninjutsu1"});
-    addIcon({name: "ninjutsu2"});
-    addIcon({name: "ninjutsu3"});
+    addIcon({ name: "ninjutsu1"});
+    addIcon({ name: "ninjutsu2"});
+    addIcon({ name: "ninjutsu3"});
   }
 
   else if (player.level >= 76
@@ -5719,7 +5719,7 @@ function ninNinjutsu() {
     else {
       icon.ninjutsu3 = icon.hyoton;
     }
-    addIcon({name: "ninjutsu3"});
+    addIcon({ name: "ninjutsu3"});
   }
 
   else if (player.level >= 45
@@ -5727,46 +5727,46 @@ function ninNinjutsu() {
   && checkRecast("trickattack") < 24000
   && checkRecast("tenchijin") > 1000) {
     icon.ninjutsu3 = icon.suiton;
-    addIcon({name: "ninjutsu3"});
+    addIcon({ name: "ninjutsu3"});
     if (checkStatus("tenchijin") > 0) {
       icon.ninjutsu1 = icon.fumashuriken;
-      addIcon({name: "ninjutsu1"});
+      addIcon({ name: "ninjutsu1"});
       icon.ninjutsu2 = icon.raiton;
-      addIcon({name: "ninjutsu2"});
+      addIcon({ name: "ninjutsu2"});
     }
   }
 
   else if (player.level >= 35
   && count.targets >= 3) {
     icon.ninjutsu3 = icon.katon;
-    addIcon({name: "ninjutsu3"}); // Probably more damage at 3 targets to do Katon than anything else...
+    addIcon({ name: "ninjutsu3"}); // Probably more damage at 3 targets to do Katon than anything else...
   }
 
   else if (player.level >= 45
-  && checkStatus("suiton", player.ID) < 0
+  && checkStatus("suiton", player.id) < 0
   && player.jobDetail.ninkiAmount < 60
   && checkRecast("tenchijin") > 1000) {
     icon.ninjutsu3 = icon.suiton;
-    addIcon({name: "ninjutsu3"});
+    addIcon({ name: "ninjutsu3"});
     if (checkStatus("tenchijin") > 0) {
       icon.ninjutsu1 = icon.fumashuriken;
-      addIcon({name: "ninjutsu1"});
+      addIcon({ name: "ninjutsu1"});
       icon.ninjutsu2 = icon.raiton;
-      addIcon({name: "ninjutsu2"});
+      addIcon({ name: "ninjutsu2"});
     }
   }
   else if (player.level >= 35
   && count.targets >= 2) {
     icon.ninjutsu3 = icon.katon;
-    addIcon({name: "ninjutsu3"});
+    addIcon({ name: "ninjutsu3"});
   }
   else if (player.level >= 35) {
     icon.ninjutsu3 = icon.raiton;
-    addIcon({name: "ninjutsu3"});
+    addIcon({ name: "ninjutsu3"});
   }
   else if (player.level >= 30) {
     icon.ninjutsu3 = icon.fumashuriken;
-    addIcon({name: "ninjutsu3"});
+    addIcon({ name: "ninjutsu3"});
   }
   else {
     console.log("Possible error in ninjutsu decision")
@@ -5776,7 +5776,7 @@ function ninNinjutsu() {
 
 // function ninMudraCombo() {
 //
-//   if (checkStatus("kassatsu", player.ID) > 5000) {
+//   if (checkStatus("kassatsu", player.id) > 5000) {
 //     icon.katon = icon.gokamekkyaku;
 //     icon.hyoton = icon.hyoshoranyu;
 //   }
@@ -5825,7 +5825,7 @@ function ninNinki() {
     else {
       icon.ninkiaction = icon.hellfrogmedium;
     }
-    addIcon({name: "ninkiaction"});
+    addIcon({ name: "ninkiaction"});
   }
 
   else {
@@ -5913,40 +5913,40 @@ function pldJobChange() {
   }
 
   if (checkRecast("fightorflight") <= checkRecast("requiescat")) {
-    addCountdownBar({name: "fightorflight", time: checkRecast("fightorflight")});
+    addCountdownBar({ name: "fightorflight", time: checkRecast("fightorflight")});
   }
   else if (player.level >= 68) {
-    addCountdownBar({name: "requiescat", time: checkRecast("requiescat")});
+    addCountdownBar({ name: "requiescat", time: checkRecast("requiescat")});
   }
 
-  addCountdownBar({name: "rampart", time: checkRecast("rampart")});
+  addCountdownBar({ name: "rampart", time: checkRecast("rampart")});
 
   // if (player.level >= 12) {
-  //   addCountdownBar({name: "lowblow", time: checkRecast("lowblow")});
+  //   addCountdownBar({ name: "lowblow", time: checkRecast("lowblow")});
   // }
 
   // if (player.level >= 18) {
-  //   addCountdownBar({name: "interject", time: checkRecast("interject")});
+  //   addCountdownBar({ name: "interject", time: checkRecast("interject")});
   // }
 
   // if (player.level >= 22) {
-  //   addCountdownBar({name: "reprisal", time: checkRecast("reprisal")});
+  //   addCountdownBar({ name: "reprisal", time: checkRecast("reprisal")});
   // }
 
   if (player.level >= 38) {
-    addCountdownBar({name: "sentinel", time: checkRecast("sentinel")});
+    addCountdownBar({ name: "sentinel", time: checkRecast("sentinel")});
   }
 
   // if (player.level >= 48) {
-  //   addCountdownBar({name: "shirk", time: checkRecast("shirk")});
+  //   addCountdownBar({ name: "shirk", time: checkRecast("shirk")});
   // }
 
   if (player.level >= 50) {
-    addCountdownBar({name: "hallowedground", time: checkRecast("hallowedground")});
+    addCountdownBar({ name: "hallowedground", time: checkRecast("hallowedground")});
   }
 
   if (player.level >= 74) {
-    addCountdownBar({name: "intervene2", time: checkRecast("intervene2")});
+    addCountdownBar({ name: "intervene2", time: checkRecast("intervene2")});
   }
 
   pldCombo();
@@ -5980,7 +5980,7 @@ function pldAction() {
       removeIcon("fightorflight");
       addStatus("fightorflight");
       addRecast("fightorflight");
-      addCountdownBar({name: "fightorflight"});
+      addCountdownBar({ name: "fightorflight"});
     }
 
     else if ("Spirits Within" == actionLog.groups.actionName) {
@@ -6011,7 +6011,7 @@ function pldAction() {
       removeIcon("requiescat");
       addStatus("requiescat");
       addRecast("requiescat");
-      addCountdownBar({name: "requiescat"});
+      addCountdownBar({ name: "requiescat"});
 
       pldRequiescatMP();
     }
@@ -6085,9 +6085,9 @@ function pldAction() {
       && actionLog.groups.result.length > 6) {
         removeIcon("royalauthority");
         count.atonement = 3;
-        addIcon({name: "atonement1"});
-        addIcon({name: "atonement2"});
-        addIcon({name: "atonement3"});
+        addIcon({ name: "atonement1"});
+        addIcon({ name: "atonement2"});
+        addIcon({ name: "atonement3"});
         pldGoringBladeCombo();
       }
 
@@ -6180,7 +6180,7 @@ function pldAction() {
 
 function pldStatus() {
 
-  if (statusLog.groups.targetID == player.ID) { // Target is self
+  if (statusLog.groups.targetID == player.id) { // Target is self
 
     if ("Rampart" == statusLog.groups.statusName) {
       if (statusLog.groups.gainsLoses == "gains") {
@@ -6201,7 +6201,7 @@ function pldStatus() {
         removeIcon("ironwill");
       }
       else if (statusLog.groups.gainsLoses == "loses") {
-        addIcon({name: "ironwill"});
+        addIcon({ name: "ironwill"});
       }
     }
 
@@ -6278,17 +6278,17 @@ function pldMitigation() {
 //   }
 //
 //   if (player.level >= 70) {
-//     if (player.MP >= 6000
+//     if (player.mp >= 6000
 //     || player.tempjobDetail.darkarts == 1) {
-//       //addIcon({name: "floodofdarkness"});
+//       //addIcon({ name: "floodofdarkness"});
 //     }
 //     else {
 //       removeIcon("floodofdarkness");
 //     }
 //   }
 //   else if (player.level >= 30) { // No TBN yet
-//     if (player.MP >= 3000) {
-//       addIcon({name: "floodofdarkness"});
+//     if (player.mp >= 3000) {
+//       addIcon({ name: "floodofdarkness"});
 //     }
 //     else {
 //       removeIcon("floodofdarkness");
@@ -6308,7 +6308,7 @@ function pldMitigation() {
 //     icon.gaugespender = icon.bloodspiller;
 //   }
 //
-//   if (checkStatus("delirium", player.ID) > 0) {
+//   if (checkStatus("delirium", player.id) > 0) {
 //     targetblood = 0;
 //   }
 //   else if (player.level >= 80
@@ -6319,10 +6319,10 @@ function pldMitigation() {
 //   if (player.jobDetail.blood >= targetblood) {
 //     if (player.level >= 80
 //     && checkRecast("livingshadow") < 1000) {
-//       addIcon({name: "gaugespender"});
+//       addIcon({ name: "gaugespender"});
 //     }
 //     else if (player.level >= 62) {
-//       addIcon({name: "gaugespender"});
+//       addIcon({ name: "gaugespender"});
 //     }
 //   }
 //   else {
@@ -6340,7 +6340,7 @@ function pldCombo() {
   removeIcon("combo3");
 
   if (checkStatus("requiescat") < 0
-  || player.MP < 2000) {
+  || player.mp < 2000) {
     if (count.targets >= 3) {
       pldAreaOfEffectCombo();
     }
@@ -6356,7 +6356,7 @@ function pldSingleTargetCombo() {
     pldGoringBladeCombo();
   }
   else if (player.level >= 54
-  && checkStatus("goringblade", target.ID) < 5 * 2500) {
+  && checkStatus("goringblade", target.id) < 5 * 2500) {
     pldGoringBladeCombo();
   }
   else if (player.level >= 54
@@ -6379,26 +6379,26 @@ function pldAreaOfEffectCombo() {
 
 function pldRageOfHaloneCombo() {
   next.combo = 1;
-  addIcon({name: "fastblade"});
-  addIcon({name: "riotblade"});
+  addIcon({ name: "fastblade"});
+  addIcon({ name: "riotblade"});
   if (player.level >= 26) {
-    addIcon({name: "rageofhalone"});
+    addIcon({ name: "rageofhalone"});
   }
 }
 
 function pldGoringBladeCombo() {
   next.combo = 2;
-  addIcon({name: "fastblade"});
-  addIcon({name: "riotblade"});
-  addIcon({name: "goringblade"});
+  addIcon({ name: "fastblade"});
+  addIcon({ name: "riotblade"});
+  addIcon({ name: "goringblade"});
 }
 
 
 function pldProminenceCombo() {
   next.combo = 3;
-  addIcon({name: "totaleclipse"});
+  addIcon({ name: "totaleclipse"});
   if (player.level >= 40) {
-    addIcon({name: "prominence"});
+    addIcon({ name: "prominence"});
   }
 }
 
@@ -6434,23 +6434,23 @@ function pldRequiescatMP() {
     icon.holyspirit5 = icon.confiteor;
   }
 
-  if (Math.floor(player.MP / 2000) >= 5) {
-    addIcon({name: "holyspirit1"});
+  if (Math.floor(player.mp / 2000) >= 5) {
+    addIcon({ name: "holyspirit1"});
   }
-  if (Math.floor(player.MP / 2000) >= 4) {
-    addIcon({name: "holyspirit2"});
+  if (Math.floor(player.mp / 2000) >= 4) {
+    addIcon({ name: "holyspirit2"});
   }
-  if (Math.floor(player.MP / 2000) >= 3) {
-    addIcon({name: "holyspirit3"});
+  if (Math.floor(player.mp / 2000) >= 3) {
+    addIcon({ name: "holyspirit3"});
   }
-  if (Math.floor(player.MP / 2000) >= 2) {
-    addIcon({name: "holyspirit4"});
+  if (Math.floor(player.mp / 2000) >= 2) {
+    addIcon({ name: "holyspirit4"});
   }
-  if (Math.floor(player.MP / 2000) >= 1) {
-    addIcon({name: "holyspirit5"});
+  if (Math.floor(player.mp / 2000) >= 1) {
+    addIcon({ name: "holyspirit5"});
   }
 
-  if (Math.floor(player.MP / 2000) == 0) {
+  if (Math.floor(player.mp / 2000) == 0) {
     pldCombo();
   }
 
@@ -6494,47 +6494,47 @@ function raidAction() {
   if (actionList.raid.indexOf(actionLog.groups.actionName) > -1) {
 
     if ("Battle Litany" == actionLog.groups.actionName) {
-      addCountdownBar({name: "raidbattlelitany", time: recast.battlelitany, text: actionLog.groups.sourceName});
+      addCountdownBar({ name: "raidbattlelitany", time: recast.battlelitany, text: actionLog.groups.sourceName});
     }
 
     else if ("Battle Voice" == actionLog.groups.actionName) {
-      addCountdownBar({name: "raidbattlevoice", time: recast.battlevoice, text: actionLog.groups.sourceName});
+      addCountdownBar({ name: "raidbattlevoice", time: recast.battlevoice, text: actionLog.groups.sourceName});
     }
 
     // else if ("Brotherhood" == actionLog.groups.actionName
     // && ["BRD", "DNC", "DRG", "MCH", "MNK", "NIN", "SAM"].indexOf(player.job) > -1) {
     else if ("Brotherhood" == actionLog.groups.actionName) {
-      addCountdownBar({name: "raidbrotherhood", time: recast.brotherhood, text: actionLog.groups.sourceName});
+      addCountdownBar({ name: "raidbrotherhood", time: recast.brotherhood, text: actionLog.groups.sourceName});
     }
 
     else if ("Chain Stratagem" == actionLog.groups.actionName) {
-      addCountdownBar({name: "raidchainstratagem", time: recast.chainstratagem, text: actionLog.groups.sourceName});
+      addCountdownBar({ name: "raidchainstratagem", time: recast.chainstratagem, text: actionLog.groups.sourceName});
     }
 
     else if ("Devilment" == actionLog.groups.actionName) {
-      addCountdownBar({name: "raiddevilment", time: recast.devilment, text: actionLog.groups.sourceName});
+      addCountdownBar({ name: "raiddevilment", time: recast.devilment, text: actionLog.groups.sourceName});
     }
 
     else if ("Devotion" == actionLog.groups.actionName) {
-      addCountdownBar({name: "raiddevotion", time: recast.devotion, text: actionLog.groups.sourceName});
+      addCountdownBar({ name: "raiddevotion", time: recast.devotion, text: actionLog.groups.sourceName});
     }
 
     else if ("Dragon Sight" == actionLog.groups.actionName) {
-      addCountdownBar({name: "raiddragonsight", time: recast.dragonsight, text: actionLog.groups.sourceName});
+      addCountdownBar({ name: "raiddragonsight", time: recast.dragonsight, text: actionLog.groups.sourceName});
     }
 
     // else if ("Embolden" == actionLog.groups.actionName
     // && ["BRD", "DNC", "DRG", "MCH", "MNK", "NIN", "SAM"].indexOf(player.job) > -1) {
     else if ("Embolden" == actionLog.groups.actionName) {
-      addCountdownBar({name: "raidembolden", time: recast.embolden, text: actionLog.groups.sourceName});
+      addCountdownBar({ name: "raidembolden", time: recast.embolden, text: actionLog.groups.sourceName});
     }
 
     else if ("Technical Step" == actionLog.groups.actionName) {
-      addCountdownBar({name: "raidtechnicalstep", time: recast.technicalstep, text: actionLog.groups.sourceName});
+      addCountdownBar({ name: "raidtechnicalstep", time: recast.technicalstep, text: actionLog.groups.sourceName});
     }
 
     else if ("Trick Attack" == actionLog.groups.actionName) {
-      addCountdownBar({name: "raidtrickattack", time: recast.trickattack, text: actionLog.groups.sourceName});
+      addCountdownBar({ name: "raidtrickattack", time: recast.trickattack, text: actionLog.groups.sourceName});
     }
 
   }
@@ -7127,7 +7127,7 @@ const rdmOnCancelled = (cancelledMatch) => {
 
 // 1A: NetworkBuff
 const rdmOnEffect = (effectMatch) => {
-  if (effectMatch.groups.targetID === player.ID) {
+  if (effectMatch.groups.targetID === player.id) {
     if (effectMatch.groups.effectName === 'Dualcast') {
       if (effectMatch.groups.gainsLoses === 'gains') {
         addStatus('dualcast', parseInt(effectMatch.groups.effectDuration, 10) * 1000);
@@ -7145,7 +7145,7 @@ const rdmOnEffect = (effectMatch) => {
           rdmDualcast(); // Prevents Verflare proc from resetting combo
         }
       } else if (effectMatch.groups.gainsLoses === 'loses') {
-        removeStatus('verfireready', player.ID);
+        removeStatus('verfireready', player.id);
       }
     } else if (effectMatch.groups.effectName === 'Verstone Ready') {
       if (effectMatch.groups.gainsLoses === 'gains') {
@@ -7154,13 +7154,13 @@ const rdmOnEffect = (effectMatch) => {
           rdmDualcast(); // Prevents Verholy proc from resetting combo
         }
       } else if (effectMatch.groups.gainsLoses === 'loses') {
-        removeStatus('verstoneready', player.ID);
+        removeStatus('verstoneready', player.id);
       }
     } else if (effectMatch.groups.effectName === 'Manafication') {
       if (effectMatch.groups.gainsLoses === 'gains') {
         addStatus('manafication', parseInt(effectMatch.groups.effectDuration, 10) * 1000);
       } else if (effectMatch.groups.gainsLoses === 'loses') {
-        removeStatus('manafication', player.ID);
+        removeStatus('manafication', player.id);
       }
     } else if (effectMatch.groups.effectName === 'Swiftcast') {
       if (effectMatch.groups.gainsLoses === 'gains') {
@@ -7360,7 +7360,7 @@ function addRecast(name, time, id) {
     time = recast[name];
   }
   if (id === undefined) {
-    id = player.ID;
+    id = player.id;
   }
 
   if (!recastTracker[name]) { // Create array if it doesn't exist yet
@@ -7376,7 +7376,7 @@ function addRecast(name, time, id) {
 
 function checkRecast(name, id) {
   if (id === undefined) {
-    id = player.ID;
+    id = player.id;
   }
   if (recastTracker[name].indexOf(id) > -1) {
     return Math.max(recastTracker[name][recastTracker[name].indexOf(id) + 1] - Date.now(), -1);
@@ -7584,7 +7584,7 @@ function samJobChange() {
 
   if (player.level >= 68
   && checkRecast("ikishoten") < 0) {
-    addIcon({name: "ikishoten"});
+    addIcon({ name: "ikishoten"});
   }
 
   samMeikyoShisui();
@@ -7601,7 +7601,7 @@ function samAction() {
 
     if (actionLog.groups.actionName == "Higanbana") {
       addStatus("higanbana", duration.higanbana, actionLog.groups.targetID);
-      if (checkStatus("meikyoshisui", player.ID) > 0) {
+      if (checkStatus("meikyoshisui", player.id) > 0) {
         samCombo(); // Consuming Sen under Meikyo will trigger a new combo
       }
       icon.iaijutsu = "003159";
@@ -7619,7 +7619,7 @@ function samAction() {
       else {
         count.targets = count.targets + 1;
       }
-      if (checkStatus("meikyoshisui", player.ID) > 0) {
+      if (checkStatus("meikyoshisui", player.id) > 0) {
         samCombo(); // Consuming Sen under Meikyo will trigger a new combo
       }
       icon.iaijutsu = "003159";
@@ -7630,7 +7630,7 @@ function samAction() {
     }
 
     else if ("Midare Setsugekka" == actionLog.groups.actionName) {
-      if (checkStatus("meikyoshisui", player.ID) > 0) {
+      if (checkStatus("meikyoshisui", player.id) > 0) {
         samCombo(); // Consuming Sen under Meikyo will trigger a new combo
       }
       icon.iaijutsu = "003159";
@@ -7761,8 +7761,8 @@ function samAction() {
       if (Date.now() - previous.mangetsu > 1000) {
         previous.mangetsu = Date.now();
         count.targets = 1;
-        if (checkStatus("jinpu", player.ID) > 0) {
-          addStatus("jinpu", Math.min(checkStatus("jinpu", player.ID) + 15000, duration.jinpu));
+        if (checkStatus("jinpu", player.id) > 0) {
+          addStatus("jinpu", Math.min(checkStatus("jinpu", player.id) + 15000, duration.jinpu));
         }
       }
       else {
@@ -7778,8 +7778,8 @@ function samAction() {
       if (Date.now() - previous.oka > 1000) {
         previous.oka = Date.now();
         count.targets = 1;
-        if (checkStatus("shifu", player.ID) > 0) {
-          addStatus("shifu", Math.min(checkStatus("shifu", player.ID) + 15000, duration.shifu));
+        if (checkStatus("shifu", player.id) > 0) {
+          addStatus("shifu", Math.min(checkStatus("shifu", player.id) + 15000, duration.shifu));
         }
       }
       else {
@@ -7830,7 +7830,7 @@ function samStatus() {
 
   // To player from anyone
 
-  else if (statusLog.groups.targetID == player.ID) {
+  else if (statusLog.groups.targetID == player.id) {
 
     if (statusLog.groups.statusName == "Jinpu") {
       if (statusLog.groups.gainsLoses == "gains") {
@@ -7917,7 +7917,7 @@ function samMeikyoShisui() {
 
   if (player.level >= 50
   && checkRecast("meikyoshisui") < 0) {
-    addIcon({name: "meikyoshisui"});
+    addIcon({ name: "meikyoshisui"});
   }
   else {
     removeIcon("meikyoshisui");
@@ -7934,7 +7934,7 @@ function samSen() {
 
   // Choose Iaijutsu icon
   if (player.jobDetail.getsu + player.jobDetail.ka + player.jobDetail.setsu == 1
-  && checkStatus("higanbana", target.ID) < 15000) {
+  && checkStatus("higanbana", target.id) < 15000) {
     icon.iaijutsu = icon.higanbana;
   }
   else if (player.jobDetail.getsu + player.jobDetail.ka + player.jobDetail.setsu == 2) {
@@ -7964,7 +7964,7 @@ function samSen() {
   }
 
   // Place Iaijutsu in combo
-  if (checkStatus("jinpu", player.ID) < 5000
+  if (checkStatus("jinpu", player.id) < 5000
   && toggle.combo == 1) {
     // Delay Iaijutsu for upcoming Jinpu buff
     if (icon.iaijutsu != "003159") {
@@ -7974,7 +7974,7 @@ function samSen() {
       addIconBlink(nextid.tsubamegaeshi2,icon.tsubamegaeshi);
     }
   }
-  else if (checkStatus("kaiten", player.ID) < 0
+  else if (checkStatus("kaiten", player.id) < 0
   && player.jobDetail.kenki < 20) {
     // Delay Iaijutsu to try for more Kenki
     if (icon.iaijutsu != "003159") {
@@ -8030,7 +8030,7 @@ function samKenki() {
   && checkRecast("ikishoten") > checkRecast("guren") + 5000
   && checkRecast("guren") < 1000
   && player.jobDetail.kenki >= 70) {
-    addIcon({name: "guren"});
+    addIcon({ name: "guren"});
   }
   else {
     removeIcon("guren");
@@ -8039,13 +8039,13 @@ function samKenki() {
   // Show Shinten/Kyuten/Seigan
   if (player.level >= 66
   && player.jobDetail.kenki >= minimumkenki + 15
-  && checkStatus("openeyes", player.ID) > 5000
+  && checkStatus("openeyes", player.id) > 5000
   && !toggle.aoe) {
-    addIcon({name: "seigan"});
+    addIcon({ name: "seigan"});
   }
   else if (player.level >= 62
   && player.jobDetail.kenki >= minimumkenki + 25) {
-    addIcon({name: "shinten"});
+    addIcon({ name: "shinten"});
   }
   else {
     removeIcon("shinten");
@@ -8064,26 +8064,26 @@ function samCombo() {
 
   if (toggle.aoe) { // AoE
 
-    if (checkStatus("meikyoshisui", player.ID) > 0) {
+    if (checkStatus("meikyoshisui", player.id) > 0) {
 
       if (player.jobDetail.ka == false
-      && checkStatus("shifu", player.ID) < checkStatus("jinpu", player.ID)) {
-        addIcon({name: "oka"});
+      && checkStatus("shifu", player.id) < checkStatus("jinpu", player.id)) {
+        addIcon({ name: "oka"});
       }
       else if (player.jobDetail.getsu == false
-      && checkStatus("jinpu", player.ID) < checkStatus("shifu", player.ID)) {
-        addIcon({name: "mangetsu"});
+      && checkStatus("jinpu", player.id) < checkStatus("shifu", player.id)) {
+        addIcon({ name: "mangetsu"});
       }
 
       else if (player.jobDetail.getsu == false) {
-        addIcon({name: "mangetsu"});
+        addIcon({ name: "mangetsu"});
       }
       else if (player.jobDetail.ka == false) {
-        addIcon({name: "oka"});
+        addIcon({ name: "oka"});
       }
 
       else {
-        addIcon({name: "mangetsu"});
+        addIcon({ name: "mangetsu"});
       }
     }
 
@@ -8091,12 +8091,12 @@ function samCombo() {
 
       if (player.level >= 45
       && player.jobDetail.ka == false
-      && checkStatus("shifu", player.ID) < checkStatus("jinpu", player.ID)) {
+      && checkStatus("shifu", player.id) < checkStatus("jinpu", player.id)) {
         okaCombo();
       }
       else if (player.level >= 35
       && player.jobDetail.getsu == false
-      && checkStatus("jinpu", player.ID) < checkStatus("shifu", player.ID)) {
+      && checkStatus("jinpu", player.id) < checkStatus("shifu", player.id)) {
         mangetsuCombo();
       }
 
@@ -8113,16 +8113,16 @@ function samCombo() {
 
   else {
 
-    if (checkStatus("meikyoshisui", player.ID) > 0) {
+    if (checkStatus("meikyoshisui", player.id) > 0) {
 
       if (player.jobDetail.getsu == false) {
-        addIcon({name: "gekko"});
+        addIcon({ name: "gekko"});
       }
       else if (player.jobDetail.ka == false) {
-        addIcon({name: "kasha"});
+        addIcon({ name: "kasha"});
       }
       else if (player.jobDetail.setsu == false) {
-        addIcon({name: "yukikaze"});
+        addIcon({ name: "yukikaze"});
       }
     }
 
@@ -8130,12 +8130,12 @@ function samCombo() {
 
       if (player.level >= 18
       && player.jobDetail.ka == false
-      && checkStatus("shifu", player.ID) < checkStatus("jinpu", player.ID)) {
+      && checkStatus("shifu", player.id) < checkStatus("jinpu", player.id)) {
         kashaCombo();
       }
       else if (player.level >= 4
       && player.jobDetail.getsu == false
-      && checkStatus("jinpu", player.ID) < checkStatus("shifu", player.ID)) {
+      && checkStatus("jinpu", player.id) < checkStatus("shifu", player.id)) {
         gekkoCombo();
       }
 
@@ -8170,41 +8170,41 @@ function samComboTimeout() {
 
 function gekkoCombo() {
   toggle.combo = 1;
-  addIcon({name: "hakaze"});
-  addIcon({name: "jinpu"});
+  addIcon({ name: "hakaze"});
+  addIcon({ name: "jinpu"});
   if (player.level >= 30) {
-    addIcon({name: "gekko"});
+    addIcon({ name: "gekko"});
   }
 }
 
 function kashaCombo() {
   toggle.combo = 2;
-  addIcon({name: "hakaze"});
-  addIcon({name: "shifu"});
+  addIcon({ name: "hakaze"});
+  addIcon({ name: "shifu"});
   if (player.level >= 40) {
-    addIcon({name: "kasha"});
+    addIcon({ name: "kasha"});
   }
 }
 
 function yukikazeCombo() {
   toggle.combo = 3;
-  addIcon({name: "hakaze"});
+  addIcon({ name: "hakaze"});
   removeIcon("jinpu");
-  addIcon({name: "yukikaze"});
+  addIcon({ name: "yukikaze"});
 }
 
 function mangetsuCombo() {
   toggle.combo = 4;
-  addIcon({name: "fuga"});
+  addIcon({ name: "fuga"});
   removeIcon("jinpu");
-  addIcon({name: "mangetsu"});
+  addIcon({ name: "mangetsu"});
 }
 
 function okaCombo() {
   toggle.combo = 5;
-  addIcon({name: "fuga"});
+  addIcon({ name: "fuga"});
   removeIcon("jinpu");
-  addIcon({name: "oka"});
+  addIcon({ name: "oka"});
 }
 
 "use strict";
@@ -8274,66 +8274,66 @@ function schJobChange() {
   // Show available cooldowns
 
   if (player.level >= 20) {
-    addCountdownBar({name: "whisperingdawn", time: -1});
+    addCountdownBar({ name: "whisperingdawn", time: -1});
   }
 
   if (player.level >= 40) {
-    addCountdownBar({name: "feyillumination", time: -1});
+    addCountdownBar({ name: "feyillumination", time: -1});
   }
 
   if (player.level >= 45) {
-    addCountdownBar({name: "aetherflow", time: -1, oncomplete: "addIcon"});
+    addCountdownBar({ name: "aetherflow", time: -1, oncomplete: "addIcon"});
   }
 
   if (player.level >= 50) {
-    addCountdownBar({name: "sacredsoil", time: -1});
+    addCountdownBar({ name: "sacredsoil", time: -1});
   }
 
   if (player.level >= 52) {
-    addCountdownBar({name: "indomitability", time: -1});
+    addCountdownBar({ name: "indomitability", time: -1});
   }
 
   if (player.level >= 56) {
-    addCountdownBar({name: "deploymenttactics", time: -1});
+    addCountdownBar({ name: "deploymenttactics", time: -1});
   }
 
   if (player.level >= 60) {
-    addCountdownBar({name: "dissipation", time: -1});
+    addCountdownBar({ name: "dissipation", time: -1});
   }
 
   if (player.level >= 62) {
-    addCountdownBar({name: "excogitation", time: -1});
+    addCountdownBar({ name: "excogitation", time: -1});
   }
 
   if (player.level >= 66) {
-    addCountdownBar({name: "chainstratagem", time: checkRecast("chainstratagem"), oncomplete: "addIcon"});
+    addCountdownBar({ name: "chainstratagem", time: checkRecast("chainstratagem"), oncomplete: "addIcon"});
   }
 
   if (player.level >= 74) {
-    addCountdownBar({name: "recitation", time: -1});
+    addCountdownBar({ name: "recitation", time: -1});
   }
 
   if (player.level >= 76) {
-    addCountdownBar({name: "feyblessing", time: -1});
+    addCountdownBar({ name: "feyblessing", time: -1});
   }
 
   if (player.level >= 80) {
-    addCountdownBar({name: "summonseraph", time: -1});
+    addCountdownBar({ name: "summonseraph", time: -1});
   }
 }
 
 // Copied from BRD mostly...
 function schTargetChangedEvent() {
-  if (previous.targetID != target.ID) {
+  if (previous.targetID != target.id) {
 
     // If not a target then clear things out
-    if (target.ID == 0 || target.ID.startsWith("1") || target.ID.startsWith("E")) {  // 0 = no target, 1... = player? E... = non-combat NPC?
+    if (target.id == 0 || target.id.startsWith("1") || target.id.startsWith("E")) {  // 0 = no target, 1... = player? E... = non-combat NPC?
       removeCountdownBar("bio");
     }
     else {
-      addCountdownBar({name: "bio", time: checkStatus("bio", target.ID), oncomplete: "addIcon"});
+      addCountdownBar({ name: "bio", time: checkStatus("bio", target.id), oncomplete: "addIcon"});
     }
-    previous.targetID = target.ID;
+    previous.targetID = target.id;
   }
 }
 
@@ -8350,48 +8350,48 @@ function schAction() {
     }
 
     else if ("Whispering Dawn" == actionLog.groups.actionName) {
-      addCountdownBar({name: "whisperingdawn"});
+      addCountdownBar({ name: "whisperingdawn"});
     }
 
     else if ("Fey Illumination" == actionLog.groups.actionName) {
-      addCountdownBar({name: "feyillumination"});
+      addCountdownBar({ name: "feyillumination"});
     }
 
     else if ("Aetherflow" == actionLog.groups.actionName) {
       removeIcon("aetherflow");
-      addCountdownBar({name: "aetherflow", time: recast.aetherflow, oncomplete: "addIcon"});
+      addCountdownBar({ name: "aetherflow", time: recast.aetherflow, oncomplete: "addIcon"});
     }
 
     else if ("Sacred Soil" == actionLog.groups.actionName) {
-      addCountdownBar({name: "sacredsoil"});
+      addCountdownBar({ name: "sacredsoil"});
     }
 
     else if ("Indomitability" == actionLog.groups.actionName) {
-      addCountdownBar({name: "indomitability"});
+      addCountdownBar({ name: "indomitability"});
     }
 
     else if ("Excogitation" == actionLog.groups.actionName) {
-      addCountdownBar({name: "excogitation"});
+      addCountdownBar({ name: "excogitation"});
     }
 
     else if ("Deployment Tactics" == actionLog.groups.actionName) {
-      addCountdownBar({name: "deploymenttactics"});
+      addCountdownBar({ name: "deploymenttactics"});
     }
 
     else if ("Dissipation" == actionLog.groups.actionName) {
-      addCountdownBar({name: "dissipation"});
+      addCountdownBar({ name: "dissipation"});
     }
 
     else if ("Chain Stratagem" == actionLog.groups.actionName) {
-      addCountdownBar({name: "chainstratagem", time: recast.chainstratagem, oncomplete: "addIcon"});
+      addCountdownBar({ name: "chainstratagem", time: recast.chainstratagem, oncomplete: "addIcon"});
     }
 
     else if ("Recitation" == actionLog.groups.actionName) {
-      addCountdownBar({name: "recitation"});
+      addCountdownBar({ name: "recitation"});
     }
 
     else if ("Summon Seraph" == actionLog.groups.actionName) {
-      addCountdownBar({name: "summonseraph"});
+      addCountdownBar({ name: "summonseraph"});
     }
   }
 }
@@ -8401,8 +8401,8 @@ function schStatus() {
   if (["Bio", "Bio II", "Biolysis"].indexOf(statusLog.groups.statusName) > -1) {
     if (statusLog.groups.gainsLoses == "gains") {
       addStatus("bio", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
-      if (target.ID == statusLog.groups.targetID) {  // Might be possible to switch targets between application to target and log entry
-        addCountdownBar({name: "bio", time: checkStatus("bio", target.ID), oncomplete: "addIcon"});
+      if (target.id == statusLog.groups.targetID) {  // Might be possible to switch targets between application to target and log entry
+        addCountdownBar({ name: "bio", time: checkStatus("bio", target.id), oncomplete: "addIcon"});
       }
     }
     else if (statusLog.groups.gainsLoses == "loses") {
@@ -8418,7 +8418,7 @@ function addStatus(name, time, id) {
     time = duration[name];
   }
   if (id == undefined) {
-    id = player.ID;
+    id = player.id;
   }
 
   if (!statusTracker[name]) { // Create array if it doesn't exist yet
@@ -8435,7 +8435,7 @@ function addStatus(name, time, id) {
 function checkStatus(name, id) {
 
   if (id === undefined) {
-    id = player.ID;
+    id = player.id;
   }
 
   if (!statusTracker[name]) {
@@ -8448,7 +8448,7 @@ function checkStatus(name, id) {
 function removeStatus(name, id) {
 
   if (id === undefined) {
-    id = player.ID;
+    id = player.id;
   }
 
   if (!statusTracker[name]) {
@@ -8538,36 +8538,36 @@ function warJobChange() {
   if (count.targets > 1) {
     if (player.level >= 56
     && checkRecast("rawintuition") < 0) {
-      addIcon({name: "rawintuition"});
+      addIcon({ name: "rawintuition"});
     }
     else if (player.level >= 8
     && checkRecast("rampart") < 0) {
-      addIcon({name: "rampart"});
+      addIcon({ name: "rampart"});
     }
     else if (player.level >= 46
     && checkRecast("vengeance") < 0) {
-      addIcon({name: "vengeance"});
+      addIcon({ name: "vengeance"});
     }
   }
 
   if (player.level >= 50
-  && checkRecast("infuriate1", player.ID) < 0) {
-    addIcon({name: "infuriate"});
+  && checkRecast("infuriate1", player.id) < 0) {
+    addIcon({ name: "infuriate"});
   }
 
   // Berserk is complicated
   if (player.level >= 64
   && checkRecast("upheaval") < 0
   && checkRecast("berserk") > 25000 ) {
-    addIcon({name: "upheaval"}); // Show Upheaval if Berserk is far away
+    addIcon({ name: "upheaval"}); // Show Upheaval if Berserk is far away
   }
   else if (player.level >= 74
-  && checkRecast("infuriate1", player.ID) < 0) {
+  && checkRecast("infuriate1", player.id) < 0) {
     removeIcon("berserk"); // Hide Berserk to prevent wasting Nascent Chaos
   }
   else if (player.level >= 6
   && checkRecast("berserk") < 0) {
-    addIcon({name: "berserk"});
+    addIcon({ name: "berserk"});
   }
 
   warCombo();
@@ -8598,15 +8598,15 @@ function warAction() {
     }
 
     else if ("Infuriate" == actionLog.groups.actionName) { // Code treats Infuriate like two different skills to juggle the charges.
-      if (checkRecast("infuriate2", player.ID) < 0) {
-        addRecast("infuriate1", player.ID, -1);
-        addRecast("infuriate2", player.ID, recast.infuriate);
+      if (checkRecast("infuriate2", player.id) < 0) {
+        addRecast("infuriate1", player.id, -1);
+        addRecast("infuriate2", player.id, recast.infuriate);
       }
       else {
         removeIcon("infuriate");
-        addRecast("infuriate1", player.ID, checkRecast("infuriate2", player.ID));
-        addRecast("infuriate2", player.ID, checkRecast("infuriate2", player.ID) + recast.infuriate);
-        addIconBlinkTimeout("infuriate", checkRecast("infuriate1", player.ID), nextid.infuriate, icon.infuriate);
+        addRecast("infuriate1", player.id, checkRecast("infuriate2", player.id));
+        addRecast("infuriate2", player.id, checkRecast("infuriate2", player.id) + recast.infuriate);
+        addIconBlinkTimeout("infuriate", checkRecast("infuriate1", player.id), nextid.infuriate, icon.infuriate);
       }
       warGauge();
     }
@@ -8634,10 +8634,10 @@ function warAction() {
           count.targets = 1; // Steel Cyclone is stronger than Inner Beast at 2+ targets
         }
         if (player.level >= 66) { // Enhanced Infuriate
-          addRecast("infuriate1", player.ID, checkRecast("infuriate1", player.ID) - 5000);
-          addRecast("infuriate2", player.ID, checkRecast("infuriate2", player.ID) - 5000);
+          addRecast("infuriate1", player.id, checkRecast("infuriate1", player.id) - 5000);
+          addRecast("infuriate2", player.id, checkRecast("infuriate2", player.id) - 5000);
           removeIcon("infuriate");
-          addIconBlinkTimeout("infuriate",checkRecast("infuriate1", player.ID),nextid.infuriate,icon.infuriate);
+          addIconBlinkTimeout("infuriate",checkRecast("infuriate1", player.id),nextid.infuriate,icon.infuriate);
         }
         removeIcon("innerbeast");
       }
@@ -8647,10 +8647,10 @@ function warAction() {
           count.targets = 1;
           previous.steelcyclone = Date.now();
           if (player.level >= 66) { // Enhanced Infuriate
-            addRecast("infuriate1", player.ID, checkRecast("infuriate1", player.ID) - 5000);
-            addRecast("infuriate2", player.ID, checkRecast("infuriate2", player.ID) - 5000);
+            addRecast("infuriate1", player.id, checkRecast("infuriate1", player.id) - 5000);
+            addRecast("infuriate2", player.id, checkRecast("infuriate2", player.id) - 5000);
             removeIcon("infuriate");
-            addIconBlinkTimeout("infuriate",checkRecast("infuriate1", player.ID),nextid.infuriate,icon.infuriate);
+            addIconBlinkTimeout("infuriate",checkRecast("infuriate1", player.id),nextid.infuriate,icon.infuriate);
           }
         }
         else {
@@ -8728,8 +8728,8 @@ function warAction() {
         if (Date.now() - previous.mythriltempest > 1000) {
           previous.mythriltempest = Date.now();
           count.targets = 1;
-          if (checkStatus("stormseye", player.ID) > 0) {
-            addStatus("stormseye", Math.min(checkStatus("stormseye", player.ID) + 10000, duration.stormseye));
+          if (checkStatus("stormseye", player.id) > 0) {
+            addStatus("stormseye", Math.min(checkStatus("stormseye", player.id) + 10000, duration.stormseye));
           }
         }
         else {
@@ -8757,7 +8757,7 @@ function warAction() {
 
 function warStatus() {
 
-  if (statusLog.groups.targetID == player.ID) { // Target is self
+  if (statusLog.groups.targetID == player.id) { // Target is self
 
     if (["Berserk", "Inner Release"].indexOf(statusLog.groups.statusName) > -1) {
       if (statusLog.groups.gainsLoses == "gains") {
@@ -8878,7 +8878,7 @@ function warGauge() {
   let targetbeast = 50; // Display spender icon if Beast is this value or above
 
   // Set Inner Beast icon - listed from highest to lowest minimum potency
-  if (checkStatus("nascentchaos", player.ID) > 2500) {
+  if (checkStatus("nascentchaos", player.id) > 2500) {
     if (count.targets >= 3) {
       icon.innerbeast = icon.chaoticcyclone;
     }
@@ -8910,7 +8910,7 @@ function warGauge() {
   }
 
   // Set Steel Cyclone icon
-  if (checkStatus("nascentchaos", player.ID) > 2500) {
+  if (checkStatus("nascentchaos", player.id) > 2500) {
     icon.steelcyclone = icon.chaoticcyclone;
   }
   else if (player.level >= 60) {
@@ -8921,34 +8921,34 @@ function warGauge() {
   }
 
   if (player.level >= 70
-  && checkStatus("berserk", player.ID) > 0) { // Possibly adjust this number
+  && checkStatus("berserk", player.id) > 0) { // Possibly adjust this number
     targetbeast = 0; // Spam during Inner Release
   }
   else if (player.level >= 70
   && checkRecast("berserk") < 5000
-  && checkRecast("infuriate1", player.ID) < 40000) {
+  && checkRecast("infuriate1", player.id) < 40000) {
     targetbeast = 50; // Avoid overcapping during Inner Release
   }
   else if (player.level >= 66
-  && checkRecast("infuriate1", player.ID) < 10000) {
+  && checkRecast("infuriate1", player.id) < 10000) {
     targetbeast = 50; // Avoid overcapping from Enhanced Infuriate
   }
   else if (player.level < 66
-  && checkRecast("infuriate1", player.ID) < 5000) {
+  && checkRecast("infuriate1", player.id) < 5000) {
     targetbeast = 50; // Avoid overcapping from Infuriate
   }
   else if (player.level >= 74
-  && checkStatus("nascentchaos", player.ID) > 2500
-  && checkStatus("nascentchaos", player.ID) < 12500) {
+  && checkStatus("nascentchaos", player.id) > 2500
+  && checkStatus("nascentchaos", player.id) < 12500) {
     targetbeast = 50; // Avoid wasting Nascent Chaos
   }
   else if (player.level >= 50
   && count.targets <= 3 // AoE wins at 3
-  && checkStatus("stormseye", player.ID) < 15000) {
+  && checkStatus("stormseye", player.id) < 15000) {
     targetbeast = 90; // Avoid letting Storm's Eye fall off during AoE
   }
   else if (player.level >= 50
-  && checkStatus("stormseye", player.ID) < 5000) {
+  && checkStatus("stormseye", player.id) < 5000) {
     targetbeast = 90; // Avoid using spenders out of Storm's Eye
   }
   else if (player.level >= 45
@@ -8965,19 +8965,19 @@ function warGauge() {
 
   // Berserk/Inner Release
   if (checkRecast("berserk") < 0
-  && checkStatus("stormseye", player.ID) > 0) {
-    addIcon({name: "berserk"});
+  && checkStatus("stormseye", player.id) > 0) {
+    addIcon({ name: "berserk"});
   }
   else if (player.level >= 70
   && checkRecast("upheaval") < 1000
-  && checkStatus("berserk", player.ID) > 0) {
-    addIcon({name: "upheaval"});
+  && checkStatus("berserk", player.id) > 0) {
+    addIcon({ name: "upheaval"});
   }
   else if (player.level >= 64
   && player.jobDetail.beast >= 20
   && checkRecast("upheaval") < 1000
   && checkRecast("berserk") > 25000) {
-    addIcon({name: "upheaval"});
+    addIcon({ name: "upheaval"});
   }
   else {
     removeIcon("upheaval");
@@ -8985,7 +8985,7 @@ function warGauge() {
 
   if (player.level >= 35
   && player.jobDetail.beast >= targetbeast) {
-    addIcon({name: "innerbeast"});
+    addIcon({ name: "innerbeast"});
   }
   else {
     removeIcon("innerbeast");
@@ -9003,25 +9003,25 @@ function warCombo() {
   // Revisit this later if it is refreshing too much
   if (player.level >= 50
   && checkRecast("berserk") < 17500
-  && checkStatus("stormseye", player.ID) - Math.max(checkRecast("berserk"), 0) < 20000) {
+  && checkStatus("stormseye", player.id) - Math.max(checkRecast("berserk"), 0) < 20000) {
     stormseyeCombo();
   }
 
   else if (player.level >= 74
   && count.targets >= 2
-  && checkStatus("stormseye", player.ID) > 7500) {
+  && checkStatus("stormseye", player.id) > 7500) {
     mythriltempestCombo();
   }
 
   else if (player.level >= 50
   && count.targets >= 3
-  && checkStatus("stormseye", player.ID) > 7500) {
+  && checkStatus("stormseye", player.id) > 7500) {
     mythriltempestCombo();
   }
 
   // Revisit this later if it is too conservative
   else if (player.level >= 50
-  && checkStatus("stormseye", player.ID) < 10000) {
+  && checkStatus("stormseye", player.id) < 10000) {
     stormseyeCombo();
   }
 
@@ -9042,28 +9042,28 @@ function warComboTimeout() {
 
 function stormspathCombo() {
   next.combo = 1;
-  addIcon({name: "heavyswing"});
+  addIcon({ name: "heavyswing"});
   if (player.level >= 18) {
-    addIcon({name: "maim"});
+    addIcon({ name: "maim"});
   }
   if (player.level >= 38) {
-    addIcon({name: "stormspath"});
+    addIcon({ name: "stormspath"});
   }
 }
 
 function stormseyeCombo() {
   next.combo = 2;
-  addIcon({name: "heavyswing"});
-  addIcon({name: "maim"});
-  addIcon({name: "stormseye"});
+  addIcon({ name: "heavyswing"});
+  addIcon({ name: "maim"});
+  addIcon({ name: "stormseye"});
 }
 
 function mythriltempestCombo() {
   next.combo = 3;
-  addIcon({name: "overpower"});
+  addIcon({ name: "overpower"});
   removeIcon("maim");
   if (player.level >= 40) {
-    addIcon({name: "mythriltempest"});
+    addIcon({ name: "mythriltempest"});
   }
 }
 
@@ -9117,59 +9117,59 @@ function whmJobChange() {
   }
 
   if (checkStatus("freecure") > 0) {
-    addIcon({name: "freecure"});
+    addIcon({ name: "freecure"});
   }
   else {
     removeIcon("freecure");
   }
 
   if (player.level >= 24
-  && player.MP / player.maxMP < 0.8
+  && player.mp / player.maxMP < 0.8
   && checkRecast("luciddreaming") < 0) {
-    addIcon({name: "luciddreaming"});
+    addIcon({ name: "luciddreaming"});
   }
   else {
     removeIcon("luciddreaming");
   }
 
   if (player.level >= 30) {
-    addCountdownBar({name: "presenceofmind", time: -1});
+    addCountdownBar({ name: "presenceofmind", time: -1});
   }
 
   if (player.level >= 50) {
-    addCountdownBar({name: "benediction", time: -1});
+    addCountdownBar({ name: "benediction", time: -1});
   }
 
   if (player.level >= 52) {
-    addCountdownBar({name: "asylum", time: -1});
+    addCountdownBar({ name: "asylum", time: -1});
   }
 
   if (player.level >= 56) {
-    addCountdownBar({name: "assize", time: -1});
+    addCountdownBar({ name: "assize", time: -1});
   }
 
   if (player.level >= 58) {
-    addCountdownBar({name: "thinair", time: -1});
+    addCountdownBar({ name: "thinair", time: -1});
   }
 
   if (player.level >= 60) {
-    addCountdownBar({name: "tetragrammaton", time: -1});
+    addCountdownBar({ name: "tetragrammaton", time: -1});
   }
 
   if (player.level >= 66) {
-    addCountdownBar({name: "divinebenison", time: -1});
+    addCountdownBar({ name: "divinebenison", time: -1});
   }
 
   if (player.level >= 70) {
-    addCountdownBar({name: "plenaryindulgence", time: -1});
+    addCountdownBar({ name: "plenaryindulgence", time: -1});
   }
 
   if (player.level >= 80) {
-    addCountdownBar({name: "temperance", time: -1});
+    addCountdownBar({ name: "temperance", time: -1});
   }
 
   if (player.level >= 18) {
-    addCountdownBar({name: "swiftcast", time: -1});
+    addCountdownBar({ name: "swiftcast", time: -1});
   }
 }
 
@@ -9177,16 +9177,16 @@ function whmPlayerChangedEvent() {
 
   // MP recovery - Lucid and Thin Air share same spot
   if (player.level >= 24
-  && player.MP / player.maxMP < 0.8
+  && player.mp / player.maxMP < 0.8
   && checkRecast("luciddreaming") < 0) {
-    addIcon({name: "luciddreaming"});
+    addIcon({ name: "luciddreaming"});
   }
   else {
     removeIcon("luciddreaming");
   }
 
   if (player.tempjobDetail.bloodlily >= 3) {
-    addIcon({name: "afflatusmisery"});
+    addIcon({ name: "afflatusmisery"});
   }
   else {
     removeIcon("afflatusmisery");
@@ -9195,20 +9195,20 @@ function whmPlayerChangedEvent() {
 
 function whmTargetChangedEvent() {
 
-  if (previous.targetID != target.ID) {
+  if (previous.targetID != target.id) {
 
     // 0 = no target, 1... = player? E... = non-combat NPC?
-    if (target.ID.startsWith("1")
+    if (target.id.startsWith("1")
     && ["PLD", "WAR", "DRK", "GNB"].indexOf(target.job) > -1) {
-      addCountdownBar({name: "regen", time: checkStatus("regen", target.ID), oncomplete: "addIcon"});
+      addCountdownBar({ name: "regen", time: checkStatus("regen", target.id), oncomplete: "addIcon"});
     }
-    else if (target.ID.startsWith("4")) {
-      addCountdownBar({name: "aero", time: checkStatus("aero", target.ID), oncomplete: "addIcon"});
+    else if (target.id.startsWith("4")) {
+      addCountdownBar({ name: "aero", time: checkStatus("aero", target.id), oncomplete: "addIcon"});
     }
     else {
       removeCountdownBar("aero");
     }
-    previous.targetID = target.ID;
+    previous.targetID = target.id;
   }
 }
 
@@ -9218,47 +9218,47 @@ function whmAction() {
 
     if (actionLog.groups.actionName == "Lucid Dreaming") {
       addRecast("luciddreaming");
-      addCountdownBar({name: "luciddreaming"});
+      addCountdownBar({ name: "luciddreaming"});
     }
 
     else if (actionLog.groups.actionName == "Presence Of Mind") {
       addRecast("presenceofmind");
-      addCountdownBar({name: "presenceofmind"});
+      addCountdownBar({ name: "presenceofmind"});
     }
 
     else if (actionLog.groups.actionName == "Benediction") {
       addRecast("benediction");
-      addCountdownBar({name: "benediction"});
+      addCountdownBar({ name: "benediction"});
     }
 
     else if (actionLog.groups.actionName == "Asylum") {
       addRecast("asylum");
-      addCountdownBar({name: "asylum"});
+      addCountdownBar({ name: "asylum"});
     }
 
     else if (actionLog.groups.actionName == "Assize") {
       addRecast("assize");
-      addCountdownBar({name: "assize"});
+      addCountdownBar({ name: "assize"});
     }
 
     else if (actionLog.groups.actionName == "Thin Air") {
       addRecast("thinair");
-      addCountdownBar({name: "thinair"});
+      addCountdownBar({ name: "thinair"});
     }
 
     else if (actionLog.groups.actionName == "Tetragrammaton") {
       addRecast("tetragrammaton");
-      addCountdownBar({name: "tetragrammaton"});
+      addCountdownBar({ name: "tetragrammaton"});
     }
 
     else if (actionLog.groups.actionName == "Divine Benison") {
       addRecast("divinebenison");
-      addCountdownBar({name: "divinebenison"});
+      addCountdownBar({ name: "divinebenison"});
     }
 
     else if (actionLog.groups.actionName == "Regen") {
       removeIcon("regen");
-      addCountdownBar({name: "regen", time: checkStatus("regen", target.ID), oncomplete: "addIcon"});
+      addCountdownBar({ name: "regen", time: checkStatus("regen", target.id), oncomplete: "addIcon"});
       addStatus("regen", duration.regen, actionLog.groups.targetID);
     }
 
@@ -9279,7 +9279,7 @@ function whmStatus() {
   if (statusLog.groups.statusName == "Freecure") {
     if (statusLog.groups.gainsLoses == "gains") {
       addStatus("freecure", parseInt(statusLog.groups.effectDuration) * 1000);
-      addIcon({name: "freecure"});
+      addIcon({ name: "freecure"});
     }
     else if (statusLog.groups.gainsLoses == "loses") {
       removeStatus("freecure");
@@ -9300,16 +9300,16 @@ function whmStatus() {
     if (statusLog.groups.gainsLoses == "gains") {
       addStatus("regen", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
       removeIcon("regen");
-      if (target.ID == statusLog.groups.targetID
+      if (target.id == statusLog.groups.targetID
       && ["PLD", "WAR", "DRK", "GNB"].indexOf(target.job) > -1) {
-        addCountdownBar({name: "regen", time: checkStatus("regen", target.ID), oncomplete: "addIcon"});
+        addCountdownBar({ name: "regen", time: checkStatus("regen", target.id), oncomplete: "addIcon"});
       }
     }
     else if (statusLog.groups.gainsLoses == "loses") {
       removeStatus("regen", statusLog.groups.targetID);
-      if (target.ID == statusLog.groups.targetID
+      if (target.id == statusLog.groups.targetID
       && ["PLD", "WAR", "DRK", "GNB"].indexOf(target.job) > -1) {
-        addIcon({name: "regen"});
+        addIcon({ name: "regen"});
       }
     }
   }
@@ -9318,14 +9318,14 @@ function whmStatus() {
     if (statusLog.groups.gainsLoses == "gains") {
       addStatus("aero", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
       removeIcon("aero");
-      if (target.ID == statusLog.groups.targetID) {
-        addCountdownBar({name: "aero", time: checkStatus("aero", target.ID), oncomplete: "addIcon"});
+      if (target.id == statusLog.groups.targetID) {
+        addCountdownBar({ name: "aero", time: checkStatus("aero", target.id), oncomplete: "addIcon"});
       }
     }
     else if (statusLog.groups.gainsLoses == "loses") {
       removeStatus("aero", statusLog.groups.targetID);
-      if (target.ID == statusLog.groups.targetID) {
-        addIcon({name: "aero"});
+      if (target.id == statusLog.groups.targetID) {
+        addIcon({ name: "aero"});
       }
     }
   }

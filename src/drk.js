@@ -58,7 +58,7 @@ function drkJobChange() {
   previous.abyssaldrain = 0;
 
     if (player.level >= 68) {
-      addCountdownBar({name: "delirium", time: checkRecast("delirium"), oncomplete: "addIcon"});
+      addCountdownBar({ name: "delirium", time: checkRecast("delirium"), oncomplete: "addIcon"});
     }
   drkCombo();
   drkGauge();
@@ -80,7 +80,7 @@ function drkAction() {
       removeIcon("delirium");
       addStatus("delirium");
       addRecast("delirium");
-      addCountdownBar({name: "delirium", time: recast.delirium, oncomplete: "addIcon"});
+      addCountdownBar({ name: "delirium", time: recast.delirium, oncomplete: "addIcon"});
       drkGauge();
     }
 
@@ -123,15 +123,15 @@ function drkAction() {
 
     else if ("Plunge" == actionLog.groups.actionName) { // Code treats Infuriate like two different skills to juggle the charges.
       if (player.level >= 78) {
-        if (checkRecast("plunge2", player.ID) < 0) {
-          addRecast("plunge1", player.ID, -1);
+        if (checkRecast("plunge2", player.id) < 0) {
+          addRecast("plunge1", player.id, -1);
           addRecast("plunge2");
         }
         else {
           removeIcon("plunge");
-          addRecast("plunge1", player.ID, checkRecast("plunge2", player.ID));
-          addRecast("plunge2", player.ID, checkRecast("plunge2", player.ID) + recast.plunge);
-          addIconBlinkTimeout("plunge", checkRecast("plunge1", player.ID), nextid.plunge, icon.plunge);
+          addRecast("plunge1", player.id, checkRecast("plunge2", player.id));
+          addRecast("plunge2", player.id, checkRecast("plunge2", player.id) + recast.plunge);
+          addIconBlinkTimeout("plunge", checkRecast("plunge1", player.id), nextid.plunge, icon.plunge);
         }
       }
       else {
@@ -259,7 +259,7 @@ function drkAction() {
 
 function drkStatus() {
 
-  if (statusLog.groups.targetID == player.ID) { // Target is self
+  if (statusLog.groups.targetID == player.id) { // Target is self
 
     if ("Delirium" == statusLog.groups.statusName) {
       if (statusLog.groups.gainsLoses == "gains") {
@@ -340,17 +340,17 @@ function drkMP() {
   }
 
   if (player.level >= 70) {
-    if (player.MP >= 6000
+    if (player.mp >= 6000
     || player.tempjobDetail.darkarts == 1) {
-      addIcon({name: "floodofdarkness"});
+      addIcon({ name: "floodofdarkness"});
     }
     else {
       removeIcon("floodofdarkness");
     }
   }
   else if (player.level >= 30) { // No TBN yet
-    if (player.MP >= 3000) {
-      addIcon({name: "floodofdarkness"});
+    if (player.mp >= 3000) {
+      addIcon({ name: "floodofdarkness"});
     }
     else {
       removeIcon("floodofdarkness");
@@ -370,7 +370,7 @@ function drkGauge() {
     icon.gaugespender = icon.bloodspiller;
   }
 
-  if (checkStatus("delirium", player.ID) > 0) {
+  if (checkStatus("delirium", player.id) > 0) {
     targetblood = 0;
   }
   else if (player.level >= 80
@@ -381,10 +381,10 @@ function drkGauge() {
   if (player.jobDetail.blood >= targetblood) {
     if (player.level >= 80
     && checkRecast("livingshadow") < 1000) {
-      addIcon({name: "gaugespender"});
+      addIcon({ name: "gaugespender"});
     }
     else if (player.level >= 62) {
-      addIcon({name: "gaugespender"});
+      addIcon({ name: "gaugespender"});
     }
   }
   else {
@@ -411,18 +411,18 @@ function drkCombo() {
 
 function drkSouleaterCombo() {
   next.combo = 1;
-  addIcon({name: "hardslash"});
-  addIcon({name: "syphonstrike"});
+  addIcon({ name: "hardslash"});
+  addIcon({ name: "syphonstrike"});
   if (player.level >= 26) {
-    addIcon({name: "souleater"});
+    addIcon({ name: "souleater"});
   }
 }
 
 function drkStalwartSoulCombo() {
   next.combo = 2;
-  addIcon({name: "unleash"});
+  addIcon({ name: "unleash"});
   if (player.level >= 74) {
-    addIcon({name: "stalwartsoul"});
+    addIcon({ name: "stalwartsoul"});
   }
 }
 

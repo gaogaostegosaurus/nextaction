@@ -73,12 +73,12 @@ const pldNext = ({
 } = {}) => {
   const pldArray = [];
 
-  next.MP = player.MP;
+  next.MP = player.mp;
   next.requiescatRecast = checkRecast({ name: 'Requiescat' });
   next.requiescatStatus = checkStatus({ name: 'Requiescat' });
   next.fightorflightRecast = checkRecast({ name: 'Fight Or Flight' });
   next.fightorflightStatus = checkStatus({ name: 'Fight Or Flight' });
-  next.goringbladeStatus = checkStatus({ name: 'Goring Blade', id: target.ID });
+  next.goringbladeStatus = checkStatus({ name: 'Goring Blade', id: target.id });
   next.swordoathStatus = checkStatus({ name: 'Sword Oath' });
   next.comboToggle = toggle.combo;
   next.swordoathCount = count.swordoath;

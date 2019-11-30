@@ -19,6 +19,21 @@ duration.straightshotready = 10000;
 duration.venomousbite = 30000;
 duration.windbite = duration.venomousbite;
 
+// DNC
+duration.flourishingcascade = 20000;
+duration.flourishingfountain = duration.flourishingcascade;
+duration.flourishingwindmill = duration.flourishingcascade;
+duration.flourishingshower = duration.flourishingcascade;
+duration.standardstep = 15000;
+duration.standardfinish = 20000;
+// duration.doublestandardfinish = duration.standardfinish;
+duration.technicalstep = 15000;
+duration.technicalfinish = 20000;
+// duration.doubletechnicalfinish = duration.technicalfinish;
+// duration.tripletechnicalfinish = duration.technicalfinish;
+// duration.quadrupletechnicalfinish = duration.technicalfinish;
+duration.devilment = 20000;
+
 // DRK
 duration.delirium = 10000;
 

@@ -1,5 +1,7 @@
 
-const icon = {};
+let iconArrayA = [];
+let iconArrayB = [];
+let iconArrayC = [];
 
 const getArrayRow = ({
   iconArray,
@@ -22,10 +24,10 @@ const syncIcons = ({
     return;
   }
 
-  if (!player.job || Date.now() - previous.syncIcons < 100) {
-    console.log(`${player.job} ${previous.syncIcons}`);
-    return;
-  }
+  // if (!player.job || Date.now() - previous.syncIcons < 100) {
+  //   // console.log(`${player.job} ${previous.syncIcons}`);
+  //   return;
+  // }
 
   previous.syncIcons = Date.now();
 

@@ -47,7 +47,7 @@ function samJobChange() {
 
   if (player.level >= 68
   && checkRecast("ikishoten") < 0) {
-    addIcon({name: "ikishoten"});
+    addIcon({ name: "ikishoten"});
   }
 
   samMeikyoShisui();
@@ -64,7 +64,7 @@ function samAction() {
 
     if (actionLog.groups.actionName == "Higanbana") {
       addStatus("higanbana", duration.higanbana, actionLog.groups.targetID);
-      if (checkStatus("meikyoshisui", player.ID) > 0) {
+      if (checkStatus("meikyoshisui", player.id) > 0) {
         samCombo(); // Consuming Sen under Meikyo will trigger a new combo
       }
       icon.iaijutsu = "003159";
@@ -82,7 +82,7 @@ function samAction() {
       else {
         count.targets = count.targets + 1;
       }
-      if (checkStatus("meikyoshisui", player.ID) > 0) {
+      if (checkStatus("meikyoshisui", player.id) > 0) {
         samCombo(); // Consuming Sen under Meikyo will trigger a new combo
       }
       icon.iaijutsu = "003159";
@@ -93,7 +93,7 @@ function samAction() {
     }
 
     else if ("Midare Setsugekka" == actionLog.groups.actionName) {
-      if (checkStatus("meikyoshisui", player.ID) > 0) {
+      if (checkStatus("meikyoshisui", player.id) > 0) {
         samCombo(); // Consuming Sen under Meikyo will trigger a new combo
       }
       icon.iaijutsu = "003159";
@@ -224,8 +224,8 @@ function samAction() {
       if (Date.now() - previous.mangetsu > 1000) {
         previous.mangetsu = Date.now();
         count.targets = 1;
-        if (checkStatus("jinpu", player.ID) > 0) {
-          addStatus("jinpu", Math.min(checkStatus("jinpu", player.ID) + 15000, duration.jinpu));
+        if (checkStatus("jinpu", player.id) > 0) {
+          addStatus("jinpu", Math.min(checkStatus("jinpu", player.id) + 15000, duration.jinpu));
         }
       }
       else {
@@ -241,8 +241,8 @@ function samAction() {
       if (Date.now() - previous.oka > 1000) {
         previous.oka = Date.now();
         count.targets = 1;
-        if (checkStatus("shifu", player.ID) > 0) {
-          addStatus("shifu", Math.min(checkStatus("shifu", player.ID) + 15000, duration.shifu));
+        if (checkStatus("shifu", player.id) > 0) {
+          addStatus("shifu", Math.min(checkStatus("shifu", player.id) + 15000, duration.shifu));
         }
       }
       else {
@@ -293,7 +293,7 @@ function samStatus() {
 
   // To player from anyone
 
-  else if (statusLog.groups.targetID == player.ID) {
+  else if (statusLog.groups.targetID == player.id) {
 
     if (statusLog.groups.statusName == "Jinpu") {
       if (statusLog.groups.gainsLoses == "gains") {
@@ -380,7 +380,7 @@ function samMeikyoShisui() {
 
   if (player.level >= 50
   && checkRecast("meikyoshisui") < 0) {
-    addIcon({name: "meikyoshisui"});
+    addIcon({ name: "meikyoshisui"});
   }
   else {
     removeIcon("meikyoshisui");
@@ -397,7 +397,7 @@ function samSen() {
 
   // Choose Iaijutsu icon
   if (player.jobDetail.getsu + player.jobDetail.ka + player.jobDetail.setsu == 1
-  && checkStatus("higanbana", target.ID) < 15000) {
+  && checkStatus("higanbana", target.id) < 15000) {
     icon.iaijutsu = icon.higanbana;
   }
   else if (player.jobDetail.getsu + player.jobDetail.ka + player.jobDetail.setsu == 2) {
@@ -427,7 +427,7 @@ function samSen() {
   }
 
   // Place Iaijutsu in combo
-  if (checkStatus("jinpu", player.ID) < 5000
+  if (checkStatus("jinpu", player.id) < 5000
   && toggle.combo == 1) {
     // Delay Iaijutsu for upcoming Jinpu buff
     if (icon.iaijutsu != "003159") {
@@ -437,7 +437,7 @@ function samSen() {
       addIconBlink(nextid.tsubamegaeshi2,icon.tsubamegaeshi);
     }
   }
-  else if (checkStatus("kaiten", player.ID) < 0
+  else if (checkStatus("kaiten", player.id) < 0
   && player.jobDetail.kenki < 20) {
     // Delay Iaijutsu to try for more Kenki
     if (icon.iaijutsu != "003159") {
@@ -493,7 +493,7 @@ function samKenki() {
   && checkRecast("ikishoten") > checkRecast("guren") + 5000
   && checkRecast("guren") < 1000
   && player.jobDetail.kenki >= 70) {
-    addIcon({name: "guren"});
+    addIcon({ name: "guren"});
   }
   else {
     removeIcon("guren");
@@ -502,13 +502,13 @@ function samKenki() {
   // Show Shinten/Kyuten/Seigan
   if (player.level >= 66
   && player.jobDetail.kenki >= minimumkenki + 15
-  && checkStatus("openeyes", player.ID) > 5000
+  && checkStatus("openeyes", player.id) > 5000
   && !toggle.aoe) {
-    addIcon({name: "seigan"});
+    addIcon({ name: "seigan"});
   }
   else if (player.level >= 62
   && player.jobDetail.kenki >= minimumkenki + 25) {
-    addIcon({name: "shinten"});
+    addIcon({ name: "shinten"});
   }
   else {
     removeIcon("shinten");
@@ -527,26 +527,26 @@ function samCombo() {
 
   if (toggle.aoe) { // AoE
 
-    if (checkStatus("meikyoshisui", player.ID) > 0) {
+    if (checkStatus("meikyoshisui", player.id) > 0) {
 
       if (player.jobDetail.ka == false
-      && checkStatus("shifu", player.ID) < checkStatus("jinpu", player.ID)) {
-        addIcon({name: "oka"});
+      && checkStatus("shifu", player.id) < checkStatus("jinpu", player.id)) {
+        addIcon({ name: "oka"});
       }
       else if (player.jobDetail.getsu == false
-      && checkStatus("jinpu", player.ID) < checkStatus("shifu", player.ID)) {
-        addIcon({name: "mangetsu"});
+      && checkStatus("jinpu", player.id) < checkStatus("shifu", player.id)) {
+        addIcon({ name: "mangetsu"});
       }
 
       else if (player.jobDetail.getsu == false) {
-        addIcon({name: "mangetsu"});
+        addIcon({ name: "mangetsu"});
       }
       else if (player.jobDetail.ka == false) {
-        addIcon({name: "oka"});
+        addIcon({ name: "oka"});
       }
 
       else {
-        addIcon({name: "mangetsu"});
+        addIcon({ name: "mangetsu"});
       }
     }
 
@@ -554,12 +554,12 @@ function samCombo() {
 
       if (player.level >= 45
       && player.jobDetail.ka == false
-      && checkStatus("shifu", player.ID) < checkStatus("jinpu", player.ID)) {
+      && checkStatus("shifu", player.id) < checkStatus("jinpu", player.id)) {
         okaCombo();
       }
       else if (player.level >= 35
       && player.jobDetail.getsu == false
-      && checkStatus("jinpu", player.ID) < checkStatus("shifu", player.ID)) {
+      && checkStatus("jinpu", player.id) < checkStatus("shifu", player.id)) {
         mangetsuCombo();
       }
 
@@ -576,16 +576,16 @@ function samCombo() {
 
   else {
 
-    if (checkStatus("meikyoshisui", player.ID) > 0) {
+    if (checkStatus("meikyoshisui", player.id) > 0) {
 
       if (player.jobDetail.getsu == false) {
-        addIcon({name: "gekko"});
+        addIcon({ name: "gekko"});
       }
       else if (player.jobDetail.ka == false) {
-        addIcon({name: "kasha"});
+        addIcon({ name: "kasha"});
       }
       else if (player.jobDetail.setsu == false) {
-        addIcon({name: "yukikaze"});
+        addIcon({ name: "yukikaze"});
       }
     }
 
@@ -593,12 +593,12 @@ function samCombo() {
 
       if (player.level >= 18
       && player.jobDetail.ka == false
-      && checkStatus("shifu", player.ID) < checkStatus("jinpu", player.ID)) {
+      && checkStatus("shifu", player.id) < checkStatus("jinpu", player.id)) {
         kashaCombo();
       }
       else if (player.level >= 4
       && player.jobDetail.getsu == false
-      && checkStatus("jinpu", player.ID) < checkStatus("shifu", player.ID)) {
+      && checkStatus("jinpu", player.id) < checkStatus("shifu", player.id)) {
         gekkoCombo();
       }
 
@@ -633,39 +633,39 @@ function samComboTimeout() {
 
 function gekkoCombo() {
   toggle.combo = 1;
-  addIcon({name: "hakaze"});
-  addIcon({name: "jinpu"});
+  addIcon({ name: "hakaze"});
+  addIcon({ name: "jinpu"});
   if (player.level >= 30) {
-    addIcon({name: "gekko"});
+    addIcon({ name: "gekko"});
   }
 }
 
 function kashaCombo() {
   toggle.combo = 2;
-  addIcon({name: "hakaze"});
-  addIcon({name: "shifu"});
+  addIcon({ name: "hakaze"});
+  addIcon({ name: "shifu"});
   if (player.level >= 40) {
-    addIcon({name: "kasha"});
+    addIcon({ name: "kasha"});
   }
 }
 
 function yukikazeCombo() {
   toggle.combo = 3;
-  addIcon({name: "hakaze"});
+  addIcon({ name: "hakaze"});
   removeIcon("jinpu");
-  addIcon({name: "yukikaze"});
+  addIcon({ name: "yukikaze"});
 }
 
 function mangetsuCombo() {
   toggle.combo = 4;
-  addIcon({name: "fuga"});
+  addIcon({ name: "fuga"});
   removeIcon("jinpu");
-  addIcon({name: "mangetsu"});
+  addIcon({ name: "mangetsu"});
 }
 
 function okaCombo() {
   toggle.combo = 5;
-  addIcon({name: "fuga"});
+  addIcon({ name: "fuga"});
   removeIcon("jinpu");
-  addIcon({name: "oka"});
+  addIcon({ name: "oka"});
 }

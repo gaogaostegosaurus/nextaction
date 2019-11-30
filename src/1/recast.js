@@ -4,7 +4,7 @@ const addRecast = ({
   name,
   property = name.replace(/[\s'-]/g, '').toLowerCase(),
   time = recast[property],
-  id = player.ID,
+  id = player.id,
 } = {}) => {
   // Create if array doesn't exist yet
   if (!recastTracker[property]) {
@@ -26,7 +26,7 @@ const addRecast = ({
 const checkRecast = ({
   name,
   property = name.replace(/[\s'-]/g, '').toLowerCase(),
-  id = player.ID,
+  id = player.id,
 } = {}) => {
   // Check if array exists
   if (!recastTracker[property]) {

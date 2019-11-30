@@ -1,4 +1,6 @@
 
+const icon = {};
+
 icon.default = '000000';
 
 // Role Actions
@@ -85,9 +87,9 @@ icon.flourishingfountain = icon.fountainfall;
 icon.bloodshower = '003465';
 icon.flourishingshower = icon.bloodshower;
 // icon.bloodshowersingletarget = icon.bloodshower;
-icon.fandance2 = '003466';
+icon.fandanceii = '003466';
 icon.devilment = '003471';
-icon.fandance3 = '003472';
+icon.fandanceiii = '003472';
 icon.flourishingfandance = icon.fandance3;
 icon.technicalstep = '003473';
 icon.technicalfinish = '003474';

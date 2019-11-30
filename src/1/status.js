@@ -1,10 +1,12 @@
 
+const statusTracker = {}; // Holds timestamps for statuses
+
 // Puts status effects into an array with target ID as an identifier
 const addStatus = ({
   name,
   property = name.replace(/[\s'-]/g, '').toLowerCase(),
   time = duration[property],
-  id = player.ID,
+  id = player.id,
 } = {}) => {
   if (!statusTracker[property]) {
     // Array doesn't exist yet, so create
@@ -27,7 +29,7 @@ const addStatus = ({
 const checkStatus = ({
   name,
   property = name.replace(/[\s'-]/g, '').toLowerCase(),
-  id = player.ID,
+  id = player.id,
 } = {}) => {
   // Search for index of matching ID
   if (!statusTracker[property]) {
@@ -47,7 +49,7 @@ const checkStatus = ({
 const removeStatus = ({
   name,
   property = name.replace(/[\s'-]/g, '').toLowerCase(),
-  id = player.ID,
+  id = player.id,
 } = {}) => {
   if (statusTracker[property]) {
     const match = statusTracker[property].findIndex((entry) => entry.id === id);

@@ -587,7 +587,7 @@ onStatus.NIN = (statusMatch) => {
 //       removeIcon("tenchijin");
 //       addRecast("hide");
 //       addRecast("ninjutsu", -1);
-//       addCountdown({name: "ninjutsu", time: -1});
+//       addCountdown({ name: "ninjutsu", time: -1});
 //       clearTimeout(timeout.ninjutsu);
 //       ninNinjutsu();
 //     }
@@ -597,7 +597,7 @@ onStatus.NIN = (statusMatch) => {
 //     }
 //
 //     else if ("Trick Attack" == actionMatch.groups.actionName) {
-//       addCountdown({name: "trickattack"});
+//       addCountdown({ name: "trickattack"});
 //     }
 //
 //     else if (["Raiton", "Hyosho Ranyu"].indexOf(actionMatch.groups.actionName) > -1) {
@@ -630,17 +630,17 @@ onStatus.NIN = (statusMatch) => {
 //       else {
 //         addRecast("kassatsu1", checkRecast("kassatsu2"));
 //         addRecast("kassatsu2", checkRecast("kassatsu2") + recast.kassatsu);
-//         addCountdown({name: "kassatsu", time: checkRecast("kassatsu1"), oncomplete: "addIcon"});
+//         addCountdown({ name: "kassatsu", time: checkRecast("kassatsu1"), oncomplete: "addIcon"});
 //       }
 //
-//       addCountdown({name: "ninjutsu", time: -1});
+//       addCountdown({ name: "ninjutsu", time: -1});
 //       clearTimeout(timeout.ninjutsu);
 //       ninNinjutsu();
 //     }
 //
 //     else if ("Dream Within A Dream" == actionMatch.groups.actionName) {
 //       removeIcon("dreamwithinadream");
-//       addCountdown({name: "dreamwithinadream", time: recast.dreamwithinadream, oncomplete: "addIcon"});
+//       addCountdown({ name: "dreamwithinadream", time: recast.dreamwithinadream, oncomplete: "addIcon"});
 //       addStatus("assassinateready");
 //     }
 //
@@ -663,15 +663,15 @@ onStatus.NIN = (statusMatch) => {
 //     else if ("Ten Chi Jin" == actionMatch.groups.actionName) {
 //       removeIcon("tenchijin");
 //       addStatus("tenchijin");
-//       addCountdown({name: "tenchijin"});
+//       addCountdown({ name: "tenchijin"});
 //       addRecast("ninjutsu", -1);
-//       addCountdown({name: "ninjutsu", time: -1});
+//       addCountdown({ name: "ninjutsu", time: -1});
 //       clearTimeout(timeout.ninjutsu);
 //       ninNinjutsu();
 //     }
 //
 //     else if ("Meisui" == actionMatch.groups.actionName) {
-//       addCountdown({name: "meisui"});
+//       addCountdown({ name: "meisui"});
 //       ninNinki();
 //     }
 //
@@ -682,7 +682,7 @@ onStatus.NIN = (statusMatch) => {
 //
 //         if ([1, 2, 3].indexOf(next.combo) == -1) {
 //           if (player.level >= 38
-//             && checkStatus("shadowfang", target.ID) < 9000) {
+//             && checkStatus("shadowfang", target.id) < 9000) {
 //               ninShadowFangCombo();
 //             }
 //             else if (player.level >= 54
@@ -848,8 +848,8 @@ onStatus.NIN = (statusMatch) => {
 //               if ("Shadow Fang" == statusLog.groups.statusName) {
 //                 if ("gains" == statusLog.groups.gainsLoses) {
 //                   addStatus("shadowfang", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
-//                   if (target.ID == statusLog.groups.targetID) {  // Might be possible to switch targets between application to target and log entry
-//                     addCountdown({name: "shadowfang", time: checkStatus("shadowfang"), text: target.ID});
+//                   if (target.id == statusLog.groups.targetID) {  // Might be possible to switch targets between application to target and log entry
+//                     addCountdown({ name: "shadowfang", time: checkStatus("shadowfang"), text: target.id});
 //                   }
 //                 }
 //                 else if ("loses" == statusLog.groups.gainsLoses) {
@@ -873,7 +873,7 @@ onStatus.NIN = (statusMatch) => {
 //   }
 //   else if (player.level >= 38
 //   && count.targets <= 3
-//   && checkStatus("shadowfang", target.ID) < 9000) {
+//   && checkStatus("shadowfang", target.id) < 9000) {
 //     ninShadowFangCombo();
 //   }
 //   else if (player.level >= 38
@@ -888,31 +888,31 @@ onStatus.NIN = (statusMatch) => {
 //
 // function ninAeolianEdgeCombo() {
 //   next.combo = 1;
-//   addIcon({name: "spinningedge"});
-//   addIcon({name: "gustslash"});
+//   addIcon({ name: "spinningedge"});
+//   addIcon({ name: "gustslash"});
 //   if (player.level >= 26) {
-//     addIcon({name: "aeolianedge"});
+//     addIcon({ name: "aeolianedge"});
 //   }
 // }
 //
 // function ninArmorCrushCombo() {
 //   next.combo = 2;
-//   addIcon({name: "spinningedge"});
-//   addIcon({name: "gustslash"});
-//   addIcon({name: "armorcrush"});
+//   addIcon({ name: "spinningedge"});
+//   addIcon({ name: "gustslash"});
+//   addIcon({ name: "armorcrush"});
 // }
 //
 // function ninShadowFangCombo() {
 //   next.combo = 3;
-//   addIcon({name: "spinningedge"});
-//   addIcon({name: "shadowfang"});
+//   addIcon({ name: "spinningedge"});
+//   addIcon({ name: "shadowfang"});
 // }
 //
 // function ninHakkeMujinsatsuCombo() {
 //   next.combo = 4;
-//   addIcon({name: "deathblossom"});
+//   addIcon({ name: "deathblossom"});
 //   if (player.level >= 52) {
-//     addIcon({name: "hakkemujinsatsu"});
+//     addIcon({ name: "hakkemujinsatsu"});
 //   }
 // }
 //
@@ -920,14 +920,14 @@ onStatus.NIN = (statusMatch) => {
 //   removeIcon("ninjutsu1");
 //   removeIcon("ninjutsu2");
 //   removeIcon("ninjutsu3");
-//   addCountdown({name: "ninjutsu"});
+//   addCountdown({ name: "ninjutsu"});
 //   clearTimeout(timeout.ninjutsu);
 //   timeout.ninjutsu = setTimeout(ninNinjutsu, recast.ninjutsu - 1000);
 //   if (checkRecast("kassatsu1") < 0) {
-//     addIcon({name: "kassatsu"});
+//     addIcon({ name: "kassatsu"});
 //   }
 //   if (checkRecast("tenchijin") < 0) {
-//     addIcon({name: "tenchijin"});
+//     addIcon({ name: "tenchijin"});
 //   }
 // }
 //

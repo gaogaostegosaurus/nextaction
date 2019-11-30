@@ -77,36 +77,36 @@ function warJobChange() {
   if (count.targets > 1) {
     if (player.level >= 56
     && checkRecast("rawintuition") < 0) {
-      addIcon({name: "rawintuition"});
+      addIcon({ name: "rawintuition"});
     }
     else if (player.level >= 8
     && checkRecast("rampart") < 0) {
-      addIcon({name: "rampart"});
+      addIcon({ name: "rampart"});
     }
     else if (player.level >= 46
     && checkRecast("vengeance") < 0) {
-      addIcon({name: "vengeance"});
+      addIcon({ name: "vengeance"});
     }
   }
 
   if (player.level >= 50
-  && checkRecast("infuriate1", player.ID) < 0) {
-    addIcon({name: "infuriate"});
+  && checkRecast("infuriate1", player.id) < 0) {
+    addIcon({ name: "infuriate"});
   }
 
   // Berserk is complicated
   if (player.level >= 64
   && checkRecast("upheaval") < 0
   && checkRecast("berserk") > 25000 ) {
-    addIcon({name: "upheaval"}); // Show Upheaval if Berserk is far away
+    addIcon({ name: "upheaval"}); // Show Upheaval if Berserk is far away
   }
   else if (player.level >= 74
-  && checkRecast("infuriate1", player.ID) < 0) {
+  && checkRecast("infuriate1", player.id) < 0) {
     removeIcon("berserk"); // Hide Berserk to prevent wasting Nascent Chaos
   }
   else if (player.level >= 6
   && checkRecast("berserk") < 0) {
-    addIcon({name: "berserk"});
+    addIcon({ name: "berserk"});
   }
 
   warCombo();
@@ -137,15 +137,15 @@ function warAction() {
     }
 
     else if ("Infuriate" == actionLog.groups.actionName) { // Code treats Infuriate like two different skills to juggle the charges.
-      if (checkRecast("infuriate2", player.ID) < 0) {
-        addRecast("infuriate1", player.ID, -1);
-        addRecast("infuriate2", player.ID, recast.infuriate);
+      if (checkRecast("infuriate2", player.id) < 0) {
+        addRecast("infuriate1", player.id, -1);
+        addRecast("infuriate2", player.id, recast.infuriate);
       }
       else {
         removeIcon("infuriate");
-        addRecast("infuriate1", player.ID, checkRecast("infuriate2", player.ID));
-        addRecast("infuriate2", player.ID, checkRecast("infuriate2", player.ID) + recast.infuriate);
-        addIconBlinkTimeout("infuriate", checkRecast("infuriate1", player.ID), nextid.infuriate, icon.infuriate);
+        addRecast("infuriate1", player.id, checkRecast("infuriate2", player.id));
+        addRecast("infuriate2", player.id, checkRecast("infuriate2", player.id) + recast.infuriate);
+        addIconBlinkTimeout("infuriate", checkRecast("infuriate1", player.id), nextid.infuriate, icon.infuriate);
       }
       warGauge();
     }
@@ -173,10 +173,10 @@ function warAction() {
           count.targets = 1; // Steel Cyclone is stronger than Inner Beast at 2+ targets
         }
         if (player.level >= 66) { // Enhanced Infuriate
-          addRecast("infuriate1", player.ID, checkRecast("infuriate1", player.ID) - 5000);
-          addRecast("infuriate2", player.ID, checkRecast("infuriate2", player.ID) - 5000);
+          addRecast("infuriate1", player.id, checkRecast("infuriate1", player.id) - 5000);
+          addRecast("infuriate2", player.id, checkRecast("infuriate2", player.id) - 5000);
           removeIcon("infuriate");
-          addIconBlinkTimeout("infuriate",checkRecast("infuriate1", player.ID),nextid.infuriate,icon.infuriate);
+          addIconBlinkTimeout("infuriate",checkRecast("infuriate1", player.id),nextid.infuriate,icon.infuriate);
         }
         removeIcon("innerbeast");
       }
@@ -186,10 +186,10 @@ function warAction() {
           count.targets = 1;
           previous.steelcyclone = Date.now();
           if (player.level >= 66) { // Enhanced Infuriate
-            addRecast("infuriate1", player.ID, checkRecast("infuriate1", player.ID) - 5000);
-            addRecast("infuriate2", player.ID, checkRecast("infuriate2", player.ID) - 5000);
+            addRecast("infuriate1", player.id, checkRecast("infuriate1", player.id) - 5000);
+            addRecast("infuriate2", player.id, checkRecast("infuriate2", player.id) - 5000);
             removeIcon("infuriate");
-            addIconBlinkTimeout("infuriate",checkRecast("infuriate1", player.ID),nextid.infuriate,icon.infuriate);
+            addIconBlinkTimeout("infuriate",checkRecast("infuriate1", player.id),nextid.infuriate,icon.infuriate);
           }
         }
         else {
@@ -267,8 +267,8 @@ function warAction() {
         if (Date.now() - previous.mythriltempest > 1000) {
           previous.mythriltempest = Date.now();
           count.targets = 1;
-          if (checkStatus("stormseye", player.ID) > 0) {
-            addStatus("stormseye", Math.min(checkStatus("stormseye", player.ID) + 10000, duration.stormseye));
+          if (checkStatus("stormseye", player.id) > 0) {
+            addStatus("stormseye", Math.min(checkStatus("stormseye", player.id) + 10000, duration.stormseye));
           }
         }
         else {
@@ -296,7 +296,7 @@ function warAction() {
 
 function warStatus() {
 
-  if (statusLog.groups.targetID == player.ID) { // Target is self
+  if (statusLog.groups.targetID == player.id) { // Target is self
 
     if (["Berserk", "Inner Release"].indexOf(statusLog.groups.statusName) > -1) {
       if (statusLog.groups.gainsLoses == "gains") {
@@ -417,7 +417,7 @@ function warGauge() {
   let targetbeast = 50; // Display spender icon if Beast is this value or above
 
   // Set Inner Beast icon - listed from highest to lowest minimum potency
-  if (checkStatus("nascentchaos", player.ID) > 2500) {
+  if (checkStatus("nascentchaos", player.id) > 2500) {
     if (count.targets >= 3) {
       icon.innerbeast = icon.chaoticcyclone;
     }
@@ -449,7 +449,7 @@ function warGauge() {
   }
 
   // Set Steel Cyclone icon
-  if (checkStatus("nascentchaos", player.ID) > 2500) {
+  if (checkStatus("nascentchaos", player.id) > 2500) {
     icon.steelcyclone = icon.chaoticcyclone;
   }
   else if (player.level >= 60) {
@@ -460,34 +460,34 @@ function warGauge() {
   }
 
   if (player.level >= 70
-  && checkStatus("berserk", player.ID) > 0) { // Possibly adjust this number
+  && checkStatus("berserk", player.id) > 0) { // Possibly adjust this number
     targetbeast = 0; // Spam during Inner Release
   }
   else if (player.level >= 70
   && checkRecast("berserk") < 5000
-  && checkRecast("infuriate1", player.ID) < 40000) {
+  && checkRecast("infuriate1", player.id) < 40000) {
     targetbeast = 50; // Avoid overcapping during Inner Release
   }
   else if (player.level >= 66
-  && checkRecast("infuriate1", player.ID) < 10000) {
+  && checkRecast("infuriate1", player.id) < 10000) {
     targetbeast = 50; // Avoid overcapping from Enhanced Infuriate
   }
   else if (player.level < 66
-  && checkRecast("infuriate1", player.ID) < 5000) {
+  && checkRecast("infuriate1", player.id) < 5000) {
     targetbeast = 50; // Avoid overcapping from Infuriate
   }
   else if (player.level >= 74
-  && checkStatus("nascentchaos", player.ID) > 2500
-  && checkStatus("nascentchaos", player.ID) < 12500) {
+  && checkStatus("nascentchaos", player.id) > 2500
+  && checkStatus("nascentchaos", player.id) < 12500) {
     targetbeast = 50; // Avoid wasting Nascent Chaos
   }
   else if (player.level >= 50
   && count.targets <= 3 // AoE wins at 3
-  && checkStatus("stormseye", player.ID) < 15000) {
+  && checkStatus("stormseye", player.id) < 15000) {
     targetbeast = 90; // Avoid letting Storm's Eye fall off during AoE
   }
   else if (player.level >= 50
-  && checkStatus("stormseye", player.ID) < 5000) {
+  && checkStatus("stormseye", player.id) < 5000) {
     targetbeast = 90; // Avoid using spenders out of Storm's Eye
   }
   else if (player.level >= 45
@@ -504,19 +504,19 @@ function warGauge() {
 
   // Berserk/Inner Release
   if (checkRecast("berserk") < 0
-  && checkStatus("stormseye", player.ID) > 0) {
-    addIcon({name: "berserk"});
+  && checkStatus("stormseye", player.id) > 0) {
+    addIcon({ name: "berserk"});
   }
   else if (player.level >= 70
   && checkRecast("upheaval") < 1000
-  && checkStatus("berserk", player.ID) > 0) {
-    addIcon({name: "upheaval"});
+  && checkStatus("berserk", player.id) > 0) {
+    addIcon({ name: "upheaval"});
   }
   else if (player.level >= 64
   && player.jobDetail.beast >= 20
   && checkRecast("upheaval") < 1000
   && checkRecast("berserk") > 25000) {
-    addIcon({name: "upheaval"});
+    addIcon({ name: "upheaval"});
   }
   else {
     removeIcon("upheaval");
@@ -524,7 +524,7 @@ function warGauge() {
 
   if (player.level >= 35
   && player.jobDetail.beast >= targetbeast) {
-    addIcon({name: "innerbeast"});
+    addIcon({ name: "innerbeast"});
   }
   else {
     removeIcon("innerbeast");
@@ -542,25 +542,25 @@ function warCombo() {
   // Revisit this later if it is refreshing too much
   if (player.level >= 50
   && checkRecast("berserk") < 17500
-  && checkStatus("stormseye", player.ID) - Math.max(checkRecast("berserk"), 0) < 20000) {
+  && checkStatus("stormseye", player.id) - Math.max(checkRecast("berserk"), 0) < 20000) {
     stormseyeCombo();
   }
 
   else if (player.level >= 74
   && count.targets >= 2
-  && checkStatus("stormseye", player.ID) > 7500) {
+  && checkStatus("stormseye", player.id) > 7500) {
     mythriltempestCombo();
   }
 
   else if (player.level >= 50
   && count.targets >= 3
-  && checkStatus("stormseye", player.ID) > 7500) {
+  && checkStatus("stormseye", player.id) > 7500) {
     mythriltempestCombo();
   }
 
   // Revisit this later if it is too conservative
   else if (player.level >= 50
-  && checkStatus("stormseye", player.ID) < 10000) {
+  && checkStatus("stormseye", player.id) < 10000) {
     stormseyeCombo();
   }
 
@@ -581,27 +581,27 @@ function warComboTimeout() {
 
 function stormspathCombo() {
   next.combo = 1;
-  addIcon({name: "heavyswing"});
+  addIcon({ name: "heavyswing"});
   if (player.level >= 18) {
-    addIcon({name: "maim"});
+    addIcon({ name: "maim"});
   }
   if (player.level >= 38) {
-    addIcon({name: "stormspath"});
+    addIcon({ name: "stormspath"});
   }
 }
 
 function stormseyeCombo() {
   next.combo = 2;
-  addIcon({name: "heavyswing"});
-  addIcon({name: "maim"});
-  addIcon({name: "stormseye"});
+  addIcon({ name: "heavyswing"});
+  addIcon({ name: "maim"});
+  addIcon({ name: "stormseye"});
 }
 
 function mythriltempestCombo() {
   next.combo = 3;
-  addIcon({name: "overpower"});
+  addIcon({ name: "overpower"});
   removeIcon("maim");
   if (player.level >= 40) {
-    addIcon({name: "mythriltempest"});
+    addIcon({ name: "mythriltempest"});
   }
 }

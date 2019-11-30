@@ -1,4 +1,9 @@
 
+const interval = {};
+const countdownArrayA = [];
+const countdownArrayB = [];
+const countdownArrayC = [];
+
 const getArrayColumn = ({
   countdownArray,
 } = {}) => {

@@ -47,15 +47,15 @@ function mnkJobChange() {
   countdownid.brotherhood = 10;
 
   if (player.level >= 50) {
-    addCountdownBar({name: "perfectbalance", time: checkRecast("perfectbalance"), oncomplete: "addIcon"});
+    addCountdownBar({ name: "perfectbalance", time: checkRecast("perfectbalance"), oncomplete: "addIcon"});
   }
 
   if (player.level >= 68) {
-    addCountdownBar({name: "riddleoffire", time: checkRecast("riddleoffire"), oncomplete: "addIcon"});
+    addCountdownBar({ name: "riddleoffire", time: checkRecast("riddleoffire"), oncomplete: "addIcon"});
   }
 
   if (player.level >= 70) {
-    addCountdownBar({name: "brotherhood", time: checkRecast("brotherhood"), oncomplete: "addIcon"});
+    addCountdownBar({ name: "brotherhood", time: checkRecast("brotherhood"), oncomplete: "addIcon"});
   }
 
   mnkCombo();
@@ -64,7 +64,7 @@ function mnkJobChange() {
 
 function mnkPlayerChangedEvent(e) {
   if (player.jobDetail.chakraStacks >= 5) {
-    addIcon({name: "theforbiddenchakra"});
+    addIcon({ name: "theforbiddenchakra"});
   }
   else {
     removeIcon("theforbiddenchakra");
@@ -76,19 +76,19 @@ function mnkAction(logLine) {
   if (actionList.mnk.indexOf(actionLog.groups.actionName) > -1) {
 
     if ("Perfect Balance" == actionLog.groups.actionName) {
-      addCountdownBar({name: "perfectbalance", time: recast.perfectbalance, oncomplete: "addIcon"});
+      addCountdownBar({ name: "perfectbalance", time: recast.perfectbalance, oncomplete: "addIcon"});
     }
 
     else if ("Riddle Of Earth" == actionLog.groups.actionName) {
-      addCountdownBar({name: "riddleofearth", time: recast.riddleofearth, oncomplete: "addIcon"});
+      addCountdownBar({ name: "riddleofearth", time: recast.riddleofearth, oncomplete: "addIcon"});
     }
 
     else if ("Riddle Of Fire" == actionLog.groups.actionName) {
-      addCountdownBar({name: "riddleoffire", time: recast.riddleoffire, oncomplete: "addIcon"});
+      addCountdownBar({ name: "riddleoffire", time: recast.riddleoffire, oncomplete: "addIcon"});
     }
 
     else if ("Brotherhood" == actionLog.groups.actionName) {
-      addCountdownBar({name: "brotherhood", time: recast.brotherhood, oncomplete: "addIcon"});
+      addCountdownBar({ name: "brotherhood", time: recast.brotherhood, oncomplete: "addIcon"});
     }
 
     else {
@@ -180,7 +180,7 @@ function mnkStatus(logLine) {
   else if (statusLog.groups.statusName == "Fists Of Earth") {
     if (statusLog.groups.gainsLoses == "gains") {
       addStatus("fistsofearth", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
-      addIcon({name: "fistsoffire"});
+      addIcon({ name: "fistsoffire"});
     }
     else if (statusLog.groups.gainsLoses == "loses") {
       removeStatus("fistsofearth", statusLog.groups.targetID);
@@ -190,7 +190,7 @@ function mnkStatus(logLine) {
   else if (statusLog.groups.statusName == "Fists Of Wind") {
     if (statusLog.groups.gainsLoses == "gains") {
       addStatus("fistsofwind", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
-      addIcon({name: "fistsoffire"});
+      addIcon({ name: "fistsoffire"});
     }
     else if (statusLog.groups.gainsLoses == "loses") {
       removeStatus("fistsofwind", statusLog.groups.targetID);
@@ -204,7 +204,7 @@ function mnkStatus(logLine) {
     }
     else if (statusLog.groups.gainsLoses == "loses") {
       removeStatus("fistsoffire", statusLog.groups.targetID);
-      addIcon({name: "fistsoffire"});
+      addIcon({ name: "fistsoffire"});
     }
   }
 
@@ -295,7 +295,7 @@ function mnkCombo() {
     icon.combo3 = icon.rockbreaker;
   }
   else if (player.level >= 30
-  && checkStatus("demolish", target.ID) < 12000) {
+  && checkStatus("demolish", target.id) < 12000) {
     icon.combo3 = icon.demolish;
   }
 
@@ -303,9 +303,9 @@ function mnkCombo() {
     icon.combo3 = icon.snappunch;
   }
 
-  addIcon({name: "combo1"});
-  addIcon({name: "combo2"});
-  addIcon({name: "combo3"});
+  addIcon({ name: "combo1"});
+  addIcon({ name: "combo2"});
+  addIcon({ name: "combo3"});
 
 }
 
