@@ -86,6 +86,21 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
     player.aetherflow = parseInt(debugJobArray[2], 16); /* 0-3 */
     // player.faerie = parseInt(debugJobArray[3], 16); /* 0-100 */
     // healerLucidDreaming();
+  } else if (player.job === 'SMN') {
+    player.aetherflow = e.detail.jobDetail.aetherflowStacks; /* 0-3 */
+    player.dreadwyrmAether = e.detail.jobDetail.dreadwyrmStacks; /* 0-2 */
+    player.firebirdToggle = e.detail.jobDetail.bahamutStacks; /* 0-1 */
+    if (player.firebirdToggle === 1) {
+      player.dreadwyrm = -1;
+      player.firebird = e.detail.jobDetail.dreadwyrmMilliseconds;
+    } else {
+      player.dreadwyrm = e.detail.jobDetail.dreadwyrmMilliseconds;
+      player.firebird = -1;
+    }
+    // player.firebird = player.dreadwyrm;
+    player.bahamut = e.detail.jobDetail.bahamutMilliseconds;
+    // player.faerie = parseInt(debugJobArray[3], 16); /* 0-100 */
+    // healerLucidDreaming();
   } else if (player.job === 'WHM') {
     // player.lilies = parseInt(debugJobArray[4], 16);
     player.bloodLily = parseInt(debugJobArray[5], 16); /* 0-3 */
@@ -187,6 +202,13 @@ addOverlayListener('onTargetChangedEvent', (e) => {
   // target.maxHP = e.detail.maxHP;
   // target.maxMP = e.detail.maxMP;
   // target.distance = e.detail.distance;
+  /* Shows and hides the overlay based on target and combat status */
+  if (target.id.startsWith('4')) {
+    document.getElementById('nextdiv').classList.replace('next-hide', 'next-show');
+  } else if (toggle.combat === 0) {
+    document.getElementById('nextdiv').classList.replace('next-show', 'next-hide');
+  }
+
   if (player.job) {
     onTargetChanged[player.job]();
   }
@@ -201,11 +223,8 @@ addOverlayListener('onInCombatChangedEvent', (e) => {
 
   if (e.detail.inGameCombat) {
     toggle.combat = 1;
-    document.getElementById('nextdiv').classList.replace('next-hide', 'next-show');
   } else {
     toggle.combat = 0;
-    document.getElementById('nextdiv').classList.replace('next-show', 'next-hide');
-    /* next-hide class has a built in delay */
   }
 });
 

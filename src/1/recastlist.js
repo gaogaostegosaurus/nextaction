@@ -148,7 +148,18 @@ recast.summonseraph = 120000;
 recast.whisperingdawn = 60000;
 
 // SMN
-recast.devotion = 180000;
+recast.enkindlebahamut = 10000;
+recast.enkindle = 120000;
+recast.fester = 5000;
+recast.painflare = 5000;
+recast.energydrain = 30000;
+recast.dreadwyrmtrance = 60000;
+recast.egiassault = 30000;
+recast.egiassaultii = 30000;
+recast.bane = 10000;
+recast.tridisaster = 50000;
+recast.aetherpact = 180000;
+recast.summonbahamut = 30000;
 
 // WAR
 recast.berserk = 90000;

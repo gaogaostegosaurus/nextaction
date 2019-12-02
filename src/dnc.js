@@ -351,8 +351,8 @@ onAction.DNC = (actionMatch) => {
     toggle.ogcd = 1;
     dncNext({ time: 1500 });
   } else if (dncFanDances.includes(actionMatch.groups.actionName)) {
-    dncNext({ time: 1000 });
     toggle.ogcd -= 1;
+    dncNext({ time: 1000 });
   } else if (dncCooldowns.includes(actionMatch.groups.actionName)) {
     addRecast({ name: actionMatch.groups.actionName });
     if (actionMatch.groups.actionName === 'Devilment') {

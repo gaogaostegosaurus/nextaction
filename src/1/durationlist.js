@@ -87,6 +87,12 @@ duration.bio = 30000;
 duration.bioii = 30000;
 duration.biolysis = 30000;
 
+// SMN
+duration.bioiii = 30000;
+duration.miasma = 30000;
+duration.miasmaiii = 30000;
+duration.hellishconduit = 30000;
+
 // WAR
 duration.stormseye = 30000;
 

@@ -439,10 +439,8 @@ count.mudra = 0;
 onAction.NIN = (actionMatch) => {
   removeIcon({ name: actionMatch.groups.actionName });
 
-  if (ninSingleTarget.indexOf(actionMatch.groups.actionName) > -1) {
+  if (ninSingleTarget.includes(actionMatch.groups.actionName) > -1) {
     count.targets = 1;
-  } else if (actionMatch.groups.logType === '15' && count.targets > 2) {
-    count.targets = 2;
   }
 
   if (ninMudra.indexOf(actionMatch.groups.actionName) > -1) {

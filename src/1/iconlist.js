@@ -388,7 +388,37 @@ icon.feyillumination = '002853';
 icon.feyblessing = '002854';
 
 // SMN
-icon.devotion = '002688';
+icon.aetherpact = '002687';
+icon.ruin = '000501';
+icon.ruinii = '000502';
+icon.bio = '000503';
+icon.bioii = '000504';
+icon.energydrain = '000514';
+icon.fester = '002676';
+icon.enkindle = '002677';
+icon.painflare = '002681';
+icon.ruiniii = '002682';
+icon.tridisaster = '002683';
+icon.dreadwyrmtrance = '002684';
+icon.deathflare = '002685';
+icon.ruiniv = '002686';
+icon.bioiii = '002689';
+icon.miasmaiii = '002690';
+icon.summonbahamut = '002691';
+icon.enkindlebahamut = '002693';
+icon.egiassault = '002695';
+icon.egiassault1 = icon.egiassault;
+icon.egiassault2 = icon.egiassault;
+icon.egiassaultii = '002696';
+icon.egiassaultii1 = icon.egiassaultii;
+icon.egiassaultii2 = icon.egiassaultii;
+icon.energysiphon = '002697';
+icon.outburst = '002698';
+icon.firebirdtrance = '002734';
+icon.fountainoffire = '002735';
+icon.brandofpurgatory = '002736';
+icon.enkindlephoenix = '002737';
+
 
 // WAR
 icon.overpower = '000254';
