@@ -372,7 +372,7 @@ const smnNext = ({
     }
 
     next.combat = 1;
-  } while (next.elapsedTime < 160000);
+  } while (next.elapsedTime < 20000);
 
   iconArrayB = smnArray;
   syncIcons();
