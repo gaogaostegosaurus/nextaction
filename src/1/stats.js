@@ -101,6 +101,15 @@ const gcdCalculation = ({
 
   recast.shadowfang = Math.floor(Math.floor(10000 * (Math.floor((70000 * (1000 - Math.floor(130
     * (delta / levelMod)))) / 1000) / 1000)) / 100) * 10;
+
+  recast.egiassault = Math.floor(Math.floor(10000 * (Math.floor((30000 * (1000 - Math.floor(130
+    * (delta / levelMod)))) / 1000) / 1000)) / 100) * 10;
+
+  recast.egiassault1 = recast.egiassault;
+  recast.egiassault2 = recast.egiassault;
+  recast.egiassaulti1 = recast.egiassault;
+  recast.egiassaultii2 = recast.egiassault;
+  
   console.log(`Standard GCD calculated as ${player.gcd}ms`);
 };
 

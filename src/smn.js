@@ -5,12 +5,29 @@ const smnCastedGCDs = [
   'Miasma', 'Miasma III',
   /* 'Physick', 'Ressurection', */
 ];
+const smnMiasmaSpells = ['Miasma', 'Miasma III'];
 
 const smnInstantGCDs = [
   'Bio', 'Bio II', 'Bio III',
   'Ruin IV',
   'Fountain Of Fire', 'Brand Of Purgatory',
-  'Egi Assault', 'Egi Assault II',
+  'Assault I: Crimson Cyclone', 'Assault I: Aerial Slash', 'Assault I: Earthen Armor',
+  'Assault Ii: Flaming Crush', 'Assault Ii: Slipstream', 'Assault Ii: Mountain Buster',
+  'Enkindle: Inferno', 'Enkindle: Aerial Blast', 'Enkindle: Earthen Fury',
+];
+
+const smnBioSpells = ['Bio', 'Bio II', 'Bio III'];
+
+const smnAssaultI = [
+  'Assault I: Crimson Cyclone', 'Assault I: Aerial Slash', 'Assault I: Earthen Armor',
+];
+
+const smnAssaultII = [
+  'Assault Ii: Flaming Crush', 'Assault Ii: Slipstream', 'Assault Ii: Mountain Buster',
+];
+
+const smnEnkindle = [
+  'Enkindle: Inferno', 'Enkindle: Aerial Blast', 'Enkindle: Earthen Fury',
 ];
 
 const smnOGCDs = [
@@ -22,7 +39,23 @@ const smnOGCDs = [
   'Firebird Trance', 'Enkindle Phoenix',
 ];
 
-const smnSingleTarget = []; /* who knows */
+const smnTrances = [
+  'Dreadwyrm Trance', 'Firebird Trance',
+];
+
+const smnCountdownA = [
+  'Egi Assault', 'Egi Assault II',
+  'Energy Drain', 'Fester', 'Painflare',
+];
+const smnCountdownB = [
+  'Tri-Disaster', 'Dreadwyrm Trance', 'Firebird Trance',
+  'Summon Bahamut', 'Enkindle Bahamut', 'Enkindle Phoenix',
+];
+const smnCountdownC = [];
+
+const smnSingleTarget = [
+  'Ruin', 'Ruin III', 'Fester',
+]; /* who knows */
 
 actionList.SMN = smnCastedGCDs.concat(smnInstantGCDs, smnOGCDs);
 statusList.SMN = [
@@ -34,11 +67,6 @@ statusList.SMN = [
   'Devotion',
 ];
 castingList.SMN = smnCastedGCDs;
-
-const smnNextOGCD = () => {
-
-};
-
 
 const smnNext = ({
   time = player.gcd,
@@ -87,7 +115,7 @@ const smnNext = ({
   next.furtherruinCount = count.furtherruin;
 
   next.combat = toggle.combat;
-  next.ogcdSlots = toggle.ogcd;
+  next.ogcdSlots = toggle.ogcdSlots;
 
   next.elapsedTime = time;
   previous.elapsedTime = 0;
@@ -95,91 +123,80 @@ const smnNext = ({
 
   do {
     delete next.gcdTime;
-
-    if (!next.combat) { /* precast */
-      smnArray.push({ name: player.ruinSpell });
-    } else if (next.bahamut - next.elapsedTime > 0
-    && next.bahamut - next.elapsedTime < player.gcd * (next.furtherruinCount + 0)
-    && next.furtherruinCount > 0) {
-      /* Use Ruin IV if running out of Bahamut GCDs */
-      smnArray.push({ name: 'Ruin IV' });
-      next.furtherruinCount -= 1;
-    } else if (player.level >= 62 && next.furtherruinCount >= 4
-    && next.egiassault2Recast - next.elapsedTime < player.gcd) {
-      /* Use Ruin IV if about to get another stack from EA */
-      smnArray.push({ name: 'Ruin IV' });
-      next.furtherruinCount -= 1;
-    } else if (player.level >= 74 && next.furtherruinCount >= 4
-    && next.egiassaultii2Recast - next.elapsedTime < player.gcd) {
-      /* Use Ruin IV if about to get another stack from EAII */
-      smnArray.push({ name: 'Ruin IV' });
-      next.furtherruinCount -= 1;
-    } else if (player.level >= 10
-    && next.egiassault2Recast - next.elapsedTime < 0) {
-      smnArray.push({ name: 'Egi Assault' });
-      next.egiassault1Recast = next.egiassault2Recast;
-      next.egiassault2Recast = recast.egiassault + next.elapsedTime;
-      if (player.level >= 62) {
-        next.furtherruinCount += 1;
-      }
-    } else if (player.level >= 40
-    && next.egiassaultii2Recast - next.elapsedTime < 0) {
-      smnArray.push({ name: 'Egi Assault II' });
-      next.egiassaultii1Recast = next.egiassaultii2Recast;
-      next.egiassaultii2Recast = recast.egiassaultii + next.elapsedTime;
-      if (player.level >= 74) {
-        next.furtherruinCount += 1;
-      }
-    } else if (next.bioStatus - next.elapsedTime < 0
-    && next.tridisasterRecast - next.elapsedTime > 0) {
-      smnArray.push({ name: player.bioSpell });
-      next.bioStatus = 30000 + next.elapsedTime;
-    } else if (next.miasmaStatus - next.elapsedTime < 0
-    && next.tridisasterRecast - next.elapsedTime > 0) {
-      smnArray.push({ name: player.miasmaSpell });
-      next.miasmaStatus = 30000 + next.elapsedTime;
-    } else if (next.firebird - next.elapsedTime > 0) { /* in Firebird phase */
-      if (next.hellishconduitStatus - next.elapsedTime > 0) {
-        smnArray.push({ name: 'Brand Of Purgatory' });
-        next.hellishconduitStatus = -1;
+    if (next.ogcdSlots > 0) {
+      if (next.elapsedTime === 0) { /* precast */
+        smnArray.push({ name: player.ruinSpell });
+      } else if (next.bahamut - next.elapsedTime > 0
+      && next.bahamut - next.elapsedTime < player.gcd * (next.furtherruinCount + 0)
+      && next.furtherruinCount > 0) {
+        /* Use Ruin IV if running out of Bahamut GCDs */
+        smnArray.push({ name: 'Ruin IV' });
+        next.furtherruinCount = Math.max(next.furtherruinCount - 1, 0);
+      } else if (player.level >= 62 && next.furtherruinCount >= 4
+      && next.egiassault2Recast - next.elapsedTime < player.gcd * 2) {
+        /* Use Ruin IV if about to get another stack from EA */
+        smnArray.push({ name: 'Ruin IV' });
+        next.furtherruinCount = Math.max(next.furtherruinCount - 1, 0);
+      } else if (player.level >= 74 && next.furtherruinCount >= 4
+      && next.egiassaultii2Recast - next.elapsedTime < player.gcd * 2) {
+        /* Use Ruin IV if about to get another stack from EAII */
+        smnArray.push({ name: 'Ruin IV' });
+        next.furtherruinCount = Math.max(next.furtherruinCount - 1, 0);
+      } else if (player.level >= 10
+      && next.egiassault2Recast - next.elapsedTime < player.gcd) {
+        /* Use Egi Assault before second stack stops timer */
+        smnArray.push({ name: 'Egi Assault' });
+        next.egiassault1Recast = next.egiassault2Recast + next.elapsedTime;
+        next.egiassault2Recast = next.egiassault2Recast + recast.egiassault + next.elapsedTime;
+        if (player.level >= 62) {
+          next.furtherruinCount = Math.min(next.furtherruinCount + 1, 4);
+        }
+      } else if (player.level >= 40
+      && next.egiassaultii2Recast - next.elapsedTime < player.gcd) {
+        /* Use Egi Assault II before second stack stops timer */
+        smnArray.push({ name: 'Egi Assault II' });
+        next.egiassaultii1Recast = next.egiassaultii2Recast + next.elapsedTime;
+        next.egiassaultii2Recast += recast.egiassaultii + next.elapsedTime;
+        if (player.level >= 74) {
+          next.furtherruinCount = Math.min(next.furtherruinCount + 1, 4);
+        }
+      } else if (next.firebird - next.elapsedTime > 0) { /* in Firebird phase */
+        if (next.hellishconduitStatus - next.elapsedTime > 0) {
+          smnArray.push({ name: 'Brand Of Purgatory' });
+          next.hellishconduitStatus = -1;
+        } else {
+          smnArray.push({ name: 'Fountain Of Fire' });
+          next.hellishconduitStatus = duration.hellishconduit + next.elapsedTime;
+        }
+      } else if (next.bioStatus - next.elapsedTime < 0
+      && next.tridisasterRecast - next.elapsedTime > player.gcd * 4
+      && next.dreadwyrmtranceRecast - next.elapsedTime > player.gcd * 3) {
+        smnArray.push({ name: player.bioSpell });
+        next.bioStatus = 30000 + next.elapsedTime;
+      } else if (next.miasmaStatus - next.elapsedTime < 0
+      && next.tridisasterRecast - next.elapsedTime > player.gcd * 4
+      && next.dreadwyrmtranceRecast - next.elapsedTime > player.gcd * 3) {
+        smnArray.push({ name: player.miasmaSpell });
+        next.miasmaStatus = 30000 + next.elapsedTime;
+      } else if (player.level >= 70 && next.egiassault1Recast - next.elapsedTime < 0
+      && next.furtherruinCount < 4) {
+        smnArray.push({ name: 'Egi Assault' });
+        next.egiassault1Recast = next.egiassault2Recast + next.elapsedTime;
+        next.egiassault2Recast = next.egiassault2Recast + recast.egiassault + next.elapsedTime;
+        next.furtherruinCount = Math.min(next.furtherruinCount + 1, 4);
+      } else if (player.level >= 74 && next.egiassaultii1Recast - next.elapsedTime < 0
+      && next.furtherruinCount < 4) {
+        smnArray.push({ name: 'Egi Assault II' });
+        next.egiassaultii1Recast = next.egiassaultii2Recast + next.elapsedTime;
+        next.egiassaultii2Recast += recast.egiassaultii + next.elapsedTime;
+        next.furtherruinCount = Math.min(next.furtherruinCount + 1, 4);
+      } else if (player.level >= 40 && count.targets >= 4) {
+        smnArray.push({ name: 'Outburst' });
+      } else if (player.level >= 40 && count.targets >= 3 && next.furtherruinCount === 0) {
+        smnArray.push({ name: 'Outburst' });
       } else {
-        smnArray.push({ name: 'Fountain Of Fire' });
-        next.hellishconduitStatus = duration.hellishconduit + next.elapsedTime;
+        smnArray.push({ name: player.ruinSpell });
       }
-    } else if (player.level >= 62 && next.furtherruinCount >= 4
-    && next.egiassault1Recast - next.elapsedTime < player.gcd) {
-      /* Use Ruin IV if about to get another stack from EA */
-      smnArray.push({ name: 'Ruin IV' });
-      next.furtherruinCount -= 1;
-    } else if (player.level >= 74 && next.furtherruinCount >= 4
-    && next.egiassaultii1Recast - next.elapsedTime < player.gcd) {
-      /* Use Ruin IV if about to get another stack from EAII */
-      smnArray.push({ name: 'Ruin IV' });
-      next.furtherruinCount -= 1;
-    } else if (player.level >= 10
-    && Math.max(next.bahamut, next.firebird) - next.elapsedTime < 0
-    && next.egiassault1Recast - next.elapsedTime < 0) {
-      smnArray.push({ name: 'Egi Assault' });
-      next.egiassault1Recast = next.egiassault2Recast;
-      next.egiassault2Recast = recast.egiassault + next.elapsedTime;
-      if (player.level >= 62) {
-        next.furtherruinCount += 1;
-      }
-    } else if (player.level >= 40
-    && Math.max(next.bahamut, next.firebird) - next.elapsedTime < 0
-    && next.egiassaultii1Recast - next.elapsedTime < 0) {
-      smnArray.push({ name: 'Egi Assault II' });
-      next.egiassaultii1Recast = next.egiassaultii2Recast;
-      next.egiassaultii2Recast = recast.egiassaultii + next.elapsedTime;
-      if (player.level >= 74) {
-        next.furtherruinCount += 1;
-      }
-    } else if (player.level >= 40 && count.targets >= 4) {
-      smnArray.push({ name: 'Outburst' });
-    } else if (player.level >= 40 && count.targets >= 3 && next.furtherruinCount === 0) {
-      smnArray.push({ name: 'Outburst' });
-    } else {
-      smnArray.push({ name: player.ruinSpell });
     }
 
     /* Determine OGCDs and adjust existing GCDs accordingly */
@@ -306,46 +323,47 @@ const smnNext = ({
       next.ogcdSlots -= 1; /* Decreases regardless of whether or not something was assigned to
       array */
     }
+    /* restore offset to original */
     next.elapsedTime -= 500;
 
     /* Replace casted GCDs for weaving */
-    if (ogcdArray.length > 0 && next.dreadwyrm - next.elapsedTime < 0
+    if (ogcdArray.length > 0
+    && (next.dreadwyrm - next.elapsedTime < 0 || next.dreadwyrm - next.elapsedTime > 20000)
     && next.swiftcastStatus - next.elapsedTime < 0
     && smnCastedGCDs.includes(smnArray[smnArray.length - 1].name)) {
-      if (next.firebird - next.elapsedTime > 0) {
-        if (next.hellishconduitStatus - next.elapsedTime > 0) {
-          smnArray[smnArray.length - 1].name = 'Brand Of Purgatory';
-        } else {
-          smnArray[smnArray.length - 1].name = 'Fountain Of Fire';
-        }
-      } else if (next.furtherruinCount > 0 && next.bahamut - next.elapsedTime > 0) {
-        smnArray[smnArray.length - 1].name = 'Ruin IV';
-        next.furtherruinCount -= 1;
-      } else if (player.level >= 62 && next.egiassault1Recast - next.elapsedTime > 0
-      && next.furtherruinCount < 4) {
-        smnArray[smnArray.length - 1].name = 'Egi Assault';
-        next.egiassault1Recast = next.egiassault2Recast;
-        next.egiassault2Recast = recast.egiassault + next.elapsedTime;
-      } else if (player.level >= 74 && next.egiassaultii1Recast - next.elapsedTime > 0
-      && next.furtherruinCount < 4) {
-        smnArray[smnArray.length - 1].name = 'Egi Assault II';
-        next.egiassaultii1Recast = next.egiassaultii2Recast;
-        next.egiassaultii2Recast = recast.egiassaultii + next.elapsedTime;
-      } else if (player.level < 62 && next.egiassault1Recast - next.elapsedTime > 0) {
-        smnArray[smnArray.length - 1].name = 'Egi Assault';
-        next.egiassault1Recast = next.egiassault2Recast;
-        next.egiassault2Recast = recast.egiassault + next.elapsedTime;
-      } else if (player.level < 74 && next.egiassaultii1Recast - next.elapsedTime > 0) {
-        smnArray[smnArray.length - 1].name = 'Egi Assault II';
-        next.egiassaultii1Recast = next.egiassaultii2Recast;
-        next.egiassaultii2Recast = recast.egiassaultii + next.elapsedTime;
-      } else if (player.level >= 38) {
-        smnArray[smnArray.length - 1].name = 'Ruin II';
+      if (smnArray[smnArray.length - 1].name.includes('Miasma')) {
+        next.miasmaStatus = -1;
       }
-      smnArray = smnArray.concat(ogcdArray);
-    } else {
-      smnArray = smnArray.concat(ogcdArray);
+      smnArray.pop();
+      if (next.furtherruinCount > 0 && next.bahamut - next.elapsedTime > 0) {
+        smnArray.push({ name: 'Ruin IV' });
+        next.furtherruinCount = Math.max(next.furtherruinCount - 1, 0);
+      } else if (next.furtherruinCount >= 4
+      && next.dreadwyrmtranceRecast > Math.min(next.egiassault1, next.egiassaultii1)
+      && next.firebirdToggle === 0) {
+        smnArray.push({ name: 'Ruin IV' });
+        next.furtherruinCount = Math.max(next.furtherruinCount - 1, 0);
+      } else if (player.level >= 10 && next.egiassault1 - next.elapsedTime < 0) {
+        /* Use second charge on OGCD */
+        smnArray.push({ name: 'Egi Assault' });
+        next.egiassault1Recast = next.egiassault2Recast + next.elapsedTime;
+        next.egiassault2Recast = next.egiassault2Recast + recast.egiassault + next.elapsedTime;
+        if (player.level >= 62) {
+          next.furtherruinCount = Math.min(next.furtherruinCount + 1, 4);
+        }
+      } else if (player.level >= 40 && next.egiassaultii1 - next.elapsedTime < 0) {
+        /* Use second charge on OGCD */
+        smnArray.push({ name: 'Egi Assault II' });
+        next.egiassaultii1Recast = next.egiassaultii2Recast + next.elapsedTime;
+        next.egiassaultii2Recast += recast.egiassaultii + next.elapsedTime;
+        if (player.level >= 74) {
+          next.furtherruinCount = Math.min(next.furtherruinCount + 1, 4);
+        }
+      } else if (player.level >= 38) {
+        smnArray.push({ name: 'Ruin II' });
+      }
     }
+    smnArray = smnArray.concat(ogcdArray);
 
     if (next.gcdTime) {
       next.elapsedTime += next.gcdTime;
@@ -354,7 +372,7 @@ const smnNext = ({
     }
 
     next.combat = 1;
-  } while (next.elapsedTime < 150000);
+  } while (next.elapsedTime < 160000);
 
   iconArrayB = smnArray;
   syncIcons();
@@ -393,74 +411,74 @@ onJobChange.SMN = () => {
 onAction.SMN = (actionMatch) => {
   removeIcon({ name: actionMatch.groups.actionName });
 
-  if (dncSingleTarget.includes(actionMatch.groups.actionName)) {
+  if (smnSingleTarget.includes(actionMatch.groups.actionName)) {
     count.targets = 1;
   }
-  // console.log(count.targets);
 
-  if (dncSteps.includes(actionMatch.groups.actionName)) {
-    addRecast({ name: actionMatch.groups.actionName });
-    addStatus({ name: actionMatch.groups.actionName });
-    dncNext({ time: 1500 });
-  } else if (dncStepActions.includes(actionMatch.groups.actionName)) {
-    // dncNext({ time: 1000 });
-  } else if (dncStandardFinishes.includes(actionMatch.groups.actionName)) {
-    removeStatus({ name: 'Standard Step' });
-    toggle.ogcd = 1;
-    dncNext({ time: 1500 });
-  } else if (dncTechnicalFinishes.includes(actionMatch.groups.actionName)) {
-    removeStatus({ name: 'Technical Step' });
-    toggle.ogcd = 1;
-    dncNext({ time: 1500 });
-  } else if (dncFanDances.includes(actionMatch.groups.actionName)) {
-    dncNext({ time: 1000 });
-    toggle.ogcd -= 1;
-  } else if (dncCooldowns.includes(actionMatch.groups.actionName)) {
-    addRecast({ name: actionMatch.groups.actionName });
-    if (actionMatch.groups.actionName === 'Devilment') {
-      addStatus({ name: 'Devilment' });
-    } else if (actionMatch.groups.actionName === 'Flourish') {
-      addStatus({ name: 'Flourishing Cascade' });
-      addStatus({ name: 'Flourishing Fountain' });
-      addStatus({ name: 'Flourishing Windmill' });
-      addStatus({ name: 'Flourishing Shower' });
-      addStatus({ name: 'Flourishing Fan Dance' });
+  if (smnCastedGCDs.includes(actionMatch.groups.actionName)) {
+    if (smnMiasmaSpells.includes(actionMatch.groups.actionName)) {
+      addStatus({ name: player.miasmaSpell, id: actionMatch.groups.targetID });
     }
-    toggle.ogcd -= 1;
-    dncNext({ time: 1000 });
-  } else if (dncWeaponskills.includes(actionMatch.groups.actionName)) {
-    if (actionMatch.groups.actionName === 'Bloodshower') {
-      removeStatus({ name: 'Flourishing Shower' });
-    } else if (actionMatch.groups.actionName === 'Rising Windmill') {
-      removeStatus({ name: 'Flourishing Windmill' });
-    } else if (actionMatch.groups.actionName === 'Fountainfall') {
-      removeStatus({ name: 'Flourishing Fountain' });
-    } else if (actionMatch.groups.actionName === 'Reverse Cascade') {
-      removeStatus({ name: 'Flourishing Cascade' });
-    } else if (['Fountain', 'Bladeshower'].includes(actionMatch.groups.actionName)) {
-      toggle.combo = 0;
-    } else if (actionMatch.groups.actionName === 'Cascade') {
-      toggle.combo = 1;
-    } else if (actionMatch.groups.actionName === 'Windmill') {
-      toggle.combo = 11;
+    if (checkStatus({ name: 'Swiftcast' }) > 0) {
+      smnNext();
+    } else {
+      smnNext({ time: 0 });
     }
-    toggle.ogcd = 1;
-    dncNext();
+  } else if (smnInstantGCDs.includes(actionMatch.groups.actionName)) {
+    if (smnBioSpells.includes(actionMatch.groups.actionName)) {
+      addStatus({ name: player.bioSpell, id: actionMatch.groups.targetID });
+    } else if (actionMatch.groups.actionName === 'Ruin IV') {
+      count.furtherruin = Math.max(count.furtherruin - 1, 0);
+    } else if (actionMatch.groups.actionName === 'Fountain Of Fire') {
+      addStatus({ name: 'Hellish Conduit' });
+    } else if (actionMatch.groups.actionName === 'Brand Of Purgatory') {
+      removeStatus({ name: 'Hellish Conduit' });
+    } else if (smnAssaultI.includes(actionMatch.groups.actionName)) {
+      if (checkRecast({ name: 'Egi Assault 2' }) > 0) {
+        addRecast({ name: 'Egi Assault 1', time: checkRecast({ name: 'Egi Assault 2' }) });
+        addCountdown({ name: 'Egi Assault 1', text: '#1 READY' });
+      }
+      addRecast({ name: 'Egi Assault 2', time: checkRecast({ name: 'Egi Assault 2' }) + recast.egiassault });
+      addCountdown({ name: 'Egi Assault 2', text: '#2 READY' });
+    } else if (smnAssaultII.includes(actionMatch.groups.actionName)) {
+      if (checkRecast({ name: 'Egi Assault II 2' }) > 0) {
+        addRecast({ name: 'Egi Assault II 1', time: checkRecast({ name: 'Egi Assault II 2' }) });
+        addCountdown({ name: 'Egi Assault II 1', text: '#1 READY' });
+      }
+      addRecast({ name: 'Egi Assault II 2', time: checkRecast({ name: 'Egi Assault II 2' }) + recast.egiassault });
+      addCountdown({ name: 'Egi Assault II 2', text: '#2 READY' });
+    }
+    toggle.ogcdSlots = 2;
+    smnNext();
+  } else if (smnOGCDs.includes(actionMatch.groups.actionName)) {
+    addRecast({ name: actionMatch.groups.actionName });
+    if (actionMatch.groups.actionName === 'Tri-Disaster') {
+      addCountdown({ name: 'Tri-Disaster' });
+    } else if (actionMatch.groups.actionName === 'Dreadwyrm Trance') {
+      addRecast({ name: 'Dreadwyrm Trance' });
+      addRecast({ name: 'Tri-Disaster', time: -1 });
+      addCountdown({ name: 'Tri-Disaster' });
+      if (player.level >= 72) {
+        addCountdown({ name: 'Trance', property: 'firebirdtrance', time: checkRecast({ name: 'Dreadwyrm Trance' }) });
+      } else {
+        addCountdown({ name: 'Trance', property: 'dreadwyrmtrance', time: checkRecast({ name: 'Dreadwyrm Trance' }) });
+      }
+    } else if (actionMatch.groups.actionName === 'Firebird Trance') {
+      addRecast({ name: 'Dreadwyrm Trance' });
+      addRecast({ name: 'Tri-Disaster', time: -1 });
+      addCountdown({ name: 'Tri-Disaster' });
+      addCountdown({ name: 'Trance', property: 'dreadwyrmtrance', time: checkRecast({ name: 'Dreadwyrm Trance' }) });
+    }
   }
-  previous.elapsedTime = next.elapsedTime;
 };
 
-onStatus.DNC = (statusMatch) => {
+onStatus.SMN = (statusMatch) => {
   if (statusMatch.groups.gainsLoses === 'gains') {
-    addStatus({ name: statusMatch.groups.statusName });
-    if (dncFlourishingBuff.includes(statusMatch.groups.statusName)) {
-      dncNext();
-    }
+    addStatus({ name: statusMatch.groups.statusName, id: statusMatch.groups.targetID });
   } else {
-    removeStatus({ name: statusMatch.groups.statusName });
+    removeStatus({ name: statusMatch.groups.statusName, id: statusMatch.groups.targetID });
   }
 };
-
 
 
 onTargetChanged.SMN = () => {};
