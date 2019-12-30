@@ -225,6 +225,9 @@ addOverlayListener('onInCombatChangedEvent', (e) => {
     toggle.combat = 1;
   } else {
     toggle.combat = 0;
+    if (target.id && !target.id.startsWith('4')) {
+      document.getElementById('nextdiv').classList.replace('next-show', 'next-hide');
+    }
   }
 });
 
