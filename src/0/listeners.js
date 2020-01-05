@@ -119,10 +119,12 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
     const casting = castingList[player.job].join('|');
     actionRegExp = new RegExp(` (?<logType>1[56]):(?<sourceID>${player.id}):(?<sourceName>${player.name}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${action}):(?<targetID>[\\dA-F]{8}):(?<targetName>[ -~]+?):(?<result>[\\dA-F]{1,8}):`);
     statusRegExp = new RegExp(` (?<logType>1[AE]):(?<targetID>[\\dA-F]{8}):(?<targetName>[ -~]+?) (?<gainsLoses>gains|loses) the effect of (?<statusName>${status}) from (?<sourceName>${player.name})(?: for )?(?<statusDuration>\\d*\\.\\d*)?(?: Seconds)?\\.`);
-    castingRegExp = new RegExp(` 14:(?<actionID>[\\dA-F]{1,4}):(?<sourceName>${player.name}) starts using (?<actionName>${casting}) on (?<targetName>[ -~]+?)\\.`);
-    cancelRegExp = new RegExp(` 17:(?<sourceID>${player.id}):(?<sourceName>${player.name}):(?<actionID>[\\dA-F]{1,4}):(?<actionName>${casting}):Cancelled:`);
-    /* addedRegExp = new RegExp(` 03:(?<sourceID>${player.id}):
-    Added new combatant (?<sourceName>${player.name})\\.  Job: (?<job>[A-z]{3}) `); */
+    /* Regular log line reacts faster for cast detection,
+      but regular log line doesn't have target ID...
+      Maybe that code right before can be used as an friendly/foe indicator? */
+    castingRegExp = new RegExp(` 00:(?<logType>[\\da-f]+):You begin casting (?<actionName>${casting})\\.`, 'i');
+    /* See above */
+    cancelRegExp = new RegExp(` 00:(?<logType>[\\da-f]+):You cancel (?<actionName>${casting})\\.`, 'i');
     resetNext();
     onJobChange[player.job]();
     console.log(`Changed to ${player.job}${player.level}`);
@@ -172,13 +174,18 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
     } else if (statusMatch) {
       onStatus[player.job](statusMatch);
     } else if (castingMatch) {
+      console.log(`${castingMatch}`);
       onCasting[player.job](castingMatch);
 
       /* Display next if casting with an NPC target */
-      if (target.id.startsWith('4')) { /* 0 = no target, 1... = player? E... = non-combat NPC? */
+      if (castingMatch.groups.logType === '0aab') { /* 0 = no target, 1... = player? E... = non-combat NPC? */
         document.getElementById('nextdiv').classList.replace('next-hide', 'next-show');
       }
+      // if (target.id.startsWith('4')) { /* 0 = no target, 1... = player? E... = non-combat NPC? */
+      //   document.getElementById('nextdiv').classList.replace('next-hide', 'next-show');
+      // }
     } else if (cancelMatch) {
+      console.log(`${cancelMatch}`);
       onCancel[player.job](cancelMatch);
     } else if (statsMatch) {
       gcdCalculation({
@@ -201,13 +208,15 @@ addOverlayListener('onTargetChangedEvent', (e) => {
   // target.currentMP = e.detail.currentMP;
   // target.maxHP = e.detail.maxHP;
   // target.maxMP = e.detail.maxMP;
-  // target.distance = e.detail.distance;
+  target.distance = e.detail.distance;
   /* Shows and hides the overlay based on target and combat status */
   if (target.id.startsWith('4')) {
     document.getElementById('nextdiv').classList.replace('next-hide', 'next-show');
   } else if (toggle.combat === 0) {
     document.getElementById('nextdiv').classList.replace('next-show', 'next-hide');
   }
+
+  // console.log(target.distance);
 
   if (player.job) {
     onTargetChanged[player.job]();

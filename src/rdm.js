@@ -16,7 +16,7 @@ actionList.RDM = [
 
 castingList.RDM = [
   'Jolt', 'Verfire', 'Verstone', 'Jolt II', 'Verthunder', 'Veraero',
-  'Verthunder II', 'Veraero II', 'Impact', 'Scatter',
+  'Verthunder II', 'Veraero II', 'Vercure', 'Impact', 'Scatter',
 ];
 
 statusList.RDM = [
@@ -92,7 +92,7 @@ const rdmCheckCombo = () => {
     // Thing
   } else if (player.level >= 68 && manaMin >= 80) {
     // Finds available proc combo
-    // Priority is Verholy because why not
+    // Verholy wins tiebreakers because why not
     if (player.level >= 70 && blackMana > whiteMana && verstoneStatus < statusBuffer) {
       rdmVerholyCombo();
     } else if (whiteMana > blackMana && verfireStatus < statusBuffer) {
@@ -558,7 +558,7 @@ const rdmNext = () => { // Main function
 onCasting.RDM = (castingMatch) => {
   // Clear out combo stuff
   next.casting = Date.now();
-  console.log(`Starts casting ${castingMatch.groups.actionName}: ${Date.now()}`);
+  // console.log(`Starts casting ${castingMatch.groups.actionName}: ${Date.now()}`);
   iconArrayA.length = 0;
   syncIcons({ iconArray: iconArrayA });
 
@@ -568,7 +568,7 @@ onCasting.RDM = (castingMatch) => {
 onAction.RDM = (actionMatch) => {
   // Action log
   next.uses = Date.now();
-  console.log(`Uses ${actionMatch.groups.actionName}: ${next.uses - next.casting}`);
+  // console.log(`Uses ${actionMatch.groups.actionName}: ${next.uses - next.casting}`);
 
   // Target number calculations
   if (['Verthunder II', 'Veraero II', 'Scatter', 'Impact', 'Moulinet', 'Enchanted Moulinet', 'Contre Sixte'].indexOf(actionMatch.groups.actionName) > -1) {
@@ -643,7 +643,7 @@ onAction.RDM = (actionMatch) => {
 
 // 17: NetworkCancelAbility
 onCancel.RDM = (cancelledMatch) => {
-  console.log(`Canceled: ${Date.now()}`);
+  // console.log(`Canceled: ${Date.now()}`);
   // const row = document.getElementById('action-row');
   // const match = row.querySelector('div[data-name~="Hardcast"]');
   unfadeIcon({ name: 'Hardcast', match: 'contains' });
