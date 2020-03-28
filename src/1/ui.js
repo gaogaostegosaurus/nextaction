@@ -1,5 +1,3 @@
-const interval = {};
-
 const resetNext = () => {
   /* Reset timeout and intervals */
   Object.keys(timeout).forEach((property) => { clearTimeout(timeout[property]); });

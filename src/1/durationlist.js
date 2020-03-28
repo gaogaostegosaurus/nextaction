@@ -60,6 +60,7 @@ duration.suiton = 20000;
 duration.kassatsu = 15000;
 duration.armorcrush = 30000;
 duration.assassinateready = 15000;
+duration.hakkemujinsatsu = 10000;
 duration.tenchijin = 6000;
 duration.bunshin = 30000;
 
