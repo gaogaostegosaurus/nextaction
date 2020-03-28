@@ -49,25 +49,25 @@ const schCooldownActions = [
   'Swiftcast', 'Lucid Dreaming', 'Surecast', 'Rescue',
 ];
 
-const schBioSpells = [ 'Bio', 'Bio II', 'Biolysis' ];
+const schBioSpells = ['Bio', 'Bio II', 'Biolysis'];
 
-const schColumns = [
-  { name: 'Aetherflow', level: 45, array: countdownArrayA },
-  { name: 'Dissipation', level: 60, array: countdownArrayA },
-  { name: 'Excogitation', level: 62, array: countdownArrayA },
-  { name: 'Indomitability', level: 52, array: countdownArrayA },
-  { name: 'Sacred Soil', level: 50, array: countdownArrayA },
-  { name: 'Recitation', level: 74, array: countdownArrayA },
-  { name: 'Emergency Tactics', level: 58, array: countdownArrayA },
-  { name: 'Deployment Tactics', level: 56, array: countdownArrayA },
-
-  { name: 'Summon Seraph', level: 80, array: countdownArrayB },
-  { name: 'Fey Blessing', level: 76, array: countdownArrayB },
-  { name: 'Fey Illumination', level: 40, array: countdownArrayB },
-  { name: 'Whispering Dawn', level: 20, array: countdownArrayB },
-
-  { name: 'Chain Stratagem', level: 66, array: countdownArrayC },
-];
+// const schColumns = [
+//   { name: 'Aetherflow', level: 45, array: countdownArrayA },
+//   { name: 'Dissipation', level: 60, array: countdownArrayA },
+//   { name: 'Excogitation', level: 62, array: countdownArrayA },
+//   { name: 'Indomitability', level: 52, array: countdownArrayA },
+//   { name: 'Sacred Soil', level: 50, array: countdownArrayA },
+//   { name: 'Recitation', level: 74, array: countdownArrayA },
+//   { name: 'Emergency Tactics', level: 58, array: countdownArrayA },
+//   { name: 'Deployment Tactics', level: 56, array: countdownArrayA },
+//
+//   { name: 'Summon Seraph', level: 80, array: countdownArrayB },
+//   { name: 'Fey Blessing', level: 76, array: countdownArrayB },
+//   { name: 'Fey Illumination', level: 40, array: countdownArrayB },
+//   { name: 'Whispering Dawn', level: 20, array: countdownArrayB },
+//
+//   { name: 'Chain Stratagem', level: 66, array: countdownArrayC },
+// ];
 
 
 actionList.SCH = schCastActions.concat(schInstantActions, schCooldownActions);

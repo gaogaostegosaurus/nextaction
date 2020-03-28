@@ -117,7 +117,7 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
     const action = actionList[player.job].join('|');
     const status = statusList[player.job].join('|');
     const casting = castingList[player.job].join('|');
-    actionRegExp = new RegExp(` (?<logType>1[56]):(?<sourceID>${player.id}):(?<sourceName>${player.name}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${action}):(?<targetID>[\\dA-F]{8}):(?<targetName>[ -~]+?):(?<result>[\\dA-F]{1,8}):`);
+    actionRegExp = new RegExp(` (?<logType>1[56]):(?<sourceID>${player.id}):(?<sourceName>${player.name}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${action}):(?<targetID>[\\dA-F]{8}):(?<targetName>[ -~]+?):(?<comboCheck>(?:[\\dA-F]{0,8}:){2,5}1?1B:)?`);
     statusRegExp = new RegExp(` (?<logType>1[AE]):(?<targetID>[\\dA-F]{8}):(?<targetName>[ -~]+?) (?<gainsLoses>gains|loses) the effect of (?<statusName>${status}) from (?<sourceName>${player.name})(?: for )?(?<statusDuration>\\d*\\.\\d*)?(?: Seconds)?\\.`);
     /* Regular log line reacts faster for cast detection,
       but regular log line doesn't have target ID...

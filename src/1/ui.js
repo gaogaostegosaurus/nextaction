@@ -1,3 +1,4 @@
+const interval = {};
 
 const resetNext = () => {
   /* Reset timeout and intervals */
