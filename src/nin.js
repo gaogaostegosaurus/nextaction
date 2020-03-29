@@ -69,7 +69,6 @@ const ninCooldowns = [
 
 /* Loop will look this many seconds into future before stopping */
 const ninNextMaxLoopTime = 12500;
-let ninNextTimeout;
 
 const ninNextGCD = ({
   comboStep,
@@ -112,7 +111,7 @@ const ninNextGCD = ({
   } else if (player.level >= 45 && trickattackStatus > 0 && shadowfangRecast < 0) {
     /* Assuming hitting everything and all ticks, SF is weaker than AoE at 9 targets (lol) */
     return 'Shadow Fang';
-  } else if (player.level >= 45 && mudra2Recast < 500 * 2 + 1500) {
+  } else if (player.level >= 45 && mudra2Recast < 500 * 2 + 1500 + 1500) {
     /* Use other ninjutsu while keeping one charge active for Suiton actions */
     if (player.targetCount > 1) {
       return 'Katon';
@@ -478,8 +477,8 @@ const ninNext = ({
 
   iconArrayB = ninArray;
   syncIcons();
-  clearTimeout(ninNextTimeout);
-  ninNextTimeout = setTimeout(ninNext, 12500);
+  clearTimeout(timeout.ninNext);
+  timeout.ninNext = setTimeout(ninNext, 12500);
 };
 
 // const ninNextTimeout = ({ time = 12500, gcd = 0, ogcd = 0 } = {}) => {
@@ -487,8 +486,8 @@ const ninNext = ({
 // };
 
 onJobChange.NIN = () => {
-  addCountdown({ name: 'Mudra 1', text: '#1 READY' });
-  addCountdown({ name: 'Mudra 2', text: '#2 READY' });
+  // addCountdown({ name: 'Mudra 1', text: '#1 READY' });
+  // addCountdown({ name: 'Mudra 2', text: '#2 READY' });
   // addCountdown({ name: 'Ten Chi Jin' });
   // addCountdown({ name: 'Kassatsu' });
   // addCountdown({ name: 'Bunshin', countdownArray: countdownArrayB });
@@ -523,10 +522,10 @@ onAction.NIN = (actionMatch) => {
     if (player.mudraCount === 0 && checkStatus({ name: 'Kassatsu' }) < 0) {
       if (checkRecast({ name: 'Mudra 2' }) > 0) {
         addRecast({ name: 'Mudra 1', time: checkRecast({ name: 'Mudra 2' }) });
-        addCountdown({ name: 'Mudra 1', text: '#1 READY' });
+        // addCountdown({ name: 'Mudra 1', text: '#1 READY' });
       }
       addRecast({ name: 'Mudra 2', time: checkRecast({ name: 'Mudra 2' }) + 20000 });
-      addCountdown({ name: 'Mudra 2', text: '#2 READY' });
+      // addCountdown({ name: 'Mudra 2', text: '#2 READY' });
     }
     player.mudraCount += 1;
     // ninNext({ gcd: 500, ogcd: 0 });
