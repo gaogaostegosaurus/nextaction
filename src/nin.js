@@ -30,8 +30,13 @@ statusList.NIN = [
 
 castingList.NIN = []; // So it doesn't complain
 
-const ninSingleTarget = [
-  'Raiton', 'Bhavacakra', 'Hyosho Ranryu',
+// const ninSingleTarget = [
+//   'Raiton', 'Bhavacakra', 'Hyosho Ranryu',
+// ];
+
+const ninMultiTarget = [
+  'Death Blossom',
+  'Hakke Mujinsatsu',
 ];
 
 const ninWeaponskills = [
@@ -70,6 +75,13 @@ const ninCooldowns = [
 /* Loop will look this many seconds into future before stopping */
 const ninNextMaxLoopTime = 12500;
 
+/* Tweaks cooldown timings for Ninjutsu... adjust as needed? */
+// const oneMudra = 500 * 1 + 1500;
+// const twoMudra = 500 * 2 + 1500;
+// const threeMudra = 500 * 3 + 1500;
+const mudraAdjust = 2500; /* Timing for mudra needs to be adjusted to keep one use on cooldown */
+const suitonAdjust = 2500; /* Prevents using Suiton too early */
+
 const ninNextGCD = ({
   comboStep,
   hutonStatus,
@@ -79,6 +91,7 @@ const ninNextGCD = ({
   mudra2Recast,
   shadowfangRecast,
   suitonStatus,
+  tenchijinRecast,
   tenchijinStatus,
   trickattackRecast,
   trickattackStatus,
@@ -94,24 +107,35 @@ const ninNextGCD = ({
     }
     return 'Raiton';
   } else if (tenchijinStatus > 0) {
-    if (player.level >= 72 && meisuiRecast < 17000) {
-      return 'TCJ Suiton'; /* TCJ to set up Meisui */
-    } else if (player.level < 72 && trickattackRecast < 17000) {
-      return 'TCJ Suiton'; /* TCJ to set up Trick (before 72) */
+    if (player.level >= 72 && meisuiRecast < duration.suiton - suitonAdjust) {
+      /* TCJ to set up Meisui */
+      return 'TCJ Suiton';
+    } else if (player.level < 72 && trickattackRecast < duration.suiton - suitonAdjust) {
+      /* TCJ to set up Trick (before 72) */
+      return 'TCJ Suiton';
     }
-    return 'TCJ Doton'; /* TCJ Doton... I guess? */
-  } else if (player.level >= 45 && mudra1Recast < 0 && hutonStatus < 500 * 3) {
+    /* TCJ Doton... I guess? This situation shouldn't normally happen */
+    return 'TCJ Doton';
+  } else if (player.level >= 45 && mudra1Recast < 0 && hutonStatus < 500 * 3 + mudraAdjust) {
     return 'Huton';
+  } else if (player.level >= 45
+    && mudra2Recast < (500 * 2 + 1500) + (1000 * 2 + 1500) + mudraAdjust) {
+    /* Prevent Mudra cooldown from idling capping during TCJ */
+    if (player.targetCount > 1) {
+      return 'Katon';
+    }
+    return 'Raiton';
   } else if (player.level >= 45 && mudra1Recast < 0 && suitonStatus < 0
-  && trickattackRecast < 17000) {
+    && trickattackRecast < duration.suiton - suitonAdjust) {
     return 'Suiton';
-  // } else if (player.level >= 72 && mudra1Recast < 0 && suitonStatus < 0
-  // && meisuiRecast < 17000) {
-  //   return 'Suiton'; // Maybe just use TCJ
+  } else if (player.level >= 72 && mudra1Recast < 0 && suitonStatus < 0 && tenchijinRecast > 168000
+    && meisuiRecast < duration.suiton - suitonAdjust) {
+    /* Use Suiton to set up Meisui if TCJ got unlinked for some reason */
+    return 'Suiton';
   } else if (player.level >= 45 && trickattackStatus > 0 && shadowfangRecast < 0) {
     /* Assuming hitting everything and all ticks, SF is weaker than AoE at 9 targets (lol) */
     return 'Shadow Fang';
-  } else if (player.level >= 45 && mudra2Recast < 500 * 2 + 1500 + 1500) {
+  } else if (player.level >= 45 && mudra2Recast < (500 * 2 + 1500) + mudraAdjust) {
     /* Use other ninjutsu while keeping one charge active for Suiton actions */
     if (player.targetCount > 1) {
       return 'Katon';
@@ -128,18 +152,20 @@ const ninNextGCD = ({
       return 'Raiton';
     }
     return 'Fuma Shuriken';
-  } else if (player.level >= 52 && player.targetCount >= 3 && comboStep === 11) {
+  } else if (player.level >= 52 && player.targetCount >= 3 && comboStep === 'Death Blossom') {
     return 'Hakke Mujinsatsu';
   } else if (player.level >= 38 && player.targetCount >= 3) {
     return 'Death Blossom';
-  } else if (player.level >= 56 && comboStep === 2 && hutonStatus < 40000 && hutonStatus > 0) {
+  } else if (player.level >= 56 && comboStep === 'Gust Slash'
+    && hutonStatus < 40000 && hutonStatus > 0) {
     return 'Armor Crush';
-  } else if (player.level >= 26 && comboStep === 2) {
+  } else if (player.level >= 26 && comboStep === 'Gust Slash') {
     return 'Aeolian Edge';
-  } else if (player.level >= 4 && comboStep === 1) {
+  } else if (player.level >= 4 && comboStep === 'Spinning Edge') {
     return 'Gust Slash';
   }
   return 'Spinning Edge';
+  /* Should probably eventually write something to prevent dropping combos */
 };
 
 const ninNextOGCD = ({
@@ -171,7 +197,7 @@ const ninNextOGCD = ({
     return 'Assassinate';
   } else if (player.level >= 56 && dreamwithinadreamRecast < 0 && trickattackStatus > 0) {
     return 'Dream Within A Dream';
-  } else if (player.level >= 72 && kassatsuStatus < 0 && tenchijinRecast < 0
+  } else if (player.level >= 72 && tenchijinRecast < 0 && kassatsuStatus < 0
   && trickattackStatus > 0 && meisuiRecast < 17000) {
     return 'Ten Chi Jin';
   } else if (player.level >= 70 && player.level < 72 && kassatsuStatus < 0
@@ -182,7 +208,7 @@ const ninNextOGCD = ({
   } else if (player.level >= 15 && ninki < ninkiTarget && mugRecast < 0) {
     return 'Mug';
   } else if (player.level >= 62 && ninki >= ninkiTarget) {
-    if (player.targetCount >= 2) {
+    if (player.targetCount > 1) {
       return 'Hellfrog Medium';
     } else if (player.level >= 68) {
       return 'Bhavacakra';
@@ -213,7 +239,7 @@ const ninNext = ({
   let elapsedTime = 0;
   let ninki = player.ninki;
   let hutonStatus = player.huton;
-  let tenchijinCount = player.tenchijinCount;
+  // let tenchijinCount = player.tenchijinCount;
   let bunshinCount = player.bunshinCount;
   let comboStep = player.comboStep;
 
@@ -262,6 +288,7 @@ const ninNext = ({
       mudra2Recast,
       shadowfangRecast,
       suitonStatus,
+      tenchijinRecast,
       tenchijinStatus,
       trickattackRecast,
       trickattackStatus,
@@ -350,17 +377,18 @@ const ninNext = ({
 
       /* Weaponskills */
       if (ninWeaponskills.indexOf(nextGCD) > -1) {
-        if (nextGCD === 'Spinning Edge') {
-          comboStep = 1;
-        } else if (nextGCD === 'Gust Slash') {
-          comboStep = 2;
-        } else if (nextGCD === 'Shadow Fang') {
-          // No change
-        } else if (nextGCD === 'Death Blossom') {
-          comboStep = 11;
-        } else {
-          comboStep = 0;
-        }
+        comboStep = nextGCD;
+        // if (nextGCD === 'Spinning Edge') {
+        //   comboStep = nextGCD;
+        // } else if (nextGCD === 'Gust Slash') {
+        //   comboStep = 2;
+        // } else if (nextGCD === 'Shadow Fang') {
+        //   // No change
+        // } else if (nextGCD === 'Death Blossom') {
+        //   comboStep = 11;
+        // } else {
+        //   comboStep = 0;
+        // }
 
         /* Ninki */
         ninki = Math.min(ninki + 5, 100);
@@ -505,18 +533,25 @@ player.comboStep = 0;
 player.mudraCount = 0;
 
 onAction.NIN = (actionMatch) => {
-  // player.gcd * (1 - Math.sign(player.huton) * 0.15)
+  /* Action log matching */
+
+  /* Remove icon before reflow */
+  removeIcon({ name: actionMatch.groups.actionName });
+
+  /* Huton modifier */
   let hutonModifier = 1;
   if (player.huton > 0) {
     hutonModifier = 0.85;
   }
 
-  removeIcon({ name: actionMatch.groups.actionName });
+  /* AOE toggle - definitely not perfect but whatever, can't do EVERYTHING. */
+  // if (ninMultiTarget.includes(actionMatch.groups.actionName)) {
+  //   player.targetCount = 3;
+  // } else {
+  //   player.targetCount = 1;
+  // }
 
-  if (ninSingleTarget.includes(actionMatch.groups.actionName) > -1) {
-    player.targetCount = 1;
-  }
-
+  /* Mudra-specific stuff */
   if (ninMudra.indexOf(actionMatch.groups.actionName) > -1) {
     /* Don't increase Mudra recast under Kassatsu */
     if (player.mudraCount === 0 && checkStatus({ name: 'Kassatsu' }) < 0) {
@@ -529,18 +564,16 @@ onAction.NIN = (actionMatch) => {
     }
     player.mudraCount += 1;
     // ninNext({ gcd: 500, ogcd: 0 });
-    // console.log(player.mudraCount);
   } else if (ninNinjutsu.indexOf(actionMatch.groups.actionName) > -1) {
-    /* General catch-all */
+    /* Ninjutsu specific stuff */
+    /* Logic here feels messy - return to fix at some point */
     if (checkStatus({ name: 'Ten Chi Jin' }) > 0 && player.tenchijinCount < 3) {
       /* TCJ doesn't actually use Mudra */
       player.tenchijinCount += 1;
       return;
     }
-
     removeStatus({ name: 'Kassatsu' });
     removeStatus({ name: 'Ten Chi Jin' });
-
     if (actionMatch.groups.actionName === 'Doton') {
       addStatus({ name: 'Doton' });
     } else if (actionMatch.groups.actionName === 'Suiton') {
@@ -548,18 +581,16 @@ onAction.NIN = (actionMatch) => {
     }
     ninNext({ gcd: 1500 });
   } else if (ninWeaponskills.indexOf(actionMatch.groups.actionName) > -1) {
-    if (actionMatch.groups.actionName === 'Death Blossom' && player.level >= 52 && actionMatch.groups.comboCheck) {
-      player.comboStep = 11;
-    } else if (actionMatch.groups.actionName === 'Gust Slash' && player.level >= 26 && actionMatch.groups.comboCheck) {
-      player.comboStep = 2;
-    } else if (actionMatch.groups.actionName === 'Spinning Edge' && player.level >= 4 && actionMatch.groups.comboCheck) {
-      player.comboStep = 1;
+    if (actionMatch.groups.comboCheck) {
+      player.comboStep = actionMatch.groups.actionName;
     } else if (actionMatch.groups.actionName === 'Shadow Fang') {
+      /* Shadow Fang doesn't interrupt combo */
       addRecast({ name: 'Shadow Fang', time: recast.shadowfang * hutonModifier });
-      addStatus({ name: 'Shadow Fang', id: actionMatch.groups.targetID });
-      addStatus({ name: 'Shadow Fang' }); /* to ease calculations */
+      // addStatus({ name: 'Shadow Fang', id: actionMatch.groups.targetID });
+      /* Since Shadow Fang can't be on more than one target, treat it like a buff */
+      addStatus({ name: 'Shadow Fang' });
     } else {
-      player.comboStep = 0;
+      player.comboStep = '';
     }
     ninNext({ gcd: player.gcd * hutonModifier });
   } else if (ninCooldowns.indexOf(actionMatch.groups.actionName) > -1) {
@@ -576,8 +607,8 @@ onAction.NIN = (actionMatch) => {
     } else if (actionMatch.groups.actionName === 'Hide') {
       addRecast({ name: 'Mudra 1', time: -1 });
       addRecast({ name: 'Mudra 2', time: -1 });
-      addCountdown({ name: 'Mudra 1' });
-      addCountdown({ name: 'Mudra 2' });
+      // addCountdown({ name: 'Mudra 1' });
+      // addCountdown({ name: 'Mudra 2' });
     }
     // ninNext();
   }
