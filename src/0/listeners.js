@@ -232,8 +232,10 @@ addOverlayListener('onInCombatChangedEvent', (e) => {
   count.targets = 1;
 
   if (e.detail.inGameCombat) {
+    player.combat = 1;
     toggle.combat = 1;
   } else {
+    player.combat = 0;
     toggle.combat = 0;
     if (target.id && !target.id.startsWith('4')) {
       document.getElementById('nextdiv').classList.replace('next-show', 'next-hide');
