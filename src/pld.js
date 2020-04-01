@@ -1,10 +1,3 @@
-'use strict';
-
-
-toggle.combo = 0;
-
-// Define actions to watch for
-
 actionList.PLD = [
 
   // Non-GCD actions
@@ -21,7 +14,7 @@ actionList.PLD = [
   // Holy Circle: 2 or more
 
   // Role actions
-  'Rampart', 'Arm\'s Length'
+  'Rampart', 'Arm\'s Length',
 
 ];
 
@@ -33,238 +26,358 @@ castingList.PLD = [
   'Clemency', 'Holy Spirit', 'Holy Circle',
 ];
 
-const pldAreaOfEffect = [
-  'Total Eclipse', 'Prominence', 'Circle Of Scorn', 'Holy Circle', 'Confiteor',
-];
-
-const pldSingleTarget = [
-  'Holy Spirit',
-];
+// const pldAreaOfEffect = [
+//   'Total Eclipse', 'Prominence', 'Circle Of Scorn', 'Holy Circle', 'Confiteor',
+// ];
+//
+// const pldSingleTarget = [
+//   'Holy Spirit',
+// ];
 
 const pldWeaponskills = [
-  'Fast Blade', 'Riot Blade', 'Rage Of Halone', 'Goring Blade',
-  'Royal Authority', 'Atonement',
-  'Total Eclipse', 'Prominence', 'Holy Spirit', 'Holy Circle', 'Confiteor',
+  'Fast Blade',
+  'Riot Blade',
+  'Rage Of Halone',
+  'Goring Blade',
+  'Royal Authority',
+  'Atonement',
+  'Prominence',
+  'Total Eclipse',
 ];
 
-const pldFinisherWeaponskills = [
-  'Rage Of Halone', 'Goring Blade', 'Royal Authority', 'Prominence',
+const pldSpells = [
+  'Holy Spirit',
+  'Holy Circle',
+  'Confiteor',
 ];
 
-const pldColumnA = [
-  'Fight Or Flight', 'Requiescat',
+const pldCooldowns = [
+  'Fight Or Flight',
+  'Spirits Within',
+  'Circle Of Scorn',
+  'Requiescat',
 ];
 
-const pldColumnB = [
-  'Rampart', 'Reprisal', 'Arm\'s Length', 'Sentinel', 'Hallowed Ground', 'Passage Of Arms',
+const pldMultiTarget = [
+  'Total Eclipse',
+  'Prominence',
+  'Holy Circle',
 ];
 
-const pldColumnC = [
-  'Low Blow', 'Provoke', 'Interject', 'Shirk',
-];
+// const pldSingleTarget = [
+//   'Total Eclipse',
+//   'Prominence',
+// ];
 
-const pldNextTimeout = () => {
-  clearTimeout(timeout.combo);
-  timeout.combo = setTimeout(pldNext, 12500);
+// const pldFinisherWeaponskills = [
+//   'Rage Of Halone', 'Goring Blade', 'Royal Authority', 'Prominence',
+// ];
+
+// const pldColumnA = [
+//   'Fight Or Flight', 'Requiescat',
+// ];
+//
+// const pldColumnB = [
+//   'Rampart', 'Reprisal', 'Arm\'s Length', 'Sentinel', 'Hallowed Ground', 'Passage Of Arms',
+// ];
+//
+// const pldColumnC = [
+//   'Low Blow', 'Provoke', 'Interject', 'Shirk',
+// ];
+
+// const pldNextTimeout = () => {
+//   clearTimeout(timeout.combo);
+//   timeout.combo = setTimeout(pldNext, 12500);
+// };
+
+const pldNextGCD = ({
+  comboStep,
+  // fightorflightRecast,
+  fightorflightStatus,
+  goringbladeStatus,
+  mp,
+  requiescatStatus,
+  swordoathStatus,
+  swordoathCount,
+} = {}) => {
+  if (player.level >= 78 && requiescatStatus > 0 && mp > 2000) {
+    /* Rotation under Requiescat */
+    if (player.level >= 80 && (mp < 4000 || requiescatStatus < player.gcd)) {
+      return 'Confiteor';
+    } else if (player.targetCount > 1) {
+      return 'Holy Circle';
+    }
+    return 'Holy Spirit';
+  } else if (player.level < 78 && requiescatStatus > 1500 && mp > 2000) {
+    /* Requiescat with cast times */
+    if (player.targetCount > 1) {
+      return 'Holy Circle';
+    }
+    return 'Holy Spirit';
+  } else if (player.level >= 52 && player.targetCount >= 3 && comboStep === 'Total Eclipse') {
+    return 'Prominence';
+  } else if (player.level >= 6 && player.targetCount >= 3) {
+    return 'Total Eclipse';
+  } else if (swordoathStatus > 0 && swordoathCount > 0) {
+    return 'Atonement';
+  // } else if (player.level >= 54 && comboStep === 'Riot Blade'
+  // && fightorflightStatus > 6 * player.gcd) {
+  //   return 'Royal Authority'; /* Helps push Goring to end of FOF window, maybe */
+  } else if (player.level >= 54 && comboStep === 'Riot Blade'
+  && goringbladeStatus < player.gcd) {
+    return 'Goring Blade'; /* Keep Goring up always */
+    // } else if (player.level >= 54 && comboStep === 'Riot Blade'
+    //   && fightorflightStatus > duration.fightorflight - player.gcd * 2) {
+    //   return 'Goring Blade';
+    // } else if (player.level >= 54 && comboStep === 'Riot Blade'
+    //   && fightorflightStatus < player.gcd * 4) {
+    // return 'Goring Blade';
+  // } else if (player.level >= 64 && player.level < 68 && fightorflightStatus < 0
+  // && fightorflightRecast > player.gcd * 3 && mp === 10000) {
+  //   /* This is probably a bad idea. */
+  //   return 'Holy Spirit';
+  } else if (player.level >= 60 && comboStep === 'Riot Blade') {
+    return 'Royal Authority';
+  } else if (player.level >= 26 && comboStep === 'Riot Blade') {
+    return 'Rage Of Halone';
+  } else if (player.level >= 4 && comboStep === 'Fast Blade') {
+    return 'Riot Blade';
+  }
+  return 'Fast Blade';
+};
+
+const pldNextOGCD = ({
+  circleofscornRecast,
+  comboStep,
+  fightorflightRecast,
+  fightorflightStatus,
+  // goringbladeStatus,
+  mp,
+  requiescatRecast,
+  requiescatStatus,
+  spiritswithinRecast,
+  swordoathCount,
+  // swordoathStatus,
+} = {}) => {
+  if (player.level >= 2 && fightorflightRecast < 0 && requiescatStatus < player.gcd
+  // && ['Fast Blade', 'Riot Blade'].includes(comboStep)) { /* Optimal but can't get it to work */
+  && ['Riot Blade', 'Total Eclipse'].includes(comboStep)) { /* Not optimal but I'm lazy */
+    return 'Fight Or Flight';
+  } else if (player.level >= 2 && player.level < 54 && fightorflightRecast < 0) {
+    /* Just use it (tm) */
+    return 'Fight Or Flight';
+  } else if (player.level >= 68 && mp > 9600 && requiescatRecast < 0
+  && ['Prominence', 'Goring Blade'].includes(comboStep)
+  && swordoathCount === 0 && fightorflightStatus < player.gcd * 2) {
+    return 'Requiescat';
+  } else if (player.level >= 50 && circleofscornRecast < 0 && player.countTargets > 1) {
+    return 'Circle Of Scorn';
+  } else if (player.level >= 30 && spiritswithinRecast < 0) {
+    return 'Spirits Within';
+  } else if (player.level >= 50 && circleofscornRecast < 0) {
+    return 'Circle Of Scorn';
+  }
+  /* No OGCD */
+  return '';
 };
 
 const pldNext = ({
-  time = player.gcd,
+  gcd = 0,
 } = {}) => {
+  let gcdTime = gcd;
+  let nextTime = 0; /* Amount of time looked ahead in loop */
+  let mpTick = 0;
+
+  let comboStep = player.comboStep;
+  let mp = player.mp;
+
+  let circleofscornRecast = checkRecast({ name: 'Circle Of Scorn' });
+  let fightorflightRecast = checkRecast({ name: 'Fight Or Flight' });
+  let fightorflightStatus = checkStatus({ name: 'Fight Or Flight' });
+  let goringbladeStatus = checkStatus({ name: 'Goring Blade', id: target.id });
+  let requiescatRecast = checkRecast({ name: 'Requiescat' });
+  let requiescatStatus = checkStatus({ name: 'Requiescat' });
+  let spiritswithinRecast = checkRecast({ name: 'Spirits Within' });
+  let swordoathStatus = checkStatus({ name: 'Sword Oath' });
+  let swordoathCount = player.swordoathCount;
+
   const pldArray = [];
 
-  next.MP = player.mp;
-  next.requiescatRecast = checkRecast({ name: 'Requiescat' });
-  next.requiescatStatus = checkStatus({ name: 'Requiescat' });
-  next.fightorflightRecast = checkRecast({ name: 'Fight Or Flight' });
-  next.fightorflightStatus = checkStatus({ name: 'Fight Or Flight' });
-  next.goringbladeStatus = checkStatus({ name: 'Goring Blade', id: target.id });
-  next.swordoathStatus = checkStatus({ name: 'Sword Oath' });
-  next.comboToggle = toggle.combo;
-  next.swordoathCount = count.swordoath;
-
-  next.elapsedTime = time;
-  // console.log(next.comboToggle);
-
   do {
-    if (next.fightorflightRecast - next.elapsedTime < 0
-    && !next.comboToggle) {
-      // Allows FoF to follow something while opening
-      pldArray.push({ name: 'Fast Blade' });
-      if (player.level >= 4) {
-        next.comboToggle = 1;
+    let loopTime = 0; /* The elapsed time for current loop */
+
+    if (gcdTime === 0) {
+      /* Insert GCD icon if GCD is complete */
+      const nextGCD = pldNextGCD({
+        comboStep,
+        fightorflightRecast,
+        fightorflightStatus,
+        goringbladeStatus,
+        mp,
+        requiescatStatus,
+        swordoathStatus,
+        swordoathCount,
+      });
+
+      pldArray.push({ name: nextGCD });
+
+      /* Special stuff */
+      if (nextGCD === 'Riot Blade') {
+        mp = Math.min(mp + 1000, 10000);
+      } else if (nextGCD === 'Prominence') {
+        mp = Math.min(mp + 500, 10000);
+      } else if (nextGCD === 'Goring Blade') {
+        goringbladeStatus = duration.goringblade;
+      } else if (player.level >= 76 && nextGCD === 'Royal Authority') {
+        swordoathStatus = duration.swordoath;
+        swordoathCount = 3;
+      } else if (nextGCD === 'Atonement') {
+        swordoathCount = Math.max(swordoathCount - 1, 0);
+        mp = Math.min(mp + 400, 10000);
+        if (swordoathCount === 0) {
+          swordoathStatus = -1;
+        }
+      } else if (nextGCD === 'Confiteor') {
+        requiescatStatus = -1;
       }
-      next.elapsedTime += player.gcd;
-    } else if (next.fightorflightRecast - next.elapsedTime < 0
-    && next.requiescatStatus - next.elapsedTime < 0) {
-      pldArray.push({ name: 'Fight Or Flight', size: 'small' });
-      next.fightorflightRecast = 60000 + next.elapsedTime;
-      next.fightorflightStatus = 25000 + next.elapsedTime;
-    } else if (player.level >= 68 && next.requiescatRecast - next.elapsedTime < 0
-    && next.fightorflightStatus - next.elapsedTime < 0
-    && next.comboToggle === 0 && next.swordoathCount === 0) {
-      pldArray.push({ name: 'Requiescat', size: 'small' });
-      next.requiescatRecast = 60000 + next.elapsedTime;
-      next.requiescatStatus = 12000 + next.elapsedTime;
-    } else if (next.requiescatStatus - next.elapsedTime > 0
-    && next.MP + Math.floor(next.elapsedTime / 3000) * 200 >= 2000) {
-      if (player.level >= 80
-      && (next.MP + Math.floor(next.elapsedTime / 3000) * 200 < 4000
-      || next.requiescatStatus - next.elapsedTime < 2500)) {
-        pldArray.push({ name: 'Confiteor' });
+
+      /* Change comboStep for all Weaponskills */
+      if (pldWeaponskills.includes(nextGCD)) {
+        comboStep = nextGCD;
       } else {
-        pldArray.push({ name: 'Holy Spirit' });
+        comboStep = '';
       }
-      next.MP -= 2000;
-      next.elapsedTime += 2500;
-    } else if (player.level >= 76 && next.swordoathCount > 0) {
-      pldArray.push({ name: 'Atonement' });
-      next.swordoathCount -= 1;
-      next.MP += 400;
-      next.elapsedTime += player.gcd;
-    } else if (player.level >= 54 && next.comboToggle === 2
-    && next.goringbladeStatus - next.elapsedTime < 0) {
-      pldArray.push({ name: 'Goring Blade' });
-      next.goringbladeStatus = 21000 + next.elapsedTime;
-      next.comboToggle = 0;
-      next.elapsedTime += player.gcd;
-    } else if (player.level >= 60 && next.comboToggle === 2) {
-      pldArray.push({ name: 'Royal Authority' });
-      if (player.level >= 76) {
-        next.swordoathCount = 3;
-      }
-      next.comboToggle = 0;
-      next.elapsedTime += player.gcd;
-    } else if (player.level >= 26 && next.comboToggle === 2) {
-      pldArray.push({ name: 'Rage Of Halone' });
-      next.comboToggle = 0;
-      next.elapsedTime += player.gcd;
-    } else if (player.level >= 4 && next.comboToggle === 1) {
-      pldArray.push({ name: 'Riot Blade' });
-      if (player.level >= 26) {
-        next.comboToggle = 2;
-      } else {
-        next.comboToggle = 0;
-      }
-      next.MP += 1000;
-      next.elapsedTime += player.gcd;
-    } else {
-      pldArray.push({ name: 'Fast Blade' });
-      next.elapsedTime += player.gcd;
-      if (player.level >= 4) {
-        next.comboToggle = 1;
+
+      /* Calculate gcd time */
+      gcdTime = player.gcd;
+      loopTime = gcdTime;
+      if (pldSpells.includes(nextGCD) && (player.level < 78 || requiescatStatus < 0)) {
+        gcdTime = 0;
       }
     }
-  } while (next.elapsedTime < 15000);
+
+    /* Queue OGCD if GCD action was instant */
+    if (gcdTime > 0) {
+      const nextOGCD = pldNextOGCD({
+        circleofscornRecast,
+        comboStep,
+        fightorflightRecast,
+        fightorflightStatus,
+        goringbladeStatus,
+        mp,
+        requiescatRecast,
+        requiescatStatus,
+        spiritswithinRecast,
+        swordoathCount,
+        // swordoathStatus,
+      });
+
+      if (nextOGCD) {
+        pldArray.push({ name: nextOGCD, size: 'small' });
+      }
+
+      if (nextOGCD === 'Fight Or Flight') {
+        fightorflightRecast = recast.fightorflight;
+        fightorflightStatus = duration.fightorflight;
+      } else if (nextOGCD === 'Spirits Within') {
+        spiritswithinRecast = recast.spiritswithin;
+        mp = Math.min(mp + 500, 10000);
+      } else if (nextOGCD === 'Circle Of Scorn') {
+        circleofscornRecast = recast.circleofscorn;
+      } else if (nextOGCD === 'Requiescat') {
+        requiescatRecast = recast.requiescat;
+        requiescatStatus = duration.requiescat + 1000;
+      }
+
+      gcdTime = 0;
+    }
+
+    circleofscornRecast -= loopTime;
+    fightorflightRecast -= loopTime;
+    fightorflightStatus -= loopTime;
+    goringbladeStatus -= loopTime;
+    requiescatRecast -= loopTime;
+    requiescatStatus -= loopTime;
+    spiritswithinRecast -= loopTime;
+    swordoathStatus -= loopTime;
+
+    nextTime += loopTime;
+
+    /* MP tick */
+    if (Math.floor(loopTime / 3000) > mpTick) {
+      mp = Math.min(mp + 200, 10000);
+      mpTick += 1;
+    }
+  } while (nextTime < 15000);
   iconArrayB = pldArray;
   syncIcons();
-  pldNextTimeout();
 };
 
 onJobChange.PLD = () => {
-
-  previous.totaleclipse = 0;
-  previous.prominence = 0;
-  previous.holycircle = 0;
-  previous.confiteor = 0;
-  previous.circleofscorn = 0;
-
-  addCountdown({ name: 'Fight Or Flight', time: checkRecast({ name: 'Fight Or Flight' }) });
-
-  if (player.level >= 68) {
-    addCountdown({ name: 'Requiescat', time: checkRecast({ name: 'Requiescat' }) });
-  }
-
-  addCountdown({ name: 'Rampart', time: checkRecast({ name: 'Rampart' }), countdownArray: countdownArrayB });
-  if (player.level >= 22) {
-    addCountdown({ name: 'Reprisal', time: checkRecast({ name: 'Reprisal' }), countdownArray: countdownArrayB });
-  }
-  if (player.level >= 32) {
-    addCountdown({ name: 'Arm\'s Length', time: checkRecast({ name: 'Arm\'s Length' }), countdownArray: countdownArrayB });
-  }
-  if (player.level >= 38) {
-    addCountdown({ name: 'Sentinel', time: checkRecast({ name: 'Sentinel' }), countdownArray: countdownArrayB });
-  }
-  if (player.level >= 50) {
-    addCountdown({ name: 'Hallowed Ground', time: checkRecast({ name: 'Hallowed Ground' }), countdownArray: countdownArrayB });
-  }
-  if (player.level >= 70) {
-    addCountdown({ name: 'Passage Of Arms', time: checkRecast({ name: 'Passage Of Arms' }), countdownArray: countdownArrayB });
-  }
-
-  if (player.level >= 12) {
-    addCountdown({ name: 'Low Blow', time: checkRecast({ name: 'Low Blow' }), countdownArray: countdownArrayC });
-  }
-  if (player.level >= 15) {
-    addCountdown({ name: 'Provoke', time: checkRecast({ name: 'Provoke' }), countdownArray: countdownArrayC });
-  }
-  if (player.level >= 18) {
-    addCountdown({ name: 'Interject', time: checkRecast({ name: 'Interject' }), countdownArray: countdownArrayC });
-  }
-  if (player.level >= 48) {
-    addCountdown({ name: 'Shirk', time: checkRecast({ name: 'Shirk' }), countdownArray: countdownArrayC });
-  }
-
+  player.swordoathCount = 0;
   pldNext();
 };
 
 onTargetChanged.PLD = () => {};
 
 onAction.PLD = (actionMatch) => {
-  if (actionMatch.groups.logType === '16') {
-    countTargets({ name: actionMatch.groups.actionName });
-  } else if (pldSingleTarget.indexOf(actionMatch.groups.actionName) > -1) {
-    count.targets = 1;
+  // if (actionMatch.groups.logType === '16') {
+  //   countTargets({ name: actionMatch.groups.actionName });
+  // } else if (pldSingleTarget.indexOf(actionMatch.groups.actionName) > -1) {
+  //   count.targets = 1;
+  // }
+
+  removeIcon({ name: actionMatch.groups.actionName });
+
+  if (pldMultiTarget.includes(actionMatch.groups.actionName)) {
+    player.targetCount = 3;
+  } else {
+    player.targetCount = 1;
   }
 
-  if (['Fight Or Flight', 'Requiescat'].indexOf(actionMatch.groups.actionName) > -1) {
-    removeIcon({ name: actionMatch.groups.actionName });
-    addStatus({ name: actionMatch.groups.actionName });
-    addRecast({ name: actionMatch.groups.actionName });
-    addCountdown({ name: actionMatch.groups.actionName });
-  } else if (pldWeaponskills.indexOf(actionMatch.groups.actionName) > -1) {
+  if (pldWeaponskills.includes(actionMatch.groups.actionName)) {
     if (actionMatch.groups.actionName === 'Atonement') {
-      count.swordoath -= 1;
-      removeIcon({ name: actionMatch.groups.actionName });
-    } else if (pldFinisherWeaponskills.indexOf(actionMatch.groups.actionName) > -1) {
-      if (actionMatch.groups.actionName === 'Goring Blade' && actionMatch.groups.result.length >= 6) {
+      /* Atonement actually doesn't break combo */
+      player.swordoathCount = Math.max(player.swordoathCount - 1, 0);
+    } else if (actionMatch.groups.comboCheck) {
+      player.comboStep = actionMatch.groups.actionName;
+      if (actionMatch.groups.actionName === 'Goring Blade') {
         addStatus({ name: 'Goring Blade', id: actionMatch.groups.targetID });
-      } else if (player.level >= 76 && actionMatch.groups.actionName === 'Royal Authority' && actionMatch.groups.result.length >= 6) {
-        count.swordoath = 3;
+      } else if (player.level >= 76 && actionMatch.groups.actionName === 'Royal Authority') {
+        addStatus({ name: 'Sword Oath' });
+        player.swordoathCount = 3;
       }
-      toggle.combo = 0;
-      removeIcon({ name: actionMatch.groups.actionName });
-    } else if (player.level >= 40 && actionMatch.groups.actionName === 'Total Eclipse' && actionMatch.groups.result.length >= 6) {
-      toggle.combo = 11;
-      removeIcon({ name: actionMatch.groups.actionName });
-    } else if (player.level >= 26 && actionMatch.groups.actionName === 'Riot Blade' && actionMatch.groups.result.length >= 8) {
-      toggle.combo = 2;
-      removeIcon({ name: actionMatch.groups.actionName });
-    } else if (player.level >= 4 && actionMatch.groups.actionName === 'Fast Blade' && actionMatch.groups.result.length >= 6) {
-      toggle.combo = 1;
-      removeIcon({ name: actionMatch.groups.actionName });
     } else {
-      toggle.combo = 0;
+      player.comboStep = '';
     }
-    pldNext();
-  } else if (pldColumnB.indexOf(actionMatch.groups.actionName) > -1) {
-    addStatus({ name: actionMatch.groups.actionName });
+    pldNext({ gcd: 2500 });
+  } else if (pldSpells.includes(actionMatch.groups.actionName)) {
+    player.comboStep = actionMatch.groups.actionName;
+    if (player.level >= 78 && checkStatus({ name: 'Requiescat' }) > 0) {
+      pldNext({ gcd: 2500 });
+    } else {
+      pldNext({ gcd: 0 });
+    }
+  } else if (pldCooldowns.includes(actionMatch.groups.actionName)) {
     addRecast({ name: actionMatch.groups.actionName });
-    addCountdown({ name: actionMatch.groups.actionName, countdownArray: countdownArrayB });
+    if (['Fight Or Flight', 'Requiescat'].includes(actionMatch.groups.actionName)) {
+      addStatus({ name: actionMatch.groups.actionName });
+    }
   }
 };
 
-onCasting.PLD = () => {};
+onCasting.PLD = () => {
+  fadeIcon({ name: 'Holy', match: 'contains' });
+};
 
 onCancel.PLD = () => {
   pldNext();
 };
 
-onStatus.PLD = () => {
-  if (statusMatch.groups.logType === '1A') {
-    //
-  } else if (statusMatch.groups.statusName === 'Sword Oath') {
-    count.swordoath = 0;
-    pldNext();
+onStatus.PLD = (statusMatch) => {
+  if (statusMatch.groups.logType === '1E') {
+    if (statusMatch.groups.statusName === 'Sword Oath') {
+      player.swordoathCount = 0;
+    }
   }
 };
