@@ -126,7 +126,8 @@ const ninNextGCD = ({
     return 'TCJ Doton';
   } else if (player.level >= 45 && mudra1Recast < 0 && hutonStatus < 500 * 3) {
     return 'Huton';
-  } else if (player.level >= 45 && tenchijinRecast < 500 * 2 + 1500
+  } else if (player.level >= 45 && (trickattackStatus > 0 || suitonStatus > 0)
+    && tenchijinRecast < 500 * 2 + 1500
     && mudra2Recast < 500 * 2 + 1500 + 1000 * 2 + 1500) {
     /* Prevent Mudra cooldown from idling capping during TCJ */
     if (player.targetCount > 1) {
@@ -532,7 +533,11 @@ onJobChange.NIN = () => {
   ninNext();
 };
 
-onTargetChanged.NIN = () => {};
+onTargetChanged.NIN = () => {
+  if (player.combat === 0) {
+    ninNext();
+  }
+};
 
 player.ninjutsuCount = 0;
 player.comboStep = 0;
