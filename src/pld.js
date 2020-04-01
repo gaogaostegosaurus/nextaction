@@ -93,7 +93,7 @@ const pldMultiTarget = [
 const pldNextGCD = ({
   comboStep,
   // fightorflightRecast,
-  fightorflightStatus,
+  // fightorflightStatus,
   goringbladeStatus,
   mp,
   requiescatStatus,
