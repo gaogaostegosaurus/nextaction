@@ -26,6 +26,15 @@ const rdmCooldowns = [
   'Swiftcast', 'Lucid Dreaming',
 ];
 
+const rdmComboActions = [
+  'Enchanted Riposte',
+  'Enchanted Zwerchhau',
+  'Enchanted Redoublement',
+  'Verflare',
+  'Verholy',
+  'Scorch',
+];
+
 const rdmDualcastSpells = [
   'Jolt',
   'Verthunder',
@@ -53,6 +62,7 @@ const rdmWeaponskills = [
 
 actionList.RDM = [...new Set([
   ...rdmAccelerationSpells,
+  ...rdmComboActions,
   ...rdmCooldowns,
   ...rdmDualcastSpells,
   ...rdmWeaponskills,
@@ -338,9 +348,9 @@ const rdmNext = ({
       loopTime = gcdTime + castTime;
 
       /* Combo */
-      if (rdmComboSkills.includes(nextGCD)) {
+      if (rdmComboActions.includes(nextGCD)) {
         comboStep = nextGCD;
-        if (comboStep === 'Scorch') {
+        if (nextGCD === 'Scorch') {
           comboStep = '';
         }
       } else {
@@ -555,7 +565,7 @@ onAction.RDM = (actionMatch) => {
     player.targetCount = 2;
   } else if (actionMatch.groups.actionName === 'Impact' && player.targetCount === 1) {
     player.targetCount = 2;
-  } else if (player.level >= 52 && rdmComboSkills.includes(actionMatch.groups.actionName)) {
+  } else if (player.level >= 52 && rdmComboActions.includes(actionMatch.groups.actionName)) {
     player.targetCount = 1;
   } else if (actionMatch.groups.actionName === 'Enchanted Moulinet' && player.targetCount === 1) {
     player.targetCount = 2;
@@ -619,6 +629,8 @@ onAction.RDM = (actionMatch) => {
     /* Well I guess some aren't Weaponskills, but close enough */
     if (actionMatch.groups.comboCheck) {
       player.comboStep = actionMatch.groups.actionName;
+    } else {
+      player.comboStep = '';
     }
 
     if (['Enchanted Riposte', 'Enchanted Zwerchhau', 'Enchanted Moulinet'].includes(actionMatch.groups.actionName)) {
