@@ -322,6 +322,7 @@ icon.joltii = '003220';
 icon.impact = '003222';
 icon.verflare = '003223';
 icon.verholy = '003224';
+icon.engagement = '003231';
 icon.enchantedriposte = '003225';
 icon.enchantedzwerchhau = '003226';
 icon.enchantedredoublement = '003227';

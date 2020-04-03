@@ -77,6 +77,12 @@ duration.goringblade = 21000;
 duration.requiescat = 12000;
 duration.swordoath = 15000;
 
+// RDM
+duration.dualcast = 15000;
+duration.verfireready = 30000;
+duration.verstoneready = duration.verfireready;
+duration.acceleration = 20000;
+
 // SAM
 duration.jinpu = 40000;
 duration.kaiten = 10000;

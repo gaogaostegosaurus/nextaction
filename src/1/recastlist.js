@@ -118,7 +118,7 @@ recast.intervene1 = recast.intervene;
 recast.intervene2 = recast.intervene;
 
 // RDM
-recast.acceleration = 35000;
+recast.acceleration = 55000;
 recast.contresixte = 45000;
 recast.corpsacorps = 40000;
 recast.displacement = 35000;

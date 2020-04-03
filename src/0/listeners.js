@@ -54,6 +54,7 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
   player.job = e.detail.job;
   player.level = e.detail.level;
 
+
   // player.currentHP = e.detail.currentHP;
   // player.maxHP = e.detail.maxHP;
   player.mp = e.detail.currentMP;
@@ -114,6 +115,8 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
     previous.level = player.level;
     player.gcd = 2500;
     player.mpRegen = 200;
+    player.targetCount = 1;
+
 
     const action = actionList[player.job].join('|');
     const status = statusList[player.job].join('|');
