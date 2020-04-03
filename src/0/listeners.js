@@ -178,7 +178,7 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
     } else if (statusMatch) {
       onStatus[player.job](statusMatch);
     } else if (castingMatch) {
-      console.log(`${castingMatch}`);
+      // console.log(`${castingMatch}`);
       onCasting[player.job](castingMatch);
 
       /* Display next if casting with an NPC target */
@@ -189,7 +189,7 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
       //   document.getElementById('nextdiv').classList.replace('next-hide', 'next-show');
       // }
     } else if (cancelMatch) {
-      console.log(`${cancelMatch}`);
+      // console.log(`${cancelMatch}`);
       onCancel[player.job](cancelMatch);
     } else if (statsMatch) {
       gcdCalculation({
