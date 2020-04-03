@@ -209,13 +209,13 @@ const ninNextOGCD = ({
     return 'Kassatsu';
   } else if (suitonStatus > 0 && trickattackRecast < 0) {
     return 'Trick Attack';
+  } else if (player.level >= 72 && tenchijinRecast < 0 && kassatsuStatus < 0
+  && trickattackStatus > 0 && meisuiRecast < 17000) {
+    return 'Ten Chi Jin';
   } else if (assassinatereadyStatus > 0) {
     return 'Assassinate';
   } else if (player.level >= 56 && dreamwithinadreamRecast < 0 && trickattackStatus > 0) {
     return 'Dream Within A Dream';
-  } else if (player.level >= 72 && tenchijinRecast < 0 && kassatsuStatus < 0
-  && trickattackStatus > 0 && meisuiRecast < 17000) {
-    return 'Ten Chi Jin';
   } else if (player.level >= 70 && player.level < 72 && kassatsuStatus < 0
   && tenchijinRecast < 0 && trickattackRecast < 17000) {
     return 'Ten Chi Jin';
