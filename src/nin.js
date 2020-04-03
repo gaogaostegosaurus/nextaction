@@ -124,25 +124,32 @@ const ninNextGCD = ({
     }
     /* TCJ Doton... I guess? This situation shouldn't normally happen */
     return 'TCJ Doton';
-  } else if (player.level >= 45 && mudra1Recast < 0 && hutonStatus < 500 * 3) {
+  } else if (player.level >= 52 && player.targetCount >= 3 && comboStep === 'Death Blossom'
+  && hutonStatus < 10000 && hutonStatus > 0) {
+    return 'Hakke Mujinsatsu';
+  } else if (player.level >= 56 && comboStep === 'Gust Slash'
+  && hutonStatus < 10000 && hutonStatus > 0) {
+    /* Give Armor Crush higher priority if Huton is really low for some reason */
+    return 'Armor Crush';
+  } else if (player.level >= 45 && mudra1Recast < 0 && hutonStatus < 500 * 3 + 1500) {
     return 'Huton';
   } else if (player.level >= 45 && (trickattackStatus > 0 || suitonStatus > 0)
-    && tenchijinRecast < 500 * 2 + 1500
-    && mudra2Recast < 500 * 2 + 1500 + 1000 * 2 + 1500) {
+  && tenchijinRecast < 500 * 2 + 1500
+  && mudra2Recast < 500 * 2 + 1500 + 1000 * 2 + 1500) {
     /* Prevent Mudra cooldown from idling capping during TCJ */
     if (player.targetCount > 1) {
       return 'Katon';
     }
     return 'Raiton';
   } else if (player.level >= 45 && mudra1Recast < 0 && suitonStatus < 0
-    && trickattackRecast < duration.suiton) {
+  && trickattackRecast < duration.suiton) {
     return 'Suiton';
   } else if (player.level >= 72 && mudra1Recast < 0 && suitonStatus < 0 && tenchijinRecast > 168000
-    && meisuiRecast < duration.suiton) {
+  && meisuiRecast < duration.suiton) {
     /* Use Suiton to set up Meisui if TCJ got unlinked for some reason */
     return 'Suiton';
   } else if (player.level >= 45 && trickattackStatus > 0 && shadowfangRecast < 0) {
-    /* Assuming hitting everything and all ticks, SF is weaker than AoE at 9 targets (lol) */
+    /* Assuming all ticks, SF is only weaker than AoE combo at 9 targets (lol) */
     return 'Shadow Fang';
   } else if (player.level >= 45 && mudra2Recast < (500 * 2 + 1500)) {
     /* Use other ninjutsu while keeping one charge active for Suiton actions */
@@ -151,10 +158,10 @@ const ninNextGCD = ({
     }
     return 'Raiton';
   } else if (player.level >= 30 && player.level < 45 && shadowfangRecast < 0) {
-    /* Assuming hitting everything and all ticks, SF is weaker than AoE at 9 targets (lol) */
+    /* Use Shadow Fang on cooldown before level 45 and Trick */
     return 'Shadow Fang';
-  } else if (player.level < 45 && mudra1Recast < 0) {
-    /* Use on cooldown prior to 45 */
+  } else if (player.level >= 30 && player.level < 45 && mudra1Recast < 0) {
+    /* Use all mudra on cooldown prior to 45 */
     if (player.level >= 35 && player.targetCount > 1) {
       return 'Katon';
     } else if (player.level >= 35) {
@@ -166,7 +173,7 @@ const ninNextGCD = ({
   } else if (player.level >= 38 && player.targetCount >= 3) {
     return 'Death Blossom';
   } else if (player.level >= 56 && comboStep === 'Gust Slash'
-    && hutonStatus < 40000 && hutonStatus > 0) {
+  && hutonStatus < 40000 && hutonStatus > 0) {
     return 'Armor Crush';
   } else if (player.level >= 26 && comboStep === 'Gust Slash') {
     return 'Aeolian Edge';
