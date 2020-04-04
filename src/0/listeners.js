@@ -39,6 +39,7 @@ const onStatus = {};
 const onTargetChanged = {};
 const onJobChange = {};
 
+let debounceTimestamp = 0;
 
 let actionRegExp;
 let statusRegExp;
@@ -148,30 +149,32 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
     // const addedMatch = e.detail.logs[i].match(addedRegExp);
 
     if (actionMatch) {
-      if (actionMatch.groups.logType === '16') {
-        if (actionMatch.groups.targetID.startsWith('4')) {
-          if (!previous.aoe || Date.now() - previous.aoe > 100) {
-            clearTimeout(timeout.aoe);
-            previous.aoe = Date.now();
-            count.targets = 1;
-            timeout.aoe = setTimeout(onAction[player.job], 100, actionMatch);
-          } else {
-            clearTimeout(timeout.aoe);
-            count.targets += 1;
-            timeout.aoe = setTimeout(onAction[player.job], 100, actionMatch);
-          }
-          /* This is slightly more complicated... for no reason? Was there a reason? */
-          // const property = actionMatch.groups.actionName.replace(/[\s'-:]/g, '').toLowerCase();
-          // if (!previous[`${property}Match`] || Date.now() - previous[`${property}Match`] > 10) {
-          //   previous[`${property}Match`] = Date.now();
-          //   count.targets = 1;
-          //   timeout[`${property}Match`] = setTimeout(onAction[player.job], 100, actionMatch);
-          // } else {
-          //   clearTimeout(timeout[`${property}Match`]);
-          //   count.targets += 1;
-          //   timeout[`${property}Match`] = setTimeout(onAction[player.job], 100, actionMatch);
-          // }
-        }
+      if (actionMatch.groups.logType === '16' && Date.now() - debounceTimestamp > 10) {
+        debounceTimestamp = Date.now(); /* Prevents AoE stuff from being silly */
+        onAction[player.job](actionMatch);
+        // if (actionMatch.groups.targetID.startsWith('4')) {
+        // if (!previous.aoe || Date.now() - previous.aoe > 100) {
+        //   clearTimeout(timeout.aoe);
+        //   previous.aoe = Date.now();
+        //   // count.targets = 1;
+        //   timeout.aoe = setTimeout(onAction[player.job], 100, actionMatch);
+        // } else {
+        //   clearTimeout(timeout.aoe);
+        //   // count.targets += 1;
+        //   timeout.aoe = setTimeout(onAction[player.job], 100, actionMatch);
+        // }
+        // /* This is slightly more complicated... for no reason? Was there a reason? */
+        // const property = actionMatch.groups.actionName.replace(/[\s'-:]/g, '').toLowerCase();
+        // if (!previous[`${property}Match`] || Date.now() - previous[`${property}Match`] > 10) {
+        //   previous[`${property}Match`] = Date.now();
+        //   count.targets = 1;
+        //   timeout[`${property}Match`] = setTimeout(onAction[player.job], 100, actionMatch);
+        // } else {
+        //   clearTimeout(timeout[`${property}Match`]);
+        //   count.targets += 1;
+        //   timeout[`${property}Match`] = setTimeout(onAction[player.job], 100, actionMatch);
+        // }
+        // }
       } else {
         onAction[player.job](actionMatch);
       }
