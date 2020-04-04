@@ -321,12 +321,6 @@ onJobChange.PLD = () => {
 onTargetChanged.PLD = () => {};
 
 onAction.PLD = (actionMatch) => {
-  // if (actionMatch.groups.logType === '16') {
-  //   countTargets({ name: actionMatch.groups.actionName });
-  // } else if (pldSingleTarget.indexOf(actionMatch.groups.actionName) > -1) {
-  //   count.targets = 1;
-  // }
-
   removeIcon({ name: actionMatch.groups.actionName });
 
   if (pldMultiTarget.includes(actionMatch.groups.actionName)) {
