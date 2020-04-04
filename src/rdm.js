@@ -491,6 +491,9 @@ const rdmNext = ({
       } else if (nextOGCD === 'Manafication') {
         // manaficationStatus = duration.manafication;
         manaficationRecast = recast.manafication;
+        if (player.level >= 74) {
+          manaficationRecast = 110000;
+        }
         blackMana = Math.min(blackMana * 2, 100);
         whiteMana = Math.min(whiteMana * 2, 100);
       } else if (nextOGCD === 'Engagement') {
@@ -589,6 +592,9 @@ onAction.RDM = (actionMatch) => {
       addStatus({ name: 'Acceleration' });
       player.accelerationCount = 3;
     } else if (actionMatch.groups.actionName === 'Manafication') {
+      if (player.level >= 74) {
+        addRecast({ name: actionMatch.groups.actionName, time: 110000 });
+      }
       addRecast({ name: 'Corps-A-Corps', time: -1 });
       addRecast({ name: 'Displacement', time: -1 });
     } else if (actionMatch.groups.actionName === 'Engagement') {
