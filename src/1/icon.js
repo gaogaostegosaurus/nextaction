@@ -1,3 +1,5 @@
+/* eslint prefer-const: "off" */
+/* exported syncIcons */
 
 let iconArrayA = [];
 let iconArrayB = [];
@@ -29,7 +31,7 @@ const syncIcons = ({
   //   return;
   // }
 
-  previous.syncIcons = Date.now();
+  // previous.syncIcons = Date.now();
 
   const rowID = getArrayRow({ iconArray });
   const rowDiv = document.getElementById(rowID);
@@ -45,14 +47,15 @@ const syncIcons = ({
     if (iconArray[arrayIndex] && iconArray[arrayIndex].name === iconDiv.dataset.name) {
       arrayIndex += 1;
     } else {
-      void iconDiv.offsetWidth;
+      // void iconDiv.offsetWidth;
       iconDiv.dataset.name = 'none';
       iconDiv.classList.replace('icon-show', 'icon-hide');
-      iconDiv.addEventListener('transitionend', (event) => {
-        if (event.propertyName === 'height') { // Height is transitioned last
-          iconDiv.remove();
-        }
-      });
+      setTimeout(() => { iconDiv.remove(); }, 1000);
+      // iconDiv.addEventListener('transitionend', (event) => {
+      //   if (event.propertyName === 'height') { // Height is transitioned last
+      //     iconDiv.remove();
+      //   }
+      // });
       // iconDiv.addEventListener('transitioncancel', (event) => {
       //   console.log('event.propertyName');
       //     const thing = iconDiv;
@@ -195,7 +198,7 @@ const removeIcon = ({
   iconArray = iconArrayB,
   match = 'exact',
 } = {}) => {
-  const removeDelay = 100;
+  // const removeDelay = 100;
 
   // Prevents this from being called multiple times by AoEs
   const rowID = getArrayRow({ iconArray });
@@ -209,16 +212,21 @@ const removeIcon = ({
   }
 
   if (matchDiv) {
-    // void matchDiv.offsetWidth; // Don't need this when removing... probably
+    void matchDiv.offsetWidth; // Don't need this when removing... probably
     matchDiv.dataset.name = 'none';
     if (!matchDiv.classList.contains('icon-hide')) {
       matchDiv.classList.replace('icon-show', 'icon-hide');
     }
-    matchDiv.addEventListener('transitionend', () => {
-      if (matchDiv.propertyName === 'height' || matchDiv.propertyName === 'width') {
-        matchDiv.remove();
-      }
-    });
+    setTimeout(() => { matchDiv.remove(); }, 1000);
+    // matchDiv.addEventListener('transitionend', (event) => {
+    //   if (event.propertyName === 'height') { // Height is transitioned last
+    //     matchDiv.remove();
+    //   }
+    // matchDiv.addEventListener('transitionend', () => {
+    //   if (matchDiv.propertyName === 'height' || matchDiv.propertyName === 'width') {
+    //     matchDiv.remove();
+    //   }
+    // });
   }
 
   const matchIndex = iconArray.findIndex((entry) => entry.name === name);
