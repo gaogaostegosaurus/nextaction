@@ -177,9 +177,7 @@ const rdmNextGCD = ({
       return 'Veraero';
     } else if (blackMana < whiteMana) {
       return 'Verthunder';
-    } else if (Math.random() < 0.5) {
-      return 'Veraero';
-    } return 'Verthunder';
+    } return 'Veraero';
   } else if (verfirereadyStatus > player.gcd) {
     if (Math.min(whiteMana + 11, 100) - blackMana <= 30) {
       return 'Veraero';
