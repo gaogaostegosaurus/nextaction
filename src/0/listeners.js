@@ -119,20 +119,28 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
     player.targetCount = 1;
 
 
-    const action = actionList[player.job].join('|');
-    const status = statusList[player.job].join('|');
-    const casting = castingList[player.job].join('|');
-    actionRegExp = new RegExp(` (?<logType>1[56]):(?<sourceID>${player.id}):(?<sourceName>${player.name}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${action}):(?<targetID>[\\dA-F]{8}):(?<targetName>[ -~]+?):(?<comboCheck>(?:[\\dA-F]{0,8}:){2,6}1?1B:)?`);
-    statusRegExp = new RegExp(` (?<logType>1[AE]):(?<targetID>[\\dA-F]{8}):(?<targetName>[ -~]+?) (?<gainsLoses>gains|loses) the effect of (?<statusName>${status}) from (?<sourceName>${player.name})(?: for )?(?<statusDuration>\\d*\\.\\d*)?(?: Seconds)?\\.`);
-    /* Regular log line reacts faster for cast detection,
-      but regular log line doesn't have target ID...
-      Maybe that code right before can be used as an friendly/foe indicator? */
-    castingRegExp = new RegExp(` 00:(?<logType>[\\da-f]+):You begin casting (?<actionName>${casting})\\.`, 'i');
-    /* See above */
-    cancelRegExp = new RegExp(` 00:(?<logType>[\\da-f]+):You cancel (?<actionName>${casting})\\.`, 'i');
+    let actionNames = '';
+    if (actionList[player.job]) {
+      actionNames = actionList[player.job].join('|');
+    }
+    actionRegExp = new RegExp(` (?<logType>1[56]):(?<sourceID>${player.id}):(?<sourceName>${player.name}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${actionNames}):(?<targetID>[\\dA-F]{8}):(?<targetName>[ -~]+?):(?<comboCheck>(?:[\\dA-F]{0,8}:){2,6}1?1B:)?`);
+
+    let statusNames = '';
+    if (statusList[player.job]) {
+      statusNames = statusList[player.job].join('|');
+    }
+    statusRegExp = new RegExp(` (?<logType>1[AE]):(?<targetID>[\\dA-F]{8}):(?<targetName>[ -~]+?) (?<gainsLoses>gains|loses) the effect of (?<statusName>${statusNames}) from (?<sourceName>${player.name})(?: for )?(?<statusDuration>\\d*\\.\\d*)?(?: Seconds)?\\.`);
+
+    let castingNames = '';
+    if (castingList[player.job]) {
+      castingNames = castingList[player.job].join('|');
+    }
+    castingRegExp = new RegExp(` 00:(?<logType>[\\da-f]+):You begin casting (?<actionName>${castingNames})\\.`, 'i');
+    cancelRegExp = new RegExp(` 00:(?<logType>[\\da-f]+):You cancel (?<actionName>${castingNames})\\.`, 'i');
+
     resetNext();
     onJobChange[player.job]();
-    console.log(`Changed to ${player.job}${player.level}`);
+    // console.log(`Changed to ${player.job}${player.level}`);
     // console.log(JSON.stringify(e));
   }
 });

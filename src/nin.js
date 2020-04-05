@@ -28,8 +28,6 @@ statusList.NIN = [
   'Bloodbath', 'Feint', 'Arm\'s Length', 'True North',
 ];
 
-castingList.NIN = []; // So it doesn't complain
-
 const ninSingleTarget = [
   'Raiton',
   'Hyosho Ranryu',
