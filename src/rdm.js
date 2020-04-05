@@ -20,7 +20,7 @@ const rdmAccelerationSpells = [
   'Verholy',
 ];
 
-const rdmCooldowns = [
+const rdmAbilities = [
   'Corps-A-Corps', 'Displacement', 'Fleche', 'Contre Sixte', 'Acceleration', 'Manafication',
   'Engagement', 'Embolden',
   'Swiftcast', 'Lucid Dreaming',
@@ -63,7 +63,7 @@ const rdmWeaponskills = [
 actionList.RDM = [...new Set([
   ...rdmAccelerationSpells,
   ...rdmComboActions,
-  ...rdmCooldowns,
+  ...rdmAbilities,
   ...rdmDualcastSpells,
   ...rdmWeaponskills,
 ])];
@@ -584,7 +584,7 @@ onAction.RDM = (actionMatch) => {
   }
 
   /* Call loop */
-  if (rdmCooldowns.includes(actionMatch.groups.actionName)) {
+  if (rdmAbilities.includes(actionMatch.groups.actionName)) {
     addRecast({ name: actionMatch.groups.actionName });
     if (actionMatch.groups.actionName === 'Acceleration') {
       addStatus({ name: 'Acceleration' });
