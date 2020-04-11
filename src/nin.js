@@ -139,13 +139,23 @@ const ninNextGCD = ({
       return 'Katon';
     }
     return 'Raiton';
-  } else if (player.level >= 45 && mudra1Recast < 0 && suitonStatus < 0
+  } else if (player.level >= 45 && player.level < 70 && mudra1Recast < 0 && suitonStatus < 0
+  && trickattackRecast < duration.suiton) { /* Since Suiton casting delays this by about 3s */
+    /* Suiton for Trick before 70 */
+    return 'Suiton';
+  } else if (player.level >= 70 && player.level < 72 && mudra1Recast < 0 && suitonStatus < 0
+  && tenchijinRecast > 0 && trickattackRecast < duration.suiton) {
+    /* Only use Suiton 70 and 71 if TCJ isn't available */
+    return 'Suiton';
+  } else if (player.level >= 72 && mudra1Recast < 0 && suitonStatus < 0
   && trickattackRecast < duration.suiton) {
+    /* Suiton for Trick 72 and after, saving TCJ for Meisui */
     return 'Suiton';
-  } else if (player.level >= 72 && mudra1Recast < 0 && suitonStatus < 0 && tenchijinRecast > 168000
-  && meisuiRecast < duration.suiton) {
-    /* Use Suiton to set up Meisui if TCJ got unlinked for some reason */
-    return 'Suiton';
+  // } else if (player.level >= 72 && mudra1Recast < 0 && suitonStatus < 0
+  // && tenchijinRecast > 168000
+  // && meisuiRecast < duration.suiton) {
+  //   /* Use Suiton to set up Meisui if TCJ got unlinked for some reason */
+  //   return 'Suiton';
   } else if (player.level >= 45 && trickattackStatus > 0 && shadowfangRecast < 0) {
     /* Assuming all ticks, SF is only weaker than AoE combo at 9 targets (lol) */
     return 'Shadow Fang';
@@ -208,14 +218,14 @@ const ninNextOGCD = ({
   } else if (suitonStatus > 0 && trickattackRecast < 0) {
     return 'Trick Attack';
   } else if (player.level >= 72 && tenchijinRecast < 0 && kassatsuStatus < 0
-  && trickattackStatus > 0 && meisuiRecast < 17000) {
+  && trickattackStatus > 0 && meisuiRecast < duration.suiton) {
     return 'Ten Chi Jin';
   } else if (assassinatereadyStatus > 0) {
     return 'Assassinate';
   } else if (player.level >= 56 && dreamwithinadreamRecast < 0 && trickattackStatus > 0) {
     return 'Dream Within A Dream';
   } else if (player.level >= 70 && player.level < 72 && kassatsuStatus < 0
-  && tenchijinRecast < 0 && trickattackRecast < 17000) {
+  && tenchijinRecast < 0 && trickattackRecast < duration.suiton) {
     return 'Ten Chi Jin';
   } else if (player.level >= 72 && suitonStatus > 0 && meisuiRecast < 0 && ninki < ninkiTarget) {
     return 'Meisui';
@@ -415,7 +425,7 @@ const ninNext = ({
       }
 
       /* Status and Recast */
-      if (ninNinjutsu.indexOf(nextGCD) > -1) {
+      if (ninNinjutsu.includes(nextGCD)) {
         if (kassatsuStatus > 0) {
           kassatsuStatus = -1;
         } else {
@@ -427,9 +437,9 @@ const ninNext = ({
       }
 
       if (nextGCD === 'Huton') {
-        hutonStatus = duration.huton;
-      } else if (['Suiton', 'TCJ Suiton'].indexOf(nextGCD) > -1) {
-        suitonStatus = duration.suiton;
+        hutonStatus = mudraTime + duration.huton;
+      } else if (['Suiton', 'TCJ Suiton'].includes(nextGCD)) {
+        suitonStatus = mudraTime + duration.suiton;
       } else if (nextGCD === 'Shadow Fang') {
         shadowfangRecast = recast.shadowfang * hutonModifier;
       } else if (nextGCD === 'Hakke Mujinsatsu') {
