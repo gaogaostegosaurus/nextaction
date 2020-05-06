@@ -208,6 +208,7 @@ const ninNextOGCD = ({
   } else if (suitonStatus > 0 && trickattackRecast < 0) {
     return 'Trick Attack';
   } else if (player.level >= 72 && suitonStatus > 0 && meisuiRecast < 0
+  && suitonStatus < trickattackRecast
   && suitonStatus < player.gcd * 2 && ninki < ninkiTarget) {
     return 'Meisui';
   } else if (player.level >= 72 && kassatsuStatus < 0 && tenchijinRecast < 0
