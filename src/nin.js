@@ -200,28 +200,32 @@ const ninNextOGCD = ({
   // mudra2Recast,
   // shadowfangRecast,
 } = {}) => {
-  if (player.level >= 80 && ninki >= 50 && bunshinRecast < 0) {
-    return 'Bunshin';
-  } else if (player.level >= 15 && ninki < ninkiTarget && mugRecast < 0) {
-    return 'Mug';
+  if (suitonStatus > 0 && trickattackRecast < 0 && suitonStatus < player.gcd * 2) {
+    return 'Trick Attack'; /* Use Trick if Suiton is about to wear off */
+  } else if (assassinatereadyStatus > 0 && assassinatereadyStatus < player.gcd * 2) {
+    return 'Assassinate'; /* Use Assassinate if Ready is about to wear off */
   } else if (player.level >= 50 && kassatsuRecast < 0
   && (suitonStatus > 0 || trickattackStatus > 0)) {
     return 'Kassatsu';
+  } else if (player.level >= 80 && ninki >= 50 && bunshinRecast < 0) {
+    return 'Bunshin';
+  } else if (player.level >= 15 && ninki < ninkiTarget && mugRecast < 0) {
+    return 'Mug';
   } else if (suitonStatus > 0 && trickattackRecast < 0) {
     return 'Trick Attack';
-  } else if (player.level >= 72 && suitonStatus > 0 && meisuiRecast < 0
-  && suitonStatus < trickattackRecast && ninki < ninkiTarget) {
-    return 'Meisui';
+  } else if (player.level >= 56 && dreamwithinadreamRecast < 0 && trickattackStatus > 0) {
+    return 'Dream Within A Dream';
   } else if (player.level >= 72 && kassatsuStatus < 0 && tenchijinRecast < 0
   && trickattackStatus > 0 && meisuiRecast < duration.suiton) {
     return 'Ten Chi Jin Suiton'; /* Use TCJ to set up Meisui */
   } else if (player.level >= 70 && player.level < 72 && kassatsuStatus < 0 && tenchijinRecast < 0
   && trickattackRecast < duration.suiton) {
     return 'Ten Chi Jin Suiton'; /* Use TCJ to set up TA before 72 */
+  } else if (player.level >= 72 && suitonStatus > 0 && meisuiRecast < 0
+  && suitonStatus < trickattackRecast && ninki < ninkiTarget) {
+    return 'Meisui';
   } else if (assassinatereadyStatus > 0) {
-    return 'Assassinate';
-  } else if (player.level >= 56 && dreamwithinadreamRecast < 0 && trickattackStatus > 0) {
-    return 'Dream Within A Dream';
+    return 'Assassinate'; /* Use Assassinate if Ready is about to wear off */
   } else if (player.level >= 62 && ninki >= ninkiTarget) {
     if (player.targetCount > 1) {
       return 'Hellfrog Medium';
