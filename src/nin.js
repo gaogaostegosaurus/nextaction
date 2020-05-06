@@ -202,14 +202,15 @@ const ninNextOGCD = ({
 } = {}) => {
   if (player.level >= 80 && ninki >= 50 && bunshinRecast < 0) {
     return 'Bunshin';
+  } else if (player.level >= 15 && ninki < ninkiTarget && mugRecast < 0) {
+    return 'Mug';
   } else if (player.level >= 50 && kassatsuRecast < 0
   && (suitonStatus > 0 || trickattackStatus > 0)) {
     return 'Kassatsu';
   } else if (suitonStatus > 0 && trickattackRecast < 0) {
     return 'Trick Attack';
   } else if (player.level >= 72 && suitonStatus > 0 && meisuiRecast < 0
-  && suitonStatus < trickattackRecast
-  && suitonStatus < player.gcd * 2 && ninki < ninkiTarget) {
+  && suitonStatus < trickattackRecast && ninki < ninkiTarget) {
     return 'Meisui';
   } else if (player.level >= 72 && kassatsuStatus < 0 && tenchijinRecast < 0
   && trickattackStatus > 0 && meisuiRecast < duration.suiton) {
@@ -221,10 +222,6 @@ const ninNextOGCD = ({
     return 'Assassinate';
   } else if (player.level >= 56 && dreamwithinadreamRecast < 0 && trickattackStatus > 0) {
     return 'Dream Within A Dream';
-  } else if (player.level >= 15 && ninki < ninkiTarget && mugRecast < 0) {
-    return 'Mug';
-  } else if (player.level >= 72 && suitonStatus > 0 && meisuiRecast < 0 && ninki < ninkiTarget) {
-    return 'Meisui';
   } else if (player.level >= 62 && ninki >= ninkiTarget) {
     if (player.targetCount > 1) {
       return 'Hellfrog Medium';
