@@ -96,7 +96,7 @@ const ninNextWeaponskill = ({
     return 'Hakke Mujinsatsu';
   } else if (player.level >= 38 && player.targetCount >= 3) {
     return 'Death Blossom';
-  } else if (player.level >= 56 && comboStep === 'Gust Slash'
+  } else if (player.level >= 54 && comboStep === 'Gust Slash'
   && hutonStatus < 40000 && hutonStatus > 0) {
     return 'Armor Crush';
   } else if (player.level >= 26 && comboStep === 'Gust Slash') {
@@ -151,7 +151,7 @@ const ninNextGCD = ({
     if (comboStep === 'Death Blossom') {
       return 'Hakke Mujinsatsu';
     } return 'Death Blossom';
-  } else if (player.level >= 56
+  } else if (player.level >= 54
   && hutonStatus < 10000 && hutonStatus > 0) {
     if (comboStep === 'Gust Slash') {
       return 'Armor Crush';
