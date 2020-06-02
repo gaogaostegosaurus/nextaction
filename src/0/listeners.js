@@ -123,20 +123,20 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
     if (actionList[player.job]) {
       actionNames = actionList[player.job].join('|');
     }
-    actionRegExp = new RegExp(` (?<logType>1[56]):(?<sourceID>${player.id}):(?<sourceName>${player.name}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${actionNames}):(?<targetID>[\\dA-F]{8}):(?<targetName>[ -~]+?):(?<comboCheck>(?:[\\dA-F]{0,8}:){2,6}1?1B:)?`);
+    actionRegExp = new RegExp(`^.{15}(?<logType>1[56]):(?<sourceID>${player.id}):(?<sourceName>${player.name}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${actionNames}):(?<targetID>[\\dA-F]{8}):(?<targetName>[ -~]+?):(?<comboCheck>(?:[\\dA-F]{0,8}:){2,6}1?1B:)?`);
 
     let statusNames = '';
     if (statusList[player.job]) {
       statusNames = statusList[player.job].join('|');
     }
-    statusRegExp = new RegExp(` (?<logType>1[AE]):(?<targetID>[\\dA-F]{8}):(?<targetName>[ -~]+?) (?<gainsLoses>gains|loses) the effect of (?<statusName>${statusNames}) from (?<sourceName>${player.name})(?: for )?(?<statusDuration>\\d*\\.\\d*)?(?: Seconds)?\\.`);
+    statusRegExp = new RegExp(`^.{15}(?<logType>1[AE]):(?<targetID>[\\dA-F]{8}):(?<targetName>[ -~]+?) (?<gainsLoses>gains|loses) the effect of (?<statusName>${statusNames}) from (?<sourceName>${player.name})(?: for )?(?<statusDuration>\\d*\\.\\d*)?(?: Seconds)?\\.`);
 
     let castingNames = '';
     if (castingList[player.job]) {
       castingNames = castingList[player.job].join('|');
     }
-    castingRegExp = new RegExp(` 00:(?<logType>[\\da-f]+):You begin casting (?<actionName>${castingNames})\\.`, 'i');
-    cancelRegExp = new RegExp(` 00:(?<logType>[\\da-f]+):You cancel (?<actionName>${castingNames})\\.`, 'i');
+    castingRegExp = new RegExp(`^.{15}00:(?<logType>[\\da-f]+):You begin casting (?<actionName>${castingNames})\\.`, 'i');
+    cancelRegExp = new RegExp(`^.{15}00:(?<logType>[\\da-f]+):You cancel (?<actionName>${castingNames})\\.`, 'i');
 
     resetNext();
     onJobChange[player.job]();
