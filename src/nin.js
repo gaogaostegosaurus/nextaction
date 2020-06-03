@@ -606,10 +606,6 @@ onTargetChanged.NIN = () => {
   }
 };
 
-player.ninjutsuCount = 0;
-player.comboStep = 0;
-player.mudraCount = 0;
-
 onAction.NIN = (actionMatch) => {
   /* Action log matching */
 
