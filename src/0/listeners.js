@@ -54,17 +54,11 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
   player.name = e.detail.name;
   player.job = e.detail.job;
   player.level = e.detail.level;
-  player.comboStep = '';
-
   // player.currentHP = e.detail.currentHP;
   // player.maxHP = e.detail.maxHP;
   player.mp = e.detail.currentMP;
   // player.maxMP = e.detail.maxMP;
   // player.currentShield = e.detail.currentShield;
-
-  player.ninjutsuCount = 0;
-  player.mudraCount = 0;
-
   /* Create 8 part array for unsupported jobs - use [0] to [7].
   Need to use parseInt because 04 is not the same as 4. */
   const debugJobArray = e.detail.debugJob.split(' ');
@@ -120,7 +114,9 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
     player.gcd = 2500;
     player.mpRegen = 200;
     player.targetCount = 1;
-
+    player.comboStep = '';
+    player.ninjutsuCount = 0;
+    player.mudraCount = 0;
 
     let actionNames = '';
     if (actionList[player.job]) {
