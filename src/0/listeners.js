@@ -157,8 +157,7 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
     // const addedMatch = e.detail.logs[i].match(addedRegExp);
 
     if (actionMatch) {
-      if (actionMatch.groups.logType === '16' && Date.now() - debounceTimestamp > 10) {
-        debounceTimestamp = Date.now(); /* Prevents AoE stuff from being silly */
+      if (actionMatch.groups.logType === '15') {
         onAction[player.job](actionMatch);
         // if (actionMatch.groups.targetID.startsWith('4')) {
         // if (!previous.aoe || Date.now() - previous.aoe > 100) {
@@ -183,7 +182,8 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
         //   timeout[`${property}Match`] = setTimeout(onAction[player.job], 100, actionMatch);
         // }
         // }
-      } else {
+      } else if (actionMatch.groups.logType === '16' && Date.now() - debounceTimestamp > 10) {
+        debounceTimestamp = Date.now(); /* Prevents AoE stuff from being silly */
         onAction[player.job](actionMatch);
       }
     } else if (statusMatch) {
