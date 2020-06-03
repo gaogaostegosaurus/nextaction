@@ -133,7 +133,7 @@ const pldNextGCD = ({
   swordoathStatus,
   swordoathCount,
 } = {}) => {
-
+  /* Atonement is highest DPS per GCD so I guess it should go here */
   if (swordoathStatus > 0 && swordoathCount > 0) {
     return 'Atonement';
   }
