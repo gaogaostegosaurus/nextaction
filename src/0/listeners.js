@@ -111,6 +111,8 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
   if (player.job && (previous.job !== player.job || previous.level !== player.level)) {
     previous.job = player.job;
     previous.level = player.level;
+
+    /* Reset all player.whatever variables */
     player.gcd = 2500;
     player.mpRegen = 200;
     player.targetCount = 1;
