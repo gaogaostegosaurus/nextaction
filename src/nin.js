@@ -312,11 +312,11 @@ const ninNext = ({
   /* Store all the data */
   // let mudraTime = 0;
 
-  let ninki = player.ninki;
-  let hutonStatus = player.huton;
-  // let tenchijinCount = player.tenchijinCount;
   let bunshinCount = player.bunshinCount;
   let comboStep = player.comboStep;
+  let hutonStatus = player.huton;
+  let ninki = player.ninki;
+  // let tenchijinCount = player.tenchijinCount;
 
   let mugRecast = checkRecast({ name: 'Mug' });
   let trickattackRecast = checkRecast({ name: 'Trick Attack' });
