@@ -420,7 +420,7 @@ onAction.PLD = (actionMatch) => {
       addStatus({ name: actionMatch.groups.actionName });
     }
   }
-  console.debug(player.comboStep);
+  // console.debug(player.comboStep);
 };
 
 onCasting.PLD = () => {
