@@ -109,6 +109,7 @@ const gcdCalculation = ({
     * (delta / levelMod)))) / 1000) / 1000)) / 100) * 10;
   recast.hotshot = Math.floor(Math.floor(10000 * (Math.floor((40000 * (1000 - Math.floor(130
     * (delta / levelMod)))) / 1000) / 1000)) / 100) * 10;
+  recast.airanchor = recast.hotshot;
 
 
   recast.egiassault1 = recast.egiassault;
