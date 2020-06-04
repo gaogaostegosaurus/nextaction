@@ -74,11 +74,15 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
     player.stepTotal = debugJobArray[6]; /* 0-4 */
   } else if (player.job === 'GNB') {
     player.cartridge = parseInt(debugJobArray[0], 16); /* 0-2 */
-  } else if (player.job === 'PLD') {
-    player.oath = e.detail.jobDetail.oath;
+  } else if (player.job === 'GNB') {
+    player.heat = e.detail.jobDetail.heat;
+    player.overheated = e.detail.jobDetail.overheatMilliseconds;
+    player.battery = e.detail.jobDetail.battery;
   } else if (player.job === 'NIN') {
     player.huton = e.detail.jobDetail.hutonMilliseconds;
     player.ninki = e.detail.jobDetail.ninkiAmount;
+  } else if (player.job === 'PLD') {
+    player.oath = e.detail.jobDetail.oath;
   } else if (player.job === 'RDM') {
     player.blackMana = e.detail.jobDetail.blackMana;
     player.whiteMana = e.detail.jobDetail.whiteMana;
