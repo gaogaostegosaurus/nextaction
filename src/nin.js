@@ -311,7 +311,6 @@ const ninNext = ({
   // let ogcdSlots = ogcd;
   /* Store all the data */
   // let mudraTime = 0;
-
   let bunshinCount = player.bunshinCount;
   let comboStep = player.comboStep;
   let hutonStatus = player.huton;
