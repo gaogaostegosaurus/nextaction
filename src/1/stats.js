@@ -95,7 +95,6 @@ const gcdCalculation = ({
   const delta = speed - base;
   const levelMod = levelMods[player.level][4];
 
-  // console.log(speed);
   player.gcd = Math.floor(Math.floor(10000 * (Math.floor((2500 * (1000 - Math.floor(130
     * (delta / levelMod)))) / 1000) / 1000)) / 100) * 10; // Modified to output in ms
 
@@ -105,12 +104,23 @@ const gcdCalculation = ({
   recast.egiassault = Math.floor(Math.floor(10000 * (Math.floor((30000 * (1000 - Math.floor(130
     * (delta / levelMod)))) / 1000) / 1000)) / 100) * 10;
 
+  /* These look like they're a little off but not by enough to matter I hope */
+  recast.drill = Math.floor(Math.floor(10000 * (Math.floor((20000 * (1000 - Math.floor(130
+    * (delta / levelMod)))) / 1000) / 1000)) / 100) * 10;
+  recast.hotshot = Math.floor(Math.floor(10000 * (Math.floor((40000 * (1000 - Math.floor(130
+    * (delta / levelMod)))) / 1000) / 1000)) / 100) * 10;
+
+
   recast.egiassault1 = recast.egiassault;
   recast.egiassault2 = recast.egiassault;
   recast.egiassaulti1 = recast.egiassault;
   recast.egiassaultii2 = recast.egiassault;
-  
+
   console.log(`Standard GCD calculated as ${player.gcd}ms`);
+  if (player.job === 'MCH') {
+    console.log(`Hot Shot: ${recast.hotshot}ms`);
+    console.log(`Drill: ${recast.drill}ms`);
+  }
 };
 
 const mpRegenCalculation = ({
