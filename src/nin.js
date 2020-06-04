@@ -306,7 +306,7 @@ const ninNext = ({
   let nextTime = 0;
   // previous.ninNext = Date.now();
   // console.log(`${checkRecast({ name: 'Mudra 1' })} ${checkRecast({ name: 'Mudra 2' })}`);
-  let gcdTime = gcd;
+  let gcdTime = gcd; /* This controls how much OGCDs have to work with */
 
   // let ogcdSlots = ogcd;
   /* Store all the data */
@@ -341,14 +341,8 @@ const ninNext = ({
   const ninArray = [];
 
   do {
-    /* General flow:
-        1. Push GCD action if called with gcdTime 0
-        2. Advance elapsedTime?
-        3. Push OGCD action
-        4. Advance elapsedTime
-        5. Loop */
-    let loopTime = 0;
-    let mudraTime = 0;
+    let loopTime = 0; /* Used at end of loop to move things "forward" */
+    let mudraTime = 0; /* Also shifts things forward */
     let hutonModifier = 1;
     if (hutonStatus > 0) {
       hutonModifier = 0.85;
@@ -629,7 +623,7 @@ onAction.NIN = (actionMatch) => {
   }
 
   /* Mudra-specific stuff */
-  if (ninMudra.indexOf(actionMatch.groups.actionName) > -1) {
+  if (ninMudra.includes(actionMatch.groups.actionName)) {
     /* Don't increase Mudra recast under Kassatsu */
     if (player.mudraCount === 0 && checkStatus({ name: 'Kassatsu' }) < 0) {
       if (checkRecast({ name: 'Mudra 2' }) > 0) {
@@ -641,7 +635,7 @@ onAction.NIN = (actionMatch) => {
     }
     player.mudraCount += 1;
     // ninNext({ gcd: 500, ogcd: 0 });
-  } else if (ninNinjutsu.indexOf(actionMatch.groups.actionName) > -1) {
+  } else if (ninNinjutsu.includes(actionMatch.groups.actionName)) {
     /* Ninjutsu specific stuff */
     /* Logic here feels messy - return to fix at some point */
     if (checkStatus({ name: 'Ten Chi Jin' }) > 0 && player.tenchijinCount < 3) {
