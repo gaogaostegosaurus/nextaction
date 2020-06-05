@@ -50,6 +50,7 @@ castingList.MCH = [];
 
 const mchNextWeaponskill = ({
   comboStep,
+  comboTime,
   overheated,
 } = {}) => {
   if (player.level >= 52 && overheated > 0 && player.targetCount >= 3) {
@@ -58,13 +59,15 @@ const mchNextWeaponskill = ({
     return 'Heat Blast';
   } else if (player.level >= 18 && player.targetCount >= 3) {
     return 'Spread Shot';
-  } else if (player.level >= 64 && comboStep === 'Heated Slug Shot') {
+  } else if (player.level >= 64 && comboStep === 'Heated Slug Shot' && comboTime > player.gcd) {
     return 'Heated Clean Shot';
-  } else if (player.level >= 26 && ['Slug Shot', 'Heated Slug Shot'].includes(comboStep)) {
+  } else if (player.level >= 26 && ['Slug Shot', 'Heated Slug Shot'].includes(comboStep)
+  && comboTime > player.gcd) {
     return 'Clean Shot';
-  } else if (player.level >= 60 && comboStep === 'Heated Split Shot') {
+  } else if (player.level >= 60 && comboStep === 'Heated Split Shot' && comboTime > player.gcd) {
     return 'Heated Slug Shot';
-  } else if (player.level >= 2 && ['Split Shot', 'Heated Split Shot'].includes(comboStep)) {
+  } else if (player.level >= 2 && ['Split Shot', 'Heated Split Shot'].includes(comboStep)
+  && comboTime > player.gcd) {
     return 'Slug Shot';
   } else if (player.level >= 54) {
     return 'Heated Split Shot';
@@ -82,13 +85,13 @@ const mchNextGCD = ({
   wildfireStatus,
 } = {}) => {
   /* Prevent breaking combo */
-  if (comboTime > 0 && comboTime < player.gcd) {
-    return mchNextWeaponskill({ comboStep, overheated });
+  if (comboStep !== '' && comboTime > 0 && comboTime < player.gcd * 3) {
+    return mchNextWeaponskill({ comboStep, comboTime, overheated });
   }
 
   /* Prioritize getting Bioblaster/Drill and Hotshot/Anchor out */
   /* Don't use at end of Wildfire or during Hypercharge */
-  if ((wildfireStatus > player.gcd || wildfireStatus < 0) && overheated <= 0) {
+  if ((wildfireStatus > player.gcd || wildfireStatus < 0) && overheated < player.gcd) {
     if (player.level >= 72 && drillRecast < 0 && player.targetCount >= 2) {
       return 'Bioblaster';
     } else if (player.level >= 58 && drillRecast < 0) {
@@ -111,7 +114,7 @@ const mchNextGCD = ({
   }
 
   /* Combo */
-  return mchNextWeaponskill({ comboStep, overheated });
+  return mchNextWeaponskill({ comboStep, comboTime, overheated });
 };
 
 
@@ -126,7 +129,8 @@ const mchNextOGCD = ({
   gcdTime,
   heat,
   hotshotRecast,
-  overheated,
+  hyperchargeRecast,
+  // overheated,
   reassembleRecast,
   ricochet1Recast,
   ricochet2Recast,
@@ -141,7 +145,7 @@ const mchNextOGCD = ({
     return 'Reassemble';
   }
 
-  /* Keep Gauss/Ricochet on cooldown */
+  /* Use stack 3 of Gauss/Ricochet */
   if (player.level >= 50 && player.targetCount > 1 && ricochet3Recast < 0) {
     return 'Ricochet';
   } else if (player.level >= 15 && gaussround3Recast < 0) {
@@ -155,7 +159,7 @@ const mchNextOGCD = ({
     return 'Barrel Stabilizer';
   }
 
-  /* Maintain low levels of Gauss/Ricochet */
+  /* Use stack 2 of Gauss/Ricochet */
   if (player.level >= 50 && player.targetCount > 1 && ricochet2Recast < 0) {
     return 'Ricochet';
   } else if (player.level >= 15 && gaussround2Recast < 0) {
@@ -165,23 +169,30 @@ const mchNextOGCD = ({
   }
 
   /* Maximize Wildfire uses */
-  if (player.level >= 45 && heat >= 50 && overheated <= 0 && wildfireRecast < 0) {
+  if (player.level >= 45 && heat >= 50 && hyperchargeRecast < 0 && wildfireRecast < 0) {
+    /* Use Wildfire immediately if Hypercharge looks ready */
+    /* Will probably(?) place Hypercharge in second OGCD slot */
     return 'Wildfire';
   } else if (player.level >= 45 && wildfireRecast < 0 && gcdTime <= 1500) {
+    /* Use Hypercharge on cooldown in second OGCD slot */
     return 'Wildfire';
   }
 
   /* Maximize Hypercharge uses */
-  if (player.level >= 30 && heat >= 50 && (wildfireStatus > 0 || wildfireRecast <= player.gcd)
-  && gcdTime <= 1500 && overheated <= 0) {
+  /* gcdTime <= 1500 keeps it in second weave slot */
+  if (player.level >= 30 && heat >= 50 && (wildfireStatus > 0 || wildfireRecast < 1500)
+  && gcdTime <= 1500 && hyperchargeRecast < 0) {
+    /* Use Hypercharge immediately if Wildfire is up or about to be up */
+    /* wildfireRecast < 1500 so that it is definitely in the next Heat Blast OGCD */
     return 'Hypercharge';
   } else if (player.level >= 30 && heat >= 50
-  && (heat === 100 || barrelstabilizerRecast < wildfireRecast) && gcdTime <= 1500
-  && overheated <= 0) {
+  && (heat === 100 || barrelstabilizerRecast < wildfireRecast) && wildfireRecast > 10000
+  && gcdTime <= 1500 && hyperchargeRecast < 0) {
+    /* Use Hypercharge if unlikely(?) to miss a Wildfire window */
     return 'Hypercharge';
   }
 
-  /* Maintain low levels of Gauss/Ricochet */
+  /* Use Gauss/Ricochet */
   if (player.level >= 50 && player.targetCount > 1 && ricochet1Recast < 0) {
     return 'Ricochet';
   } else if (player.level >= 15 && gaussround1Recast < 0) {
@@ -226,18 +237,18 @@ const mchNext = ({
   let comboTime = player.comboTime - Date.now();
   let drillRecast = checkRecast({ name: 'Drill' });
   let flamethrowerRecast = checkRecast({ name: 'Flamethrower' });
-  let hotshotRecast = checkRecast({ name: 'Hot Shot' });
-  let reassembleRecast = checkRecast({ name: 'Reassemble' });
-  // let reassembleStatus = checkStatus({ name: 'Reassemble' });
-  let wildfireRecast = checkRecast({ name: 'Wildfire' });
-  let wildfireStatus = checkStatus({ name: 'Wildfire' });
-
   let gaussround1Recast = checkRecast({ name: 'Gauss Round 1' });
   let gaussround2Recast = checkRecast({ name: 'Gauss Round 2' });
   let gaussround3Recast = checkRecast({ name: 'Gauss Round 3' });
+  let hotshotRecast = checkRecast({ name: 'Hot Shot' });
+  let hyperchargeRecast = checkRecast({ name: 'Hypercharge' });
+  let reassembleRecast = checkRecast({ name: 'Reassemble' });
+  let reassembleStatus = checkStatus({ name: 'Reassemble' });
   let ricochet1Recast = checkRecast({ name: 'Ricochet 1' });
   let ricochet2Recast = checkRecast({ name: 'Ricochet 2' });
   let ricochet3Recast = checkRecast({ name: 'Ricochet 3' });
+  let wildfireRecast = checkRecast({ name: 'Wildfire' });
+  let wildfireStatus = checkStatus({ name: 'Wildfire' });
 
   const mchArray = [];
 
@@ -245,7 +256,6 @@ const mchNext = ({
     let loopTime = 0;
 
     if (gcdTime <= 1000) {
-      /* Insert GCD icon if GCD is complete */
       const nextGCD = mchNextGCD({
         comboStep,
         comboTime,
@@ -258,14 +268,15 @@ const mchNext = ({
 
       mchArray.push({ name: nextGCD });
 
-      /* GCD stuff */
-
       if (mchComboWeaponskills.includes(nextGCD)) {
         comboStep = nextGCD;
-        comboTime = 12500;
+        comboTime = 15000;
         heat = Math.min(heat + 5, 100);
         if (['Clean Shot', 'Heated Clean Shot'].includes(nextGCD)) {
           battery = Math.min(battery + 10, 100);
+        }
+        if (['Spread Shot', 'Clean Shot', 'Heated Clean Shot'].includes(nextGCD)) {
+          comboStep = '';
         }
       } else if (['Hot Shot', 'Air Anchor'].includes(nextGCD)) {
         battery = Math.min(battery + 20, 100);
@@ -305,6 +316,7 @@ const mchNext = ({
           gcdTime,
           heat,
           hotshotRecast,
+          hyperchargeRecast,
           overheated,
           reassembleRecast,
           ricochet1Recast,
@@ -316,32 +328,33 @@ const mchNext = ({
 
         if (nextOGCD) {
           mchArray.push({ name: nextOGCD, size: 'small' });
-        }
 
-        if (nextOGCD === 'Reassemble') {
-          reassembleRecast = recast.reassemble;
-          // reassembleStatus = duration.reassemble;
-        } else if (nextOGCD === 'Gauss Round') {
-          gaussround1Recast = gaussround2Recast;
-          gaussround2Recast = gaussround3Recast;
-          gaussround3Recast = Math.max(gaussround3Recast + 30000, 30000);
-        } else if (nextOGCD === 'Hypercharge') {
-          heat -= 50;
-          overheated = 8501; /* Actually 8 seconds, but this will predict better */
-        } else if (['Rook Autoturret', 'Automaton Queen'].includes(nextOGCD)) {
-          battery = 0;
-        } else if (nextOGCD === 'Wildfire') {
-          wildfireRecast = recast.wildfire;
-          wildfireStatus = duration.wildfire;
-        } else if (nextOGCD === 'Ricochet') {
-          ricochet1Recast = ricochet2Recast;
-          ricochet2Recast = ricochet3Recast;
-          ricochet3Recast = Math.max(ricochet3Recast + 30000, 30000);
-        } else if (nextOGCD === 'Barrel Stabilizer') {
-          barrelstabilizerRecast = recast.barrelstabilizer;
-          heat = Math.min(heat + 50, 100);
+          if (nextOGCD === 'Reassemble') {
+            reassembleRecast = recast.reassemble;
+            // reassembleStatus = duration.reassemble;
+          } else if (nextOGCD === 'Gauss Round') {
+            gaussround1Recast = gaussround2Recast;
+            gaussround2Recast = gaussround3Recast;
+            gaussround3Recast = Math.max(gaussround3Recast + 30000, 30000);
+            /* Honestly not 100% sure why this is needed or if this works, but it shoud prevent
+             weird edge cases where the number is negative before operations even start */
+          } else if (nextOGCD === 'Hypercharge') {
+            heat -= 50;
+            overheated = 8501; /* Actually 8 seconds, but this predicts better because reasons */
+          } else if (['Rook Autoturret', 'Automaton Queen'].includes(nextOGCD)) {
+            battery = 0;
+          } else if (nextOGCD === 'Wildfire') {
+            wildfireRecast = recast.wildfire;
+            wildfireStatus = duration.wildfire;
+          } else if (nextOGCD === 'Ricochet') {
+            ricochet1Recast = ricochet2Recast;
+            ricochet2Recast = ricochet3Recast;
+            ricochet3Recast = Math.max(ricochet3Recast + 30000, 30000);
+          } else if (nextOGCD === 'Barrel Stabilizer') {
+            barrelstabilizerRecast = recast.barrelstabilizer;
+            heat = Math.min(heat + 50, 100);
+          }
         }
-
         gcdTime -= 1000;
       }
     }
@@ -354,8 +367,9 @@ const mchNext = ({
     drillRecast -= loopTime;
     flamethrowerRecast -= loopTime;
     hotshotRecast -= loopTime;
+    hyperchargeRecast -= loopTime;
     reassembleRecast -= loopTime;
-    // reassembleStatus -= loopTime;
+    reassembleStatus -= loopTime;
     overheated -= loopTime;
     gaussround1Recast -= loopTime;
     gaussround2Recast -= loopTime;
@@ -390,7 +404,7 @@ onAction.MCH = (actionMatch) => {
   if (mchComboWeaponskills.includes(actionMatch.groups.actionName)) {
     if (actionMatch.groups.comboCheck) {
       player.comboStep = actionMatch.groups.actionName;
-      player.comboTime = Date.now() + 12500;
+      player.comboTime = Date.now() + 15000;
     } else {
       player.comboStep = '';
       player.comboTime = -1;
