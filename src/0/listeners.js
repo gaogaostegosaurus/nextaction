@@ -77,9 +77,15 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
   } else if (player.job === 'MCH') {
     player.heat = e.detail.jobDetail.heat;
     player.overheated = e.detail.jobDetail.overheatMilliseconds;
+    if (player.overheated === 0) {
+      player.overheated = -1;
+    } /* Simplifies comparisons */
     player.battery = e.detail.jobDetail.battery;
   } else if (player.job === 'NIN') {
     player.huton = e.detail.jobDetail.hutonMilliseconds;
+    if (player.huton === 0) {
+      player.huton = -1;
+    }
     player.ninki = e.detail.jobDetail.ninkiAmount;
   } else if (player.job === 'PLD') {
     player.oath = e.detail.jobDetail.oath;
