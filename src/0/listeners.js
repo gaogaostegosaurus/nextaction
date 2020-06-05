@@ -74,7 +74,7 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
     player.stepTotal = debugJobArray[6]; /* 0-4 */
   } else if (player.job === 'GNB') {
     player.cartridge = parseInt(debugJobArray[0], 16); /* 0-2 */
-  } else if (player.job === 'GNB') {
+  } else if (player.job === 'MCH') {
     player.heat = e.detail.jobDetail.heat;
     player.overheated = e.detail.jobDetail.overheatMilliseconds;
     player.battery = e.detail.jobDetail.battery;
@@ -121,6 +121,7 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
     player.mpRegen = 200;
     player.targetCount = 1;
     player.comboStep = '';
+    player.comboTime = -1;
     player.ninjutsuCount = 0;
     player.mudraCount = 0;
 

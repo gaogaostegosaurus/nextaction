@@ -43,7 +43,7 @@ duration.delirium = 10000;
 duration.nomercy = 20000;
 
 // MCH
-duration.hypercharge = 10000;
+duration.wildfire = 10000;
 
 // MNK
 duration.twinsnakes = 15000;
