@@ -194,7 +194,7 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
         //   timeout[`${property}Match`] = setTimeout(onAction[player.job], 100, actionMatch);
         // }
         // }
-      } else if (actionMatch.groups.logType === '16' && Date.now() - debounceTimestamp > 10) {
+      } else if (actionMatch.groups.logType === '16' && Date.now() - debounceTimestamp > 50) {
         debounceTimestamp = Date.now(); /* Prevents AoE stuff from being silly */
         onAction[player.job](actionMatch);
       }
