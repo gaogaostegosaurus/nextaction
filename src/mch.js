@@ -433,6 +433,7 @@ onTargetChanged.MCH = () => {
 };
 
 onAction.MCH = (actionMatch) => {
+  /* Remove icon before reflow */
   removeIcon({ name: actionMatch.groups.actionName });
 
   if (mchMultiTarget.includes(actionMatch.groups.actionName)) {
@@ -442,10 +443,8 @@ onAction.MCH = (actionMatch) => {
   }
 
   if (mchComboWeaponskills.includes(actionMatch.groups.actionName)) {
-    if (player.level < 2) {
-      removeStatus({ name: 'Combo' });
-      player.comboStep = '';
-    } else if (player.level < 26 && actionMatch.groups.actionName === 'Slug Shot') {
+    if ((player.level < 2)
+    || (player.level < 26 && actionMatch.groups.actionName === 'Slug Shot')) {
       removeStatus({ name: 'Combo' });
       player.comboStep = '';
     } else if (actionMatch.groups.comboCheck) {
