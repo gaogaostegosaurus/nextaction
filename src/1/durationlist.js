@@ -44,6 +44,8 @@ duration.nomercy = 20000;
 
 // MCH
 duration.wildfire = 10000;
+duration.flamethrower = 10000;
+duration.reassemble = 5000;
 
 // MNK
 duration.twinsnakes = 15000;
