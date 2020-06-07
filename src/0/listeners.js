@@ -135,7 +135,7 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
     if (actionList[player.job]) {
       actionNames = actionList[player.job].join('|');
     }
-    actionRegExp = new RegExp(`^.{15}(?<logType>1[56]):(?<sourceID>${player.id}):(?<sourceName>${player.name}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${actionNames}):(?<targetID>[\\dA-F]{8}):(?<targetName>[ -~]+?):(?<comboCheck>(?:[\\dA-F]{0,8}:){2,6}1?1B:)?`);
+    actionRegExp = new RegExp(`^.{15}(?<logType>1[56]):(?<sourceID>${player.id}):(?<sourceName>${player.name}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${actionNames}):(?<targetID>[\\dA-F]{8}):(?<comboCheck>([^:]*:)*?1?1B:)?`);
 
     let statusNames = '';
     if (statusList[player.job]) {
