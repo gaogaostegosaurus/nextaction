@@ -2,7 +2,7 @@
 const mchSingleTarget = [
   'Split Shot', 'Slug Shot', 'Hot Shot', 'Clean Shot',
   'Heated Split Shot', 'Heated Slug Shot', 'Heated Clean Shot',
-  'Drill', 'Air Anchor', 'Heat Blast',
+  'Drill', 'Heat Blast',
 ];
 
 const mchMultiTarget = [
@@ -104,7 +104,8 @@ const mchNextGCD = ({
   }
 
   /* Flamethrower is better than Spread in AoE */
-  if (player.level >= 70 && player.targetCount >= 2 && flamethrowerRecast < 0) {
+  if (player.level >= 70 && player.targetCount >= 2 && wildfireStatus < 0
+  && flamethrowerRecast < 0) {
     return 'Flamethrower';
   }
 
@@ -152,7 +153,7 @@ const mchNextOGCD = ({
   }
 
   /* Use stack 3 of Gauss/Ricochet */
-  if (player.level >= 50 && ricochet3Recast < 0) {
+  if (player.level >= 50 && player.targetCount < 3 && ricochet3Recast < 0) {
     return 'Ricochet';
   } else if (player.level >= 15 && gaussround3Recast < 0) {
     return 'Gauss Round';
@@ -164,7 +165,7 @@ const mchNextOGCD = ({
   }
 
   /* Use stack 2 of Gauss/Ricochet */
-  if (player.level >= 50 && ricochet2Recast < 0) {
+  if (player.level >= 50 && player.targetCount < 3 && ricochet2Recast < 0) {
     return 'Ricochet';
   } else if (player.level >= 15 && gaussround2Recast < 0) {
     return 'Gauss Round';
@@ -183,13 +184,13 @@ const mchNextOGCD = ({
   /* Maximize Hypercharge uses */
   /* gcdTime <= 1500 keeps it in second weave slot */
   if (player.level >= 30 && heat >= 50 && (wildfireStatus > 0 || wildfireRecast < 1500)
-  && gcdTime <= 1500 && comboStatus > 1500 * 6 && hyperchargeRecast < 0) {
+  && gcdTime <= 1500 && (comboStatus > 1500 * 6 || comboStatus === -1) && hyperchargeRecast < 0) {
     /* Use Hypercharge immediately if Wildfire is up or about to be up */
     /* wildfireRecast < 1500 so that it is definitely in the next Heat Blast OGCD */
     return 'Hypercharge';
   } else if (player.level >= 30 && heat >= 50
   && (heat === 100 || barrelstabilizerRecast < wildfireRecast) && wildfireRecast > 10000
-  && gcdTime <= 1500 && comboStatus > 1500 * 6 && hyperchargeRecast < 0) {
+  && gcdTime <= 1500 && (comboStatus > 1500 * 6 || comboStatus === -1) && hyperchargeRecast < 0) {
     /* Use Hypercharge if unlikely(?) to miss a Wildfire window */
     return 'Hypercharge';
   }
@@ -252,7 +253,7 @@ const mchNext = ({
 
   const mchArray = [];
 
-  while (nextTime < 30000) {
+  while (nextTime < 15000) {
     let loopTime = 0;
 
     /* If no time for OGCD, use GCD */
@@ -272,17 +273,17 @@ const mchNext = ({
       /* Combo */
       if (mchComboWeaponskills.includes(nextGCD)) {
         if (player.level < 2) {
-          comboStatus = 0;
+          comboStatus = -1;
           comboStep = '';
         } else if (player.level < 26 && nextGCD === 'Slug Shot') {
-          comboStatus = 0;
+          comboStatus = -1;
           comboStep = '';
         } else {
           comboStatus = duration.combo;
           comboStep = nextGCD;
         }
       } else if (mchFinisherWeaponskills.includes(nextGCD)) {
-        comboStatus = 0;
+        comboStatus = -1;
         comboStep = '';
       }
 
@@ -328,7 +329,8 @@ const mchNext = ({
     }
 
     if (flamethrowerStatus > 0) {
-      loopTime += 10000;
+      loopTime += flamethrowerStatus;
+      flamethrowerStatus = -1;
     }
 
     while (gcdTime > 1000) {
@@ -441,21 +443,21 @@ onAction.MCH = (actionMatch) => {
 
   if (mchComboWeaponskills.includes(actionMatch.groups.actionName)) {
     if (player.level < 2) {
-      player.comboStatus = -1;
+      removeStatus({ name: 'Combo' });
       player.comboStep = '';
     } else if (player.level < 26 && actionMatch.groups.actionName === 'Slug Shot') {
-      player.comboStatus = -1;
+      removeStatus({ name: 'Combo' });
       player.comboStep = '';
     } else if (actionMatch.groups.comboCheck) {
       addStatus({ name: 'Combo' });
       player.comboStep = actionMatch.groups.actionName;
     } else {
-      player.comboStatus = -1;
+      removeStatus({ name: 'Combo' });
       player.comboStep = '';
     }
     mchNext({ gcd: player.gcd });
   } else if (mchFinisherWeaponskills.includes(actionMatch.groups.actionName)) {
-    player.comboStatus = -1;
+    removeStatus({ name: 'Combo' });
     player.comboStep = '';
     mchNext({ gcd: player.gcd });
   }
@@ -530,5 +532,8 @@ onStatus.MCH = (statusMatch) => {
     });
   } else {
     removeStatus({ name: statusMatch.groups.statusName, id: statusMatch.groups.targetID });
+    if (statusMatch.groups.statusName === 'Flamethrower') {
+      mchNext({ gcd: 0 });
+    }
   }
 };
