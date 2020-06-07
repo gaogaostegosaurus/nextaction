@@ -13,7 +13,7 @@ const mchComboWeaponskills = [
   'Split Shot', 'Slug Shot', 'Heated Split Shot', 'Heated Slug Shot',
 ];
 
-const mchOtherWeaponskills = [
+const mchFinisherWeaponskills = [
   'Clean Shot', 'Heated Clean Shot', 'Spread Shot',
 ];
 
@@ -34,7 +34,7 @@ const mchCooldowns = [
 
 actionList.MCH = [...new Set([
   ...mchComboWeaponskills,
-  ...mchOtherWeaponskills,
+  ...mchFinisherWeaponskills,
   ...mchRecastWeaponskills,
   ...mchOverheatedWeaponskills,
   ...mchCooldowns,
@@ -93,12 +93,12 @@ const mchNextGCD = ({
 
   /* Prioritize getting Bioblaster/Drill and Hotshot/Anchor out */
   /* Don't use at end of Wildfire */
-  if (player.level >= 58 && (wildfireStatus > player.gcd || wildfireStatus < 0)
+  if (player.level >= 58 && (wildfireStatus > 1500 * 4 + 2500 || wildfireStatus < 0)
   && drillRecast < 0) {
     if (player.level >= 72 && player.targetCount >= 2) {
       return 'Bioblaster';
     } return 'Drill';
-  } else if (player.level >= 76 && (wildfireStatus > player.gcd || wildfireStatus < 0)
+  } else if (player.level >= 76 && (wildfireStatus > 1500 * 4 + 2500 || wildfireStatus < 0)
   && hotshotRecast < 0) {
     return 'Air Anchor';
   }
@@ -131,7 +131,7 @@ const mchNextOGCD = ({
   heat,
   hotshotRecast,
   hyperchargeRecast,
-  // overheated,
+  overheated,
   reassembleRecast,
   ricochet1Recast,
   ricochet2Recast,
@@ -143,9 +143,11 @@ const mchNextOGCD = ({
   if (player.level >= 18 && player.targetCount >= 3 && drillRecast > player.gcd
   && reassembleRecast < 0) {
     return 'Reassemble';
-  } else if (player.level >= 10 && drillRecast < player.gcd && reassembleRecast < 0) {
+  } else if (player.level >= 10 && drillRecast < player.gcd && overheated < 0
+  && reassembleRecast < 0) {
     return 'Reassemble';
-  } else if (player.level >= 76 && hotshotRecast < player.gcd && reassembleRecast < 0) {
+  } else if (player.level >= 76 && hotshotRecast < player.gcd && overheated < 0
+  && reassembleRecast < 0) {
     return 'Reassemble';
   }
 
@@ -268,9 +270,17 @@ const mchNext = ({
 
       /* Combo */
       if (mchComboWeaponskills.includes(nextGCD)) {
-        comboStatus = duration.combo;
-        comboStep = nextGCD;
-      } else if (mchOtherWeaponskills.includes(nextGCD)) {
+        if (player.level < 2) {
+          comboStatus = 0;
+          comboStep = '';
+        } else if (player.level < 26 && nextGCD === 'Slug Shot') {
+          comboStatus = 0;
+          comboStep = '';
+        } else {
+          comboStatus = duration.combo;
+          comboStep = nextGCD;
+        }
+      } else if (mchFinisherWeaponskills.includes(nextGCD)) {
         comboStatus = 0;
         comboStep = '';
       }
@@ -292,7 +302,7 @@ const mchNext = ({
       }
 
       /* Heat and Battery */
-      if (mchComboWeaponskills.includes(nextGCD) || mchOtherWeaponskills.includes(nextGCD)) {
+      if (mchComboWeaponskills.includes(nextGCD) || mchFinisherWeaponskills.includes(nextGCD)) {
         heat = Math.min(heat + 5, 100);
         if (['Clean Shot', 'Heated Clean Shot'].includes(nextGCD)) {
           battery = Math.min(battery + 10, 100);
@@ -329,7 +339,7 @@ const mchNext = ({
         heat,
         hotshotRecast,
         hyperchargeRecast,
-        // overheated,
+        overheated,
         reassembleRecast,
         ricochet1Recast,
         ricochet2Recast,
@@ -352,6 +362,8 @@ const mchNext = ({
           } else {
             gaussround2Recast = Math.max(gaussround2Recast + 30000, 30000);
           }
+          // console.log('Gauss: ' + gaussround1Recast + ' '
+          // + gaussround2Recast + ' ' + gaussround3Recast);
           /* Honestly not 100% sure if this works, but it should prevent
            weird edge cases where the number is negative before operations even start */
         } else if (nextOGCD === 'Hypercharge') {
@@ -370,6 +382,8 @@ const mchNext = ({
           } else {
             ricochet2Recast = Math.max(ricochet2Recast + 30000, 30000);
           }
+          // console.log('Ricochet: ' + ricochet1Recast + ' '
+          //  + ricochet2Recast + ' ' + ricochet3Recast);
         } else if (nextOGCD === 'Barrel Stabilizer') {
           barrelstabilizerRecast = recast.barrelstabilizer;
           heat = Math.min(heat + 50, 100);
@@ -420,19 +434,25 @@ onAction.MCH = (actionMatch) => {
   }
 
   if (mchComboWeaponskills.includes(actionMatch.groups.actionName)) {
-    if (actionMatch.groups.comboCheck) {
+    if (player.level < 2) {
+      player.comboStatus = -1;
+      player.comboStep = '';
+    } else if (player.level < 26 && actionMatch.groups.actionName === 'Slug Shot') {
+      player.comboStatus = -1;
+      player.comboStep = '';
+    } else if (actionMatch.groups.comboCheck) {
+      addStatus({ name: 'Combo' });
       player.comboStep = actionMatch.groups.actionName;
     } else {
-      addStatus({ name: 'Combo' });
-      player.comboStep = '';
       player.comboStatus = -1;
+      player.comboStep = '';
     }
-  } else if (mchOtherWeaponskills.includes(actionMatch.groups.actionName)) {
-    mchNext({ gcd: player.gcd });
+  } else if (mchFinisherWeaponskills.includes(actionMatch.groups.actionName)) {
+    player.comboStatus = -1;
     player.comboStep = '';
-    removeStatus({ name: 'Combo' });
-    mchNext({ gcd: player.gcd });
-  } else if (mchRecastWeaponskills.includes(actionMatch.groups.actionName)) {
+  }
+
+  if (mchRecastWeaponskills.includes(actionMatch.groups.actionName)) {
     if (actionMatch.groups.actionName === 'Bioblaster') {
       addRecast({ name: 'Drill' });
     } else if (actionMatch.groups.actionName === 'Air Anchor') {
@@ -455,6 +475,12 @@ onAction.MCH = (actionMatch) => {
       addRecast({ name: 'Ricochet 1', time: checkRecast({ name: 'Ricochet 1' }) - 15000 });
       addRecast({ name: 'Ricochet 2', time: checkRecast({ name: 'Ricochet 2' }) - 15000 });
       addRecast({ name: 'Ricochet 3', time: checkRecast({ name: 'Ricochet 3' }) - 15000 });
+      // console.log('Gauss: ' + checkRecast({ name: 'Gauss Round 1' }) + ' '
+      //   + checkRecast({ name: 'Gauss Round 2' }) + ' '
+      //   + checkRecast({ name: 'Gauss Round 3' }));
+      console.log('Ricochet - HB: ' + checkRecast({ name: 'Ricochet 1' })
+        + ' ' + checkRecast({ name: 'Ricochet 2' }) + ' '
+        + checkRecast({ name: 'Ricochet 3' }) + ' ' + Date.now());
     }
     mchNext({ gcd: 1500 });
   } else if (mchCooldowns.includes(actionMatch.groups.actionName)) {
@@ -462,10 +488,16 @@ onAction.MCH = (actionMatch) => {
       addRecast({ name: 'Gauss Round 1', time: checkRecast({ name: 'Gauss Round 2' }) });
       addRecast({ name: 'Gauss Round 2', time: checkRecast({ name: 'Gauss Round 3' }) });
       addRecast({ name: 'Gauss Round 3', time: checkRecast({ name: 'Gauss Round 3' }) + 30000 });
+      // console.log('Gauss: ' + checkRecast({ name: 'Gauss Round 1' }) + ' '
+      //   + checkRecast({ name: 'Gauss Round 2' }) + ' '
+      //   + checkRecast({ name: 'Gauss Round 3' }));
     } else if (actionMatch.groups.actionName === 'Ricochet') {
       addRecast({ name: 'Ricochet 1', time: checkRecast({ name: 'Ricochet 2' }) });
       addRecast({ name: 'Ricochet 2', time: checkRecast({ name: 'Ricochet 3' }) });
       addRecast({ name: 'Ricochet 3', time: checkRecast({ name: 'Ricochet 3' }) + 30000 });
+      console.log('Ricochet: ' + checkRecast({ name: 'Ricochet 1' }) + ' '
+        + checkRecast({ name: 'Ricochet 2' }) + ' '
+        + checkRecast({ name: 'Ricochet 3' }) + ' ' + Date.now());
     } else {
       addRecast({ name: actionMatch.groups.actionName });
     }
