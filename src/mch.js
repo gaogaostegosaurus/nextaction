@@ -447,9 +447,11 @@ onAction.MCH = (actionMatch) => {
       player.comboStatus = -1;
       player.comboStep = '';
     }
+    mchNext({ gcd: player.gcd });
   } else if (mchFinisherWeaponskills.includes(actionMatch.groups.actionName)) {
     player.comboStatus = -1;
     player.comboStep = '';
+    mchNext({ gcd: player.gcd });
   }
 
   if (mchRecastWeaponskills.includes(actionMatch.groups.actionName)) {
@@ -463,6 +465,7 @@ onAction.MCH = (actionMatch) => {
 
     /* We'll pretend Flamethrower is used for longer than 2 seconds */
     if (actionMatch.groups.actionName === 'Flamethrower') {
+      addStatus({ name: 'Flamethrower' })
       mchNext({ gcd: 0 });
     } else {
       mchNext({ gcd: player.gcd });
