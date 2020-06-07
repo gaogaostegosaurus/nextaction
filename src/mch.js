@@ -236,6 +236,7 @@ const mchNext = ({
   let comboStatus = checkStatus({ name: 'Combo' });
   let drillRecast = checkRecast({ name: 'Drill' });
   let flamethrowerRecast = checkRecast({ name: 'Flamethrower' });
+  let flamethrowerStatus = checkStatus({ name: 'Flamethrower' });
   let gaussround1Recast = checkRecast({ name: 'Gauss Round 1' });
   let gaussround2Recast = checkRecast({ name: 'Gauss Round 2' });
   let gaussround3Recast = checkRecast({ name: 'Gauss Round 3' });
@@ -292,6 +293,7 @@ const mchNext = ({
         hotshotRecast = recast.hotshot;
       } else if (['Flamethrower'].includes(nextGCD)) {
         flamethrowerRecast = recast.flamethrower;
+        flamethrowerStatus = duration.flamethrower;
       } else if (nextGCD === 'Heat Blast') {
         gaussround1Recast -= 15000;
         gaussround2Recast -= 15000;
@@ -323,6 +325,10 @@ const mchNext = ({
       /* Loop */
       loopTime = gcdTime; /* Sets current loop's "length" to GCD length */
       nextTime += loopTime; /* Sets adds current loop's time to total time looked ahead */
+    }
+
+    if (flamethrowerStatus > 0) {
+      loopTime += 10000;
     }
 
     while (gcdTime > 1000) {
@@ -465,7 +471,7 @@ onAction.MCH = (actionMatch) => {
 
     /* We'll pretend Flamethrower is used for longer than 2 seconds */
     if (actionMatch.groups.actionName === 'Flamethrower') {
-      addStatus({ name: 'Flamethrower' })
+      addStatus({ name: 'Flamethrower' });
       mchNext({ gcd: 0 });
     } else {
       mchNext({ gcd: player.gcd });
@@ -481,9 +487,9 @@ onAction.MCH = (actionMatch) => {
       // console.log('Gauss: ' + checkRecast({ name: 'Gauss Round 1' }) + ' '
       //   + checkRecast({ name: 'Gauss Round 2' }) + ' '
       //   + checkRecast({ name: 'Gauss Round 3' }));
-      console.log('Ricochet - HB: ' + checkRecast({ name: 'Ricochet 1' })
-        + ' ' + checkRecast({ name: 'Ricochet 2' }) + ' '
-        + checkRecast({ name: 'Ricochet 3' }) + ' ' + Date.now());
+      // console.log('Ricochet - HB: ' + checkRecast({ name: 'Ricochet 1' })
+      //   + ' ' + checkRecast({ name: 'Ricochet 2' }) + ' '
+      //   + checkRecast({ name: 'Ricochet 3' }) + ' ' + Date.now());
     }
     mchNext({ gcd: 1500 });
   } else if (mchCooldowns.includes(actionMatch.groups.actionName)) {
@@ -498,9 +504,9 @@ onAction.MCH = (actionMatch) => {
       addRecast({ name: 'Ricochet 1', time: checkRecast({ name: 'Ricochet 2' }) });
       addRecast({ name: 'Ricochet 2', time: checkRecast({ name: 'Ricochet 3' }) });
       addRecast({ name: 'Ricochet 3', time: checkRecast({ name: 'Ricochet 3' }) + 30000 });
-      console.log('Ricochet: ' + checkRecast({ name: 'Ricochet 1' }) + ' '
-        + checkRecast({ name: 'Ricochet 2' }) + ' '
-        + checkRecast({ name: 'Ricochet 3' }) + ' ' + Date.now());
+      // console.log('Ricochet: ' + checkRecast({ name: 'Ricochet 1' }) + ' '
+      //   + checkRecast({ name: 'Ricochet 2' }) + ' '
+      //   + checkRecast({ name: 'Ricochet 3' }) + ' ' + Date.now());
     } else {
       addRecast({ name: actionMatch.groups.actionName });
     }
