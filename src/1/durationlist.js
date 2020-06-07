@@ -2,7 +2,7 @@
 
 const duration = {};
 
-duration.combo = 14000;
+duration.combo = 15000;
 
 // Role
 duration.swiftcast = 10000;
