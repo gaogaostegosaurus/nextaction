@@ -153,9 +153,9 @@ const mchNextOGCD = ({
   }
 
   /* Use stack 3 of Gauss/Ricochet */
-  if (player.level >= 50 && player.targetCount < 3 && ricochet3Recast < 0) {
+  if (player.level >= 76 && player.targetCount < 3 && ricochet3Recast < 0) {
     return 'Ricochet';
-  } else if (player.level >= 15 && gaussround3Recast < 0) {
+  } else if (player.level >= 76 && gaussround3Recast < 0) {
     return 'Gauss Round';
   }
 
