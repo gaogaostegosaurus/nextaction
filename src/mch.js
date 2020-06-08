@@ -188,10 +188,15 @@ const mchNextOGCD = ({
     /* Use Hypercharge immediately if Wildfire is up or about to be up */
     /* wildfireRecast < 1500 so that it is definitely in the next Heat Blast OGCD */
     return 'Hypercharge';
-  } else if (player.level >= 30 && heat >= 50
-  && (heat === 100 || barrelstabilizerRecast < wildfireRecast) && wildfireRecast > 10000
-  && gcdTime <= 1500 && (comboStatus > 1500 * 6 || comboStatus === -1) && hyperchargeRecast < 0) {
-    /* Use Hypercharge if unlikely(?) to miss a Wildfire window */
+  } else if (player.level >= 66 && heat >= 50 && barrelstabilizerRecast < wildfireRecast
+  && wildfireRecast > 10000 && gcdTime <= 1500 && (comboStatus > 1500 * 6 || comboStatus === -1)
+  && hyperchargeRecast < 0) {
+    /* Use Hypercharge if Barrel Stabilizer will be up before Wildfire */
+    return 'Hypercharge';
+  } else if (player.level >= 30 && heat >= 100
+  && wildfireRecast > 10000 && gcdTime <= 1500 && (comboStatus > 1500 * 6 || comboStatus === -1)
+  && hyperchargeRecast < 0) {
+    /* Use Hypercharge if Heat is capped */
     return 'Hypercharge';
   }
 
