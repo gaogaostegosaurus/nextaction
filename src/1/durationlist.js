@@ -20,6 +20,12 @@ duration.triplecast = 15000;
 duration.straightshotready = 10000;
 duration.venomousbite = 30000;
 duration.windbite = duration.venomousbite;
+duration.causticbite = duration.venomousbite;
+duration.stormbite = duration.venomousbite;
+duration.song = 30000;
+duration.magesballad = duration.song;
+duration.armyspaeon = duration.song;
+duration.thewanderersminuet = duration.song;
 
 // DNC
 duration.flourishingcascade = 20000;

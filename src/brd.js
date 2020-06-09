@@ -1,465 +1,389 @@
-"use strict";
 
-const brdActionList = [
-  "Heavy Shot", "Straight Shot", "Venomous Bite", "Windbite", "Iron Jaws", "Caustic Bite", "Stormbite", "Refulgent Arrow",
-  "Quick Nock",
-  "Raging Strikes", "Barrage", "Battle Voice", "The Wanderer\'s Minuet", "Empyreal Arrow", "Sidewinder",
-  "Mage\'s Ballad", "Army\'s Paeon",
+const brdWeaponskills = [
+  'Heavy Shot', 'Burst Shot',
+  'Straight Shot', 'Refulgent Arrow',
+  'Venomous Bite', 'Caustic Bite', 'Windbite', 'Stormbite', 'Iron Jaws',
+  'Apex Arrow',
+  'Quick Nock',
 ];
 
-function brdJobChange() {
+const brdCooldowns = [
+  'Raging Strikes', 'Barrage', 'Battle Voice', 'Pitch Perfect', 'Empyreal Arrow',
+  'Sidewinder', 'Shadowbite',
+  'Bloodletter', 'Rain Of Death',
+];
 
-  nextid.ironjaws = 0;
-  nextid.windbite = 1;
-  nextid.venomousbite = 2;
-  nextid.straightshot = 3;
-  nextid.refulgentarrow = nextid.straightshot;
-  nextid.heavyshot = 4;
-  nextid.burstshot = nextid.heavyshot;
-  nextid.quicknock = nextid.heavyshot;
-  nextid.ballad = 10;
-  nextid.paeon = nextid.ballad;
-  nextid.minuet = nextid.ballad;
-  nextid.ragingstrikes = 11;
-  nextid.barrage = 12;
-  nextid.pitchperfect = 13;
-  nextid.empyrealarrow = 14;
-  nextid.sidewinder = 15;
-  nextid.shadowbite = nextid.sidewinder;
+const brdSongs = [
+  'Mage\'s Ballad', 'Army\'s Paeon', 'The Wanderer\'s Minuet',
+];
 
-  countdownid.ironjaws = 0;
-  countdownid.windbite = 1;
-  countdownid.venomousbite = 2;
-  countdownid.ballad = 3;
-  countdownid.paeon = 4;
-  countdownid.minuet = 5;
-  countdownid.empyrealarrow = 6;
-  countdownid.ragingstrikes = 7;
-  countdownid.barrage = 8;
-  countdownid.sidewinder = 9;
-  countdownid.shadowbite = countdownid.sidewinder;
+const brdMultiTarget = [
+  'Quick Nock',
+];
 
-  if (player.level >= 64) {
-    icon.venomousbite = icon.causticbite;
-    icon.windbite = icon.stormbite;
+const brdSingleTarget = [
+  'Heavy Shot', 'Burst Shot',
+];
+
+actionList.BRD = [...new Set([
+  ...brdWeaponskills,
+  ...brdCooldowns,
+  ...brdSongs,
+])];
+
+statusList.BRD = [
+  'Straight Shot Ready', 'Raging Strikes', 'Barrage', 'Battle Voice',
+  'Venomous Bite', 'Windbite', 'Caustic Bite', 'Stormbite',
+];
+
+const brdNextGCD = ({
+  venomousbiteStatus,
+  windbiteStatus,
+  soulvoice,
+  straightshotreadyStatus,
+} = {}) => {
+  if (straightshotreadyStatus > 0 && straightshotreadyStatus < player.gcd * 2) {
+    if (player.level >= 70) {
+      return 'Refulgent Arrow';
+    } return 'Straight Shot';
   }
-  else {
-    icon.venomousbite = "000363";
-    icon.windbite = "000367";
+
+  if (player.level >= 30 && windbiteStatus < player.gcd) {
+    if (player.level >= 64) {
+      return 'Stormbite';
+    } return 'Windbite';
   }
 
-  if (player.level >= 70) {
-    icon.straightshot = icon.refulgentarrow;
+  if (player.level >= 6 && venomousbiteStatus < player.gcd) {
+    if (player.level >= 64) {
+      return 'Caustic Bite';
+    } return 'Venomous Bite';
   }
-  else {
-    icon.straightshot = "000359";
+
+  if (player.level >= 54 && Math.min(venomousbiteStatus, windbiteStatus) > 0
+  && Math.min(venomousbiteStatus, windbiteStatus) < player.gcd * 3) {
+    return 'Iron Jaws';
+  }
+
+  if (soulvoice >= 100) {
+    return 'Apex Arrow';
+  }
+
+  if (player.targetCount > 2) {
+    return 'Quick Nock';
+  }
+
+  if (straightshotreadyStatus > 0) {
+    if (player.level >= 70) {
+      return 'Refulgent Arrow';
+    } return 'Straight Shot';
+  }
+
+  if (player.targetCount > 1) {
+    return 'Quick Nock';
   }
 
   if (player.level >= 76) {
-    icon.heavyshot = icon.burstshot;
-  }
-  else {
-    icon.heavyshot = "000358";
-  }
+    return 'Burst Shot';
+  } return 'Heavy Shot';
+};
 
-  previous.empyrealarrow = 0;
-  previous.quicknock = 0;
-  previous.rainofdeath = 0;
-  previous.shadowbite = 0;
-  previous.apexarrow = 0;
-}
-
-
-function brdPlayerChangedEvent() {
-
-  // Pitch Perfect
-  if (previous.song == "minuet") {
-    if (player.jobDetail.songProcs == 3) {
-      addIcon({ name: "pitchperfect"});
+const brdNextOGCD = ({
+  gcdTime,
+  songName,
+  songStatus,
+  repertoire,
+  magesballadRecast,
+  armyspaeonRecast,
+  thewanderersminuetRecast,
+  straightshotreadyStatus,
+  ragingstrikesStatus,
+  venomousbiteStatus,
+  windbiteStatus,
+  ragingstrikesRecast,
+  bloodletterRecast,
+  barrageRecast,
+  battlevoiceRecast,
+  pitchperfectRecast,
+  empyrealarrowRecast,
+  sidewinderRecast,
+} = {}) => {
+  if (songStatus < player.gcd) { /* No song or song ending */
+    if (player.level >= 52 && thewanderersminuetRecast < 0) {
+      return 'The Wanderer\'s Minuet';
+    } else if (player.level >= 30 && magesballadRecast < 0) {
+      return 'Mage\'s Ballad';
+    } else if (player.level >= 40 && armyspaeonRecast < 0) {
+      return 'Army\'s Paeon';
     }
-    else if (player.jobDetail.songProcs > 0
-    && player.jobDetail.songMilliseconds < 3000) {
-      addIcon({ name: "pitchperfect"});
-    }
-    else {
-      removeIcon("pitchperfect");
-    }
-  }
-  else {
-    removeIcon("pitchperfect");
+  } else if (player.level >= 52 && magesballadRecast < 30000 && armyspaeonRecast < 60000
+  && thewanderersminuetRecast < 0) {
+    return 'The Wanderer\'s Minuet';
   }
 
-  // Don't use EA without song after 68
-  if (player.level >= 68
-  && player.jobDetail.songMilliseconds <= 0) {
-    removeCountdownBar("empyrealarrow");
+  if (songName === 'The Wanderer\'s Minuet' && ragingstrikesRecast < 0) {
+    return 'Raging Strikes';
   }
-}
 
-function brdTargetChangedEvent() { // Checks DoTs after switching targets
-  if (previous.targetID != target.id) { // Prevent this from repeatedly being called on movement or whatever
+  if (player.level >= 50 && battlevoiceRecast < 0) {
+    return 'Battle Voice';
+  }
 
-    // If not a target then clear things out
-    if (target.id.startsWith("4")) {
-      if (player.level >= 54
-      && checkStatus("venomousbite", target.id) > 0
-      && checkStatus("windbite", target.id) > 0) {
-        addCountdownBar({ name: "ironjaws", time: Math.min(checkStatus("venomousbite", target.id), checkStatus("windbite", target.id)) - 5000, oncomplete: "addIcon"});
+  if (player.level >= 38 && ragingstrikesStatus > 0 && straightshotreadyStatus < 0
+  && barrageRecast < 0) {
+    return 'Barrage';
+  }
+
+  if (songName === 'The Wanderer\'s Minuet' && repertoire >= 3 && pitchperfectRecast < 0) {
+    return 'Pitch Perfect';
+  }
+
+  if (songName === 'Mage\'s Ballad' && gcdTime > 1500) {
+    return 'Bloodletter';
+  }
+
+  if (player.level >= 54 && songStatus > player.gcd && gcdTime > 1500 && empyrealarrowRecast < 0) {
+    return 'Empyreal Arrow';
+  }
+
+  if (player.level >= 60 && Math.min(venomousbiteStatus, windbiteStatus) > player.gcd
+  && sidewinderRecast < 0) {
+    return 'Sidewinder';
+  }
+
+  if (player.level >= 15 && bloodletterRecast < 0) {
+    return 'Bloodletter';
+  }
+
+  return '';
+};
+
+const brdNext = ({
+  gcd = 0,
+} = {}) => {
+  let gcdTime = gcd;
+  let nextTime = 0; /* Tracks how "long" the loop has lasted */
+
+  let songName = player.songName;
+  let songStatus = player.songStatus;
+  let repertoire = player.repertoire;
+  let soulvoice = player.soulvoice;
+
+
+  let straightshotreadyStatus = checkStatus({ name: 'Straight Shot Ready' });
+  let ragingstrikesStatus = checkStatus({ name: 'Raging Strikes' });
+  let venomousbiteStatus = checkStatus({ name: 'Venomous Bite' });
+  let windbiteStatus = checkStatus({ name: 'Windbite' });
+
+  let ragingstrikesRecast = checkRecast({ name: 'Raging Strikes' });
+  let bloodletterRecast = checkRecast({ name: 'Bloodletter' });
+  let magesballadRecast = checkRecast({ name: 'Mage\'s Ballad' });
+  let armyspaeonRecast = checkRecast({ name: 'Army\'s Paeon' });
+  let thewanderersminuetRecast = checkRecast({ name: 'The Wanderer\'s Minuet' });
+  let barrageRecast = checkRecast({ name: 'Barrage' });
+  let battlevoiceRecast = checkRecast({ name: 'Battle Voice' });
+  let pitchperfectRecast = checkRecast({ name: 'Pitch Perfect' });
+  let empyrealarrowRecast = checkRecast({ name: 'Empyreal Arrow' });
+  let sidewinderRecast = checkRecast({ name: 'Sidewinder' });
+
+
+  const brdArray = [];
+
+  while (nextTime < 15000) {
+    let loopTime = 0;
+
+    /* If no time for OGCD, use GCD */
+    if (gcdTime <= 1000) {
+      const nextGCD = brdNextGCD({
+        venomousbiteStatus,
+        windbiteStatus,
+        soulvoice,
+        straightshotreadyStatus,
+      });
+
+      brdArray.push({ name: nextGCD });
+
+      if (['Straight Shot', 'Refulgent Arrow'].includes(nextGCD)) {
+        straightshotreadyStatus = -1;
+      } else if (['Venomous Bite', 'Caustic Bite'].includes(nextGCD)) {
+        venomousbiteStatus = duration.venomousbite;
+      } else if (['Windbite', 'Stormbite'].includes(nextGCD)) {
+        windbiteStatus = duration.windbite;
+      } else if (nextGCD === 'Iron Jaws') {
+        if (venomousbiteStatus > 0) {
+          venomousbiteStatus = duration.venomousbite;
+        }
+        if (windbiteStatus > 0) {
+          windbiteStatus = duration.windbite;
+        }
+      } else if (nextGCD === 'Apex Arrow') {
+        soulvoice = 0;
       }
-      else {
-        addCountdownBar({ name: "venomousbite", time: checkStatus("venomousbite", target.id), oncomplete: "addIcon"});
-        if (player.level >= 18) {
-          addCountdownBar({ name: "windbite", time: checkStatus("windbite", target.id), oncomplete: "addIcon"});
+
+      gcdTime = player.gcd;
+
+      /* Loop */
+      loopTime = gcdTime; /* Sets current loop's "length" to GCD length */
+      nextTime += loopTime; /* Sets adds current loop's time to total time looked ahead */
+    }
+
+    while (gcdTime > 1000) {
+      const nextOGCD = brdNextOGCD({
+        gcdTime,
+        songName,
+        songStatus,
+        repertoire,
+        magesballadRecast,
+        armyspaeonRecast,
+        thewanderersminuetRecast,
+        straightshotreadyStatus,
+        ragingstrikesStatus,
+        venomousbiteStatus,
+        windbiteStatus,
+        ragingstrikesRecast,
+        bloodletterRecast,
+        barrageRecast,
+        battlevoiceRecast,
+        pitchperfectRecast,
+        empyrealarrowRecast,
+        sidewinderRecast,
+      });
+
+      if (nextOGCD) {
+        brdArray.push({ name: nextOGCD, size: 'small' });
+
+        if (nextOGCD === 'Raging Strikes') {
+          ragingstrikesRecast = recast.ragingstrikes;
+          ragingstrikesStatus = duration.ragingstrikes;
+        } else if (['Bloodletter', 'Rain Of Death'].includes(nextOGCD)) {
+          repertoire = 0;
+          bloodletterRecast = recast.bloodletter;
+        } else if (brdSongs.includes(nextOGCD)) {
+          if (nextOGCD === 'Mage\'s Ballad') {
+            magesballadRecast = recast.magesballad;
+          } else if (nextOGCD === 'Army\'s Paeon') {
+            armyspaeonRecast = recast.armyspaeon;
+          } else if (nextOGCD === 'The Wanderer\'s Minuet') {
+            thewanderersminuetRecast = recast.thewanderersminuet;
+          }
+          songName = nextOGCD;
+          songStatus = duration.song;
+        } else if (nextOGCD === 'Barrage') {
+          barrageRecast = recast.barrage;
+          straightshotreadyStatus = duration.straightshotready;
+        } else if (nextOGCD === 'Battle Voice') {
+          battlevoiceRecast = recast.battlevoice;
+        } else if (nextOGCD === 'Pitch Perfect') {
+          repertoire = 0;
+          pitchperfectRecast = recast.pitchperfect;
+        } else if (nextOGCD === 'Empyreal Arrow') {
+          repertoire += 1;
+          empyrealarrowRecast = recast.empyrealarrow;
+        } else if (['Sidewinder', 'Shadowbite'].includes(nextOGCD)) {
+          sidewinderRecast = recast.sidewinder;
         }
       }
-    }
-    else {
-      removeIcon("ironjaws");
-      removeIcon("venomousbite");
-      removeIcon("windbite");
-      removeCountdownBar("ironjaws");
-      removeCountdownBar("venomousbite");
-      removeCountdownBar("windbite");
+      gcdTime -= 1000;
     }
 
-    previous.targetID = target.id;
+    songStatus -= loopTime;
+    magesballadRecast -= loopTime;
+    armyspaeonRecast -= loopTime;
+    thewanderersminuetRecast -= loopTime;
+
+    ragingstrikesRecast -= loopTime;
+    straightshotreadyStatus -= loopTime;
+    ragingstrikesStatus -= loopTime;
+    venomousbiteStatus -= loopTime;
+    windbiteStatus -= loopTime;
+
+    bloodletterRecast -= loopTime;
+    barrageRecast -= loopTime;
+    battlevoiceRecast -= loopTime;
+    pitchperfectRecast -= loopTime;
+    empyrealarrowRecast -= loopTime;
+    sidewinderRecast -= loopTime;
   }
-}
+  iconArrayB = brdArray;
+  syncIcons();
+};
 
-function brdAction() {
 
-  // statustime added to actions because just going by buff gain/loss lines is super slow
+onJobChange.BRD = () => {
+  brdNext();
+};
 
-  if (["Straight Shot", "Refulgent Arrow"].indexOf(actionLog.groups.actionName) > -1) {
-    removeIcon("straightshot");
+onTargetChanged.BRD = () => { /* Re-checks DoTs after switching targets */
+  if (player.combat === 0) {
+    brdNext({ gcd: player.gcd });
   }
+};
 
-  else if (["Venomous Bite", "Caustic Bite"].indexOf(actionLog.groups.actionName) > -1
-  && actionLog.groups.result.length > 2) {
-    removeIcon("ironjaws");
-    removeIcon("venomousbite");
-    addStatus("venomousbite", duration.venomousbite, actionLog.groups.targetID);
-    if (player.level >= 54
-    && checkStatus("windbite", actionLog.groups.targetID) > 0) {
-      removeCountdownBar("venomousbite");
-      removeCountdownBar("windbite");
-      addCountdownBar({ name: "ironjaws", time: Math.min(checkStatus("venomousbite", actionLog.groups.targetID), checkStatus("windbite", actionLog.groups.targetID)) - 5000, oncomplete: "addIcon"});
-    }
-    else {
-      removeCountdownBar("ironjaws");
-      addCountdownBar({ name: "venomousbite", time: checkStatus("venomousbite", actionLog.groups.targetID), oncomplete: "addIcon"});
-    }
-  }
+onAction.BRD = (actionMatch) => {
+  removeIcon({ name: actionMatch.groups.actionName });
 
-  else if (["Windbite", "Stormbite"].indexOf(actionLog.groups.actionName) > -1
-  && actionLog.groups.result.length > 2) {
-    removeIcon("ironjaws");
-    removeIcon("windbite");
-    addStatus("windbite", duration.windbite, actionLog.groups.targetID);
-    if (player.level >= 54
-    && checkStatus("venomousbite", actionLog.groups.targetID) > 0) {
-      removeCountdownBar("venomousbite");
-      removeCountdownBar("windbite");
-      addCountdownBar({ name: "ironjaws", time: Math.min(checkStatus("venomousbite", actionLog.groups.targetID), checkStatus("windbite", actionLog.groups.targetID)) - 5000, oncomplete: "addIcon"});
-    }
-    else {
-      removeCountdownBar("ironjaws");
-      addCountdownBar({ name: "windbite", time: checkStatus("windbite", actionLog.groups.targetID), oncomplete: "addIcon"});
-    }
-    // if (player.level >= 54
-    // && checkStatus("venomousbite", actionLog.groups.targetID) > 0) {
-    //   removeIcon("venomousbite");
-    //   clearTimeout(timeout.venomousbite);
-    //   clearTimeout(timeout.windbite);
-    //   addIconBlinkTimeout("ironjaws", Math.min(checkStatus("venomousbite", actionLog.groups.targetID), checkStatus("windbite", actionLog.groups.targetID)) - 5000, nextid.ironjaws, icon.ironjaws);
-    // }
-    // else {
-    //   removeIcon("ironjaws");
-    //   clearTimeout(timeout.ironjaws);
-    //   addIconBlinkTimeout("windbite", 30000, nextid.windbite, icon.windbite);
-    // }
+  if (brdMultiTarget.includes(actionMatch.groups.actionName)) {
+    player.targetCount = 3;
+  } else if (brdSingleTarget.includes(actionMatch.groups.actionName)) {
+    player.targetCount = 1;
   }
 
-  else if ("Iron Jaws" == actionLog.groups.actionName) {
-
-    removeIcon("ironjaws");
-
-    if (checkStatus("venomousbite", actionLog.groups.targetID) > 0
-    && checkStatus("windbite", actionLog.groups.targetID) > 0) {
-      removeCountdownBar("venomousbite");
-      removeCountdownBar("windbite");
-      addStatus("venomousbite", duration.venomousbite, actionLog.groups.targetID);
-      addStatus("windbite", duration.windbite, actionLog.groups.targetID);
-      addCountdownBar({ name: "ironjaws", time: Math.min(checkStatus("venomousbite", actionLog.groups.targetID), checkStatus("windbite", actionLog.groups.targetID)) - 5000, oncomplete: "addIcon"});
-      // removeIcon("venomousbite");
-      // clearTimeout(timeout.ironjaws);
-      // addIconBlinkTimeout("venomousbite", 30000, nextid.venomousbite, icon.venomousbite);
-    }
-    else if (checkStatus("venomousbite", actionLog.groups.targetID) > 0) {
-      removeIcon("venomousbite");
-      addStatus("venomousbite", duration.venomousbite, actionLog.groups.targetID);
-      removeCountdownBar("ironjaws");
-      addCountdownBar({ name: "venomousbite", time: checkStatus("venomousbite", actionLog.groups.targetID), oncomplete: "addIcon"});
-    }
-
-    else if (checkStatus("windbite", actionLog.groups.targetID) > 0) {
-      removeIcon("windbite");
-      addStatus("windbite", duration.windbite, actionLog.groups.targetID);
-      removeCountdownBar("ironjaws");
-      addCountdownBar({ name: "windbite", time: checkStatus("windbite", actionLog.groups.targetID), oncomplete: "addIcon"});
-    }
-
-  }
-
-  else if ("Quick Nock" == actionLog.groups.actionName) {
-    if (Date.now() - previous.quicknock > 1000) {
-      previous.quicknock = Date.now();
-      count.targets = 1;
-    }
-    else {
-      count.targets = count.targets + 1;
-    }
-  }
-
-  else if ("Rain Of Death" == actionLog.groups.actionName) {
-    if (Date.now() - previous.rainofdeath > 1000) {
-      previous.rainofdeath = Date.now();
-      count.targets = 1;
-    }
-    else {
-      count.targets = count.targets + 1;
-    }
-  }
-
-  else if ("Raging Strikes" == actionLog.groups.actionName) {
-    addCountdownBar({ name: "ragingstrikes"});
-    // addIconBlinkTimeout("ragingstrikes",recast.ragingstrikes,nextid.ragingstrikes,icon.ragingstrikes);
-    // if (player.level >= 38
-    // && checkStatus("straightshotready") < 0) {
-    //   addIconBlinkTimeout("barrage", checkRecast("barrage"), nextid.barrage, icon.barrage);
-    // }
-  }
-
-  else if ("Barrage" == actionLog.groups.actionName) {
-    addCountdownBar({ name: "barrage"});
-  }
-
-  else if ("Battle Voice" == actionLog.groups.actionName) {
-    addCountdownBar({ name: "battlevoice"});
-    // addRecast("battlevoice");
-    // removeIcon("battlevoice");
-    // addIconBlinkTimeout("battlevoice",recast.battlevoice,nextid.battlevoice,icon.battlevoice);
-  }
-
-  else if ("Sidewinder" == actionLog.groups.actionName) {
-    addCountdownBar({ name: "sidewinder"});
-    // addRecast("sidewinder");
-    // removeIcon("sidewinder");
-    // addIconBlinkTimeout("sidewinder",recast.sidewinder,nextid.sidewinder,icon.sidewinder);
-  }
-
-  else if ("Shadowbite" == actionLog.groups.actionName) {
-    addCountdownBar({ name: "sidewinder"});
-    // addRecast("sidewinder"); // Same cooldown as SW
-    // removeIcon("sidewinder");
-    // addIconBlinkTimeout("sidewinder",recast.sidewinder,nextid.sidewinder,icon.sidewinder);
-    if (Date.now() - previous.shadowbite > 1000) {
-      previous.shadowbite = Date.now();
-      count.targets = 1;
-    }
-    else {
-      count.targets = count.targets + 1;
-    }
-  }
-
-  else if ("Mage's Ballad" == actionLog.groups.actionName) {
-    addCountdownBar({ name: "ballad"});
-    // removeIcon("ballad");
-    // addRecast("ballad");
-    // addStatus("song", 30000);
-    // previous.song = "ballad";
-    // if (player.level >= 52) {
-    //   if (count.targets > 6) {
-    //     if (checkRecast("paeon") <= checkRecast("minuet")) {
-    //       addIconBlinkTimeout("paeon", Math.max(checkRecast("paeon"), 30000), nextid.paeon, icon.paeon);
-    //     }
-    //     else {
-    //       addIconBlinkTimeout("minuet", Math.max(checkRecast("minuet"), 30000), nextid.minuet, icon.minuet);
-    //     }
-    //   }
-    //   else {
-    //     if (checkRecast("minuet") <= checkRecast("paeon")) {
-    //       addIconBlinkTimeout("minuet", Math.max(checkRecast("minuet"), 30000), nextid.minuet, icon.minuet);
-    //     }
-    //     else {
-    //       addIconBlinkTimeout("paeon", Math.max(checkRecast("paeon"), 30000), nextid.paeon, icon.paeon);
-    //     }
-    //   }
-    // }
-    // else if (player.level >= 40) {
-    //   addIconBlinkTimeout("paeon", Math.max(checkRecast("paeon"), 30000), nextid.paeon, icon.paeon);
-    // }
-    // else {
-    //   addIconBlinkTimeout("ballad", checkRecast("ballad"), nextid.ballad, icon.ballad);
-    // }
-    if (player.level >= 68) {
-      addCountdownBar({ name: "empyrealarrow", time: checkRecast("empyrealarrow")});
-      // addIconTimeout("empyrealarrow",checkRecast("empyrealarrow"),nextid.empyrealarrow,icon.empyrealarrow);
-    }
-  }
-
-  else if ("Army's Paeon" == actionLog.groups.actionName) {
-    addCountdownBar({ name: "paeon"});
-    // removeIcon("paeon");
-    // addRecast("paeon");
-    // addStatus("song", 30000);
-    // previous.song = "paeon";
-    // if (player.level >= 52) {
-    //   if (count.targets > 2) { // Min AP time for 3-6 targets
-    //     if (checkRecast("ballad") <= checkRecast("minuet")) {
-    //       addIconBlinkTimeout("ballad", Math.max(checkRecast("ballad"), checkRecast("minuet") - 30000, 20000), nextid.ballad, icon.ballad);
-    //     }
-    //     else {
-    //       if (count.targets > 6) { // Max AP time if many targets
-    //         addIconBlinkTimeout("minuet", Math.max(checkRecast("minuet"), 30000), nextid.minuet, icon.minuet);
-    //       }
-    //       else { // Min AP time if 1-2 targets
-    //         addIconBlinkTimeout("minuet", Math.max(checkRecast("minuet"), checkRecast("ballad") - 30000, 20000), nextid.minuet, icon.minuet);
-    //       }
-    //     }
-    //   }
-    //   else {
-    //     if (checkRecast("minuet") <= checkRecast("ballad")) {
-    //       addIconBlinkTimeout("minuet", Math.max(checkRecast("minuet"), checkRecast("ballad") - 30000, 20000), nextid.minuet, icon.minuet);
-    //     }
-    //     else {
-    //       addIconBlinkTimeout("ballad", Math.max(checkRecast("ballad"), checkRecast("minuet") - 30000, 20000), nextid.ballad, icon.ballad);
-    //     }
-    //   }
-    // }
-    // else {
-    //   addIconBlinkTimeout("ballad", Math.max(checkRecast("ballad"), 30000), nextid.ballad, icon.ballad);
-    // }
-    if (player.level >= 68) {
-      addCountdownBar({ name: "empyrealarrow", time: checkRecast("empyrealarrow")});
-    }
-  }
-
-  else if ("The Wanderer's Minuet" == actionLog.groups.actionName) {
-    addCountdownBar({ name: "paeon"});
-    // removeIcon("minuet");
-    // addRecast("minuet");
-    // addStatus("song", 30000);
-    // previous.song = "minuet";
-    // if (checkRecast("ballad") <= checkRecast("paeon")) { // Mage's always beats Paeon
-    //   addIconBlinkTimeout("ballad", Math.max(checkRecast("ballad"), 30000), nextid.ballad, icon.ballad); // Revisit for optimization at high targets?
-    // }
-    // else {
-    //   addIconBlinkTimeout("paeon", Math.max(checkRecast("paeon"), 30000), nextid.paeon, icon.paeon);
-    // }
-    if (player.level >= 68) {
-      addCountdownBar({ name: "empyrealarrow", time: checkRecast("empyrealarrow")});
-    }
-  }
-
-  else if ("Empyreal Arrow" == actionLog.groups.actionName) {
-    if (recast.empyrealarrow > Date.now() - previous.empyrealarrow) {
-      recast.empyrealarrow = Date.now() - previous.empyrealarrow;
-    }
-    previous.empyrealarrow = Date.now();
-    // removeIcon("empyrealarrow");
-    // addRecast("empyrealarrow");
-    addCountdownBar({ name: "empyrealarrow"});
-    // if (player.level >= 68) {
-    //   if (checkStatus("song", player.id) > recast.empyrealarrow) { // Check if EA should be reused within song duration
-    //     addIconTimeout("empyrealarrow",recast.empyrealarrow,nextid.empyrealarrow,icon.empyrealarrow);
-    //   }
-    // }
-    // else {
-    //   addIconTimeout("empyrealarrow",recast.empyrealarrow,nextid.empyrealarrow,icon.empyrealarrow);
-    // }
-  }
-}
-
-
-function brdStatus() {
-
-  if (statusLog.groups.targetID == player.id) {
-
-    if (statusLog.groups.statusName == "Straight Shot Ready") {
-      if (statusLog.groups.gainsLoses == "gains") {
-        addStatus("straightshotready", parseInt(statusLog.groups.effectDuration) * 1000);
-        addIcon({ name: "straightshot"});
-        // removeIcon("barrage");
+  if (brdWeaponskills.includes(actionMatch.groups.actionName)) {
+    if (['Straight Shot', 'Refulgent Arrow'].includes(actionMatch.groups.actionName)) {
+      removeStatus({ name: 'Straight Shot Ready' });
+    } else if (['Venomous Bite', 'Caustic Bite'].includes(actionMatch.groups.actionName)) {
+      addStatus({ name: 'Venomous Bite' });
+    } else if (['Windbite', 'Stormbite'].includes(actionMatch.groups.actionName)) {
+      addStatus({ name: 'Windbite' });
+    } else if (actionMatch.groups.actionName === 'Iron Jaws') {
+      if (checkStatus({ name: 'Venomous Bite' }) > 0) {
+        addStatus({ name: 'Venomous Bite' });
       }
-      else if (statusLog.groups.gainsLoses == "loses") {
-        removeStatus("straightshotready");
-        removeIcon("straightshot");
-        // addIconBlinkTimeout("barrage", checkRecast("barrage"), nextid.barrage, icon.barrage);
+      if (checkStatus({ name: 'Windbite' }) > 0) {
+        addStatus({ name: 'Windbite' });
       }
     }
-
-    else if (statusLog.groups.statusName == "Raging Strikes") {
-      if (statusLog.groups.gainsLoses == "gains") {
-        addStatus("ragingstrikes", parseInt(statusLog.groups.effectDuration) * 1000);
-      }
-      else if (statusLog.groups.gainsLoses == "loses") {
-        removeStatus("ragingstrikes");
-      }
+    brdNext({ gcd: player.gcd });
+  } else if (brdSongs.includes(actionMatch.groups.actionName)) {
+    addRecast({ name: actionMatch.groups.actionName });
+  } else if (brdCooldowns.includes(actionMatch.groups.actionName)) {
+    if (actionMatch.groups.actionName === 'Raging Strikes') {
+      addStatus({ name: actionMatch.groups.actionName });
+    } else if (['Bloodletter', 'Rain Of Death'].includes(actionMatch.groups.actionName)) {
+      addRecast({ name: 'Bloodletter' });
+    } else if (actionMatch.groups.actionName === 'Barrage') {
+      addStatus({ name: 'Straight Shot Ready' });
+    } else if (actionMatch.groups.actionName === 'Shadowbite') {
+      addRecast({ name: 'Sidewinder' });
     }
+    addRecast({ name: actionMatch.groups.actionName });
   }
+  // console.log(checkStatus({ name: 'Straight Shot Ready' }));
+};
 
-  else {
-
-    if (["Venomous Bite", "Caustic Bite"].indexOf(statusLog.groups.statusName) > -1) {
-      if (statusLog.groups.gainsLoses == "gains") {
-        addStatus("venomousbite", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
-        if (target.id == statusLog.groups.targetID) {  // Might be possible to switch targets during this
-          if (player.level >= 54
-          && checkStatus("windbite", target.id) > 0) {
-            removeCountdownBar("venomousbite");
-            removeCountdownBar("windbite");
-            addCountdownBar({ name: "ironjaws", time: Math.min(checkStatus("venomousbite", target.id), checkStatus("windbite", target.id)) - 5000, oncomplete: "addIcon"});
-          }
-          else {
-            removeCountdownBar("ironjaws");
-            addCountdownBar({ name: "venomousbite", time: checkStatus("venomousbite", target.id), oncomplete: "addIcon"});
-            addCountdownBar({ name: "windbite", time: checkStatus("windbite", target.id), oncomplete: "addIcon"});
-          }
-        }
-      }
-      else if (statusLog.groups.gainsLoses == "loses") {
-        removeIcon("ironjaws");
-        removeCountdownBar("ironjaws");
-        addCountdownBar({ name: "venomousbite", time: checkStatus("venomousbite", target.id), oncomplete: "addIcon"});
-        addCountdownBar({ name: "windbite", time: checkStatus("windbite", target.id), oncomplete: "addIcon"});
-      }
+onStatus.BRD = (statusMatch) => {
+  if (statusMatch.groups.gainsLoses === 'gains') {
+    addStatus({
+      name: statusMatch.groups.statusName,
+      time: parseFloat(statusMatch.groups.statusDuration) * 1000,
+      id: statusMatch.groups.targetID,
+    });
+    if (statusMatch.groups.statusName === 'Caustic Bite') {
+      addStatus({
+        name: 'Venomous Bite',
+        time: parseFloat(statusMatch.groups.statusDuration) * 1000,
+        id: statusMatch.groups.targetID,
+      });
+    } else if (statusMatch.groups.statusName === 'Stormbite') {
+      addStatus({
+        name: 'Windbite',
+        time: parseFloat(statusMatch.groups.statusDuration) * 1000,
+        id: statusMatch.groups.targetID,
+      });
+    } else if (statusMatch.groups.statusName === 'Straight Shot Ready') {
+      brdNext({ gcd: 0 });
     }
-
-    else if (["Windbite", "Stormbite"].indexOf(statusLog.groups.statusName) > -1) {
-      if (statusLog.groups.gainsLoses == "gains") {
-        addStatus("windbite", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
-        if (target.id == statusLog.groups.targetID) {  // Might be possible to switch targets during this
-          if (player.level >= 54
-          && checkStatus("venomousbite", target.id) > 0) {
-            removeCountdownBar("venomousbite");
-            removeCountdownBar("windbite");
-            addCountdownBar({ name: "ironjaws", time: Math.min(checkStatus("venomousbite", target.id), checkStatus("windbite", target.id)) - 5000, oncomplete: "addIcon"});
-          }
-          else {
-            removeIcon("ironjaws");
-            removeCountdownBar("ironjaws");
-            addCountdownBar({ name: "venomousbite", time: checkStatus("venomousbite", target.id), oncomplete: "addIcon"});
-            addCountdownBar({ name: "windbite", time: checkStatus("windbite", target.id), oncomplete: "addIcon"});
-          }
-        }
-      }
-      else if (statusLog.groups.gainsLoses == "loses") {
-        removeIcon("ironjaws");
-        removeCountdownBar("ironjaws");
-        addCountdownBar({ name: "venomousbite", time: checkStatus("venomousbite", target.id), oncomplete: "addIcon"});
-        addCountdownBar({ name: "windbite", time: checkStatus("windbite", target.id), oncomplete: "addIcon"});
-      }
-    }
+  } else {
+    removeStatus({ name: statusMatch.groups.statusName, id: statusMatch.groups.targetID });
   }
-}
+};

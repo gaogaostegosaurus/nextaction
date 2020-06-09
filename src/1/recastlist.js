@@ -25,12 +25,16 @@ recast.transpose = 5000;
 recast.triplecast = 60000;
 
 // BRD
-recast.ballad = 80000;
 recast.ragingstrikes = 80000;
+recast.bloodletter = 15000;
+recast.rainofdeath = recast.bloodletter;
+recast.song = 80000;
+recast.magesballad = recast.song;
+recast.paeon = recast.song;
+recast.minuet = recast.song;
 recast.barrage = 80000;
-recast.paeon = 80000;
 recast.battlevoice = 180000;
-recast.minuet = 80000;
+recast.pitchperfect = 6000;
 recast.empyrealarrow = 15000;
 recast.sidewinder = 60000;
 

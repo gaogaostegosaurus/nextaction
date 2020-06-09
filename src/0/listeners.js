@@ -63,7 +63,20 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
   Need to use parseInt because 04 is not the same as 4. */
   const debugJobArray = e.detail.debugJob.split(' ');
 
-  if (player.job === 'DNC') { // Temporary
+  if (player.job === 'BRD') {
+    if (e.detail.jobDetail.songName === 'Ballad') {
+      player.songName = 'Mage\'s Ballad';
+    } else if (e.detail.jobDetail.songName === 'Paeon') {
+      player.songName = 'Army\'s Paeon';
+    } else if (e.detail.jobDetail.songName === 'Minuet') {
+      player.songName = 'The Wanderer\'s Minuet';
+    } else if (e.detail.jobDetail.songName === 'None') {
+      player.songName = '';
+    }
+    player.songStatus = e.detail.jobDetail.songMilliseconds;
+    player.repertoire = e.detail.jobDetail.songProcs;
+    player.soulvoice = e.detail.jobDetail.soulGauge;
+  } else if (player.job === 'DNC') { // Temporary
     player.fourfoldFeathers = parseInt(debugJobArray[0], 16); /* 0-4 */
     player.esprit = parseInt(debugJobArray[1], 16); /* 0-100 */
     /* Steps - 1 is Emboite, 2 is Entrechat, 3 is Jete, 4 is Pirouette */
