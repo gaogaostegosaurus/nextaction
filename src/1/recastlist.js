@@ -129,12 +129,12 @@ recast.intervene2 = recast.intervene;
 
 // RDM
 recast.acceleration = 55000;
-recast.contresixte = 45000;
+recast.contresixte = 35000;
 recast.corpsacorps = 40000;
 recast.displacement = 35000;
 recast.embolden = 120000;
 recast.fleche = 25000;
-recast.manafication = 120000;
+recast.manafication = 110000;
 
 // SAM
 recast.guren = 120000;
