@@ -103,8 +103,8 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
   } else if (player.job === 'PLD') {
     player.oath = e.detail.jobDetail.oath;
   } else if (player.job === 'RDM') {
-    player.blackMana = e.detail.jobDetail.blackMana;
-    player.whiteMana = e.detail.jobDetail.whiteMana;
+    player.blackmana = e.detail.jobDetail.blackMana;
+    player.whitemana = e.detail.jobDetail.whiteMana;
   } else if (player.job === 'SCH') {
     player.aetherflow = parseInt(debugJobArray[2], 16); /* 0-3 */
     // player.faerie = parseInt(debugJobArray[3], 16); /* 0-100 */
