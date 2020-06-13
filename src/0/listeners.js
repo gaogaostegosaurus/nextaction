@@ -57,6 +57,7 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
   // player.currentHP = e.detail.currentHP;
   // player.maxHP = e.detail.maxHP;
   player.mp = e.detail.currentMP;
+  player.casting = '';
   // player.maxMP = e.detail.maxMP;
   // player.currentShield = e.detail.currentShield;
   /* Create 8 part array for unsupported jobs - use [0] to [7].
@@ -252,13 +253,12 @@ addOverlayListener('onTargetChangedEvent', (e) => {
   /* Shows and hides the overlay based on target and combat status */
   if (target.id.startsWith('4')) {
     document.getElementById('nextdiv').classList.replace('next-hide', 'next-show');
-  } else if (toggle.combat === 0) {
+  } else if (toggle.combat !== 1) {
     document.getElementById('nextdiv').classList.replace('next-show', 'next-hide');
   }
 
-  // console.log(target.distance);
-
-  if (player.job) {
+  if (player.job && target.id !== target.previousid) {
+    target.previousid = target.id;
     onTargetChanged[player.job]();
   }
 });
