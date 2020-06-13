@@ -104,11 +104,8 @@ const gcdCalculation = ({
   recast.egiassault = Math.floor(Math.floor(10000 * (Math.floor((30000 * (1000 - Math.floor(130
     * (delta / levelMod)))) / 1000) / 1000)) / 100) * 10;
 
-  /* These look like they're a little off but not by enough to matter I hope */
-  recast.drill = Math.floor(Math.floor(10000 * (Math.floor((20000 * (1000 - Math.floor(130
-    * (delta / levelMod)))) / 1000) / 1000)) / 100) * 10;
-  recast.hotshot = Math.floor(Math.floor(10000 * (Math.floor((40000 * (1000 - Math.floor(130
-    * (delta / levelMod)))) / 1000) / 1000)) / 100) * 10;
+  recast.drill = player.gcd * 8;
+  recast.hotshot = player.gcd * 16;
   recast.airanchor = recast.hotshot;
 
 
@@ -121,6 +118,8 @@ const gcdCalculation = ({
   if (player.job === 'MCH') {
     console.log(`Hot Shot: ${recast.hotshot}ms`);
     console.log(`Drill: ${recast.drill}ms`);
+  } else if (player.job === 'NIN') {
+    console.log(`Shadow Fang: ${recast.shadowfang}ms`);
   }
 };
 
