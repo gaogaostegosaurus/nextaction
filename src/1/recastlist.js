@@ -129,12 +129,12 @@ recast.intervene2 = recast.intervene;
 
 // RDM
 recast.acceleration = 55000;
-recast.contresixte = 35000;
+recast.contresixte = 45000; // Set to 35000 after level 78
 recast.corpsacorps = 40000;
 recast.displacement = 35000;
 recast.embolden = 120000;
 recast.fleche = 25000;
-recast.manafication = 110000;
+recast.manafication = 120000; // Set to 110000 after level 74 inside script
 
 // SAM
 recast.guren = 120000;
