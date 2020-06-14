@@ -244,7 +244,8 @@ const rdmNextGCD = ({
   } else if (player.level >= 68 && Math.min(blackmana, whitemana) >= 80
   && blackmana + 21 < whitemana + 30 && verfirereadyStatus < 1500 * 2 + 2200 + player.gcd * 3) {
     return 'Enchanted Riposte'; /* Start combo for Verflare (20%) */
-  } else if (player.level >= 68 && Math.max(blackmana + 11, whitemana + 11) >= 100) {
+  } else if (player.level >= 68 && Math.min(blackmana, whitemana) >= 80
+  && Math.max(blackmana + 11, whitemana + 11) >= 100) {
     return 'Enchanted Riposte'; /* Likely to overcapping mana unless combo starts */
   } else if (player.level >= 2 && player.level < 68 && Math.min(blackmana, whitemana) >= 80) {
     return 'Enchanted Riposte'; /* Before Verflare/Verholy */
