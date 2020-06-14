@@ -46,6 +46,9 @@ let statusRegExp;
 let castingRegExp;
 let cancelRegExp;
 // let addedRegExp;
+
+/* This regex matches a line appearing during various things:
+  zone change, eating food, changing equipment, maybe more? */
 const statsRegExp = new RegExp(' 0C:Player Stats: (?<jobID>[\\d]+):(?<strength>[\\d]+):(?<dexterity>[\\d]+):(?<vitality>[\\d]+):(?<intelligence>[\\d]+):(?<mind>[\\d]+):(?<piety>[\\d]+):(?<attackPower>[\\d]+):(?<directHitRate>[\\d]+):(?<criticalHit>[\\d]+):(?<attackMagicPotency>[\\d]+):(?<healingMagicPotency>[\\d]+):(?<determination>[\\d]+):(?<skillSpeed>[\\d]+):(?<spellSpeed>[\\d]+):0:(?<tenacity>[\\d]+)');
 
 addOverlayListener('onPlayerChangedEvent', (e) => {
@@ -57,7 +60,6 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
   // player.currentHP = e.detail.currentHP;
   // player.maxHP = e.detail.maxHP;
   player.mp = e.detail.currentMP;
-  player.casting = '';
   // player.maxMP = e.detail.maxMP;
   // player.currentShield = e.detail.currentShield;
   /* Create 8 part array for unsupported jobs - use [0] to [7].
