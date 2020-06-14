@@ -163,15 +163,15 @@ const gnbNext = ({
 
   let nomercyStatus = checkStatus({ name: 'No Mercy' });
 
-  let nomercyRecast = checkRecast({ name: 'No Mercy' });
-  let dangerzoneRecast = checkRecast({ name: 'Danger Zone' });
-  let sonicbreakRecast = checkRecast({ name: 'Sonic Break' });
-  let roughdivide1Recast = checkRecast({ name: 'Rough Divide 1' });
-  let roughdivide2Recast = checkRecast({ name: 'Rough Divide 2' });
-  let gnashingfangRecast = checkRecast({ name: 'Gnashing Fang' });
-  let bowshockRecast = checkRecast({ name: 'Bow Shock' });
-  let continuationRecast = checkRecast({ name: 'Continuation' });
-  let bloodfestRecast = checkRecast({ name: 'Bloodfest' });
+  let nomercyRecast = checkRecast({ name: 'No Mercy' }) - 500;
+  let dangerzoneRecast = checkRecast({ name: 'Danger Zone' }) - 500;
+  let sonicbreakRecast = checkRecast({ name: 'Sonic Break' }) - 500;
+  let roughdivide1Recast = checkRecast({ name: 'Rough Divide 1' }) - 500;
+  let roughdivide2Recast = checkRecast({ name: 'Rough Divide 2' }) - 500;
+  let gnashingfangRecast = checkRecast({ name: 'Gnashing Fang' }) - 500;
+  let bowshockRecast = checkRecast({ name: 'Bow Shock' }) - 500;
+  let continuationRecast = checkRecast({ name: 'Continuation' }) - 500;
+  let bloodfestRecast = checkRecast({ name: 'Bloodfest' }) - 500;
 
   const gnbArray = [];
 
