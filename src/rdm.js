@@ -19,6 +19,7 @@ actionList.RDM = [...new Set([
   ...rdmWeaponskills,
   ...rdmCooldowns,
   // ...rdmDualcastSpells, /* Easier/more accurate controlling this via the buffs */
+  /* I think that means it won't work in Eureka but screw Eureka */
 ])];
 
 const rdmMultiTarget = [
