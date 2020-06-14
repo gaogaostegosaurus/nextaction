@@ -98,28 +98,36 @@ const gcdCalculation = ({
   player.gcd = Math.floor(Math.floor(10000 * (Math.floor((2500 * (1000 - Math.floor(130
     * (delta / levelMod)))) / 1000) / 1000)) / 100) * 10; // Modified to output in ms
 
-  recast.shadowfang = Math.floor(Math.floor(10000 * (Math.floor((70000 * (1000 - Math.floor(130
+  recast.sonicbreak = Math.floor(Math.floor(10000 * (Math.floor((60000 * (1000 - Math.floor(130
     * (delta / levelMod)))) / 1000) / 1000)) / 100) * 10;
-
-  recast.egiassault = Math.floor(Math.floor(10000 * (Math.floor((30000 * (1000 - Math.floor(130
+  recast.gnashingfang = Math.floor(Math.floor(10000 * (Math.floor((30000 * (1000 - Math.floor(130
     * (delta / levelMod)))) / 1000) / 1000)) / 100) * 10;
 
   recast.drill = player.gcd * 8;
   recast.hotshot = player.gcd * 16;
   recast.airanchor = recast.hotshot;
 
+  recast.shadowfang = Math.floor(Math.floor(10000 * (Math.floor((70000 * (1000 - Math.floor(130
+    * (delta / levelMod)))) / 1000) / 1000)) / 100) * 10;
 
+  recast.egiassault = player.gcd * 12;
   recast.egiassault1 = recast.egiassault;
   recast.egiassault2 = recast.egiassault;
   recast.egiassaulti1 = recast.egiassault;
   recast.egiassaultii2 = recast.egiassault;
 
   console.log(`Standard GCD calculated as ${player.gcd}ms`);
-  if (player.job === 'MCH') {
+
+  if (player.job === 'GNB') {
+    console.log(`Sonic Break: ${recast.sonicbreak}ms`);
+    console.log(`Gnashing Fang: ${recast.gnashingfang}ms`);
+  } else if (player.job === 'MCH') {
     console.log(`Hot Shot: ${recast.hotshot}ms`);
     console.log(`Drill: ${recast.drill}ms`);
   } else if (player.job === 'NIN') {
     console.log(`Shadow Fang: ${recast.shadowfang}ms`);
+  } else if (player.job === 'SMN') {
+    console.log(`Egi Assault: ${recast.egiassault}ms`);
   }
 };
 
