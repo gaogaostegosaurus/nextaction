@@ -151,9 +151,9 @@ const gnbNextOGCD = ({
     return 'Bow Shock'; /* Weaker than Blasting Zone but stronger than Danger Zone on one target */
   } else if (player.level >= 18 && dangerzoneRecast < 0) {
     return 'Danger Zone';
-  } else if (player.level >= 56 && nomercyStatus > 0 && roughdivide1Recast < 0) {
+  } else if (player.level >= 56 && nomercyStatus > 0 && gcdTime <= 1500 && roughdivide1Recast < 0) {
     return 'Rough Divide';
-  } else if (player.level >= 56 && roughdivide2Recast < 0) {
+  } else if (player.level >= 56 && gcdTime <= 1500 && roughdivide2Recast < 0) {
     return 'Rough Divide';
   } return ''; /* Returns nothing if no OGCD matches */
 };
