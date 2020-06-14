@@ -46,6 +46,7 @@ const gnbNextGCD = ({ /* All GNB GCDs are weaponskills so... */
   cartridgecomboStep,
   cartridges,
   nomercyStatus,
+  nomercyRecast,
   sonicbreakRecast,
   gnashingfangRecast,
   bloodfestRecast,
@@ -70,7 +71,7 @@ const gnbNextGCD = ({ /* All GNB GCDs are weaponskills so... */
     }
   }
 
-  /* High priority GCDs that don't use cartridges */
+  /* Highest priority GCDs, no cartridges needed */
   if (nomercyStatus > 0 && sonicbreakRecast < 0) {
     return 'Sonic Break';
   } else if (cartridgecomboStep === 'Savage Claw') {
@@ -79,27 +80,34 @@ const gnbNextGCD = ({ /* All GNB GCDs are weaponskills so... */
     return 'Savage Claw';
   }
 
-  /* Use cartridges */
-  if ((cartridges > 0 && (nomercyStatus > 0 || bloodfestRecast < player.gcd * cartridges))
-  || (cartridges >= 2 && (comboStep === 'Brutal Shell' || comboStep === 'Demon Slice'))) {
-    /* Dump cartridges during No Mercy or if Bloodfest is coming up */
-    /* Use a cartridge if about to overcap with regular combos */
-    if (player.level >= 72 && player.targetCount >= 4) {
-      return 'Fated Circle'; /* Spam at high enemy counts */
-    } else if (player.level >= 60 && gnashingfangRecast < 0) {
-      return 'Gnashing Fang';
-    } else if (player.level < 60 || cartridges >= 2
-    || (gnashingfangRecast > 0 && gnashingfangRecast + player.gcd * 3 > nomercyStatus)) {
-      /* Not sure how this condition works, check later */
-      if (player.level >= 72 && player.targetCount >= 2) {
-        return 'Fated Circle';
-      } else if (player.level >= 30) {
-        return 'Burst Strike';
-      }
+  /* Highest priority if a cartridge is available */
+  if (player.level >= 72 && cartridges > 0 && player.targetCount >= 4) { /* For future use, maybe */
+    return 'Fated Circle'; /* Spam at high enemy counts */
+  } else if (player.level >= 60 && cartridges > 0 && nomercyRecast > player.gcd * 2
+  && gnashingfangRecast < 0) {
+    /* No Mercy condition to prevent too much drift - delays by up to this many GCDs */
+    return 'Gnashing Fang';
+  }
+
+  /* Dump cartridges during No Mercy or if Bloodfest is coming up soon */
+  if ((cartridges > 0 && (nomercyStatus > 0 || bloodfestRecast < player.gcd * cartridges))) {
+    if (player.level >= 72 && player.targetCount >= 2) {
+      return 'Fated Circle';
+    } else if (player.level >= 30) {
+      return 'Burst Strike';
     }
   }
 
-  /* Everything else */
+  /* Use a cartridge if about to overcap with combo */
+  if (cartridges >= 2 && (comboStep === 'Brutal Shell' || comboStep === 'Demon Slice')) {
+    if (player.level >= 72 && player.targetCount >= 2) {
+      return 'Fated Circle';
+    } else if (player.level >= 30) {
+      return 'Burst Strike';
+    }
+  }
+
+  /* Combos */
   if (player.level >= 40 && player.targetCount >= 2 && comboStep === 'Demon Slice') {
     return 'Demon Slaughter';
   } else if (player.level >= 10 && player.targetCount >= 2) {
@@ -186,6 +194,7 @@ const gnbNext = ({
         cartridgecomboStep,
         cartridges,
         nomercyStatus,
+        nomercyRecast,
         sonicbreakRecast,
         gnashingfangRecast,
         bloodfestRecast,
