@@ -312,7 +312,6 @@ const gnbNext = ({
     bowshockRecast -= player.gcd;
     continuationRecast -= player.gcd;
     bloodfestRecast -= player.gcd;
-    console.log(cartridgecomboStep);
   }
   iconArrayB = gnbArray;
   syncIcons();
