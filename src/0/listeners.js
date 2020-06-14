@@ -89,7 +89,8 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
     player.step4 = parseInt(debugJobArray[5], 16);
     player.stepTotal = debugJobArray[6]; /* 0-4 */
   } else if (player.job === 'GNB') {
-    player.cartridge = parseInt(debugJobArray[0], 16); /* 0-2 */
+    player.cartridges = e.detail.jobDetail.cartridges;
+    // player.cartridges = parseInt(debugJobArray[0], 16); /* 0-2 */
   } else if (player.job === 'MCH') {
     player.heat = e.detail.jobDetail.heat;
     player.overheated = e.detail.jobDetail.overheatMilliseconds;

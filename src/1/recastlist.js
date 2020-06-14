@@ -60,9 +60,16 @@ recast.battlelitany = 180000;
 recast.dragonsight = 120000;
 
 // GNB
-recast.gnashingfang = 30000;
 recast.nomercy = 60000;
+recast.dangerzone = 30000;
 recast.roughdivide = 30000;
+recast.roughdivide1 = recast.roughdivide;
+recast.roughdivide2 = recast.roughdivide;
+recast.bowshock = 60000;
+recast.continuation = 1000;
+recast.bloodfest = 90000;
+/* These need to have a "default" until I can figure something else out */
+recast.gnashingfang = 30000;
 recast.sonicbreak = 60000;
 
 // MCH
