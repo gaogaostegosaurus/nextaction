@@ -20,6 +20,7 @@ const gnbCooldowns = [
   'Danger Zone', 'Blasting Zone',
   'Rough Divide',
   'Bow Shock',
+  'Jugular Rip', 'Abdomen Tear', 'Eye Gouge',
   'Bloodfest',
 ];
 
@@ -121,22 +122,21 @@ const gnbNextGCD = ({ /* All GNB GCDs are weaponskills so... */
 
 const gnbNextOGCD = ({
   gcdTime,
-  lastGCD,
   cartridges,
+  continuationStep,
   nomercyStatus,
   nomercyRecast,
   dangerzoneRecast,
   roughdivide1Recast,
   roughdivide2Recast,
   bowshockRecast,
-  continuationRecast,
   bloodfestRecast,
 } = {}) => {
-  if (player.level >= 70 && lastGCD === 'Gnashing Fang' && continuationRecast < 0) {
+  if (player.level >= 70 && continuationStep === 'Gnashing Fang') {
     return 'Jugular Rip';
-  } else if (player.level >= 70 && lastGCD === 'Savage Claw' && continuationRecast < 0) {
+  } else if (player.level >= 70 && continuationStep === 'Savage Claw') {
     return 'Abdomen Tear';
-  } else if (player.level >= 70 && lastGCD === 'Wicked Talon' && continuationRecast < 0) {
+  } else if (player.level >= 70 && continuationStep === 'Wicked Talon') {
     return 'Eye Gouge';
   } else if (player.level >= 76 && cartridges <= 0 && bloodfestRecast < 0) {
     return 'Bloodfest';
@@ -170,6 +170,7 @@ const gnbNext = ({
   let cartridges = player.cartridges;
 
   let nomercyStatus = checkStatus({ name: 'No Mercy' });
+  let continuationStep = player.continuationStep; /* The memory is actually pretty useless so */
 
   let nomercyRecast = checkRecast({ name: 'No Mercy' }) - 500;
   let dangerzoneRecast = checkRecast({ name: 'Danger Zone' }) - 500;
@@ -178,15 +179,13 @@ const gnbNext = ({
   let roughdivide2Recast = checkRecast({ name: 'Rough Divide 2' }) - 500;
   let gnashingfangRecast = checkRecast({ name: 'Gnashing Fang' }) - 500;
   let bowshockRecast = checkRecast({ name: 'Bow Shock' }) - 500;
-  let continuationRecast = checkRecast({ name: 'Continuation' }) - 500;
   let bloodfestRecast = checkRecast({ name: 'Bloodfest' }) - 500;
 
   const gnbArray = [];
 
   while (nextTime < 15000) { /* Outside loop for GCDs, looks ahead this number ms */
-    let lastGCD = ''; /* Stores GCD for Continuation */
-
     if (gcdTime <= 1000) {
+      continuationStep = ''; /* Looks like the Continuation buff is removed on any GCD */
       const nextGCD = gnbNextGCD({
         comboStatus,
         comboStep,
@@ -199,8 +198,6 @@ const gnbNext = ({
         gnashingfangRecast,
         bloodfestRecast,
       });
-
-      lastGCD = nextGCD;
 
       gnbArray.push({ name: nextGCD });
 
@@ -222,6 +219,10 @@ const gnbNext = ({
           comboStep = nextGCD;
         }
       } else if (gnbCartridgeWeaponskills.includes(nextGCD)) {
+        if (player.level >= 70) {
+          continuationStep = nextGCD; /* Set for Continuation OGCD */
+        }
+
         if (nextGCD === 'Wicked Talon') {
           cartridgecomboStatus = -1;
           cartridgecomboStep = '';
@@ -261,15 +262,14 @@ const gnbNext = ({
     while (gcdTime > 1000) {
       const nextOGCD = gnbNextOGCD({
         gcdTime,
-        lastGCD,
         cartridges,
+        continuationStep,
         nomercyStatus,
         nomercyRecast,
         dangerzoneRecast,
         roughdivide1Recast,
         roughdivide2Recast,
         bowshockRecast,
-        continuationRecast,
         bloodfestRecast,
       });
 
@@ -287,7 +287,7 @@ const gnbNext = ({
         } else if (nextOGCD === 'Bow Shock') {
           bowshockRecast = recast.bowshock;
         } else if (['Jugular Rip', 'Abdomen Tear', 'Eye Gouge'].includes(nextOGCD)) {
-          continuationRecast = recast.continuation; /* Prevents it from being called twice */
+          continuationStep = '';
         } else if (nextOGCD === 'Bloodfest') {
           bloodfestRecast = recast.bloodfest;
         }
@@ -310,7 +310,6 @@ const gnbNext = ({
     roughdivide2Recast -= player.gcd;
     gnashingfangRecast -= player.gcd;
     bowshockRecast -= player.gcd;
-    continuationRecast -= player.gcd;
     bloodfestRecast -= player.gcd;
   }
   iconArrayB = gnbArray;
@@ -340,7 +339,7 @@ onAction.GNB = (actionMatch) => {
     || actionMatch.groups.actionName === 'Solid Barrel'
     || actionMatch.groups.actionName === 'Demon Slaughter'
     || actionMatch.groups.actionName === 'Lightning Shot') {
-      /* Ends combo */
+      /* All of the above end combo */
       removeStatus({ name: 'Combo' });
       player.comboStep = '';
     } else {
@@ -348,6 +347,10 @@ onAction.GNB = (actionMatch) => {
       player.comboStep = actionMatch.groups.actionName;
     }
   } else if (gnbCartridgeWeaponskills.includes(actionMatch.groups.actionName)) {
+    if (player.level >= 70) {
+      player.continuationStep = actionMatch.groups.actionName;
+    }
+
     if (actionMatch.groups.actionName === 'Wicked Talon') {
       removeStatus({ name: 'Cartridge Combo' });
       player.cartridgecomboStep = '';
@@ -355,6 +358,8 @@ onAction.GNB = (actionMatch) => {
       addStatus({ name: 'Cartridge Combo' });
       player.cartridgecomboStep = actionMatch.groups.actionName;
     }
+  } else if (gnbOtherWeaponskills.includes(actionMatch.groups.actionName)) {
+    player.continuationStep = '';
   }
 
   /* Add recasts */
@@ -364,6 +369,8 @@ onAction.GNB = (actionMatch) => {
     /* Catch Rough Divide since it has stacks and needs to be handled differently */
     addRecast({ name: 'Rough Divide 1', time: checkRecast({ name: 'Rough Divide 2' }) });
     addRecast({ name: 'Rough Divide 2', time: checkRecast({ name: 'Rough Divide 2' }) + recast.roughdivide });
+  } else if (['Jugular Rip', 'Abdomen Tear', 'Eye Gouge'].includes(actionMatch.groups.actionName)) {
+    player.continuationStep = '';
   } else if (actionMatch.groups.actionName === 'Blasting Zone') {
     addRecast({ name: 'Danger Zone' });
   } else if (gnbCooldowns.includes(actionMatch.groups.actionName)) {

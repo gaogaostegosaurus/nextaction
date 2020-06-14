@@ -47,7 +47,7 @@ duration.delirium = 10000;
 
 // GNB
 duration.nomercy = 20000;
-
+duration.continuation = 10000;
 // MCH
 duration.wildfire = 10000;
 duration.flamethrower = 10000;
