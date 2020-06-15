@@ -62,7 +62,7 @@ const gnbNextGCD = ({ /* All GNB GCDs are weaponskills so... */
   }
 
   /* Don't drop combo */
-  if (comboStatus < player.gcd * 2) {
+  if (comboStatus < player.gcd * 2 && cartridgecomboStatus < 0) {
     if (player.level >= 40 && player.targetCount >= 2 && comboStep === 'Demon Slice') {
       return 'Demon Slaughter';
     } else if (player.level >= 26 && comboStep === 'Brutal Shell') {
@@ -91,7 +91,8 @@ const gnbNextGCD = ({ /* All GNB GCDs are weaponskills so... */
   }
 
   /* Dump cartridges during No Mercy or if Bloodfest is coming up soon */
-  if ((cartridges > 0 && (nomercyStatus > 0 || bloodfestRecast < player.gcd * cartridges))) {
+  if (cartridges > 0
+  && (nomercyStatus > 0 || (player.level >= 76 && bloodfestRecast < player.gcd * cartridges))) {
     if (player.level >= 72 && player.targetCount >= 2) {
       return 'Fated Circle';
     } else if (player.level >= 30) {
