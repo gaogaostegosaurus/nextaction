@@ -88,6 +88,9 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
     player.step3 = parseInt(debugJobArray[4], 16);
     player.step4 = parseInt(debugJobArray[5], 16);
     player.stepTotal = debugJobArray[6]; /* 0-4 */
+  } else if (player.job === 'DRK') {
+    player.blood = e.detail.jobDetail.blood;
+    player.darkarts = parseInt(debugJobArray[4], 16);
   } else if (player.job === 'GNB') {
     player.cartridges = e.detail.jobDetail.cartridges;
     // player.cartridges = parseInt(debugJobArray[0], 16); /* 0-2 */
