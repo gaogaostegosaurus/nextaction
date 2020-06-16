@@ -1,11 +1,11 @@
 
-const gnbWeaponskills = [
+const gnbComboWeaponskills = [
   'Keen Edge', 'Brutal Shell', 'Solid Barrel',
   'Demon Slice', 'Demon Slaughter',
   'Lightning Shot',
 ];
 
-const gnbCartridgeWeaponskills = [ /* Interrupted by regular combo */
+const gnbCartridgeComboWeaponskills = [ /* Interrupted by regular combo */
   'Gnashing Fang', 'Savage Claw', 'Wicked Talon',
 ];
 
@@ -34,8 +34,8 @@ const gnbSingleTarget = [
 ];
 
 actionList.GNB = [...new Set([
-  ...gnbWeaponskills,
-  ...gnbCartridgeWeaponskills,
+  ...gnbComboWeaponskills,
+  ...gnbCartridgeComboWeaponskills,
   ...gnbOtherWeaponskills,
   ...gnbCooldowns,
 ])];
@@ -204,7 +204,7 @@ const gnbNext = ({
 
       gnbArray.push({ name: nextGCD });
 
-      if (gnbWeaponskills.includes(nextGCD)) {
+      if (gnbComboWeaponskills.includes(nextGCD)) {
         cartridgecomboStatus = -1; /* Regular combo interrupts cartridge combo */
         cartridgecomboStep = '';
 
@@ -221,7 +221,7 @@ const gnbNext = ({
           comboStatus = duration.combo;
           comboStep = nextGCD;
         }
-      } else if (gnbCartridgeWeaponskills.includes(nextGCD)) {
+      } else if (gnbCartridgeComboWeaponskills.includes(nextGCD)) {
         if (player.level >= 70) {
           continuationStep = nextGCD; /* Set for Continuation OGCD */
         }
@@ -332,7 +332,7 @@ onAction.GNB = (actionMatch) => {
     player.targetCount = 1;
   }
 
-  if (gnbWeaponskills.includes(actionMatch.groups.actionName)) {
+  if (gnbComboWeaponskills.includes(actionMatch.groups.actionName)) {
     removeStatus({ name: 'Cartridge Combo' });
     player.cartridgecomboStep = '';
 
@@ -349,7 +349,7 @@ onAction.GNB = (actionMatch) => {
       addStatus({ name: 'Combo' });
       player.comboStep = actionMatch.groups.actionName;
     }
-  } else if (gnbCartridgeWeaponskills.includes(actionMatch.groups.actionName)) {
+  } else if (gnbCartridgeComboWeaponskills.includes(actionMatch.groups.actionName)) {
     if (player.level >= 70) {
       player.continuationStep = actionMatch.groups.actionName;
     }
@@ -387,8 +387,8 @@ onAction.GNB = (actionMatch) => {
   }
 
   /* Call next function */
-  if (gnbWeaponskills.includes(actionMatch.groups.actionName)
-  || gnbCartridgeWeaponskills.includes(actionMatch.groups.actionName)
+  if (gnbComboWeaponskills.includes(actionMatch.groups.actionName)
+  || gnbCartridgeComboWeaponskills.includes(actionMatch.groups.actionName)
   || gnbOtherWeaponskills.includes(actionMatch.groups.actionName)) {
     gnbNext({ gcd: player.gcd });
   }
