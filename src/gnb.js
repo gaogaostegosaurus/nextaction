@@ -84,8 +84,8 @@ const gnbNextGCD = ({ /* All GNB GCDs are weaponskills so... */
   /* Highest priority if a cartridge is available */
   if (player.level >= 72 && cartridges > 0 && player.targetCount >= 4) { /* For future use, maybe */
     return 'Fated Circle'; /* Spam at high enemy counts */
-  } else if (player.level >= 60 && cartridges > 0 && nomercyRecast > player.gcd * 2
-  && gnashingfangRecast < 0) {
+  } else if (player.level >= 60 && cartridges > 0
+  && (nomercyStatus > 0 || nomercyRecast > player.gcd * 2) && gnashingfangRecast < 0) {
     /* No Mercy condition to prevent too much drift - delays by up to this many GCDs */
     return 'Gnashing Fang';
   }
@@ -146,11 +146,13 @@ const gnbNextOGCD = ({
   } else if (player.level >= 62 && player.targetCount >= 2 && nomercyStatus > 0
   && bowshockRecast < 0) {
     return 'Bow Shock'; /* Aligns with No Mercy */
-  } else if (player.level >= 80 && dangerzoneRecast < 0) {
+  } else if (player.level >= 80 && (nomercyStatus > 0 || nomercyRecast > 6000)
+  && dangerzoneRecast < 0) {
     return 'Blasting Zone';
   } else if (player.level >= 62 && nomercyStatus > 0 && bowshockRecast < 0) {
     return 'Bow Shock'; /* Weaker than Blasting Zone but stronger than Danger Zone on one target */
-  } else if (player.level >= 18 && dangerzoneRecast < 0) {
+  } else if (player.level >= 18 && (nomercyStatus > 0 || nomercyRecast > 6000)
+  && dangerzoneRecast < 0) {
     return 'Danger Zone';
   } else if (player.level >= 56 && nomercyStatus > 0 && gcdTime <= 1500 && roughdivide1Recast < 0) {
     return 'Rough Divide';
