@@ -179,6 +179,7 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
 
 addOverlayListener('onLogEvent', (e) => { // Fires on log event
   const logLength = e.detail.logs.length;
+  let aoeTargetsHit = 0;
 
   for (let i = 0; i < logLength; i += 1) {
     const actionMatch = e.detail.logs[i].match(actionRegExp);
@@ -187,7 +188,6 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
     const cancelMatch = e.detail.logs[i].match(cancelRegExp);
     const statsMatch = e.detail.logs[i].match(statsRegExp);
     // const addedMatch = e.detail.logs[i].match(addedRegExp);
-
     if (actionMatch) {
       if (actionMatch.groups.logType === '15') {
         onAction[player.job](actionMatch);
@@ -214,9 +214,18 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
         //   timeout[`${property}Match`] = setTimeout(onAction[player.job], 100, actionMatch);
         // }
         // }
-      } else if (actionMatch.groups.logType === '16' && Date.now() - debounceTimestamp > 50) {
-        debounceTimestamp = Date.now(); /* Prevents AoE stuff from being silly */
-        onAction[player.job](actionMatch);
+      } else if (actionMatch.groups.logType === '16'
+      && actionMatch.groups.targetID.startsWith('4')) {
+        const timeoutProperty = actionMatch.groups.actionName.replace(/[\s'-:]/g, '').toLowerCase();
+        aoeTargetsHit += 1;
+        if (player.targetCount !== aoeTargetsHit) {
+          player.targetCount = aoeTargetsHit;
+        }
+        clearTimeout(timeout[`${timeoutProperty}`]);
+        timeout[`${timeoutProperty}`] = setTimeout(onAction[player.job], 50, actionMatch);
+      // } else if (actionMatch.groups.logType === '16' && Date.now() - debounceTimestamp > 50) {
+      //   debounceTimestamp = Date.now(); /* Prevents AoE stuff from being silly */
+      //   onAction[player.job](actionMatch);
       }
     } else if (statusMatch) {
       onStatus[player.job](statusMatch);
