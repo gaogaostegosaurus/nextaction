@@ -1,11 +1,18 @@
 
 const rdmWeaponskills = [
   /* Yes, some are technically not weaponskills but I don't care */
-  'Riposte', 'Enchanted Riposte', 'Zwerchhau', 'Enchanted Zwerchhau',
+  'Riposte', 'Enchanted Riposte',
+  'Zwerchhau', 'Enchanted Zwerchhau',
   'Redoublement', 'Enchanted Redoublement',
+  'Verflare', 'Verholy', 'Scorch',
   'Moulinet', 'Enchanted Moulinet',
-  'Verflare', 'Verholy',
-  'Reprise', 'Enchanted Reprise', 'Scorch',
+  'Reprise', 'Enchanted Reprise',
+];
+
+const rdmSpells = [
+  'Jolt', 'Jolt II', 'Verfire', 'Verstone', 'Verthunder II', 'Veraero II',
+  'Verthunder', 'Veraero', 'Scatter', 'Impact',
+  'Vercure', 'Veraise',
 ];
 
 const rdmCooldowns = [
@@ -17,33 +24,16 @@ const rdmCooldowns = [
 
 actionList.RDM = [...new Set([
   ...rdmWeaponskills,
+  ...rdmSpells,
   ...rdmCooldowns,
   // ...rdmDualcastSpells, /* Easier/more accurate controlling this via the buffs */
   /* I think that means it won't work in Eureka but screw Eureka */
 ])];
 
-const rdmMultiTarget = [
-  'Verthunder II',
-  'Veraero II',
-  'Impact',
-  'Scatter',
-  'Moulinet', 'Enchanted Moulinet',
-];
 
-castingList.RDM = [
-  'Jolt',
-  'Verthunder',
-  'Veraero',
-  'Scatter',
-  'Verthunder II',
-  'Veraero II',
-  'Verfire',
-  'Verstone',
-  'Vercure',
-  'Jolt II',
-  'Veraise',
-  'Impact',
-];
+castingList.RDM = [...new Set([
+  ...rdmSpells,
+])];
 
 statusList.RDM = [
   'Dualcast',
@@ -185,7 +175,8 @@ const rdmNextGCD = ({
   const repriseTime = repriseCount * 2200; /* Reprise and Moulinet have set recast times */
   const moulinetTime = moulinetCount * 1500;
 
-  // if (hardcasting !== '') { /* Moves Dualcast combo to front if called by hardcasting something */
+  /* Moves Dualcast combo to front if called by hardcasting something */
+  // if (hardcasting !== '') {
   //   return rdmNextDualcast({
   //     blackmana,
   //     whitemana,
@@ -668,64 +659,66 @@ const rdmNext = ({
 onAction.RDM = (actionMatch) => {
   /* Untoggle casting */
   player.hardcasting = '';
+  const actionName = actionMatch.groups.actionName;
 
-  /* Remove matched icon */
-  removeIcon({ name: actionMatch.groups.actionName });
-
-  if (rdmMultiTarget.includes(actionMatch.groups.actionName)) {
-    player.targetCount = 3;
-  } else {
+  if (
+    (player.level < 62 && actionName === 'Jolt')
+    || (player.level >= 52 && ['Enchanted Riposte'].includes(actionName))
+    || (player.level >= 66 && ['Verthunder', 'Veraero'].includes(actionName))
+  ) {
     player.targetCount = 1;
   }
 
-  if (rdmWeaponskills.includes(actionMatch.groups.actionName)) {
+  /* Remove matched icon */
+  removeIcon({ name: actionName });
+  if (rdmWeaponskills.includes(actionName)) {
     /* Set combo status/step */
     if (player.level < 35
-    || (player.level < 50 && actionMatch.groups.actionName === 'Enchanted Zwerchhau')
-    || (player.level < 68 && actionMatch.groups.actionName === 'Enchanted Redoublement')
-    || (player.level < 80 && ['Verflare', 'Verholy'].includes(actionMatch.groups.actionName))
-    || (actionMatch.groups.actionName === 'Scorch')) {
+    || (player.level < 50 && actionName === 'Enchanted Zwerchhau')
+    || (player.level < 68 && actionName === 'Enchanted Redoublement')
+    || (player.level < 80 && ['Verflare', 'Verholy'].includes(actionName))
+    || (actionName === 'Scorch')) {
       removeStatus({ name: 'Combo' });
       player.comboStep = '';
-    } else if (['Moulinet', 'Enchanted Moulinet', 'Reprise', 'Enchanted Reprise'].includes(actionMatch.groups.actionName)) {
+    } else if (['Moulinet', 'Enchanted Moulinet', 'Reprise', 'Enchanted Reprise'].includes(actionName)) {
       removeStatus({ name: 'Combo' });
       player.comboStep = '';
     } else {
       addStatus({ name: 'Combo' });
-      player.comboStep = actionMatch.groups.actionName;
+      player.comboStep = actionName;
     }
 
     /* Call next function with appropriate GCD time */
-    if (['Enchanted Riposte', 'Enchanted Zwerchhau', 'Enchanted Moulinet'].includes(actionMatch.groups.actionName)) {
+    if (['Enchanted Riposte', 'Enchanted Zwerchhau', 'Enchanted Moulinet'].includes(actionName)) {
       rdmNext({ gcd: 1500 });
-    } else if (['Enchanted Redoublement', 'Enchanted Reprise'].includes(actionMatch.groups.actionName)) {
+    } else if (['Enchanted Redoublement', 'Enchanted Reprise'].includes(actionName)) {
       rdmNext({ gcd: 2200 });
     } else {
       rdmNext({ gcd: player.gcd });
     }
-  } else if (rdmCooldowns.includes(actionMatch.groups.actionName)) {
-    addRecast({ name: actionMatch.groups.actionName });
-    if (actionMatch.groups.actionName === 'Acceleration') {
+  } else if (rdmCooldowns.includes(actionName)) {
+    addRecast({ name: actionName });
+    if (actionName === 'Acceleration') {
       addStatus({ name: 'Acceleration' });
       player.accelerationCount = 3;
-    } else if (actionMatch.groups.actionName === 'Contre Sixte') {
+    } else if (actionName === 'Contre Sixte') {
       if (player.level >= 78) {
-        addRecast({ name: actionMatch.groups.actionName, time: 35000 });
+        addRecast({ name: actionName, time: 35000 });
       }
-    } else if (actionMatch.groups.actionName === 'Manafication') {
+    } else if (actionName === 'Manafication') {
       if (player.level >= 74) {
-        addRecast({ name: actionMatch.groups.actionName, time: 110000 });
+        addRecast({ name: actionName, time: 110000 });
       }
       addRecast({ name: 'Corps-A-Corps', time: -1 });
       addRecast({ name: 'Displacement', time: -1 });
       rdmNext({ gcd: 0 });
-    } else if (actionMatch.groups.actionName === 'Engagement') {
+    } else if (actionName === 'Engagement') {
       /* Set Displacement cooldown with Engagement */
       addRecast({ name: 'Displacement' });
     }
-    // else if (actionMatch.groups.actionName === 'Swiftcast') {
+    // else if (actionName === 'Swiftcast') {
     //   addStatus({ name: 'Swiftcast' });
-    // } else if (actionMatch.groups.actionName === 'Lucid Dreaming') {
+    // } else if (actionName === 'Lucid Dreaming') {
     //   addStatus({ name: 'Lucid Dreaming' });
     // }
   }
@@ -744,11 +737,11 @@ onStatus.RDM = (statusMatch) => {
       removeIcon({ name: 'Hardcast', match: 'contains' });
       /* Possibly look into making this the same as the Dualcast version */
     } else if (statusMatch.groups.statusName === 'Verfire Ready') {
-      rdmNext({ gcd: player.gcd });
+      rdmNext({ gcd: player.gcd }); /* Call function if Ready status changes */
     } else if (statusMatch.groups.statusName === 'Verstone Ready') {
       rdmNext({ gcd: player.gcd });
     } else if (statusMatch.groups.statusName === 'Swiftcast') {
-      rdmNext({ gcd: 0 });
+      rdmNext({ gcd: 0 }); /* Call function if Swiftcasting */
     }
   } else {
     removeStatus({ name: statusMatch.groups.statusName });
@@ -765,11 +758,11 @@ onStatus.RDM = (statusMatch) => {
 };
 
 onCasting.RDM = (castingMatch) => {
-  if (rdmMultiTarget.includes(castingMatch.groups.actionName)) {
-    player.targetCount = 3;
-  } else {
-    player.targetCount = 1;
-  }
+  // if (rdmMultiTarget.includes(castingMatch.groups.actionName)) {
+  //   player.targetCount = 3;
+  // } else {
+  //   player.targetCount = 1;
+  // }
   player.hardcasting = castingMatch.groups.actionName;
   player.comboStep = '';
   rdmNext({ gcd: 0 });
