@@ -350,7 +350,7 @@ onAction.GNB = (actionMatch) => {
   if (gnbMultiTargetActions.includes(actionName) && actionMatch.groups.logType === '15') {
     /* Multi target only hits single target */
     player.targetCount = 1;
-  } else if ((player.level >= 15 && actionName === 'Keen Edge')
+  } else if ((player.level >= 10 && actionName === 'Keen Edge')
     || (player.level >= 72 && actionName === 'Burst Strike')) {
     player.targetCount = 1;
   }
