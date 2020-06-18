@@ -24,21 +24,18 @@ const gnbCooldowns = [
   'Bloodfest',
 ];
 
-const gnbMultiTarget = [
-  'Demon Slice', 'Demon Slaughter',
-  'Fated Circle',
-];
-
-const gnbSingleTarget = [
-  'Keen Edge', 'Brutal Shell', 'Solid Barrel',
-];
-
 actionList.GNB = [...new Set([
   ...gnbComboWeaponskills,
   ...gnbCartridgeComboWeaponskills,
   ...gnbOtherWeaponskills,
   ...gnbCooldowns,
 ])];
+
+const gnbMultiTargetActions = [
+  'Demon Slice', 'Demon Slaughter',
+  'Fated Circle',
+  'Bow Shock',
+];
 
 const gnbNextGCD = ({ /* All GNB GCDs are weaponskills so... */
   comboStatus,
@@ -52,6 +49,27 @@ const gnbNextGCD = ({ /* All GNB GCDs are weaponskills so... */
   gnashingfangRecast,
   bloodfestRecast,
 } = {}) => {
+  const burststrikePotency = 500;
+  // const sonicbreakPotency = 300 + 90 * 10;
+  const fatedcirclePotency = 320 * player.targetCount;
+
+  let solidbarrelComboPotency = 200;
+  if (player.level >= 26) {
+    solidbarrelComboPotency = 300;
+  } else if (player.level >= 4) {
+    solidbarrelComboPotency = 250;
+  }
+
+  let demonslaughterComboPotency = 150 * player.targetCount; /* Combo average */
+  if (player.level >= 40) {
+    demonslaughterComboPotency = 200 * player.targetCount; /* Combo average */
+  }
+
+  let wickedtalonComboPotency = 550;
+  if (player.level >= 70) {
+    wickedtalonComboPotency = 550 + 280;
+  }
+
   /* Don't drop cartridge combo */
   if (cartridgecomboStatus < player.gcd * 2) {
     if (cartridgecomboStep === 'Savage Claw') {
@@ -63,7 +81,7 @@ const gnbNextGCD = ({ /* All GNB GCDs are weaponskills so... */
 
   /* Don't drop combo */
   if (comboStatus < player.gcd * 2 && cartridgecomboStatus < 0) {
-    if (player.level >= 40 && player.targetCount >= 2 && comboStep === 'Demon Slice') {
+    if (player.level >= 40 && comboStep === 'Demon Slice') {
       return 'Demon Slaughter';
     } else if (player.level >= 26 && comboStep === 'Brutal Shell') {
       return 'Solid Barrel';
@@ -81,28 +99,26 @@ const gnbNextGCD = ({ /* All GNB GCDs are weaponskills so... */
     return 'Savage Claw';
   }
 
-  /* Highest priority if a cartridge is available */
-  if (player.level >= 72 && cartridges > 0 && player.targetCount >= 4) { /* For future use, maybe */
-    return 'Fated Circle'; /* Spam at high enemy counts */
-  } else if (player.level >= 60 && cartridges > 0
-  && (nomercyStatus > 0 || nomercyRecast > player.gcd * 2) && gnashingfangRecast < 0) {
-    /* No Mercy condition to prevent too much drift - delays by up to this many GCDs */
+  /* Start cartridge combo when able, unless just spamming AoE combo is better */
+  /* No Mercy condition to prevent too much drift - delays by up to this many GCDs */
+  if (player.level >= 60 && cartridges > 0 && wickedtalonComboPotency >= demonslaughterComboPotency
+  && (nomercyStatus > 0 || nomercyRecast >= recast.gnashingfang * 0.20) && gnashingfangRecast < 0) {
     return 'Gnashing Fang';
   }
 
   /* Dump cartridges during No Mercy or if Bloodfest is coming up soon */
   if (cartridges > 0
   && (nomercyStatus > 0 || (player.level >= 76 && bloodfestRecast < player.gcd * cartridges))) {
-    if (player.level >= 72 && player.targetCount >= 2) {
+    if (player.level >= 72 && fatedcirclePotency > burststrikePotency) {
       return 'Fated Circle';
-    } else if (player.level >= 30) {
+    } else if (player.level >= 30 && burststrikePotency >= demonslaughterComboPotency) {
       return 'Burst Strike';
     }
   }
 
   /* Use a cartridge if about to overcap with combo */
   if (cartridges >= 2 && (comboStep === 'Brutal Shell' || comboStep === 'Demon Slice')) {
-    if (player.level >= 72 && player.targetCount >= 2) {
+    if (player.level >= 72 && fatedcirclePotency > burststrikePotency) {
       return 'Fated Circle';
     } else if (player.level >= 30) {
       return 'Burst Strike';
@@ -110,9 +126,10 @@ const gnbNextGCD = ({ /* All GNB GCDs are weaponskills so... */
   }
 
   /* Combos */
-  if (player.level >= 40 && player.targetCount >= 2 && comboStep === 'Demon Slice') {
+  if (player.level >= 40 && demonslaughterComboPotency > solidbarrelComboPotency
+  && comboStep === 'Demon Slice') {
     return 'Demon Slaughter';
-  } else if (player.level >= 10 && player.targetCount >= 2) {
+  } else if (player.level >= 10 && demonslaughterComboPotency > solidbarrelComboPotency) {
     return 'Demon Slice';
   } else if (player.level >= 26 && comboStep === 'Brutal Shell') {
     return 'Solid Barrel';
@@ -133,6 +150,13 @@ const gnbNextOGCD = ({
   bowshockRecast,
   bloodfestRecast,
 } = {}) => {
+  const bowshockPotency = (200 + 90 * 5) * player.targetCount;
+
+  let dangerzonePotency = 350;
+  if (player.level >= 80) {
+    dangerzonePotency = 800;
+  }
+
   if (player.level >= 70 && continuationStep === 'Gnashing Fang') {
     return 'Jugular Rip';
   } else if (player.level >= 70 && continuationStep === 'Savage Claw') {
@@ -143,17 +167,16 @@ const gnbNextOGCD = ({
     return 'Bloodfest';
   } else if (player.level >= 2 && gcdTime <= 1500 && nomercyRecast < 0) {
     return 'No Mercy'; /* gcdTime <= 1500 places it in second part of GCD */
-  } else if (player.level >= 62 && player.targetCount >= 2 && nomercyStatus > 0
+  } else if (player.level >= 62 && nomercyStatus > 0 && bowshockPotency > dangerzonePotency
   && bowshockRecast < 0) {
     return 'Bow Shock'; /* Aligns with No Mercy */
-  } else if (player.level >= 80 && (nomercyStatus > 0 || nomercyRecast > 6000)
+  } else if (player.level >= 35 && (nomercyStatus > 0 || nomercyRecast >= recast.dangerzone * 0.20)
   && dangerzoneRecast < 0) {
-    return 'Blasting Zone';
+    if (player.level >= 80) {
+      return 'Blasting Zone';
+    } return 'Danger Zone';
   } else if (player.level >= 62 && nomercyStatus > 0 && bowshockRecast < 0) {
     return 'Bow Shock'; /* Weaker than Blasting Zone but stronger than Danger Zone on one target */
-  } else if (player.level >= 18 && (nomercyStatus > 0 || nomercyRecast > 6000)
-  && dangerzoneRecast < 0) {
-    return 'Danger Zone';
   } else if (player.level >= 56 && nomercyStatus > 0 && gcdTime <= 1500 && roughdivide1Recast < 0) {
     return 'Rough Divide';
   } else if (player.level >= 56 && gcdTime <= 1500 && roughdivide2Recast < 0) {
@@ -320,76 +343,76 @@ const gnbNext = ({
 };
 
 onAction.GNB = (actionMatch) => {
-  removeIcon({ name: actionMatch.groups.actionName });
+  const actionName = actionMatch.groups.actionName;
+  removeIcon({ name: actionName });
 
   /* Set probable target count */
-  if (gnbMultiTarget.includes(actionMatch.groups.actionName)) {
-    player.targetCount = 2;
-  } else if (gnbSingleTarget.includes(actionMatch.groups.actionName)) {
+  if (gnbMultiTargetActions.includes(actionName) && actionMatch.groups.logType === '15') {
+    /* Multi target only hits single target */
     player.targetCount = 1;
-  } else if (player.level >= 72 && actionMatch.groups.actionName === 'Burst Strike') {
-    /* Burst Strike will only be used on one target after getting Fated Circle */
+  } else if ((player.level >= 15 && actionName === 'Keen Edge')
+    || (player.level >= 72 && actionName === 'Burst Strike')) {
     player.targetCount = 1;
   }
 
-  if (gnbComboWeaponskills.includes(actionMatch.groups.actionName)) {
+  if (gnbComboWeaponskills.includes(actionName)) {
     removeStatus({ name: 'Cartridge Combo' });
     player.cartridgecomboStep = '';
 
     if (player.level < 4
-    || (player.level < 26 && actionMatch.groups.actionName === 'Brutal Shell')
-    || (player.level < 40 && actionMatch.groups.actionName === 'Demon Slice')
-    || actionMatch.groups.actionName === 'Solid Barrel'
-    || actionMatch.groups.actionName === 'Demon Slaughter'
-    || actionMatch.groups.actionName === 'Lightning Shot') {
+    || (player.level < 26 && actionName === 'Brutal Shell')
+    || (player.level < 40 && actionName === 'Demon Slice')
+    || actionName === 'Solid Barrel'
+    || actionName === 'Demon Slaughter'
+    || actionName === 'Lightning Shot') {
       /* All of the above end combo */
       removeStatus({ name: 'Combo' });
       player.comboStep = '';
     } else {
       addStatus({ name: 'Combo' });
-      player.comboStep = actionMatch.groups.actionName;
+      player.comboStep = actionName;
     }
-  } else if (gnbCartridgeComboWeaponskills.includes(actionMatch.groups.actionName)) {
+  } else if (gnbCartridgeComboWeaponskills.includes(actionName)) {
     if (player.level >= 70) {
-      player.continuationStep = actionMatch.groups.actionName;
+      player.continuationStep = actionName;
     }
 
-    if (actionMatch.groups.actionName === 'Wicked Talon') {
+    if (actionName === 'Wicked Talon') {
       removeStatus({ name: 'Cartridge Combo' });
       player.cartridgecomboStep = '';
     } else {
       addStatus({ name: 'Cartridge Combo' });
-      player.cartridgecomboStep = actionMatch.groups.actionName;
+      player.cartridgecomboStep = actionName;
     }
-  } else if (gnbOtherWeaponskills.includes(actionMatch.groups.actionName)) {
+  } else if (gnbOtherWeaponskills.includes(actionName)) {
     player.continuationStep = '';
   }
 
   /* Add recasts */
-  if (['Sonic Break', 'Gnashing Fang'].includes(actionMatch.groups.actionName)) {
-    addRecast({ name: actionMatch.groups.actionName });
-  } else if (actionMatch.groups.actionName === 'Rough Divide') {
+  if (['Sonic Break', 'Gnashing Fang'].includes(actionName)) {
+    addRecast({ name: actionName });
+  } else if (actionName === 'Rough Divide') {
     /* Catch Rough Divide since it has stacks and needs to be handled differently */
     addRecast({ name: 'Rough Divide 1', time: checkRecast({ name: 'Rough Divide 2' }) });
     addRecast({ name: 'Rough Divide 2', time: checkRecast({ name: 'Rough Divide 2' }) + recast.roughdivide });
-  } else if (['Jugular Rip', 'Abdomen Tear', 'Eye Gouge'].includes(actionMatch.groups.actionName)) {
+  } else if (['Jugular Rip', 'Abdomen Tear', 'Eye Gouge'].includes(actionName)) {
     player.continuationStep = '';
-  } else if (actionMatch.groups.actionName === 'Blasting Zone') {
+  } else if (actionName === 'Blasting Zone') {
     addRecast({ name: 'Danger Zone' });
-  } else if (gnbCooldowns.includes(actionMatch.groups.actionName)) {
+  } else if (gnbCooldowns.includes(actionName)) {
     /* All other cooldowns */
-    addRecast({ name: actionMatch.groups.actionName });
+    addRecast({ name: actionName });
   }
 
   /* Add statuses */
-  if (actionMatch.groups.actionName === 'No Mercy') {
+  if (actionName === 'No Mercy') {
     addStatus({ name: 'No Mercy' });
   }
 
   /* Call next function */
-  if (gnbComboWeaponskills.includes(actionMatch.groups.actionName)
-  || gnbCartridgeComboWeaponskills.includes(actionMatch.groups.actionName)
-  || gnbOtherWeaponskills.includes(actionMatch.groups.actionName)) {
+  if (gnbComboWeaponskills.includes(actionName)
+  || gnbCartridgeComboWeaponskills.includes(actionName)
+  || gnbOtherWeaponskills.includes(actionName)) {
     gnbNext({ gcd: player.gcd });
   }
 };

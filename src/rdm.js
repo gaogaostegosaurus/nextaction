@@ -1,4 +1,10 @@
 
+const rdmSpells = [
+  'Jolt', 'Jolt II', 'Verfire', 'Verstone', 'Verthunder II', 'Veraero II',
+  'Verthunder', 'Veraero', 'Scatter', 'Impact',
+  'Vercure', 'Veraise',
+];
+
 const rdmWeaponskills = [
   /* Yes, some are technically not weaponskills but I don't care */
   'Riposte', 'Enchanted Riposte',
@@ -9,12 +15,6 @@ const rdmWeaponskills = [
   'Reprise', 'Enchanted Reprise',
 ];
 
-const rdmSpells = [
-  'Jolt', 'Jolt II', 'Verfire', 'Verstone', 'Verthunder II', 'Veraero II',
-  'Verthunder', 'Veraero', 'Scatter', 'Impact',
-  'Vercure', 'Veraise',
-];
-
 const rdmCooldowns = [
   'Corps-A-Corps', 'Displacement', 'Fleche', 'Acceleration',
   'Contre Sixte', 'Embolden', 'Manafication',
@@ -23,13 +23,18 @@ const rdmCooldowns = [
 ];
 
 actionList.RDM = [...new Set([
-  ...rdmWeaponskills,
   ...rdmSpells,
+  ...rdmWeaponskills,
   ...rdmCooldowns,
   // ...rdmDualcastSpells, /* Easier/more accurate controlling this via the buffs */
   /* I think that means it won't work in Eureka but screw Eureka */
 ])];
 
+const rdmMultiTargetActions = [
+  'Verthunder II', 'Veraero II', 'Scatter', 'Impact',
+  'Moulinet', 'Enchanted Moulinet',
+  'Contre Sixte',
+];
 
 castingList.RDM = [...new Set([
   ...rdmSpells,
@@ -49,13 +54,48 @@ const rdmNextDualcast = ({
   verstonereadyStatus,
   swiftcastStatus,
 } = {}) => {
+  /* Verthunder/Veraero II: 100 */
+  /* Verthunder/Veraero: 310 */
+  /* Verstone/Verfire: 270 */
+
+  let joltPotency = 180;
+  if (player.level >= 62) {
+    joltPotency = 280;
+  }
+
+  let verstonePotency = 270;
+  if (player.level >= 62) {
+    verstonePotency = 300;
+  }
+
+  let veraeroPotency = 310;
+  if (player.level >= 62) {
+    veraeroPotency = 370;
+  }
+
+  let veraeroiiPotency = 100 * player.targetCount;
+  if (player.level >= 78) {
+    veraeroiiPotency = 120 * player.targetCount;
+  }
+
+  const scatterPotency = 120 * player.targetCount;
+  const impactPotency = 220 * player.targetCount;
+
   let hardcast = 'Jolt';
   let dualcast = 'Jolt';
+
   if (swiftcastStatus < 0) {
-    if (player.targetCount >= 3) {
+    if (player.level >= 18 && veraeroiiPotency > verstonePotency) {
       if (player.level >= 22 && blackmana > whitemana) {
         hardcast = 'Veraero II';
-      } else if (player.level >= 18) {
+      } else {
+        hardcast = 'Verthunder II';
+      }
+    } else if (player.level >= 18 && Math.max(verfirereadyStatus, verstonereadyStatus) < player.gcd
+    && veraeroiiPotency > joltPotency) {
+      if (player.level >= 22 && blackmana > whitemana) {
+        hardcast = 'Veraero II';
+      } else {
         hardcast = 'Verthunder II';
       }
     } else if (Math.min(blackmana + 9, 100) > whitemana + 30) {
@@ -109,10 +149,10 @@ const rdmNextDualcast = ({
   blackmanaNext = Math.min(blackmanaNext, 100);
   whitemanaNext = Math.min(whitemanaNext, 100);
 
-  if (player.level >= 15 && player.targetCount >= 3) {
-    dualcast = 'Scatter';
-  } else if (player.level >= 66 && player.targetCount >= 2) {
+  if (player.level >= 66 && impactPotency > veraeroPotency) {
     dualcast = 'Impact';
+  } else if (player.level >= 15 && scatterPotency > veraeroPotency) {
+    dualcast = 'Scatter';
   } else if (player.level >= 10 && Math.min(blackmanaNext + 11, 100) > whitemanaNext + 30) {
     /* This and following block should prevent unbalanced mana */
     dualcast = 'Veraero';
@@ -221,7 +261,7 @@ const rdmNextGCD = ({
   } else if (player.level >= 35 && player.level < 50 && Math.min(blackmana, whitemana) >= 25
   && comboStep === 'Enchanted Riposte') {
     return 'Enchanted Zwerchhau';
-  } else if (player.level >= 52 && player.targetCount > 1
+  } else if (player.level >= 52 && player.targetCount > 1 && Math.min(blackmana, whitemana) >= 20
   && moulinetTime > manaficationRecast) {
     return 'Enchanted Moulinet'; /* This should take care of general AoE but check later */
   } else if (player.level >= 70 && Math.min(blackmana, whitemana) >= 80 && blackmana > whitemana
@@ -661,11 +701,15 @@ onAction.RDM = (actionMatch) => {
   player.hardcasting = '';
   const actionName = actionMatch.groups.actionName;
 
-  if (
+  if (rdmMultiTargetActions.includes(actionName) && actionMatch.groups.logType === '15') {
+    /* Multi target only hits single target */
+    player.targetCount = 1;
+  } else if (
     (player.level < 62 && actionName === 'Jolt')
     || (player.level >= 52 && ['Enchanted Riposte'].includes(actionName))
     || (player.level >= 66 && ['Verthunder', 'Veraero'].includes(actionName))
   ) {
+    /* Unambiguous single target actions */
     player.targetCount = 1;
   }
 
