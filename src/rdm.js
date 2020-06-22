@@ -759,12 +759,13 @@ onAction.RDM = (actionMatch) => {
     } else if (actionName === 'Engagement') {
       /* Set Displacement cooldown with Engagement */
       addRecast({ name: 'Displacement' });
+    } else if (actionName === 'Swiftcast') {
+      addStatus({ name: 'Swiftcast' });
+    } else if (actionName === 'Lucid Dreaming') {
+      addStatus({ name: 'Lucid Dreaming' });
     }
-    // else if (actionName === 'Swiftcast') {
-    //   addStatus({ name: 'Swiftcast' });
-    // } else if (actionName === 'Lucid Dreaming') {
-    //   addStatus({ name: 'Lucid Dreaming' });
-    // }
+    // console.log(actionName + ' ' + checkRecast({ name: actionName }));
+    //
   }
 };
 
