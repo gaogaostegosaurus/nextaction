@@ -214,12 +214,13 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
         //   timeout[`${property}Match`] = setTimeout(onAction[player.job], 100, actionMatch);
         // }
         // }
-      } else if (actionMatch.groups.logType === '16'
-      && actionMatch.groups.targetID.startsWith('4')) {
+      } else if (actionMatch.groups.logType === '16') {
         const timeoutProperty = actionMatch.groups.actionName.replace(/[\s'-:]/g, '').toLowerCase();
-        aoeTargetsHit += 1;
-        if (player.targetCount !== aoeTargetsHit) {
-          player.targetCount = aoeTargetsHit;
+        if (actionMatch.groups.targetID.startsWith('4')) {
+          aoeTargetsHit += 1;
+          if (player.targetCount !== aoeTargetsHit) {
+            player.targetCount = aoeTargetsHit;
+          }
         }
         clearTimeout(timeout[`${timeoutProperty}`]);
         timeout[`${timeoutProperty}`] = setTimeout(onAction[player.job], 50, actionMatch);
@@ -254,27 +255,30 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
   }
 });
 
-addOverlayListener('onTargetChangedEvent', (e) => {
+addOverlayListener('EnmityTargetData', (e) => {
   // console.log(`onTargetChangedEvent: ${JSON.stringify(e)}`);
-  target.name = e.detail.name;
-  target.id = e.detail.id.toString(16).toUpperCase(); // See player.id above
-  target.job = e.detail.job;
-  // target.level = e.detail.level;
-  // target.currentHP = e.detail.currentHP;
-  // target.currentMP = e.detail.currentMP;
-  // target.maxHP = e.detail.maxHP;
-  // target.maxMP = e.detail.maxMP;
-  target.distance = e.detail.distance;
-  /* Shows and hides the overlay based on target and combat status */
-  if (target.id.startsWith('4')) {
-    document.getElementById('nextdiv').classList.replace('next-hide', 'next-show');
-  } else if (toggle.combat !== 1) {
-    document.getElementById('nextdiv').classList.replace('next-show', 'next-hide');
-  }
+  if (e.Target) {
+    target.name = e.Target.Name;
+    target.id = e.Target.ID.toString(16).toUpperCase(); // See player.id above
+    target.distance = e.Target.Distance;
+    // target.job = e.Target.job;
+    // target.level = e.detail.level;
+    // target.currentHP = e.detail.currentHP;
+    // target.currentMP = e.detail.currentMP;
+    // target.maxHP = e.detail.maxHP;
+    // target.maxMP = e.detail.maxMP;
+    // target.distance = e.Target.Distance;
+    /* Shows and hides the overlay based on target and combat status */
+    if (target.id.startsWith('4')) {
+      document.getElementById('nextdiv').classList.replace('next-hide', 'next-show');
+    } else if (toggle.combat !== 1) {
+      document.getElementById('nextdiv').classList.replace('next-show', 'next-hide');
+    }
 
-  if (player.job && target.id !== target.previousid) {
-    target.previousid = target.id;
-    onTargetChanged[player.job]();
+    if (player.job && target.id !== target.previousid) {
+      target.previousid = target.id;
+      onTargetChanged[player.job]();
+    }
   }
 });
 
