@@ -1,4 +1,6 @@
 
+const recastTracker = {}; // Holds timestamps for cooldowns
+
 const addRecast = ({
   name,
   property = name.replace(/[\s'-]/g, '').toLowerCase(),
