@@ -747,25 +747,23 @@ onAction.RDM = (actionMatch) => {
       player.accelerationCount = 3;
     } else if (actionName === 'Contre Sixte') {
       if (player.level >= 78) {
-        addRecast({ name: actionName, time: 35000 });
+        addRecast({ name: actionName, time: 35000 }); /* Level 78 trait */
       }
     } else if (actionName === 'Manafication') {
       if (player.level >= 74) {
-        addRecast({ name: actionName, time: 110000 });
+        addRecast({ name: actionName, time: 110000 }); /* Level 74 trait */
       }
       addRecast({ name: 'Corps-A-Corps', time: -1 });
       addRecast({ name: 'Displacement', time: -1 });
       rdmNext({ gcd: 0 });
     } else if (actionName === 'Engagement') {
-      /* Set Displacement cooldown with Engagement */
-      addRecast({ name: 'Displacement' });
+      addRecast({ name: 'Displacement' }); /* Set Displacement cooldown with Engagement */
     } else if (actionName === 'Swiftcast') {
       addStatus({ name: 'Swiftcast' });
     } else if (actionName === 'Lucid Dreaming') {
       addStatus({ name: 'Lucid Dreaming' });
     }
     // console.log(actionName + ' ' + checkRecast({ name: actionName }));
-    //
   }
 };
 
