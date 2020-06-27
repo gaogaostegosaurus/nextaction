@@ -5,15 +5,13 @@
 addOverlayListener('onInitializeOverlay', (e) => {
 }); */
 
+/* Store list of whatevers in property matching job abbreivations -
+  allows for some code reuse across jobs */
 const actionList = {};
 const statusList = {};
 const castingList = {};
 
 // Objects
-let recastTracker = {}; // Holds timestamps for cooldowns
-let cooldowntime = {}; // Holds timestamps for cooldowns
-let nextTimeout;
-
 const player = {};
 player.gcd = 2500;
 
@@ -25,8 +23,8 @@ const target = {};
 const removeAnimationTime = 1000;
 
 const timeout = {}; // For timeout variables
-const toggle = {}; // Toggley things
-const count = {}; // County things?
+// const toggle = {}; // Toggley things
+// const count = {}; // County things?
 let potency = {};
 let previous = {};
 let next = {};
@@ -52,17 +50,17 @@ let cancelRegExp;
 const statsRegExp = new RegExp(' 0C:Player Stats: (?<jobID>[\\d]+):(?<strength>[\\d]+):(?<dexterity>[\\d]+):(?<vitality>[\\d]+):(?<intelligence>[\\d]+):(?<mind>[\\d]+):(?<piety>[\\d]+):(?<attackPower>[\\d]+):(?<directHitRate>[\\d]+):(?<criticalHit>[\\d]+):(?<attackMagicPotency>[\\d]+):(?<healingMagicPotency>[\\d]+):(?<determination>[\\d]+):(?<skillSpeed>[\\d]+):(?<spellSpeed>[\\d]+):0:(?<tenacity>[\\d]+)');
 
 addOverlayListener('onPlayerChangedEvent', (e) => {
+  /* Fires after onZoneChangedEvent on reload */
+  // console.log('onPlayerChangedEvent');
   // console.log(JSON.stringify(e));
   player.id = e.detail.id.toString(16).toUpperCase();
   player.name = e.detail.name;
   player.job = e.detail.job;
   player.level = e.detail.level;
-  // player.currentHP = e.detail.currentHP;
-  // player.maxHP = e.detail.maxHP;
   player.mp = e.detail.currentMP;
-  // player.maxMP = e.detail.maxMP;
-  // player.currentShield = e.detail.currentShield;
-  /* Create 8 part array for unsupported jobs - use [0] to [7].
+
+  /* Create 8 part array for "unsupported" jobs - index is [0] to [7].
+  Example: player.fourfoldFeathers = parseInt(debugJobArray[0], 16);
   Need to use parseInt because 04 is not the same as 4. */
   const debugJobArray = e.detail.debugJob.split(' ');
 
@@ -79,9 +77,10 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
     player.songStatus = e.detail.jobDetail.songMilliseconds;
     player.repertoire = e.detail.jobDetail.songProcs;
     player.soulvoice = e.detail.jobDetail.soulGauge;
-  } else if (player.job === 'DNC') { // Temporary
+  } else if (player.job === 'DNC') {
     player.fourfoldFeathers = parseInt(debugJobArray[0], 16); /* 0-4 */
     player.esprit = parseInt(debugJobArray[1], 16); /* 0-100 */
+
     /* Steps - 1 is Emboite, 2 is Entrechat, 3 is Jete, 4 is Pirouette */
     player.step1 = parseInt(debugJobArray[2], 16);
     player.step2 = parseInt(debugJobArray[3], 16);
@@ -115,7 +114,6 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
   } else if (player.job === 'SCH') {
     player.aetherflow = parseInt(debugJobArray[2], 16); /* 0-3 */
     // player.faerie = parseInt(debugJobArray[3], 16); /* 0-100 */
-    // healerLucidDreaming();
   } else if (player.job === 'SMN') {
     player.aetherflow = e.detail.jobDetail.aetherflowStacks; /* 0-3 */
     player.dreadwyrmAether = e.detail.jobDetail.dreadwyrmStacks; /* 0-2 */
@@ -127,14 +125,10 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
       player.dreadwyrm = e.detail.jobDetail.dreadwyrmMilliseconds;
       player.firebird = -1;
     }
-    // player.firebird = player.dreadwyrm;
     player.bahamut = e.detail.jobDetail.bahamutMilliseconds;
-    // player.faerie = parseInt(debugJobArray[3], 16); /* 0-100 */
-    // healerLucidDreaming();
   } else if (player.job === 'WHM') {
     // player.lilies = parseInt(debugJobArray[4], 16);
     player.bloodLily = parseInt(debugJobArray[5], 16); /* 0-3 */
-    // healerLucidDreaming();
   }
 
   /* Detects name/job/level change and clears elements */
@@ -172,12 +166,12 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
 
     resetNext();
     onJobChange[player.job]();
-    // console.log(`Changed to ${player.job}${player.level}`);
-    // console.log(JSON.stringify(e));
+    console.log(`Changed to ${player.job}${player.level}`);
   }
 });
 
 addOverlayListener('onLogEvent', (e) => { // Fires on log event
+  // console.log('onLogEvent');
   const logLength = e.detail.logs.length;
   let aoeTargetsHit = 0;
 
@@ -191,32 +185,11 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
     if (actionMatch) {
       if (actionMatch.groups.logType === '15') {
         onAction[player.job](actionMatch);
-        // if (actionMatch.groups.targetID.startsWith('4')) {
-        // if (!previous.aoe || Date.now() - previous.aoe > 100) {
-        //   clearTimeout(timeout.aoe);
-        //   previous.aoe = Date.now();
-        //   // count.targets = 1;
-        //   timeout.aoe = setTimeout(onAction[player.job], 100, actionMatch);
-        // } else {
-        //   clearTimeout(timeout.aoe);
-        //   // count.targets += 1;
-        //   timeout.aoe = setTimeout(onAction[player.job], 100, actionMatch);
-        // }
-        // /* This is slightly more complicated... for no reason? Was there a reason? */
-        // const property = actionMatch.groups.actionName.replace(/[\s'-:]/g, '').toLowerCase();
-        // if (!previous[`${property}Match`] || Date.now() - previous[`${property}Match`] > 10) {
-        //   previous[`${property}Match`] = Date.now();
-        //   count.targets = 1;
-        //   timeout[`${property}Match`] = setTimeout(onAction[player.job], 100, actionMatch);
-        // } else {
-        //   clearTimeout(timeout[`${property}Match`]);
-        //   count.targets += 1;
-        //   timeout[`${property}Match`] = setTimeout(onAction[player.job], 100, actionMatch);
-        // }
-        // }
       } else if (actionMatch.groups.logType === '16') {
         const timeoutProperty = actionMatch.groups.actionName.replace(/[\s'-:]/g, '').toLowerCase();
-        if (actionMatch.groups.targetID.startsWith('4')) {
+        if (actionMatch.groups.targetID.startsWith('4')
+        && actionMatch.groups.actionName !== 'Dream Within A Dream') {
+          /* DWAW hits one target multiple times using logType 16 */
           aoeTargetsHit += 1;
           if (player.targetCount !== aoeTargetsHit) {
             player.targetCount = aoeTargetsHit;
@@ -224,23 +197,11 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
         }
         clearTimeout(timeout[`${timeoutProperty}`]);
         timeout[`${timeoutProperty}`] = setTimeout(onAction[player.job], 50, actionMatch);
-      // } else if (actionMatch.groups.logType === '16' && Date.now() - debounceTimestamp > 50) {
-      //   debounceTimestamp = Date.now(); /* Prevents AoE stuff from being silly */
-      //   onAction[player.job](actionMatch);
       }
     } else if (statusMatch) {
       onStatus[player.job](statusMatch);
     } else if (castingMatch) {
-      // console.log(`${castingMatch}`);
       onCasting[player.job](castingMatch);
-
-      /* Display next if casting with an NPC target */
-      if (castingMatch.groups.logType === '0aab') { /* 0 = no target, 1... = player? E... = non-combat NPC? */
-        document.getElementById('nextdiv').classList.replace('next-hide', 'next-show');
-      }
-      // if (target.id.startsWith('4')) { /* 0 = no target, 1... = player? E... = non-combat NPC? */
-      //   document.getElementById('nextdiv').classList.replace('next-hide', 'next-show');
-      // }
     } else if (cancelMatch) {
       // console.log(`${cancelMatch}`);
       onCancel[player.job](cancelMatch);
@@ -256,22 +217,32 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
 });
 
 addOverlayListener('EnmityTargetData', (e) => {
+  // console.log('EmnityTargetData');
   // console.log(`onTargetChangedEvent: ${JSON.stringify(e)}`);
+  /* Copied from stringify for notes:
+  {"type":"EnmityTargetData","Target":{"ID":1073746514,"OwnerID":0,"Type":2,"TargetID":275370607,"Job":0,"Name":"Striking Dummy","CurrentHP":254,"MaxHP":16000,"PosX":-706.4552,"PosY":23.5000038,"PosZ":-583.5873,"Rotation":-0.461016417,"Distance":"2.78","EffectiveDistance":0,"Effects":[{"BuffID":508,"Stack":0,"Timer":10.7531652,"ActorID":275370607,"isOwner":false}]},"Focus":null,"Hover":null,"TargetOfTarget":{"ID":275370607,"OwnerID":0,"Type":1,"TargetID":3758096384,"Job":30,"Name":"Lyn Tah'row","CurrentHP":87008,"MaxHP":87008,"PosX":-708.9726,"PosY":23.5000038,"PosZ":-582.397156,"Rotation":2.01241565,"Distance":"0.00","EffectiveDistance":0,"Effects":[{"BuffID":365,"Stack":10,"Timer":30,"ActorID":3758096384,"isOwner":false},{"BuffID":360,"Stack":10,"Timer":30,"ActorID":3758096384,"isOwner":false}]},"Entries":[{"ID":275370607,"OwnerID":0,"Name":"Lyn Tah'row","Enmity":100,"isMe":true,"HateRate":100,"Job":30}]} (Source: file:///C:/Users/Dan/Google%20Drive/Advanced%20Combat%20Tracker/Plugins/next/src/0/listeners.js, Line: 219) */
+  /* Possible properties for e.Target are
+    ID - as decimal number instead of hex (as in parser log)
+    OwnerID - often "0"
+    Type
+    TargetID
+    Job
+    Name
+    CurrentHP, MaxHP
+    PosX, PosY, PosZ, Rotation
+    Distance - Distance to center of target
+    EffectiveDistance - Distance to edge of target
+    Effects - Array of effects (?)
+  */
   if (e.Target) {
     target.name = e.Target.Name;
-    target.id = e.Target.ID.toString(16).toUpperCase(); // See player.id above
-    target.distance = e.Target.Distance;
-    // target.job = e.Target.job;
-    // target.level = e.detail.level;
-    // target.currentHP = e.detail.currentHP;
-    // target.currentMP = e.detail.currentMP;
-    // target.maxHP = e.detail.maxHP;
-    // target.maxMP = e.detail.maxMP;
-    // target.distance = e.Target.Distance;
+    target.id = e.Target.ID.toString(16).toUpperCase(); /* Change to hex value (with caps) */
+    target.distance = e.Target.EffectiveDistance;
+
     /* Shows and hides the overlay based on target and combat status */
-    if (target.id.startsWith('4')) {
+    if (target.id.startsWith('4') && target.distance <= 25) {
       document.getElementById('nextdiv').classList.replace('next-hide', 'next-show');
-    } else if (toggle.combat !== 1) {
+    } else {
       document.getElementById('nextdiv').classList.replace('next-show', 'next-hide');
     }
 
@@ -279,31 +250,26 @@ addOverlayListener('EnmityTargetData', (e) => {
       target.previousid = target.id;
       onTargetChanged[player.job]();
     }
+  } else if (!player.combat) { /* Implies no target, not in combat */
+    document.getElementById('nextdiv').classList.replace('next-show', 'next-hide');
   }
 });
 
 addOverlayListener('onInCombatChangedEvent', (e) => {
-  // console.log(`onInCombatChangedEvent: ${JSON.stringify(e)}`);
-
-  /* Can't think of a good way to consistently reset AoE count other than this. Hopefully does not
-  have a race condition with starting with AoEs... */
-  count.targets = 1;
-
   if (e.detail.inGameCombat) {
-    player.combat = 1;
-    toggle.combat = 1;
+    player.combat = Date.now();
+    // toggle.combat = 1;
   } else {
-    player.combat = 0;
-    toggle.combat = 0;
-    if (target.id && !target.id.startsWith('4')) {
-      document.getElementById('nextdiv').classList.replace('next-show', 'next-hide');
-    }
+    delete player.combat;
   }
 });
 
 addOverlayListener('onZoneChangedEvent', (e) => {
-  /* This fires extremely early upon load - careful of what you put here since it won't work if it
-  requires the character data to be loaded as well. */
+  /* Fires first on reload */
+  /* This seems to fire extremely early upon load -
+    careful of what you put here since it won't work if it requires the character data to be loaded
+    as well. */
+  // console.log('onZoneChangedEvent');
   // console.log(`onZoneChangedEvent: ${JSON.stringify(e)}`);
 });
 
