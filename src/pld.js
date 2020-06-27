@@ -1,38 +1,3 @@
-actionList.PLD = [
-
-  // Non-GCD actions
-  'Fight Or Flight', 'Spirits Within', 'Sheltron', 'Sentinel', 'Cover',
-  'Divine Veil', 'Intervention', 'Requiescat', 'Passage Of Arms',
-  'Intervene',
-  'Circle Of Scorn',
-
-  // GCD actions
-  'Fast Blade', 'Riot Blade', 'Rage Of Halone', 'Goring Blade',
-  'Royal Authority', 'Atonement', 'Holy Spirit',
-  'Total Eclipse', 'Prominence', 'Holy Circle', 'Confiteor',
-  // Total Eclipse => Prominence: 3 or more
-  // Holy Circle: 2 or more
-
-  // Role actions
-  'Rampart', 'Arm\'s Length',
-
-];
-
-statusList.PLD = [
-  'Goring Blade', 'Requiescat', 'Sword Oath',
-];
-
-castingList.PLD = [
-  'Clemency', 'Holy Spirit', 'Holy Circle',
-];
-
-// const pldAreaOfEffect = [
-//   'Total Eclipse', 'Prominence', 'Circle Of Scorn', 'Holy Circle', 'Confiteor',
-// ];
-//
-// const pldSingleTarget = [
-//   'Holy Spirit',
-// ];
 
 const pldWeaponskills = [
   'Fast Blade',
@@ -59,22 +24,21 @@ const pldCooldowns = [
   'Spirits Within',
   'Circle Of Scorn',
   'Requiescat',
+  'Reprisal',
 ];
 
-const pldMultiTarget = [
-  'Total Eclipse',
-  'Prominence',
-  'Holy Circle',
+actionList.PLD = [...new Set([
+  ...pldWeaponskills,
+  ...pldSpells,
+  ...pldCooldowns,
+])];
+
+statusList.PLD = [
+  'Goring Blade', 'Requiescat', 'Sword Oath',
 ];
 
-const pldSingleTarget = [
-  'Fast Blade',
-  'Riot Blade',
-  'Rage Of Halone',
-  'Goring Blade',
-  'Royal Authority',
-  'Holy Spirit',
-  'Atonement',
+castingList.PLD = [
+  'Clemency', 'Holy Spirit', 'Holy Circle',
 ];
 
 // const pldSingleTarget = [
@@ -102,6 +66,15 @@ const pldSingleTarget = [
 //   clearTimeout(timeout.combo);
 //   timeout.combo = setTimeout(pldNext, 12500);
 // };
+
+const pldMultiTargetActions = [
+  'Total Eclipse',
+  'Prominence',
+  'Holy Circle',
+  'Confiteor',
+  'Circle Of Scorn',
+  'Reprisal',
+];
 
 const pldNextWeaponskill = ({
   comboStep,
@@ -131,23 +104,88 @@ const pldNextGCD = ({
   mp,
   requiescatStatus,
   swordoathStatus,
-  swordoathCount,
+  // swordoathCount,
 } = {}) => {
-  /* Atonement is highest DPS per GCD so I guess it should go here */
-  if (swordoathStatus > 0 && swordoathCount > 0) {
-    return 'Atonement';
+  let rageofhaloneComboPotency = 200;
+  if (player.level >= 76) {
+    rageofhaloneComboPotency = 450;
+  } else if (player.level >= 60) {
+    rageofhaloneComboPotency = 350;
+  } else if (player.level >= 26) {
+    rageofhaloneComboPotency = 284;
+  } else if (player.level >= 4) {
+    rageofhaloneComboPotency = 250;
   }
 
+  let goringbladeComboPotency = 200;
+  if (player.level >= 54) {
+    goringbladeComboPotency = 495
+      - 85 * Math.ceil(Math.max(goringbladeStatus - player.gcd * 2, 0) / 3000);
+  } else if (player.level >= 4) {
+    rageofhaloneComboPotency = 250;
+  }
+
+  let prominenceComboPotency = 0;
+  if (player.level >= 40) {
+    prominenceComboPotency = 170 * player.targetCount;
+  } else if (player.level >= 6) {
+    prominenceComboPotency = 120 * player.targetCount;
+  }
+
+  let prominencePotency = 0;
+  if (player.level >= 40 && comboStep === 'Total Eclipse') {
+    prominencePotency = 220 * player.targetCount;
+  }
+
+  let holyspiritPotency = 0;
+  let holycirclePotency = 0 * player.targetCount;
+  if (requiescatStatus > 0) {
+    holyspiritPotency = 525;
+    holycirclePotency = 375 * player.targetCount;
+  }
+
+  const atonementPotency = 550;
+
+  /* Sword Oath */
+  if (swordoathStatus > 0) {
+    if (holycirclePotency > atonementPotency) {
+      return 'Holy Circle';
+    } else if (prominencePotency > atonementPotency) {
+      return 'Prominence';
+    } else if (prominenceComboPotency > atonementPotency) {
+      return 'Total Eclipse';
+    } return 'Atonement';
+  }
+
+  /* Requiescat */
   if (player.level >= 78 && requiescatStatus > 0 && mp > 2000) {
     if (player.level >= 80 && (mp < 4000 || requiescatStatus < player.gcd)) {
       return 'Confiteor';
-    } else if (player.targetCount > 1) {
+    } else if (holycirclePotency > holyspiritPotency) {
       return 'Holy Circle';
-    }
-    return 'Holy Spirit';
+    } return 'Holy Spirit';
+  } else if (requiescatStatus > 2500 && mp > 2000) {
+    if (player.level >= 72 && holycirclePotency > holyspiritPotency) {
+      return 'Holy Circle';
+    } return 'Holy Spirit';
   }
 
-  return pldNextWeaponskill({ comboStep, goringbladeStatus });
+  if (player.level >= 40 && comboStep === 'Total Eclipse') {
+    return 'Prominence';
+  } else if (prominenceComboPotency > Math.max(rageofhaloneComboPotency, goringbladeComboPotency)) {
+    return 'Total Eclipse';
+  } else if (player.level >= 54 && comboStep === 'Riot Blade' && goringbladeStatus < 6000) {
+    return 'Goring Blade';
+  } else if (player.level >= 60 && comboStep === 'Riot Blade') {
+    return 'Royal Authority';
+  } else if (player.level >= 26 && comboStep === 'Riot Blade') {
+    return 'Rage Of Halone';
+  } else if (player.level >= 4 && comboStep === 'Fast Blade') {
+    return 'Riot Blade';
+  }
+  return 'Fast Blade';
+
+  // return pldNextWeaponskill({ comboStep, goringbladeStatus });
   // if (player.level >= 78 && requiescatStatus > 0 && mp > 2000) {
   //   /* Rotation under Requiescat */
   //   if (player.level >= 80 && (mp < 4000 || requiescatStatus < player.gcd)) {
@@ -383,23 +421,27 @@ onTargetChanged.PLD = () => {
 };
 
 onAction.PLD = (actionMatch) => {
-  removeIcon({ name: actionMatch.groups.actionName });
+  const actionName = actionMatch.groups.actionName;
+  removeIcon({ name: actionName });
 
-  if (pldMultiTarget.includes(actionMatch.groups.actionName)) {
-    player.targetCount = 3;
-  } else if (pldSingleTarget.includes(actionMatch.groups.actionName)) {
+  /* Set probable target count */
+  if (pldMultiTargetActions.includes(actionName) && actionMatch.groups.logType === '15') {
+    /* Multi target only hits single target */
+    player.targetCount = 1;
+  } else if ((player.level >= 10 && player.level < 54 && actionName === 'Fast Blade')
+    || (player.level >= 72 && actionName === 'Holy Spirit')) {
     player.targetCount = 1;
   }
 
-  if (pldWeaponskills.includes(actionMatch.groups.actionName)) {
-    if (actionMatch.groups.actionName === 'Atonement') {
+  if (pldWeaponskills.includes(actionName)) {
+    if (actionName === 'Atonement') {
       /* Atonement actually doesn't break combo */
       player.swordoathCount -= 1;
     } else if (actionMatch.groups.comboCheck) {
-      player.comboStep = actionMatch.groups.actionName;
-      if (actionMatch.groups.actionName === 'Goring Blade') {
+      player.comboStep = actionName;
+      if (actionName === 'Goring Blade') {
         addStatus({ name: 'Goring Blade', id: actionMatch.groups.targetID });
-      } else if (player.level >= 76 && actionMatch.groups.actionName === 'Royal Authority') {
+      } else if (player.level >= 76 && actionName === 'Royal Authority') {
         addStatus({ name: 'Sword Oath' });
         player.swordoathCount = 3;
       }
@@ -407,17 +449,17 @@ onAction.PLD = (actionMatch) => {
       player.comboStep = '';
     }
     pldNext({ gcd: player.gcd });
-  } else if (pldSpells.includes(actionMatch.groups.actionName)) {
+  } else if (pldSpells.includes(actionName)) {
     player.comboStep = '';
     if (player.level >= 78 && checkStatus({ name: 'Requiescat' }) > 0) {
       pldNext({ gcd: player.gcd });
     } else {
       pldNext({ gcd: 0 });
     }
-  } else if (pldCooldowns.includes(actionMatch.groups.actionName)) {
-    addRecast({ name: actionMatch.groups.actionName });
-    if (['Fight Or Flight', 'Requiescat'].includes(actionMatch.groups.actionName)) {
-      addStatus({ name: actionMatch.groups.actionName });
+  } else if (pldCooldowns.includes(actionName)) {
+    addRecast({ name: actionName });
+    if (['Fight Or Flight', 'Requiescat'].includes(actionName)) {
+      addStatus({ name: actionName });
     }
   }
   // console.debug(player.comboStep);
