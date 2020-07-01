@@ -91,7 +91,7 @@ const gnbNextGCD = ({ /* All GNB GCDs are weaponskills so... */
   }
 
   /* Highest priority GCDs, no cartridges needed */
-  if (nomercyStatus > 0 && sonicbreakRecast < 0) {
+  if (player.level >= 54 && nomercyStatus > 0 && sonicbreakRecast < 0) {
     return 'Sonic Break';
   } else if (cartridgecomboStep === 'Savage Claw') {
     return 'Wicked Talon';
