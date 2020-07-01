@@ -76,26 +76,6 @@ const pldMultiTargetActions = [
   'Reprisal',
 ];
 
-const pldNextWeaponskill = ({
-  comboStep,
-  goringbladeStatus,
-} = {}) => {
-  if (player.level >= 40 && player.targetCount >= 3 && comboStep === 'Total Eclipse') {
-    return 'Prominence';
-  } else if (player.level >= 6 && player.targetCount >= 3) {
-    return 'Total Eclipse';
-  } else if (player.level >= 54 && comboStep === 'Riot Blade' && goringbladeStatus < 6000) {
-    return 'Goring Blade';
-  } else if (player.level >= 60 && comboStep === 'Riot Blade') {
-    return 'Royal Authority';
-  } else if (player.level >= 26 && comboStep === 'Riot Blade') {
-    return 'Rage Of Halone';
-  } else if (player.level >= 4 && comboStep === 'Fast Blade') {
-    return 'Riot Blade';
-  }
-  return 'Fast Blade';
-};
-
 const pldNextGCD = ({
   comboStep,
   // fightorflightRecast,
