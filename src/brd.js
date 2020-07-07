@@ -31,7 +31,7 @@ actionList.BRD = [...new Set([
   ...brdSongs,
 ])];
 
-statusList.BRD = [
+player.statusList.BRD = [
   'Straight Shot Ready', 'Raging Strikes', 'Barrage', 'Battle Voice',
   'Venomous Bite', 'Windbite', 'Caustic Bite', 'Stormbite',
 ];

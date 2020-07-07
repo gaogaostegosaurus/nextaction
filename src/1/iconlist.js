@@ -228,40 +228,7 @@ icon.anatman = '002546';
 icon.sixsidedstar = '002547';
 
 // NIN
-icon.spinningedge = '000601';
-icon.gustslash = '000602';
-icon.aeolianedge = '000605';
-icon.shadowfang = '000606';
-icon.hide = '000609';
-icon.assassinate = '000612';
-icon.mug = '000613';
-icon.deathblossom = '000615';
-icon.trickattack = '000618';
-icon.ten = '002901';
-icon.chi = '002902';
-icon.jin = '002903';
-icon.ninjutsu = '002904';
-icon.mudra1 = '002904';
-icon.mudra2 = '002904';
-icon.kassatsu = '002906';
-icon.fumashuriken = '002907';
-icon.katon = '002908';
-icon.hyoton = '002909';
-icon.huton = '002910';
-icon.doton = '002911';
-icon.raiton = '002912';
-icon.suiton = '002913';
-icon.rabbitmedium = '002913';
-icon.armorcrush = '002915';
-icon.dreamwithinadream = '002918';
-icon.hellfrogmedium = '002920';
-icon.bhavacakra = '002921';
-icon.tenchijin = '002922';
-icon.hakkemujinsatsu = '002923';
-icon.meisui = '002924';
-icon.gokamekkyaku = '002925';
-icon.hyoshoranryu = '002926';
-icon.bunshin = '002927';
+
 
 // PLD
 icon.sentinel = '000151';

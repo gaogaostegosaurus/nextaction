@@ -24,7 +24,7 @@ actionList.DNC = [
   'Improvisation',
 ];
 
-statusList.DNC = [
+player.statusList.DNC = [
   'Standard Step', 'Standard Finish', 'Flourishing Cascade', 'Flourishing Windmill',
   'Flourishing Fountain', 'Flourishing Shower', 'Closed Position', 'Dance Partner', 'Devilment',
   'Flourishing Fan Dance', 'Technical Step', 'Technical Finish', 'Improvisation',

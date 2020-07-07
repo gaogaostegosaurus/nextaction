@@ -1,39 +1,31 @@
 /* eslint prefer-const: "off" */
 /* exported syncIcons */
 
-let iconArrayA = [];
-let iconArrayB = [];
-let iconArrayC = [];
-
-const getArrayRow = ({
-  iconArray,
+nextActionOverlay.getArrayRow = ({
+  iconArray = nextActionOverlay.iconArrayB,
 } = {}) => {
   // Associate array with row
   let rowID = 'icon-b';
-  if (iconArray === iconArrayA) {
+  if (iconArray === nextActionOverlay.iconArrayA) {
     rowID = 'icon-a';
-  } else if (iconArray === iconArrayC) {
+  } else if (iconArray === nextActionOverlay.iconArrayB) {
+    rowID = 'icon-b';
+  } else if (iconArray === nextActionOverlay.iconArrayC) {
     rowID = 'icon-c';
   }
   return rowID;
 };
 
-const syncIcons = ({
-  iconArray = iconArrayB,
+nextActionOverlay.syncIcons = ({
+  iconArray = nextActionOverlay.iconArrayB,
+  playerData = nextActionOverlay.playerData,
 } = {}) => {
-  if (!player.job) {
+  if (!playerData.job) {
     // console.log('Not ready');
     return;
   }
 
-  // if (!player.job || Date.now() - previous.syncIcons < 100) {
-  //   // console.log(`${player.job} ${previous.syncIcons}`);
-  //   return;
-  // }
-
-  // previous.syncIcons = Date.now();
-
-  const rowID = getArrayRow({ iconArray });
+  const rowID = nextActionOverlay.getArrayRow({ iconArray });
   const rowDiv = document.getElementById(rowID);
 
   // Find current row length
@@ -67,6 +59,8 @@ const syncIcons = ({
 
 
   if (arrayIndex < iconArrayLength) {
+    const icon = nextActionOverlay.icon;
+
     for (let i = arrayIndex; i < iconArrayLength; i += 1) {
       const iconDiv = document.createElement('div');
       const iconImg = document.createElement('img');
@@ -81,7 +75,7 @@ const syncIcons = ({
       if (iconArray[i].img) {
         iconImg.src = `img/icon/${icon[iconArray[i].img]}.png`;
       } else {
-        iconImg.src = `img/icon/${icon[iconArray[i].name.replace(/[\s'-:]/g, '').toLowerCase()]}.png`;
+        iconImg.src = `img/icon/${icon[iconArray[i].name.replace(/[\s':-]/g, '').toLowerCase()]}.png`;
       }
       iconOverlay.src = 'img/icon/overlay.png';
       void iconDiv.offsetWidth;
@@ -94,16 +88,16 @@ const syncIcons = ({
 };
 
 
-const addIcon = ({
+nextActionOverlay.addIcon = ({
   name,
-  img = name.replace(/[\s'-:]/g, '').toLowerCase(),
-  iconArray = iconArrayB,
+  img = name.replace(/[\s':-]/g, '').toLowerCase(),
+  iconArray = nextActionOverlay.iconArrayB,
   size = 'normal',
   order = 10,
 } = {}) => {
   // Adds action to specified array and row
 
-  const rowID = getArrayRow({ iconArray });
+  const rowID = nextActionOverlay.getArrayRow({ iconArray });
   const rowDiv = document.getElementById(rowID);
   // console.log(name + rowID);
 
@@ -111,6 +105,7 @@ const addIcon = ({
 
   // Create elements
   const iconDiv = document.createElement('div');
+  const icon = nextActionOverlay.icon;
   const iconImg = document.createElement('img');
   const iconOverlay = document.createElement('img');
 
@@ -120,9 +115,9 @@ const addIcon = ({
   iconImg.className = 'iconimg';
   iconOverlay.className = 'iconoverlay';
   iconDiv.dataset.name = name;
-  iconImg.src = `img/icon/${icon[img]}.png`;
-  iconOverlay.src = 'img/icon/overlay.png';
+  iconImg.src = `img/icon/${nextActionOverlay.icon[img]}.png`;
   rowDiv.append(iconDiv);
+  iconOverlay.src = 'img/icon/overlay.png';
   iconDiv.append(iconImg);
   iconDiv.append(iconOverlay);
   void iconDiv.offsetWidth; // Reflow to make transition work
@@ -139,15 +134,15 @@ const addIcon = ({
 };
 
 
-const fadeIcon = ({
+nextActionOverlay.fadeIcon = ({
   name,
   // size = 'normal',
-  iconArray = iconArrayB,
+  iconArray = nextActionOverlay.iconArrayB,
   match = 'exact',
 } = {}) => {
   // Sets an action to lower opacity, for casting or whatever
 
-  const rowID = getArrayRow({ iconArray });
+  const rowID = nextActionOverlay.getArrayRow({ iconArray });
   const rowDiv = document.getElementById(rowID);
 
   // removeOldIcons({ rowID });
@@ -166,14 +161,14 @@ const fadeIcon = ({
 };
 
 
-const unfadeIcon = ({
+nextActionOverlay.unfadeIcon = ({
   name,
-  iconArray = iconArrayB,
+  iconArray = nextActionOverlay.iconArrayB,
   match = 'exact',
 } = {}) => {
   // Undos fadeAction effect
 
-  const rowID = getArrayRow({ iconArray });
+  const rowID = nextActionOverlay.getArrayRow({ iconArray });
   const rowDiv = document.getElementById(rowID);
 
   // removeOldIcons({ rowID });
@@ -192,16 +187,16 @@ const unfadeIcon = ({
 };
 
 
-const removeIcon = ({
+nextActionOverlay.removeIcon = ({
   name,
-  // property = name.replace(/[\s'-:]/g, '').toLowerCase(),
-  iconArray = iconArrayB,
+  // property = name.replace(/[\s':-]/g, '').toLowerCase(),
+  iconArray = nextActionOverlay.iconArrayB,
   match = 'exact',
 } = {}) => {
   // const removeDelay = 100;
 
   // Prevents this from being called multiple times by AoEs
-  const rowID = getArrayRow({ iconArray });
+  const rowID = nextActionOverlay.getArrayRow({ iconArray });
   const rowDiv = document.getElementById(rowID);
 
   let matchDiv;

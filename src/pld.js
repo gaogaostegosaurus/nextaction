@@ -33,7 +33,7 @@ actionList.PLD = [...new Set([
   ...pldCooldowns,
 ])];
 
-statusList.PLD = [
+player.statusList.PLD = [
   'Goring Blade', 'Requiescat', 'Sword Oath',
 ];
 

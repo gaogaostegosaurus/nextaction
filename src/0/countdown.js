@@ -32,7 +32,7 @@ const removeOldCountdowns = ({
 
 const addCountdown = ({
   name,
-  property = name.replace(/[\s'-]/g, '').toLowerCase(),
+  property = name.replace(/[\s':-]/g, '').toLowerCase(),
   time = checkRecast({ name }),
   countdownArray = countdownArrayA,
   order = 10,
@@ -164,14 +164,14 @@ const addCountdown = ({
 
 const stopCountdown = ({
   name,
-  property = name.replace(/[\s'-]/g, '').toLowerCase(),
+  property = name.replace(/[\s':-]/g, '').toLowerCase(),
 } = {}) => {
   clearInterval(interval[property]);
 };
 
 const hideCountdown = ({
   name,
-  property = name.replace(/[\s'-]/g, '').toLowerCase(),
+  property = name.replace(/[\s':-]/g, '').toLowerCase(),
   countdownArray = countdownArrayA,
 } = {}) => {
   const columnID = getArrayColumn({ countdownArray });

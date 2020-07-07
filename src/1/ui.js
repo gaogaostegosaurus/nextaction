@@ -1,4 +1,5 @@
 const resetNext = () => {
+  const timeout = player.timeout;
   /* Reset timeout and intervals */
   Object.keys(timeout).forEach((property) => { clearTimeout(timeout[property]); });
   Object.keys(interval).forEach((property) => { clearInterval(interval[property]); });

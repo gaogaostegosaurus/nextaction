@@ -1,49 +1,47 @@
 
-const recastTracker = {}; // Holds timestamps for cooldowns
-
-const addRecast = ({
-  name,
-  property = name.replace(/[\s'-]/g, '').toLowerCase(),
-  time = recast[property], /* Assigned to -1 to "reset" recast */
-  id = player.id, /* Typically doesn't need to be assigned, but just in case I get around to writing
-   raid type stuff */
+nextActionOverlay.addRecast = ({
+  actionName,
+  propertyName = actionName.replace(/[\s':-]/g, '').toLowerCase(),
+  playerData = nextActionOverlay.playerData,
+  id = playerData.id,
+  recast = nextActionOverlay.recast[propertyName], /* Assign -1 to "reset" recast */
 } = {}) => {
-  /* Create array if it doesn't exist yet */
-  if (!recastTracker[property]) {
-    recastTracker[property] = [];
+  if (!actionName) {
+    return; /* Exit if called by mistake? */
   }
 
-  /* Look for matching ID */
-  const match = recastTracker[property].findIndex((entry) => entry.id === id);
+  const recastTracker = nextActionOverlay.recastTracker;
 
-  if (match > -1) {
-    /* Update recast if match found */
-    recastTracker[property][match] = { id, time: time + Date.now() };
+  if (!recastTracker[propertyName]) {
+    recastTracker[propertyName] = [{ id, recast: Date.now() + recast }];
   } else {
-    /* Push recast value if no match found */
-    recastTracker[property].push({ id, time: time + Date.now() });
+    const match = recastTracker[propertyName].findIndex((entry) => entry.id === id);
+    if (match > -1) {
+      /* Update recast if match found */
+      recastTracker[propertyName][match] = { id, recast: Date.now() + recast };
+    } else {
+      /* Push recast value if no match found */
+      recastTracker[propertyName].push({ id, recast: Date.now() + recast });
+    }
   }
 };
 
-const checkRecast = ({
-  name,
-  property = name.replace(/[\s'-]/g, '').toLowerCase(),
-  id = player.id,
+nextActionOverlay.checkRecast = ({
+  actionName,
+  propertyName = actionName.replace(/[\s':-]/g, '').toLowerCase(),
+  playerData = nextActionOverlay.playerData,
+  id = playerData.id,
 } = {}) => {
-  /* Return -1 if array doesn't exist */
-  if (!recastTracker[property]) {
-    return -1;
+  const recastTracker = nextActionOverlay.recastTracker;
+
+  if (!recastTracker[propertyName]) {
+    return -1; /* Return -1 if array doesn't exist */
   }
+
+  const match = recastTracker[propertyName].findIndex((entry) => entry.id === id);
 
   /* Find matching ID in array */
-  const match = recastTracker[property].findIndex((entry) => entry.id === id);
-
   if (match > -1) {
-    /* Returns recast time matching ID */
-    /* Returns -1 if the number is less than -1 */
-    return Math.max(recastTracker[property][match].time - Date.now(), -1);
-  }
-
-  /* Return -1 if no match */
-  return -1;
+    return Math.max(recastTracker[propertyName][match].recast - Date.now(), -1);
+  } return -1; /* Return -1 if no match */
 };

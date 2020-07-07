@@ -40,7 +40,7 @@ actionList.MCH = [...new Set([
   ...mchCooldowns,
 ])];
 
-statusList.MCH = [
+player.statusList.MCH = [
   'Reassemble', 'Wildfire', 'Flamethrower',
 ];
 
