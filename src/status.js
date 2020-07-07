@@ -1,4 +1,3 @@
-
 /* Puts status effects into an array with target ID as an identifier */
 nextActionOverlay.addStatus = ({
   statusName,
@@ -7,7 +6,7 @@ nextActionOverlay.addStatus = ({
   id = playerData.id,
   duration = nextActionOverlay.duration[propertyName], /* Assign -1 to "reset" recast */
 } = {}) => {
-  const statusTracker = nextActionOverlay.statusTracker;
+  const { statusTracker } = nextActionOverlay;
 
   if (!statusTracker[propertyName]) {
     // Array doesn't exist yet, so create
@@ -61,7 +60,7 @@ nextActionOverlay.removeStatus = ({
     return; /* Exit if called by mistake? */
   }
 
-  const statusTracker = nextActionOverlay.statusTracker;
+  const { statusTracker } = nextActionOverlay;
 
   if (statusTracker[propertyName]) {
     nextActionOverlay.addStatus({ statusName, id, duration: -1 });

@@ -112,7 +112,7 @@ nextActionOverlay.onPlayerChangedEvent.NIN = (e) => {
   playerData.ninki = e.detail.jobDetail.ninkiAmount;
 };
 
-nextActionOverlay.next.NIN = ({
+nextActionOverlay.nextAction.NIN = ({
   time = 0,
 } = {}) => {
   /* Shorten names */
@@ -127,7 +127,7 @@ nextActionOverlay.next.NIN = ({
   const { weaponskills } = nextActionOverlay.actionList.NIN;
   const { ninjutsu } = nextActionOverlay.actionList.NIN;
 
-  const next = nextActionOverlay.next.NIN;
+  const nextAction = nextActionOverlay.nextAction.NIN;
 
   /* Initial values for loops */
   let ogcdTime = time;
@@ -172,7 +172,7 @@ nextActionOverlay.next.NIN = ({
     }
 
     if (ogcdTime <= 1000) { /* "If not enough time for oGCD" */
-      const nextGCD = next.gcd({
+      const nextGCD = nextAction.gcd({
         comboStep,
         loopRecast,
         loopStatus,
@@ -265,7 +265,7 @@ nextActionOverlay.next.NIN = ({
         }
       }
 
-      const nextOGCD = next.ogcd({
+      const nextOGCD = nextAction.ogcd({
         ninki,
         ninkiTarget,
         loopRecast,
@@ -345,15 +345,15 @@ nextActionOverlay.next.NIN = ({
   nextActionOverlay.iconArrayB = ninArray;
   nextActionOverlay.syncIcons();
   clearTimeout(nextActionOverlay.timeout.next);
-  nextActionOverlay.timeout.next = setTimeout(next, 14000);
+  nextActionOverlay.timeout.next = setTimeout(nextAction, 14000);
 };
 
-nextActionOverlay.next.NIN.gcd = ({
+nextActionOverlay.nextAction.NIN.gcd = ({
   comboStep,
   loopRecast,
   loopStatus,
 } = {}) => {
-  const next = nextActionOverlay.next.NIN;
+  const nextAction = nextActionOverlay.nextAction.NIN;
   const { playerData } = nextActionOverlay;
   const { level } = playerData;
   const { duration } = nextActionOverlay;
@@ -371,7 +371,7 @@ nextActionOverlay.next.NIN.gcd = ({
 
   /* Continue Combo if timer is low */
   if (loopStatus.combo > 0 && loopStatus.combo < playerData.gcd * 2) {
-    return next.weaponskill({ comboStep, loopStatus });
+    return nextAction.weaponskill({ comboStep, loopStatus });
   }
 
   /* Prioritize Huton if it's really low for some reason */
@@ -409,7 +409,7 @@ nextActionOverlay.next.NIN.gcd = ({
           return 'Goka Mekkyaku';
         }
         return 'Hyosho Ranryu';
-      } return next.weaponskill();
+      } return nextAction.weaponskill();
     } if (loopRecast.shadowfang < 0) {
       return 'Shadow Fang';
     } if (loopStatus.kassatsu > 0) {
@@ -418,23 +418,23 @@ nextActionOverlay.next.NIN.gcd = ({
           return 'Goka Mekkyaku';
         }
         return 'Hyosho Ranryu';
-      } return next.ninjutsu();
+      } return nextAction.ninjutsu();
     } if (loopRecast.mudra1 < 0 && loopStatus.trickattack > 2000) {
-      return next.ninjutsu();
-    } return next.weaponskill({ comboStep, loopStatus });
+      return nextAction.ninjutsu();
+    } return nextAction.weaponskill({ comboStep, loopStatus });
   }
 
   /* Normal attacks */
   if (level >= 45 && loopRecast.mudra2 < (500 * 2 + 1500)) {
-    return next.ninjutsu(); /* Keep one Ninjutsu charge on cooldown */
+    return nextAction.ninjutsu(); /* Keep one Ninjutsu charge on cooldown */
   } if (level >= 30 && level < 45 && loopRecast.shadowfang < 0) {
     return 'Shadow Fang'; /* Use Shadow Fang on cooldown before Trick */
   } if (level >= 30 && level < 45 && loopRecast.mudra1 < 0) {
-    return next.ninjutsu(); /* Use all mudra on cooldown prior to 45 */
-  } return next.weaponskill({ comboStep, loopStatus });
+    return nextAction.ninjutsu(); /* Use all mudra on cooldown prior to 45 */
+  } return nextAction.weaponskill({ comboStep, loopStatus });
 };
 
-nextActionOverlay.next.NIN.weaponskill = ({
+nextActionOverlay.nextAction.NIN.weaponskill = ({
   comboStep,
   loopStatus,
 } = {}) => {
@@ -477,7 +477,7 @@ nextActionOverlay.next.NIN.weaponskill = ({
   } return 'Spinning Edge';
 };
 
-nextActionOverlay.next.NIN.ninjutsu = () => {
+nextActionOverlay.nextAction.NIN.ninjutsu = () => {
   const { playerData } = nextActionOverlay;
   const { level } = playerData;
   const { targetCount } = playerData;
@@ -489,7 +489,7 @@ nextActionOverlay.next.NIN.ninjutsu = () => {
   } return 'Fuma Shuriken';
 };
 
-nextActionOverlay.next.NIN.ogcd = ({
+nextActionOverlay.nextAction.NIN.ogcd = ({
   loopStatus,
   loopRecast,
   ninki,
@@ -549,7 +549,7 @@ nextActionOverlay.next.NIN.ogcd = ({
 nextActionOverlay.onTargetChange.NIN = () => {
   const { playerData } = nextActionOverlay;
   if (playerData.combat === 0) {
-    nextActionOverlay.next.NIN();
+    nextActionOverlay.nextAction.NIN();
   }
 };
 
@@ -569,7 +569,7 @@ nextActionOverlay.onAction.NIN = (actionMatch) => {
   const { ninjutsu } = nextActionOverlay.actionList.NIN;
   const { level } = playerData;
   const { huton } = playerData;
-  const next = nextActionOverlay.next.NIN;
+  const nextAction = nextActionOverlay.nextAction.NIN;
   const { gcd } = playerData;
 
   /* Shorten common functions */
@@ -611,7 +611,7 @@ nextActionOverlay.onAction.NIN = (actionMatch) => {
       playerData.comboStep = '';
     }
     /* Call next with GCD active */
-    next({ time: gcd * hutonModifier });
+    nextAction({ time: gcd * hutonModifier });
   } else if (mudra.includes(actionName)) {
     if (playerData.mudraCount === 0 && checkStatus({ statusName: 'Kassatsu' }) < 0) {
       /* Don't increase Mudra recast under Kassatsu */
@@ -639,23 +639,23 @@ nextActionOverlay.onAction.NIN = (actionMatch) => {
       removeStatus({ statusName: 'Kassatsu' });
       removeStatus({ statusName: 'Ten Chi Jin' });
       playerData.tenchijinCount = 0;
-      next({ time: 1500 });
+      nextAction({ time: 1500 });
     }
   } else if (abilities.includes(actionName)) {
     addRecast({ actionName });
     if (actionName === 'Trick Attack') {
       addStatus({ statusName: 'Trick Attack' }); /* Treat as buff to make predictions easier */
-      next({ time: 0 });
+      nextAction({ time: 0 });
     } else if (actionName === 'Kassatsu') {
       addStatus({ statusName: 'Kassatsu' });
-      next({ time: 0 });
+      nextAction({ time: 0 });
     } else if (actionName === 'Ten Chi Jin') {
       addStatus({ statusName: 'Ten Chi Jin' });
       playerData.tenchijinCount = 0;
     } else if (actionName === 'Hide') {
       addRecast({ actionName: 'Mudra 1', recast: -1 });
       addRecast({ actionName: 'Mudra 2', recast: -1 });
-      next({ time: 0 });
+      nextAction({ time: 0 });
     }
   }
 };

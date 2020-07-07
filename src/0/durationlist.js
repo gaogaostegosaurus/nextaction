@@ -1,12 +1,8 @@
 // Duration properties - list by alphabetical job then alphabetical status
 
-const duration = {};
-
 duration.combo = 15000;
 
 // Role
-duration.swiftcast = 10000;
-
 
 // BLM
 duration.sharpcast = 15000;
@@ -81,10 +77,7 @@ duration.requiescat = 12000;
 duration.swordoath = 15000;
 
 // RDM
-duration.dualcast = 15000;
-duration.verfireready = 30000;
-duration.verstoneready = duration.verfireready;
-duration.acceleration = 20000;
+
 
 // SAM
 duration.jinpu = 40000;

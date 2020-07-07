@@ -1,4 +1,3 @@
-
 const icon = {};
 
 icon.default = '000000';
@@ -229,7 +228,6 @@ icon.sixsidedstar = '002547';
 
 // NIN
 
-
 // PLD
 icon.sentinel = '000151';
 icon.shieldbash = '000154';
@@ -273,7 +271,6 @@ icon.atonement3 = icon.atonement;
 icon.intervene = '002520';
 icon.intervene1 = icon.intervene;
 icon.intervene2 = icon.intervene;
-
 
 // RDM
 icon.jolt = '003202';
@@ -391,7 +388,6 @@ icon.fountainoffire = '002735';
 icon.brandofpurgatory = '002736';
 icon.enkindlephoenix = '002737';
 
-
 // WAR
 icon.overpower = '000254';
 icon.maim = '000255';
@@ -453,7 +449,6 @@ icon.raiddevotion = icon.devotion;
 icon.raidembolden = icon.embolden;
 icon.raidtechnicalstep = icon.technicalstep;
 icon.raidtrickattack = icon.trickattack;
-
 
 // Other
 icon.gold0 = '066181';

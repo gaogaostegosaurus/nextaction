@@ -57,9 +57,8 @@ nextActionOverlay.syncIcons = ({
     }
   } // Should have only matching icons remaining now
 
-
   if (arrayIndex < iconArrayLength) {
-    const icon = nextActionOverlay.icon;
+    const { icon } = nextActionOverlay;
 
     for (let i = arrayIndex; i < iconArrayLength; i += 1) {
       const iconDiv = document.createElement('div');
@@ -78,6 +77,7 @@ nextActionOverlay.syncIcons = ({
         iconImg.src = `img/icon/${icon[iconArray[i].name.replace(/[\s':-]/g, '').toLowerCase()]}.png`;
       }
       iconOverlay.src = 'img/icon/overlay.png';
+      // eslint-disable-next-line no-void
       void iconDiv.offsetWidth;
       iconDiv.classList.replace('icon-hide', 'icon-show');
       if (iconArray[i].size === 'small') {
@@ -86,7 +86,6 @@ nextActionOverlay.syncIcons = ({
     }
   }
 };
-
 
 nextActionOverlay.addIcon = ({
   name,
@@ -105,7 +104,7 @@ nextActionOverlay.addIcon = ({
 
   // Create elements
   const iconDiv = document.createElement('div');
-  const icon = nextActionOverlay.icon;
+  // const { icon } = nextActionOverlay;
   const iconImg = document.createElement('img');
   const iconOverlay = document.createElement('img');
 
@@ -120,6 +119,7 @@ nextActionOverlay.addIcon = ({
   iconOverlay.src = 'img/icon/overlay.png';
   iconDiv.append(iconImg);
   iconDiv.append(iconOverlay);
+  // eslint-disable-next-line no-void
   void iconDiv.offsetWidth; // Reflow to make transition work
   iconDiv.classList.replace('icon-hide', 'icon-show');
   if (size === 'small') {
@@ -132,7 +132,6 @@ nextActionOverlay.addIcon = ({
   });
   iconArray.sort((a, b) => a.order - b.order);
 };
-
 
 nextActionOverlay.fadeIcon = ({
   name,
@@ -155,11 +154,11 @@ nextActionOverlay.fadeIcon = ({
   }
 
   if (matchDiv) {
+    // eslint-disable-next-line no-void
     void matchDiv.offsetWidth;
     matchDiv.classList.add('icon-fade');
   }
 };
-
 
 nextActionOverlay.unfadeIcon = ({
   name,
@@ -181,11 +180,11 @@ nextActionOverlay.unfadeIcon = ({
   }
 
   if (matchDiv) {
+    // eslint-disable-next-line no-void
     void matchDiv.offsetWidth;
     matchDiv.classList.remove('icon-fade');
   }
 };
-
 
 nextActionOverlay.removeIcon = ({
   name,
@@ -207,6 +206,7 @@ nextActionOverlay.removeIcon = ({
   }
 
   if (matchDiv) {
+    // eslint-disable-next-line no-void
     void matchDiv.offsetWidth; // Don't need this when removing... probably
     matchDiv.dataset.name = 'none';
     if (!matchDiv.classList.contains('icon-hide')) {

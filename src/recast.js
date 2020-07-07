@@ -1,4 +1,3 @@
-
 nextActionOverlay.addRecast = ({
   actionName,
   propertyName = actionName.replace(/[\s':-]/g, '').toLowerCase(),
@@ -10,7 +9,7 @@ nextActionOverlay.addRecast = ({
     return; /* Exit if called by mistake? */
   }
 
-  const recastTracker = nextActionOverlay.recastTracker;
+  const { recastTracker } = nextActionOverlay;
 
   if (!recastTracker[propertyName]) {
     recastTracker[propertyName] = [{ id, recast: Date.now() + recast }];
@@ -32,7 +31,7 @@ nextActionOverlay.checkRecast = ({
   playerData = nextActionOverlay.playerData,
   id = playerData.id,
 } = {}) => {
-  const recastTracker = nextActionOverlay.recastTracker;
+  const { recastTracker } = nextActionOverlay;
 
   if (!recastTracker[propertyName]) {
     return -1; /* Return -1 if array doesn't exist */
