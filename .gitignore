@@ -1,9 +1,9 @@
 /.git
 /.gitignore
+
+/.eslintrc*
 /node_modules
-/old
 /package.json
 /package-lock.json
-/.eslintrc*
+
 /resources
-/gulpfile.js

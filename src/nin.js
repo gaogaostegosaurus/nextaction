@@ -1,4 +1,3 @@
-
 nextActionOverlay.statusList.NIN = [
   'Shade Shift', 'Shadow Fang', 'Kassatsu', 'Assassinate Ready', 'Ten Chi Jin', 'Bunshin',
   'Mudra', 'Doton', 'Suiton',
@@ -33,11 +32,11 @@ nextActionOverlay.actionList.NIN.abilities = [
 ];
 
 nextActionOverlay.onJobChange.NIN = () => {
-  const playerData = nextActionOverlay.playerData;
+  const { playerData } = nextActionOverlay;
   playerData.ninjutsuCount = 0;
   playerData.mudraCount = 0;
 
-  const recast = nextActionOverlay.recast;
+  const { recast } = nextActionOverlay;
   recast.shadeshift = 120000;
   recast.hide = 20000;
   recast.mug = 120000;
@@ -53,7 +52,7 @@ nextActionOverlay.onJobChange.NIN = () => {
   recast.meisui = 120000;
   recast.bunshin = 90000;
 
-  const duration = nextActionOverlay.duration;
+  const { duration } = nextActionOverlay;
   duration.trickattack = 15000;
   duration.shadowfang = 30000;
   duration.mudra = 6000;
@@ -67,7 +66,7 @@ nextActionOverlay.onJobChange.NIN = () => {
   duration.tenchijin = 6000;
   duration.bunshin = 30000;
 
-  const icon = nextActionOverlay.icon;
+  const { icon } = nextActionOverlay;
   icon.spinningedge = '000601';
   icon.gustslash = '000602';
   icon.aeolianedge = '000605';
@@ -105,7 +104,7 @@ nextActionOverlay.onJobChange.NIN = () => {
 }; /* Keep collapsed, usually */
 
 nextActionOverlay.onPlayerChangedEvent.NIN = (e) => {
-  const playerData = nextActionOverlay.playerData;
+  const { playerData } = nextActionOverlay;
   playerData.huton = e.detail.jobDetail.hutonMilliseconds;
   if (playerData.huton === 0) {
     playerData.huton = -1;
@@ -117,16 +116,16 @@ nextActionOverlay.next.NIN = ({
   time = 0,
 } = {}) => {
   /* Shorten names */
-  const checkRecast = nextActionOverlay.checkRecast;
-  const checkStatus = nextActionOverlay.checkStatus;
-  const recast = nextActionOverlay.recast;
-  const duration = nextActionOverlay.duration;
+  const { checkRecast } = nextActionOverlay;
+  const { checkStatus } = nextActionOverlay;
+  const { recast } = nextActionOverlay;
+  const { duration } = nextActionOverlay;
 
-  const playerData = nextActionOverlay.playerData;
-  const level = playerData.level;
+  const { playerData } = nextActionOverlay;
+  const { level } = playerData;
 
-  const weaponskills = nextActionOverlay.actionList.NIN.weaponskills;
-  const ninjutsu = nextActionOverlay.actionList.NIN.ninjutsu;
+  const { weaponskills } = nextActionOverlay.actionList.NIN;
+  const { ninjutsu } = nextActionOverlay.actionList.NIN;
 
   const next = nextActionOverlay.next.NIN;
 
@@ -135,9 +134,9 @@ nextActionOverlay.next.NIN = ({
   let nextTime = 0;
   const nextMaxTime = 15000;
 
-  let comboStep = playerData.comboStep;
-  let ninki = playerData.ninki;
-  let bunshinCount = playerData.bunshinCount;
+  let { comboStep } = playerData;
+  let { ninki } = playerData;
+  let { bunshinCount } = playerData;
 
   const loopRecast = {};
   loopRecast.mug = checkRecast({ actionName: 'Mug' });
@@ -355,9 +354,9 @@ nextActionOverlay.next.NIN.gcd = ({
   loopStatus,
 } = {}) => {
   const next = nextActionOverlay.next.NIN;
-  const playerData = nextActionOverlay.playerData;
-  const level = playerData.level;
-  const duration = nextActionOverlay.duration;
+  const { playerData } = nextActionOverlay;
+  const { level } = playerData;
+  const { duration } = nextActionOverlay;
   /* Use Kassatsu if it's about to fade */
   if (loopStatus.kassatsu > 0 && loopStatus.kassatsu < playerData.gcd * 2) {
     if (level >= 76) {
@@ -365,10 +364,9 @@ nextActionOverlay.next.NIN.gcd = ({
         return 'Goka Mekkyaku';
       }
       return 'Hyosho Ranryu';
-    } else if (playerData.targetCount > 1) {
+    } if (playerData.targetCount > 1) {
       return 'Katon';
-    }
-    return 'Raiton';
+    } return 'Raiton';
   }
 
   /* Continue Combo if timer is low */
@@ -379,16 +377,16 @@ nextActionOverlay.next.NIN.gcd = ({
   /* Prioritize Huton if it's really low for some reason */
   if (level >= 45 && loopRecast.mudra1 < 0 && loopStatus.huton < 500 * 3 + 1500) {
     return 'Huton';
-  } else if (level >= 52 && playerData.targetCount >= 3
+  } if (level >= 52 && playerData.targetCount >= 3
   && loopStatus.huton < 10000 && loopStatus.huton > 0) {
     if (comboStep === 'Death Blossom') {
       return 'Hakke Mujinsatsu';
     } return 'Death Blossom';
-  } else if (level >= 54
+  } if (level >= 54
   && loopStatus.huton < 10000 && loopStatus.huton > 0) {
     if (comboStep === 'Gust Slash') {
       return 'Armor Crush';
-    } else if (comboStep === 'Spinning Edge') {
+    } if (comboStep === 'Spinning Edge') {
       return 'Gust Slash';
     } return 'Spinning Edge';
   }
@@ -398,7 +396,7 @@ nextActionOverlay.next.NIN.gcd = ({
   && loopRecast.mudra1 < 0 && loopStatus.suiton < 0
   && loopRecast.trickattack < duration.suiton) { /* Since Suiton casting delays this by about 3s */
     return 'Suiton'; /* Suiton for Trick before 70 */
-  } else if (level >= 70 && level < 72 && loopRecast.mudra1 < 0 && loopStatus.suiton < 0
+  } if (level >= 70 && level < 72 && loopRecast.mudra1 < 0 && loopStatus.suiton < 0
   && loopRecast.tenchijin > loopRecast.trickattack) {
     return 'Suiton'; /* Only use Suiton 70 and 71 if TCJ isn't available */
   }
@@ -412,16 +410,16 @@ nextActionOverlay.next.NIN.gcd = ({
         }
         return 'Hyosho Ranryu';
       } return next.weaponskill();
-    } else if (loopRecast.shadowfang < 0) {
+    } if (loopRecast.shadowfang < 0) {
       return 'Shadow Fang';
-    } else if (loopStatus.kassatsu > 0) {
+    } if (loopStatus.kassatsu > 0) {
       if (level >= 76) {
         if (playerData.targetCount > 1) {
           return 'Goka Mekkyaku';
         }
         return 'Hyosho Ranryu';
       } return next.ninjutsu();
-    } else if (loopRecast.mudra1 < 0 && loopStatus.trickattack > 2000) {
+    } if (loopRecast.mudra1 < 0 && loopStatus.trickattack > 2000) {
       return next.ninjutsu();
     } return next.weaponskill({ comboStep, loopStatus });
   }
@@ -429,9 +427,9 @@ nextActionOverlay.next.NIN.gcd = ({
   /* Normal attacks */
   if (level >= 45 && loopRecast.mudra2 < (500 * 2 + 1500)) {
     return next.ninjutsu(); /* Keep one Ninjutsu charge on cooldown */
-  } else if (level >= 30 && level < 45 && loopRecast.shadowfang < 0) {
+  } if (level >= 30 && level < 45 && loopRecast.shadowfang < 0) {
     return 'Shadow Fang'; /* Use Shadow Fang on cooldown before Trick */
-  } else if (level >= 30 && level < 45 && loopRecast.mudra1 < 0) {
+  } if (level >= 30 && level < 45 && loopRecast.mudra1 < 0) {
     return next.ninjutsu(); /* Use all mudra on cooldown prior to 45 */
   } return next.weaponskill({ comboStep, loopStatus });
 };
@@ -440,9 +438,9 @@ nextActionOverlay.next.NIN.weaponskill = ({
   comboStep,
   loopStatus,
 } = {}) => {
-  const playerData = nextActionOverlay.playerData;
-  const level = playerData.level;
-  const targetCount = playerData.targetCount;
+  const { playerData } = nextActionOverlay;
+  const { level } = playerData;
+  const { targetCount } = playerData;
 
   let aeolianedgeComboPotency = 220;
   if (level >= 26) {
@@ -468,25 +466,25 @@ nextActionOverlay.next.NIN.weaponskill = ({
   if (level >= 54 && comboStep === 'Gust Slash'
   && loopStatus.huton < 40000 && loopStatus.huton > 0) {
     return 'Armor Crush';
-  } else if (level >= 52 && comboStep === 'Death Blossom') {
+  } if (level >= 52 && comboStep === 'Death Blossom') {
     return 'Hakke Mujinsatsu';
-  } else if (level >= 26 && comboStep === 'Gust Slash') {
+  } if (level >= 26 && comboStep === 'Gust Slash') {
     return 'Aeolian Edge';
-  } else if (level >= 4 && comboStep === 'Spinning Edge') {
+  } if (level >= 4 && comboStep === 'Spinning Edge') {
     return 'Gust Slash';
-  } else if (level >= 38 && hakkemujinsatsuComboPotency > aeolianedgeComboPotency) {
+  } if (level >= 38 && hakkemujinsatsuComboPotency > aeolianedgeComboPotency) {
     return 'Death Blossom';
   } return 'Spinning Edge';
 };
 
 nextActionOverlay.next.NIN.ninjutsu = () => {
-  const playerData = nextActionOverlay.playerData;
-  const level = playerData.level;
-  const targetCount = playerData.targetCount;
+  const { playerData } = nextActionOverlay;
+  const { level } = playerData;
+  const { targetCount } = playerData;
 
   if (level >= 35 && targetCount > 1) {
     return 'Katon';
-  } else if (level >= 35) {
+  } if (level >= 35) {
     return 'Raiton';
   } return 'Fuma Shuriken';
 };
@@ -497,19 +495,19 @@ nextActionOverlay.next.NIN.ogcd = ({
   ninki,
   ninkiTarget,
 } = {}) => {
-  const playerData = nextActionOverlay.playerData;
-  const level = playerData.level;
-  const gcd = playerData.gcd;
+  const { playerData } = nextActionOverlay;
+  const { level } = playerData;
+  const { gcd } = playerData;
 
-  const duration = nextActionOverlay.duration;
+  const { duration } = nextActionOverlay;
 
   /* Prioritize these action if the related buff is about to wear off for some reason? */
   if (loopStatus.suiton > 0 && loopStatus.suiton < gcd * 2 && loopRecast.trickattack < 0) {
     return 'Trick Attack';
-  } else if (level >= 72 && loopStatus.suiton > 0 && loopStatus.suiton < gcd * 2
+  } if (level >= 72 && loopStatus.suiton > 0 && loopStatus.suiton < gcd * 2
   && loopStatus.suiton < loopRecast.trickattack && ninki < ninkiTarget && loopRecast.meisui < 0) {
     return 'Meisui';
-  } else if (loopStatus.assassinateready > 0 && loopStatus.assassinateready < gcd * 2) {
+  } if (loopStatus.assassinateready > 0 && loopStatus.assassinateready < gcd * 2) {
     return 'Assassinate';
   }
 
@@ -517,31 +515,31 @@ nextActionOverlay.next.NIN.ogcd = ({
   if (level >= 50 && (loopStatus.suiton > gcd || loopStatus.trickattack > 0)
   && loopRecast.kassatsu < 0) {
     return 'Kassatsu';
-  } else if (level >= 15 && (level < 66 || ninki < ninkiTarget) && loopRecast.mug < 0) {
+  } if (level >= 15 && (level < 66 || ninki < ninkiTarget) && loopRecast.mug < 0) {
     return 'Mug';
-  } else if (level >= 80 && ninki >= 50 && loopRecast.bunshin < 0) {
+  } if (level >= 80 && ninki >= 50 && loopRecast.bunshin < 0) {
     return 'Bunshin';
-  } else if (loopStatus.suiton > 0 && loopRecast.trickattack < 0) {
+  } if (loopStatus.suiton > 0 && loopRecast.trickattack < 0) {
     return 'Trick Attack';
-  } else if (level >= 56 && loopStatus.trickattack > 0 && loopRecast.dreamwithinadream < 0) {
+  } if (level >= 56 && loopStatus.trickattack > 0 && loopRecast.dreamwithinadream < 0) {
     return 'Dream Within A Dream';
-  } else if (level >= 72 && loopStatus.kassatsu < 0 && loopStatus.trickattack > 0
+  } if (level >= 72 && loopStatus.kassatsu < 0 && loopStatus.trickattack > 0
   && loopRecast.meisui < duration.suiton && loopStatus.combo > playerData.gcd * 3
   && loopRecast.tenchijin < 0) {
     return 'Ten Chi Jin Suiton'; /* Use TCJ to set up Meisui */
-  } else if (level >= 70 && level < 72 && loopStatus.kassatsu < 0
+  } if (level >= 70 && level < 72 && loopStatus.kassatsu < 0
   && loopRecast.trickattack < duration.suiton && loopStatus.combo > playerData.gcd * 3
   && loopRecast.tenchijin < 0) {
     return 'Ten Chi Jin Suiton'; /* Use TCJ to set up TA before 72 */
-  } else if (loopStatus.assassinateready > 0) {
+  } if (loopStatus.assassinateready > 0) {
     return 'Assassinate';
-  } else if (level >= 72 && loopStatus.suiton > 0 && loopStatus.suiton < loopRecast.trickattack
+  } if (level >= 72 && loopStatus.suiton > 0 && loopStatus.suiton < loopRecast.trickattack
   && ninki < ninkiTarget && loopRecast.meisui < 0) {
     return 'Meisui';
-  } else if (level >= 62 && ninki >= ninkiTarget) {
+  } if (level >= 62 && ninki >= ninkiTarget) {
     if (playerData.targetCount > 1) {
       return 'Hellfrog Medium';
-    } else if (level >= 68) {
+    } if (level >= 68) {
       return 'Bhavacakra';
     }
     return 'Hellfrog Medium';
@@ -549,7 +547,7 @@ nextActionOverlay.next.NIN.ogcd = ({
 };
 
 nextActionOverlay.onTargetChange.NIN = () => {
-  const playerData = nextActionOverlay.playerData;
+  const { playerData } = nextActionOverlay;
   if (playerData.combat === 0) {
     nextActionOverlay.next.NIN();
   }
@@ -559,27 +557,27 @@ nextActionOverlay.onAction.NIN = (actionMatch) => {
   const singletargetActions = [
     'Raiton', 'Hyosho Ranryu',
   ];
-  const playerData = nextActionOverlay.playerData;
+  const { playerData } = nextActionOverlay;
 
   /* Shortens some stuff */
-  const actionName = actionMatch.groups.actionName;
-  const comboCheck = actionMatch.groups.comboCheck;
+  const { actionName } = actionMatch.groups;
+  const { comboCheck } = actionMatch.groups;
   // const targetID = actionMatch.groups.targetID;
-  const weaponskills = nextActionOverlay.actionList.NIN.weaponskills;
-  const abilities = nextActionOverlay.actionList.NIN.abilities;
-  const mudra = nextActionOverlay.actionList.NIN.mudra;
-  const ninjutsu = nextActionOverlay.actionList.NIN.ninjutsu;
-  const level = playerData.level;
-  const huton = playerData.huton;
+  const { weaponskills } = nextActionOverlay.actionList.NIN;
+  const { abilities } = nextActionOverlay.actionList.NIN;
+  const { mudra } = nextActionOverlay.actionList.NIN;
+  const { ninjutsu } = nextActionOverlay.actionList.NIN;
+  const { level } = playerData;
+  const { huton } = playerData;
   const next = nextActionOverlay.next.NIN;
-  const gcd = playerData.gcd;
+  const { gcd } = playerData;
 
   /* Shorten common functions */
-  const addStatus = nextActionOverlay.addStatus;
-  const checkStatus = nextActionOverlay.checkStatus;
-  const removeStatus = nextActionOverlay.removeStatus;
-  const addRecast = nextActionOverlay.addRecast;
-  const checkRecast = nextActionOverlay.checkRecast;
+  const { addStatus } = nextActionOverlay;
+  const { checkStatus } = nextActionOverlay;
+  const { removeStatus } = nextActionOverlay;
+  const { addRecast } = nextActionOverlay;
+  const { checkRecast } = nextActionOverlay;
 
   /* Remove icon before reflow */
   nextActionOverlay.removeIcon({ name: actionName });
@@ -589,7 +587,6 @@ nextActionOverlay.onAction.NIN = (actionMatch) => {
   if (huton >= 0) {
     hutonModifier = 0.85;
   }
-
 
   if (singletargetActions.includes(actionName)) {
     playerData.targetCount = 1;
@@ -665,10 +662,10 @@ nextActionOverlay.onAction.NIN = (actionMatch) => {
 
 nextActionOverlay.onStatus.NIN = (statusMatch) => {
   /* Shorten common functions */
-  const playerData = nextActionOverlay.playerData;
-  const addStatus = nextActionOverlay.addStatus;
+  const { playerData } = nextActionOverlay;
+  const { addStatus } = nextActionOverlay;
   // const checkStatus = nextActionOverlay.checkStatus;
-  const removeStatus = nextActionOverlay.removeStatus;
+  const { removeStatus } = nextActionOverlay;
 
   if (statusMatch.groups.gainsLoses === 'gains') {
     addStatus({
