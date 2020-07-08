@@ -51,14 +51,16 @@ addOverlayListener('onPlayerChangedEvent', (e) => { /* Fires after onZoneChanged
   const { playerData } = nextActionOverlay;
 
   /* This block activates on job/level change */
-  if (e.detail.job !== nextActionOverlay.playerData.job
-    || e.detail.level !== nextActionOverlay.playerData.level) {
+  if (e.detail.job !== playerData.job
+    || e.detail.level !== playerData.level) {
     /* Set new playerData */
     // nextActionOverlay.playerData = e.detail;
 
     const { actionList } = nextActionOverlay;
     const { statusList } = nextActionOverlay;
     const { castingList } = nextActionOverlay;
+    const { duration } = nextActionOverlay;
+    duration.combo = 15000;
 
     /* Fix ID - defaults to decimal value */
     playerData.name = e.detail.name;
@@ -71,20 +73,37 @@ addOverlayListener('onPlayerChangedEvent', (e) => { /* Fires after onZoneChanged
     playerData.mpRegen = 200;
     playerData.targetCount = 1;
     playerData.comboStep = '';
-    playerData.comboTimeout = -1;
+    // playerData.comboTimeout = -1;
 
-    /* Initialize job-specific stuff */
-    nextActionOverlay.onJobChange[playerData.job](); /* Sets static and initial values */
-    nextActionOverlay.onPlayerChangedEvent[playerData.job](e); /* Links dynamic values */
+    /* Assign functions */
+    if (nextActionOverlay.onJobChange[playerData.job]) {
+      nextActionOverlay.onJobChange = nextActionOverlay.onJobChange[playerData.job];
+    }
+    if (nextActionOverlay.onPlayerChangedEvent[playerData.job]) {
+      nextActionOverlay
+        .onPlayerChangedEvent = nextActionOverlay.onPlayerChangedEvent[playerData.job];
+    }
+    if (nextActionOverlay.onTargetChange[playerData.job]) {
+      nextActionOverlay.onTargetChange = nextActionOverlay.onTargetChange[playerData.job];
+    }
+    if (nextActionOverlay.nextAction[playerData.job]) {
+      nextActionOverlay.nextAction = nextActionOverlay.nextAction[playerData.job];
+    }
+    if (nextActionOverlay.onAction[playerData.job]) {
+      nextActionOverlay.onAction = nextActionOverlay.onAction[playerData.job];
+    }
+    if (nextActionOverlay.onStatus[playerData.job]) {
+      nextActionOverlay.onStatus = nextActionOverlay.onStatus[playerData.job];
+    }
+
+    nextActionOverlay.onJobChange(); /* Sets static and initial values */
+    nextActionOverlay.onPlayerChangedEvent(e); /* Links dynamic values */
 
     /* Creates new regexes for matching */
-    const actionNames = Object.values(actionList[playerData.job]).flat(Infinity).join('|');
-    const statusNames = Object.values(statusList[playerData.job]).flat(Infinity).join('|');
+    const actionNames = Object.values(actionList).flat(Infinity).join('|');
+    const statusNames = Object.values(statusList).flat(Infinity).join('|');
 
-    if (!castingList[playerData.job]) {
-      castingList[playerData.job] = [];
-    }
-    const castingNames = Object.values(castingList[playerData.job]).flat(Infinity).join('|');
+    const castingNames = Object.values(castingList).flat(Infinity).join('|');
     // console.log(castingNames);
     nextActionOverlay.actionRegex = new RegExp(
       `^.{15}(?<logType>1[56]):(?<sourceID>${playerData.id}):(?<sourceName>${playerData.name}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${actionNames}):(?<targetID>[\\dA-F]{8}):(?<comboCheck>([^:]*:)*?1?1B:)?`,
@@ -102,12 +121,12 @@ addOverlayListener('onPlayerChangedEvent', (e) => { /* Fires after onZoneChanged
     /* Not sure if there's a better solution since the network log line is suuuuuuper slow */
 
     /* Initialize overlay */
-    nextActionOverlay.nextAction[playerData.job]();
+    nextActionOverlay.nextAction();
     // eslint-disable-next-line no-console
     console.log(`Changed to ${playerData.job}${playerData.level}`);
   }
 
-  nextActionOverlay.onPlayerChangedEvent[playerData.job](e);
+  nextActionOverlay.onPlayerChangedEvent(e);
 
   /* Section below does job-specific stuff */
 
@@ -141,9 +160,6 @@ addOverlayListener('onPlayerChangedEvent', (e) => { /* Fires after onZoneChanged
   // } else if (playerData.job === 'DRK') {
   //   playerData.blood = e.detail.jobDetail.blood;
   //   playerData.darkarts = parseInt(debugJobArray[4], 16);
-  // } else if (playerData.job === 'GNB') {
-  //   playerData.cartridges = e.detail.jobDetail.cartridges;
-  //   // playerData.cartridges = parseInt(debugJobArray[0], 16); /* 0-2 */
   // } else if (playerData.job === 'MCH') {
   //   playerData.heat = e.detail.jobDetail.heat;
   //   playerData.overheated = e.detail.jobDetail.overheatMilliseconds;
@@ -153,16 +169,8 @@ addOverlayListener('onPlayerChangedEvent', (e) => { /* Fires after onZoneChanged
   //   playerData.battery = e.detail.jobDetail.battery;
   // } else if (playerData.job === 'MNK') {
   //   playerData.onPlayerChangedEvent[playerData.job](e);
-  // } else if (playerData.job === 'NIN') {
-  //   playerData.huton = e.detail.jobDetail.hutonMilliseconds;
-  //   if (playerData.huton === 0) {
-  //     playerData.huton = -1;
-  //   }
-  //   playerData.ninki = e.detail.jobDetail.ninkiAmount;
   // } else if (playerData.job === 'PLD') {
   //   playerData.oath = e.detail.jobDetail.oath;
-  // } else if (playerData.job === 'RDM') {
-  //   //
   // } else if (playerData.job === 'SCH') {
   //   playerData.aetherflow = parseInt(debugJobArray[2], 16); /* 0-3 */
   //   // playerData.faerie = parseInt(debugJobArray[3], 16); /* 0-100 */
@@ -216,7 +224,7 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
       const { actionName } = actionMatch.groups;
       const { targetID } = actionMatch.groups;
       if (logType === '15') {
-        onAction[playerData.job](actionMatch);
+        onAction(actionMatch);
       } else if (logType === '16') {
         const { timeout } = nextActionOverlay;
         const timeoutName = actionName.replace(/[\s':-]/g, '').toLowerCase();
@@ -228,15 +236,15 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
           }
         }
         clearTimeout(timeout[`${timeoutName}`]);
-        timeout[`${timeoutName}`] = setTimeout(onAction[playerData.job], 50, actionMatch);
+        timeout[`${timeoutName}`] = setTimeout(onAction, 50, actionMatch);
       }
     } else if (statusMatch) {
-      onStatus[playerData.job](statusMatch);
+      onStatus(statusMatch);
     } else if (castingMatch) {
-      onCasting[playerData.job](castingMatch);
+      onCasting(castingMatch);
     } else if (cancelMatch) {
       // console.log(`${cancelMatch}`);
-      onCancel[playerData.job](cancelMatch);
+      onCancel(cancelMatch);
     } else if (statsMatch) {
       /* Calculates speed-related stuff */
 
@@ -365,6 +373,8 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
       nextActionOverlay.recast.egiassault2 = egiassaultRecast;
       nextActionOverlay.recast.egiassaultii1 = egiassaultRecast;
       nextActionOverlay.recast.egiassaultii2 = egiassaultRecast;
+      // eslint-disable-next-line no-console
+      console.log('Speed recalculated');
     }
   }
 });
@@ -396,7 +406,7 @@ addOverlayListener('EnmityTargetData', (e) => {
     if (targetData.id !== e.Target.ID.toString(16).toUpperCase()) {
       targetData.name = e.Target.Name;
       targetData.id = e.Target.ID.toString(16).toUpperCase();
-      nextActionOverlay.onTargetChange[playerData.job]();
+      nextActionOverlay.onTargetChange();
     }
 
     targetData.distance = e.Target.EffectiveDistance; /* Distance to "outside of circle" */
@@ -406,7 +416,7 @@ addOverlayListener('EnmityTargetData', (e) => {
 
   if (nextActionOverlay.gameActive
   && (playerData.combat
-    || (targetData.id && targetData.id.startsWith('4') && targetData.distance <= 25)
+    || (e.Target && targetData.id.startsWith('4') && targetData.distance <= 25)
   )) {
     document.getElementById('nextdiv').classList.replace('next-hide', 'next-show');
   } else {

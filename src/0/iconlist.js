@@ -3,17 +3,6 @@ const icon = {};
 icon.default = '000000';
 
 // Role Actions
-icon.rampart = '000801';
-icon.lowblow = '000802';
-icon.provoke = '000803';
-icon.reprisal = '000806';
-icon.interject = '000808';
-icon.shirk = '000810';
-icon.secondwind = '000821';
-icon.armslength = '000822';
-icon.bloodbath = '000823';
-icon.luciddreaming = '000865';
-icon.swiftcast = '000866';
 
 // BLM
 icon.fire = '000451';
@@ -150,35 +139,6 @@ icon.edgeofshadow = '003086';
 icon.livingshadow = '003088';
 
 // GNB
-icon.keenedge = '003401';
-icon.nomercy = '003402';
-icon.brutalshell = '003403';
-icon.camouflage = '003404';
-icon.demonslice = '003405';
-icon.royalguard = '003406';
-icon.lightningshot = '003407';
-icon.dangerzone = '003408';
-icon.solidbarrel = '003409';
-icon.gnashingfang = '003410';
-icon.savageclaw = '003411';
-icon.nebula = '003412';
-icon.demonslaughter = '003413';
-icon.wickedtalon = '003414';
-icon.aurora = '003415';
-icon.superbolide = '003416';
-icon.sonicbreak = '003417';
-icon.roughdivide = '003418';
-icon.continuation = '003419';
-icon.jugularrip = '003420';
-icon.abdomentear = '003421';
-icon.eyegouge = '003422';
-icon.bowshock = '003423';
-icon.heartoflight = '003424';
-icon.heartofstone = '003425';
-icon.burststrike = '003426';
-icon.fatedcircle = '003427';
-icon.bloodfest = '003428';
-icon.blastingzone = '003429';
 
 // MCH
 icon.splitshot = '003001';

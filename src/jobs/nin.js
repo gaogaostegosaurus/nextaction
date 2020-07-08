@@ -1,40 +1,38 @@
-nextActionOverlay.statusList.NIN = [
-  'Shade Shift', 'Shadow Fang', 'Kassatsu', 'Assassinate Ready', 'Ten Chi Jin', 'Bunshin',
-  'Mudra', 'Doton', 'Suiton',
-  'Bloodbath', 'Feint', 'Arm\'s Length', 'True North',
-];
-
-nextActionOverlay.actionList.NIN = [];
-
-nextActionOverlay.actionList.NIN.weaponskills = [
-  'Spinning Edge', 'Gust Slash', 'Aeolian Edge', 'Armor Crush',
-  'Death Blossom', 'Hakke Mujinsatsu',
-  'Throwing Dagger',
-  'Shadow Fang',
-];
-
-nextActionOverlay.actionList.NIN.mudra = [
-  'Ten', 'Chi', 'Jin',
-];
-
-nextActionOverlay.actionList.NIN.ninjutsu = [
-  'Fuma Shuriken', 'Katon', 'Raiton', 'Hyoton', 'Huton', 'Doton', 'Suiton',
-  'Rabbit Medium',
-  'Goka Mekkyaku', 'Hyosho Ranryu',
-];
-
-nextActionOverlay.actionList.NIN.abilities = [
-  'Shade Shift', 'Hide', 'Mug', 'Shukuchi', 'Dream Within A Dream', 'Assassinate',
-  'Kassatsu', 'Ten Chi Jin',
-  'Trick Attack', 'Meisui',
-  'Hellfrog Medium', 'Bhavacakra', 'Bunshin',
-  'Second Wind', 'Leg Sweep', 'Bloodbath', 'Feint', 'Arm\'s Length', 'True North',
-];
-
 nextActionOverlay.onJobChange.NIN = () => {
   const { playerData } = nextActionOverlay;
   playerData.ninjutsuCount = 0;
   playerData.mudraCount = 0;
+
+  nextActionOverlay.actionList.weaponskills = [
+    'Spinning Edge', 'Gust Slash', 'Aeolian Edge', 'Armor Crush',
+    'Death Blossom', 'Hakke Mujinsatsu',
+    'Throwing Dagger',
+    'Shadow Fang',
+  ];
+
+  nextActionOverlay.actionList.ninjutsu = [
+    'Fuma Shuriken', 'Katon', 'Raiton', 'Hyoton', 'Huton', 'Doton', 'Suiton',
+    'Rabbit Medium',
+    'Goka Mekkyaku', 'Hyosho Ranryu',
+  ];
+
+  nextActionOverlay.actionList.mudra = [
+    'Ten', 'Chi', 'Jin',
+  ];
+
+  nextActionOverlay.actionList.abilities = [
+    'Shade Shift', 'Hide', 'Mug', 'Shukuchi', 'Dream Within A Dream', 'Assassinate',
+    'Kassatsu', 'Ten Chi Jin',
+    'Trick Attack', 'Meisui',
+    'Hellfrog Medium', 'Bhavacakra', 'Bunshin',
+    'Second Wind', 'Leg Sweep', 'Bloodbath', 'Feint', 'Arm\'s Length', 'True North',
+  ];
+
+  nextActionOverlay.statusList = [
+    'Shade Shift', 'Shadow Fang', 'Kassatsu', 'Assassinate Ready', 'Ten Chi Jin', 'Bunshin',
+    'Mudra', 'Doton', 'Suiton',
+    'Bloodbath', 'Feint', 'Arm\'s Length', 'True North',
+  ];
 
   const { recast } = nextActionOverlay;
   recast.shadeshift = 120000;
@@ -112,6 +110,13 @@ nextActionOverlay.onPlayerChangedEvent.NIN = (e) => {
   playerData.ninki = e.detail.jobDetail.ninkiAmount;
 };
 
+nextActionOverlay.onTargetChange.NIN = () => {
+  const { playerData } = nextActionOverlay;
+  if (playerData.combat === 0) {
+    nextActionOverlay.nextAction();
+  }
+};
+
 nextActionOverlay.nextAction.NIN = ({
   time = 0,
 } = {}) => {
@@ -124,10 +129,10 @@ nextActionOverlay.nextAction.NIN = ({
   const { playerData } = nextActionOverlay;
   const { level } = playerData;
 
-  const { weaponskills } = nextActionOverlay.actionList.NIN;
-  const { ninjutsu } = nextActionOverlay.actionList.NIN;
+  const { weaponskills } = nextActionOverlay.actionList;
+  const { ninjutsu } = nextActionOverlay.actionList;
 
-  const nextAction = nextActionOverlay.nextAction.NIN;
+  const { nextAction } = nextActionOverlay;
 
   /* Initial values for loops */
   let ogcdTime = time;
@@ -139,25 +144,23 @@ nextActionOverlay.nextAction.NIN = ({
   let { bunshinCount } = playerData;
 
   const loopRecast = {};
-  loopRecast.mug = checkRecast({ actionName: 'Mug' });
-  loopRecast.trickattack = checkRecast({ actionName: 'Trick Attack' });
-  loopRecast.shadowfang = checkRecast({ actionName: 'Shadow Fang' });
-  loopRecast.mudra1 = checkRecast({ actionName: 'Mudra 1' });
-  loopRecast.mudra2 = checkRecast({ actionName: 'Mudra 2' });
-  loopRecast.kassatsu = checkRecast({ actionName: 'Kassatsu' });
-  loopRecast.dreamwithinadream = checkRecast({ actionName: 'Dream Within A Dream' });
-  loopRecast.tenchijin = checkRecast({ actionName: 'Ten Chi Jin' });
-  loopRecast.meisui = checkRecast({ actionName: 'Meisui' });
-  loopRecast.bunshin = checkRecast({ actionName: 'Bunshin' });
+  const loopRecastList = [
+    'Mug', 'Trick Attack', 'Shadow Fang', 'Mudra 1', 'Mudra 2', 'Kassatsu', 'Dream Within A Dream',
+    'Ten Chi Jin', 'Meisui', 'Bunshin'];
+  loopRecastList.forEach((actionName) => {
+    const propertyName = actionName.replace(/[\s':-]/g, '').toLowerCase();
+    loopRecast[propertyName] = checkRecast({ actionName }) - 1000;
+  });
 
   const loopStatus = {};
-  loopStatus.combo = checkStatus({ statusName: 'Combo' });
+  const loopStatusList = ['Combo', 'Trick Attack', 'Suiton', 'Kassatsu', 'Assassinate Ready', 'Bunshin'];
+  loopStatusList.forEach((statusName) => {
+    const propertyName = statusName.replace(/[\s':-]/g, '').toLowerCase();
+    loopStatus[propertyName] = checkStatus({ statusName });
+  });
+
+  /* Huton technically not a status effect, but treat like one */
   loopStatus.huton = playerData.huton;
-  loopStatus.trickattack = checkStatus({ statusName: 'Trick Attack' }); // Added manually
-  loopStatus.kassatsu = checkStatus({ statusName: 'Kassatsu' });
-  loopStatus.assassinateready = checkStatus({ statusName: 'Assassinate Ready' });
-  loopStatus.bunshin = checkStatus({ statusName: 'Bunshin' });
-  loopStatus.suiton = checkStatus({ statusName: 'Suiton' });
 
   /* Clear array */
   const ninArray = [];
@@ -353,7 +356,7 @@ nextActionOverlay.nextAction.NIN.gcd = ({
   loopRecast,
   loopStatus,
 } = {}) => {
-  const nextAction = nextActionOverlay.nextAction.NIN;
+  const { nextAction } = nextActionOverlay;
   const { playerData } = nextActionOverlay;
   const { level } = playerData;
   const { duration } = nextActionOverlay;
@@ -521,14 +524,15 @@ nextActionOverlay.nextAction.NIN.ogcd = ({
     return 'Bunshin';
   } if (loopStatus.suiton > 0 && loopRecast.trickattack < 0) {
     return 'Trick Attack';
-  } if (level >= 56 && loopStatus.trickattack > 0 && loopRecast.dreamwithinadream < 0) {
+  } if (level >= 56 && loopRecast.trickattack > 3000 && loopRecast.dreamwithinadream < 0) {
     return 'Dream Within A Dream';
-  } if (level >= 72 && loopStatus.kassatsu < 0 && loopStatus.trickattack > 0
-  && loopRecast.meisui < duration.suiton && loopStatus.combo > playerData.gcd * 3
+  } if (level >= 72 && loopStatus.kassatsu < 0 && loopRecast.trickattack > 6000
+  && loopRecast.meisui < duration.suiton && loopStatus.combo > playerData.gcd * 2
   && loopRecast.tenchijin < 0) {
     return 'Ten Chi Jin Suiton'; /* Use TCJ to set up Meisui */
   } if (level >= 70 && level < 72 && loopStatus.kassatsu < 0
-  && loopRecast.trickattack < duration.suiton && loopStatus.combo > playerData.gcd * 3
+  && loopRecast.trickattack > duration.suiton
+  && (loopStatus.combo < 0 || loopStatus.combo > playerData.gcd * 2)
   && loopRecast.tenchijin < 0) {
     return 'Ten Chi Jin Suiton'; /* Use TCJ to set up TA before 72 */
   } if (loopStatus.assassinateready > 0) {
@@ -546,13 +550,6 @@ nextActionOverlay.nextAction.NIN.ogcd = ({
   } return ''; /* No OGCD */
 };
 
-nextActionOverlay.onTargetChange.NIN = () => {
-  const { playerData } = nextActionOverlay;
-  if (playerData.combat === 0) {
-    nextActionOverlay.nextAction.NIN();
-  }
-};
-
 nextActionOverlay.onAction.NIN = (actionMatch) => {
   const singletargetActions = [
     'Raiton', 'Hyosho Ranryu',
@@ -563,13 +560,13 @@ nextActionOverlay.onAction.NIN = (actionMatch) => {
   const { actionName } = actionMatch.groups;
   const { comboCheck } = actionMatch.groups;
   // const targetID = actionMatch.groups.targetID;
-  const { weaponskills } = nextActionOverlay.actionList.NIN;
-  const { abilities } = nextActionOverlay.actionList.NIN;
-  const { mudra } = nextActionOverlay.actionList.NIN;
-  const { ninjutsu } = nextActionOverlay.actionList.NIN;
+  const { weaponskills } = nextActionOverlay.actionList;
+  const { abilities } = nextActionOverlay.actionList;
+  const { mudra } = nextActionOverlay.actionList;
+  const { ninjutsu } = nextActionOverlay.actionList;
   const { level } = playerData;
   const { huton } = playerData;
-  const nextAction = nextActionOverlay.nextAction.NIN;
+  const { nextAction } = nextActionOverlay;
   const { gcd } = playerData;
 
   /* Shorten common functions */
@@ -610,6 +607,7 @@ nextActionOverlay.onAction.NIN = (actionMatch) => {
       removeStatus({ statusName: 'Combo' });
       playerData.comboStep = '';
     }
+    // console.log(checkStatus({ statusName: 'Combo' }));
     /* Call next with GCD active */
     nextAction({ time: gcd * hutonModifier });
   } else if (mudra.includes(actionName)) {
@@ -645,10 +643,11 @@ nextActionOverlay.onAction.NIN = (actionMatch) => {
     addRecast({ actionName });
     if (actionName === 'Trick Attack') {
       addStatus({ statusName: 'Trick Attack' }); /* Treat as buff to make predictions easier */
-      nextAction({ time: 0 });
+      removeStatus({ statusName: 'Suiton' });
+      // nextAction({ time: 0 });
     } else if (actionName === 'Kassatsu') {
       addStatus({ statusName: 'Kassatsu' });
-      nextAction({ time: 0 });
+      // nextAction({ time: 0 });
     } else if (actionName === 'Ten Chi Jin') {
       addStatus({ statusName: 'Ten Chi Jin' });
       playerData.tenchijinCount = 0;
@@ -656,6 +655,9 @@ nextActionOverlay.onAction.NIN = (actionMatch) => {
       addRecast({ actionName: 'Mudra 1', recast: -1 });
       addRecast({ actionName: 'Mudra 2', recast: -1 });
       nextAction({ time: 0 });
+    } else if (actionName === 'Meisui') {
+      removeStatus({ statusName: 'Suiton' });
+      // nextAction({ time: 0 });
     }
   }
 };

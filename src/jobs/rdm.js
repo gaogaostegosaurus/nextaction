@@ -1,47 +1,43 @@
-nextActionOverlay.actionList.RDM = [];
-
-nextActionOverlay.actionList.RDM.spells = [
-  'Jolt', 'Jolt II', 'Verfire', 'Verstone', 'Verthunder II', 'Veraero II',
-  'Verthunder', 'Veraero', 'Scatter', 'Impact',
-  'Vercure', 'Veraise',
-];
-
-nextActionOverlay.castingList.RDM = nextActionOverlay.actionList.RDM.spells;
-
-nextActionOverlay.actionList.NIN = [];
-
-nextActionOverlay.actionList.RDM.weaponskills = [
-  /* Yes, some are technically not weaponskills but I don't care */
-  'Riposte', 'Enchanted Riposte',
-  'Zwerchhau', 'Enchanted Zwerchhau',
-  'Redoublement', 'Enchanted Redoublement',
-  'Verflare', 'Verholy', 'Scorch',
-  'Moulinet', 'Enchanted Moulinet',
-  'Reprise', 'Enchanted Reprise',
-];
-
-nextActionOverlay.actionList.RDM.abilities = [
-  'Corps-A-Corps', 'Displacement', 'Fleche', 'Acceleration',
-  'Contre Sixte', 'Embolden', 'Manafication',
-  'Engagement',
-  'Swiftcast', 'Lucid Dreaming',
-];
-
-/* Easier/more accurate controlling this via the buffs */
-/* I think that means it won't work in Eureka but screw Eureka */
-
-nextActionOverlay.statusList.RDM = [
-  'Dualcast',
-  'Verfire Ready',
-  'Verstone Ready',
-  'Swiftcast',
-];
-
 nextActionOverlay.onJobChange.RDM = () => {
   /* Set initial values */
   const { playerData } = nextActionOverlay;
   const { level } = playerData;
   playerData.comboStep = '';
+
+  nextActionOverlay.actionList.spells = [
+    'Jolt', 'Jolt II', 'Verfire', 'Verstone', 'Verthunder II', 'Veraero II',
+    'Verthunder', 'Veraero', 'Scatter', 'Impact',
+    'Vercure', 'Veraise',
+  ];
+
+  nextActionOverlay.castingList = nextActionOverlay.actionList.spells;
+
+  nextActionOverlay.actionList.weaponskills = [
+    /* Yes, some are technically not weaponskills but I don't care */
+    'Riposte', 'Enchanted Riposte',
+    'Zwerchhau', 'Enchanted Zwerchhau',
+    'Redoublement', 'Enchanted Redoublement',
+    'Verflare', 'Verholy', 'Scorch',
+    'Moulinet', 'Enchanted Moulinet',
+    'Reprise', 'Enchanted Reprise',
+  ];
+
+  nextActionOverlay.actionList.abilities = [
+    'Corps-A-Corps', 'Displacement', 'Fleche', 'Acceleration',
+    'Contre Sixte', 'Embolden', 'Manafication',
+    'Engagement',
+    'Swiftcast', 'Lucid Dreaming',
+  ];
+
+  /* Easier/more accurate controlling this via the buffs */
+  /* I think that means it won't work in Eureka but screw Eureka */
+
+  nextActionOverlay.statusList = [
+    'Dualcast',
+    'Verfire Ready',
+    'Verstone Ready',
+    'Swiftcast',
+  ];
 
   nextActionOverlay.onJobChange.magicDPS();
 
@@ -120,7 +116,7 @@ nextActionOverlay.nextAction.RDM = ({
 } = {}) => {
   const { playerData } = nextActionOverlay;
   const { level } = playerData;
-  const { weaponskills } = nextActionOverlay.actionList.RDM;
+  const { weaponskills } = nextActionOverlay.actionList;
   const { checkRecast } = nextActionOverlay;
   const { checkStatus } = nextActionOverlay;
   const { duration } = nextActionOverlay;
@@ -733,8 +729,8 @@ nextActionOverlay.nextAction.RDM.dualcast = ({
 nextActionOverlay.onAction.RDM = (actionMatch) => {
   const { removeStatus } = nextActionOverlay;
 
-  const { weaponskills } = nextActionOverlay.actionList.RDM;
-  const { abilities } = nextActionOverlay.actionList.RDM;
+  const { weaponskills } = nextActionOverlay.actionList;
+  const { abilities } = nextActionOverlay.actionList;
   const { playerData } = nextActionOverlay;
   const { level } = playerData;
   const nextAction = nextActionOverlay.nextAction.RDM;
@@ -808,7 +804,7 @@ nextActionOverlay.onAction.RDM = (actionMatch) => {
       }
       addRecast({ actionName: 'Corps-A-Corps', recast: -1 });
       addRecast({ actionName: 'Displacement', recast: -1 });
-      nextActionOverlay.next.RDM();
+      nextActionOverlay.nextAction.RDM();
     } else if (actionName === 'Engagement') {
       addRecast({ actionName: 'Displacement' }); /* Set Displacement cooldown with Engagement */
     } else if (actionName === 'Swiftcast') {
