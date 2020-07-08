@@ -78,25 +78,42 @@ addOverlayListener('onPlayerChangedEvent', (e) => { /* Fires after onZoneChanged
     /* Assign functions */
     if (nextActionOverlay.onJobChange[playerData.job]) {
       nextActionOverlay.onJobChange = nextActionOverlay.onJobChange[playerData.job];
+    } else {
+      nextActionOverlay.onJobChange = nextActionOverlay.onJobChange.NONE;
     }
+
     if (nextActionOverlay.onPlayerChangedEvent[playerData.job]) {
       nextActionOverlay
         .onPlayerChangedEvent = nextActionOverlay.onPlayerChangedEvent[playerData.job];
-    }
-    if (nextActionOverlay.onTargetChange[playerData.job]) {
-      nextActionOverlay.onTargetChange = nextActionOverlay.onTargetChange[playerData.job];
-    }
-    if (nextActionOverlay.nextAction[playerData.job]) {
-      nextActionOverlay.nextAction = nextActionOverlay.nextAction[playerData.job];
-    }
-    if (nextActionOverlay.onAction[playerData.job]) {
-      nextActionOverlay.onAction = nextActionOverlay.onAction[playerData.job];
-    }
-    if (nextActionOverlay.onStatus[playerData.job]) {
-      nextActionOverlay.onStatus = nextActionOverlay.onStatus[playerData.job];
+    } else {
+      nextActionOverlay.onPlayerChangedEvent = nextActionOverlay.onPlayerChangedEvent.NONE;
     }
 
-    nextActionOverlay.onJobChange(); /* Sets static and initial values */
+    if (nextActionOverlay.onTargetChange[playerData.job]) {
+      nextActionOverlay.onTargetChange = nextActionOverlay.onTargetChange[playerData.job];
+    } else {
+      nextActionOverlay.onTargetChange = nextActionOverlay.onTargetChange.NONE;
+    }
+
+    if (nextActionOverlay.nextAction[playerData.job]) {
+      nextActionOverlay.nextAction = nextActionOverlay.nextAction[playerData.job];
+    } else {
+      nextActionOverlay.nextAction = nextActionOverlay.nextAction.NONE;
+    }
+
+    if (nextActionOverlay.onAction[playerData.job]) {
+      nextActionOverlay.onAction = nextActionOverlay.onAction[playerData.job];
+    } else {
+      nextActionOverlay.onAction = nextActionOverlay.onAction.NONE;
+    }
+
+    if (nextActionOverlay.onStatus[playerData.job]) {
+      nextActionOverlay.onStatus = nextActionOverlay.onStatus[playerData.job];
+    } else {
+      nextActionOverlay.onStatus = nextActionOverlay.onStatus.NONE;
+    }
+
+    nextActionOverlay.onJobChange();
     nextActionOverlay.onPlayerChangedEvent(e); /* Links dynamic values */
 
     /* Creates new regexes for matching */
