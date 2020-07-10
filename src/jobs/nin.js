@@ -111,14 +111,13 @@ nextActionOverlay.onPlayerChangedEvent.NIN = (e) => {
 };
 
 nextActionOverlay.onTargetChange.NIN = () => {
-  const { playerData } = nextActionOverlay;
-  if (playerData.combat === 0) {
-    nextActionOverlay.nextAction();
+  if (nextActionOverlay.combat === 0) {
+    nextActionOverlay.nextAction.NIN();
   }
 };
 
 nextActionOverlay.nextAction.NIN = ({
-  time = 0,
+  delay = 0,
 } = {}) => {
   /* Shorten names */
   const { checkRecast } = nextActionOverlay;
@@ -132,12 +131,9 @@ nextActionOverlay.nextAction.NIN = ({
   const { weaponskills } = nextActionOverlay.actionList;
   const { ninjutsu } = nextActionOverlay.actionList;
 
-  const { nextAction } = nextActionOverlay;
+  const nextAction = nextActionOverlay.nextAction.NIN;
 
   /* Initial values for loops */
-  let ogcdTime = time;
-  let nextTime = 0;
-  const nextMaxTime = 15000;
 
   let { comboStep } = playerData;
   let { ninki } = playerData;
@@ -165,8 +161,13 @@ nextActionOverlay.nextAction.NIN = ({
   /* Clear array */
   const ninArray = [];
 
-  do {
+  let gcdTime = delay;
+  let nextTime = 0;
+  const nextMaxTime = 15000;
+
+  while (nextTime < nextMaxTime) {
     let loopTime = 0; /* Used at end of loop to move things "forward" */
+
     let mudraTime = 0; /* NIN specific, also shifts things forward */
     let hutonModifier = 1;
 
@@ -174,7 +175,7 @@ nextActionOverlay.nextAction.NIN = ({
       hutonModifier = 0.85;
     }
 
-    if (ogcdTime <= 1000) { /* "If not enough time for oGCD" */
+    if (gcdTime <= 1000) { /* "If not enough time for oGCD" */
       const nextGCD = nextAction.gcd({
         comboStep,
         loopRecast,
@@ -194,6 +195,10 @@ nextActionOverlay.nextAction.NIN = ({
         if (loopStatus.bunshin > 0 && bunshinCount > 0) {
           bunshinCount -= 1;
           ninki = Math.min(ninki + 5, 100);
+        }
+
+        if (bunshinCount <= 0) {
+          loopStatus.bunshin = -1;
         }
 
         if ((level >= 4 && nextGCD === 'Spinning Edge')
@@ -244,30 +249,30 @@ nextActionOverlay.nextAction.NIN = ({
       }
 
       /* Calculate how much time for OGCDs */
-      if (ninjutsu.indexOf(nextGCD) > -1) {
-        ogcdTime = 1500;
+      if (ninjutsu.includes(nextGCD)) {
+        gcdTime = 1500;
       } else {
-        ogcdTime = playerData.gcd * hutonModifier;
+        gcdTime = playerData.gcd * hutonModifier;
       }
 
-      loopTime = mudraTime + ogcdTime;
+      loopTime = mudraTime + gcdTime;
 
       /* End of GCD section */
-    } else {
-      /* If gcdTime > 0, then add OGCD action */
+    }
 
-      /* Calculate Ninki target for OGCD function */
-      let ninkiTarget = 50; /* "If Ninki is here or above, use Bhavacakra or Hellfrog" */
-      if (level >= 80) {
-        if (loopRecast.bunshin > Math.max(loopRecast.meisui, loopRecast.tenchijin)) {
-          ninkiTarget = 50;
-        } else if (loopRecast.bunshin > loopRecast.mug) {
-          ninkiTarget = 60;
-        } else {
-          ninkiTarget = 100;
-        }
+    /* Calculate Ninki target for OGCD section */
+    let ninkiTarget = 50; /* "If Ninki is this or more, OK to use Bhavacakra or Hellfrog" */
+    if (level >= 80) {
+      if (loopRecast.bunshin > loopRecast.meisui) {
+        ninkiTarget = 50;
+      } else if (loopRecast.bunshin > loopRecast.mug) {
+        ninkiTarget = 60;
+      } else {
+        ninkiTarget = 100;
       }
+    }
 
+    while (gcdTime > 1000) {
       const nextOGCD = nextAction.ogcd({
         ninki,
         ninkiTarget,
@@ -331,9 +336,9 @@ nextActionOverlay.nextAction.NIN = ({
       if (nextOGCD === 'Ten Chi Jin Suiton') {
         /* This is a little awkward but probably fine as long as it's defined out of loop */
         loopTime += 2000; /* To account for the first two Ninjutsu steps */
-        ogcdTime = 1500; /* Ends with a GCD practically */
+        gcdTime = 1500; /* Ends with a GCD  */
       } else {
-        ogcdTime = 0;
+        gcdTime -= 1250;
       }
     }
 
@@ -342,13 +347,13 @@ nextActionOverlay.nextAction.NIN = ({
     Object.keys(loopStatus).forEach((property) => { loopStatus[property] -= loopTime; });
     nextTime += loopTime;
     /* Go to next loop unless time has exceeded */
-  } while (nextTime < nextMaxTime);
+  }
   // console.log(JSON.stringify(iconArrayB));
 
   nextActionOverlay.iconArrayB = ninArray;
   nextActionOverlay.syncIcons();
-  clearTimeout(nextActionOverlay.timeout.next);
-  nextActionOverlay.timeout.next = setTimeout(nextAction, 14000);
+  // clearTimeout(nextActionOverlay.timeout.nextAction);
+  // nextActionOverlay.timeout.nextAction = setTimeout(nextAction, playerData.gcd * 2);
 };
 
 nextActionOverlay.nextAction.NIN.gcd = ({
@@ -356,7 +361,7 @@ nextActionOverlay.nextAction.NIN.gcd = ({
   loopRecast,
   loopStatus,
 } = {}) => {
-  const { nextAction } = nextActionOverlay;
+  const nextAction = nextActionOverlay.nextAction.NIN;
   const { playerData } = nextActionOverlay;
   const { level } = playerData;
   const { duration } = nextActionOverlay;
@@ -396,12 +401,13 @@ nextActionOverlay.nextAction.NIN.gcd = ({
 
   /* Use Suiton to allow TA as soon as possible */
   if (level >= 45 && (level < 70 || level >= 72)
-  && loopRecast.mudra1 < 0 && loopStatus.suiton < 0
-  && loopRecast.trickattack < duration.suiton) { /* Since Suiton casting delays this by about 3s */
+  && loopStatus.suiton < 0 && loopStatus.kassatsu < 0 && loopRecast.mudra1 < 0
+  && loopRecast.trickattack < duration.suiton - playerData.gcd) {
     return 'Suiton'; /* Suiton for Trick before 70 */
-  } if (level >= 70 && level < 72 && loopRecast.mudra1 < 0 && loopStatus.suiton < 0
-  && loopRecast.tenchijin > loopRecast.trickattack) {
-    return 'Suiton'; /* Only use Suiton 70 and 71 if TCJ isn't available */
+  } if (level >= 70 && level < 72
+  && loopStatus.suiton < 0 && loopStatus.kassatsu < 0 && loopRecast.mudra1 < 0
+  && loopRecast.trickattack < Math.min(duration.suiton, loopRecast.tenchijin) - playerData.gcd) {
+    return 'Suiton'; /* Only use Suiton 70 and 71 if the timing prevents TCJ into Trick */
   }
 
   /* Trick priority */
@@ -515,10 +521,10 @@ nextActionOverlay.nextAction.NIN.ogcd = ({
   }
 
   /* Normal priority */
-  if (level >= 50 && (loopStatus.suiton > gcd || loopStatus.trickattack > 0)
+  if (level >= 50 && (loopStatus.suiton > gcd || loopRecast.trickattack > 3000)
   && loopRecast.kassatsu < 0) {
     return 'Kassatsu';
-  } if (level >= 15 && (level < 66 || ninki < ninkiTarget) && loopRecast.mug < 0) {
+  } if (level >= 15 && (level < 66 || ninki <= 60) && loopRecast.mug < 0) {
     return 'Mug';
   } if (level >= 80 && ninki >= 50 && loopRecast.bunshin < 0) {
     return 'Bunshin';
@@ -526,19 +532,26 @@ nextActionOverlay.nextAction.NIN.ogcd = ({
     return 'Trick Attack';
   } if (level >= 56 && loopRecast.trickattack > 3000 && loopRecast.dreamwithinadream < 0) {
     return 'Dream Within A Dream';
-  } if (level >= 72 && loopStatus.kassatsu < 0 && loopRecast.trickattack > 6000
-  && loopRecast.meisui < duration.suiton && loopStatus.combo > playerData.gcd * 2
+  } if (level >= 72
+  && loopStatus.kassatsu < 0
+  && loopRecast.meisui < duration.suiton - playerData.gcd
+  && loopRecast.trickattack > 6000
+  && (loopStatus.combo < 0 || loopStatus.combo > playerData.gcd * 2)
   && loopRecast.tenchijin < 0) {
     return 'Ten Chi Jin Suiton'; /* Use TCJ to set up Meisui */
-  } if (level >= 70 && level < 72 && loopStatus.kassatsu < 0
-  && loopRecast.trickattack > duration.suiton
+    /* TA > 6000 prevents waiting too long, also implies only when TA is on cooldown */
+    /* Combo lines prevent a c-c-combo breaker */
+  } if (level >= 70 && level < 72
+  && loopStatus.kassatsu < 0
+  && loopRecast.trickattack < duration.suiton - playerData.gcd
   && (loopStatus.combo < 0 || loopStatus.combo > playerData.gcd * 2)
   && loopRecast.tenchijin < 0) {
     return 'Ten Chi Jin Suiton'; /* Use TCJ to set up TA before 72 */
   } if (loopStatus.assassinateready > 0) {
     return 'Assassinate';
-  } if (level >= 72 && loopStatus.suiton > 0 && loopStatus.suiton < loopRecast.trickattack
-  && ninki < ninkiTarget && loopRecast.meisui < 0) {
+  } if (level >= 72 && ninki <= 50
+  && loopStatus.suiton > 0 && loopStatus.suiton < loopRecast.trickattack
+  && loopRecast.meisui < 0) {
     return 'Meisui';
   } if (level >= 62 && ninki >= ninkiTarget) {
     if (playerData.targetCount > 1) {
@@ -566,7 +579,7 @@ nextActionOverlay.onAction.NIN = (actionMatch) => {
   const { ninjutsu } = nextActionOverlay.actionList;
   const { level } = playerData;
   const { huton } = playerData;
-  const { nextAction } = nextActionOverlay;
+  const nextAction = nextActionOverlay.nextAction.NIN;
   const { gcd } = playerData;
 
   /* Shorten common functions */
@@ -609,7 +622,7 @@ nextActionOverlay.onAction.NIN = (actionMatch) => {
     }
     // console.log(checkStatus({ statusName: 'Combo' }));
     /* Call next with GCD active */
-    nextAction({ time: gcd * hutonModifier });
+    nextAction({ delay: gcd * hutonModifier });
   } else if (mudra.includes(actionName)) {
     if (playerData.mudraCount === 0 && checkStatus({ statusName: 'Kassatsu' }) < 0) {
       /* Don't increase Mudra recast under Kassatsu */
@@ -637,27 +650,27 @@ nextActionOverlay.onAction.NIN = (actionMatch) => {
       removeStatus({ statusName: 'Kassatsu' });
       removeStatus({ statusName: 'Ten Chi Jin' });
       playerData.tenchijinCount = 0;
-      nextAction({ time: 1500 });
+      nextAction({ delay: 1500 });
     }
   } else if (abilities.includes(actionName)) {
     addRecast({ actionName });
     if (actionName === 'Trick Attack') {
       addStatus({ statusName: 'Trick Attack' }); /* Treat as buff to make predictions easier */
       removeStatus({ statusName: 'Suiton' });
-      // nextAction({ time: 0 });
+      // nextAction({ delay: 0 });
     } else if (actionName === 'Kassatsu') {
       addStatus({ statusName: 'Kassatsu' });
-      // nextAction({ time: 0 });
+      // nextAction({ delay: 0 });
     } else if (actionName === 'Ten Chi Jin') {
       addStatus({ statusName: 'Ten Chi Jin' });
       playerData.tenchijinCount = 0;
     } else if (actionName === 'Hide') {
       addRecast({ actionName: 'Mudra 1', recast: -1 });
       addRecast({ actionName: 'Mudra 2', recast: -1 });
-      nextAction({ time: 0 });
+      nextAction({ delay: 0 });
     } else if (actionName === 'Meisui') {
       removeStatus({ statusName: 'Suiton' });
-      // nextAction({ time: 0 });
+      // nextAction({ delay: 0 });
     }
   }
 };

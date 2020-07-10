@@ -59,6 +59,7 @@ addOverlayListener('onPlayerChangedEvent', (e) => { /* Fires after onZoneChanged
     const { actionList } = nextActionOverlay;
     const { statusList } = nextActionOverlay;
     const { castingList } = nextActionOverlay;
+    const { timeout } = nextActionOverlay;
     const { duration } = nextActionOverlay;
     duration.combo = 15000;
 
@@ -75,49 +76,48 @@ addOverlayListener('onPlayerChangedEvent', (e) => { /* Fires after onZoneChanged
     playerData.comboStep = '';
     // playerData.comboTimeout = -1;
 
+    /* Clear overlay and reset timers */
+    Object.keys(timeout).forEach((property) => { clearTimeout(timeout[property]); });
+    // Object.keys(interval).forEach((property) => { clearInterval(interval[property]); });
+    document.getElementById('icon-a').innerHTML = '';
+    document.getElementById('icon-b').innerHTML = '';
+    document.getElementById('icon-c').innerHTML = '';
+    document.getElementById('countdown-a').innerHTML = '';
+    document.getElementById('countdown-b').innerHTML = '';
+    document.getElementById('countdown-c').innerHTML = '';
+
     /* Assign functions */
-    if (nextActionOverlay.onJobChange[playerData.job]) {
-      nextActionOverlay.onJobChange = nextActionOverlay.onJobChange[playerData.job];
-    } else {
-      nextActionOverlay.onJobChange = nextActionOverlay.onJobChange.NONE;
+    if (!nextActionOverlay.onJobChange[playerData.job]) {
+      nextActionOverlay.onJobChange[playerData.job] = nextActionOverlay.onJobChange.NONE;
     }
 
-    if (nextActionOverlay.onPlayerChangedEvent[playerData.job]) {
+    if (!nextActionOverlay.onPlayerChangedEvent[playerData.job]) {
       nextActionOverlay
-        .onPlayerChangedEvent = nextActionOverlay.onPlayerChangedEvent[playerData.job];
-    } else {
-      nextActionOverlay.onPlayerChangedEvent = nextActionOverlay.onPlayerChangedEvent.NONE;
+        .onPlayerChangedEvent[playerData.job] = nextActionOverlay.onPlayerChangedEvent.NONE;
     }
 
-    if (nextActionOverlay.onTargetChange[playerData.job]) {
-      nextActionOverlay.onTargetChange = nextActionOverlay.onTargetChange[playerData.job];
-    } else {
-      nextActionOverlay.onTargetChange = nextActionOverlay.onTargetChange.NONE;
+    if (!nextActionOverlay.onTargetChange[playerData.job]) {
+      nextActionOverlay.onTargetChange[playerData.job] = nextActionOverlay.onTargetChange.NONE;
     }
 
-    if (nextActionOverlay.nextAction[playerData.job]) {
-      nextActionOverlay.nextAction = nextActionOverlay.nextAction[playerData.job];
-    } else {
-      nextActionOverlay.nextAction = nextActionOverlay.nextAction.NONE;
+    if (!nextActionOverlay.nextAction[playerData.job]) {
+      nextActionOverlay.nextAction[playerData.job] = nextActionOverlay.nextAction.NONE;
     }
 
-    if (nextActionOverlay.onAction[playerData.job]) {
-      nextActionOverlay.onAction = nextActionOverlay.onAction[playerData.job];
-    } else {
-      nextActionOverlay.onAction = nextActionOverlay.onAction.NONE;
+    if (!nextActionOverlay.onAction[playerData.job]) {
+      nextActionOverlay.onAction[playerData.job] = nextActionOverlay.onAction.NONE;
     }
 
-    if (nextActionOverlay.onStatus[playerData.job]) {
-      nextActionOverlay.onStatus = nextActionOverlay.onStatus[playerData.job];
-    } else {
-      nextActionOverlay.onStatus = nextActionOverlay.onStatus.NONE;
+    if (!nextActionOverlay.onStatus[playerData.job]) {
+      nextActionOverlay.onStatus[playerData.job] = nextActionOverlay.onStatus.NONE;
     }
 
-    nextActionOverlay.onJobChange();
-    nextActionOverlay.onPlayerChangedEvent(e); /* Links dynamic values */
+    nextActionOverlay.onJobChange[playerData.job]();
+    nextActionOverlay.onPlayerChangedEvent[playerData.job](e); /* Links dynamic values */
 
     /* Creates new regexes for matching */
     const actionNames = Object.values(actionList).flat(Infinity).join('|');
+    // console.log(actionNames);
     const statusNames = Object.values(statusList).flat(Infinity).join('|');
 
     const castingNames = Object.values(castingList).flat(Infinity).join('|');
@@ -138,12 +138,12 @@ addOverlayListener('onPlayerChangedEvent', (e) => { /* Fires after onZoneChanged
     /* Not sure if there's a better solution since the network log line is suuuuuuper slow */
 
     /* Initialize overlay */
-    nextActionOverlay.nextAction();
+    nextActionOverlay.nextAction[playerData.job]();
     // eslint-disable-next-line no-console
     console.log(`Changed to ${playerData.job}${playerData.level}`);
   }
 
-  nextActionOverlay.onPlayerChangedEvent(e);
+  nextActionOverlay.onPlayerChangedEvent[playerData.job](e);
 
   /* Section below does job-specific stuff */
 
@@ -235,13 +235,14 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
     const statsMatch = logs[i].match(statsRegex);
 
     const { playerData } = nextActionOverlay;
+    const { job } = playerData;
 
     if (actionMatch) {
       const { logType } = actionMatch.groups;
       const { actionName } = actionMatch.groups;
       const { targetID } = actionMatch.groups;
       if (logType === '15') {
-        onAction(actionMatch);
+        onAction[job](actionMatch);
       } else if (logType === '16') {
         const { timeout } = nextActionOverlay;
         const timeoutName = actionName.replace(/[\s':-]/g, '').toLowerCase();
@@ -253,15 +254,15 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
           }
         }
         clearTimeout(timeout[`${timeoutName}`]);
-        timeout[`${timeoutName}`] = setTimeout(onAction, 50, actionMatch);
+        timeout[`${timeoutName}`] = setTimeout(onAction[job], 50, actionMatch);
       }
     } else if (statusMatch) {
-      onStatus(statusMatch);
+      onStatus[job](statusMatch);
     } else if (castingMatch) {
-      onCasting(castingMatch);
+      onCasting[job](castingMatch);
     } else if (cancelMatch) {
       // console.log(`${cancelMatch}`);
-      onCancel(cancelMatch);
+      onCancel[job](cancelMatch);
     } else if (statsMatch) {
       /* Calculates speed-related stuff */
 
@@ -417,25 +418,28 @@ addOverlayListener('EnmityTargetData', (e) => {
   */
 
   const { playerData } = nextActionOverlay;
+  const { job } = playerData;
   const { targetData } = nextActionOverlay;
 
-  if (e.Target && playerData.job) {
+  if (e.Target) { /* Target exists */
     if (targetData.id !== e.Target.ID.toString(16).toUpperCase()) {
+      /* Changed target */
       targetData.name = e.Target.Name;
       targetData.id = e.Target.ID.toString(16).toUpperCase();
-      nextActionOverlay.onTargetChange();
+      if (nextActionOverlay.onTargetChange[job]) {
+        nextActionOverlay.onTargetChange[job]();
+      }
     }
 
     targetData.distance = e.Target.EffectiveDistance; /* Distance to "outside of circle" */
 
-    /* Shows and hides the overlay based on target and combat status */
-  }
-
-  if (nextActionOverlay.gameActive
-  && (playerData.combat
-    || (e.Target && targetData.id.startsWith('4') && targetData.distance <= 25)
-  )) {
-    document.getElementById('nextdiv').classList.replace('next-hide', 'next-show');
+    if (nextActionOverlay.combat
+      || (targetData.id && targetData.id.startsWith('4') && targetData.distance <= 25)
+    ) {
+      document.getElementById('nextdiv').classList.replace('next-hide', 'next-show');
+    } else {
+      document.getElementById('nextdiv').classList.replace('next-show', 'next-hide');
+    }
   } else {
     document.getElementById('nextdiv').classList.replace('next-show', 'next-hide');
   }
@@ -444,9 +448,9 @@ addOverlayListener('EnmityTargetData', (e) => {
 addOverlayListener('onInCombatChangedEvent', (e) => {
   // console.log(`onInCombatChangedEvent: ${JSON.stringify(e)}`);
   const { playerData } = nextActionOverlay;
-  if (playerData.combat !== e.detail.inGameCombat) {
-    playerData.combat = e.detail.inGameCombat;
-    if (playerData.combat === false) {
+  if (nextActionOverlay.combat !== e.detail.inGameCombat) {
+    nextActionOverlay.combat = e.detail.inGameCombat;
+    if (nextActionOverlay.combat === false) {
       playerData.targetCount = 1; /* Reset targetCount when OOC */
     }
   }

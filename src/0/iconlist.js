@@ -166,25 +166,7 @@ icon.airanchor = '003045';
 icon.automatonqueen = '003501';
 
 // MNK
-icon.demolish = '000204';
-icon.fistsoffire = '000205';
-icon.bootshine = '000208';
-icon.truestrike = '000209';
-icon.snappunch = '000210';
-icon.twinsnakes = '000213';
-icon.armofthedestroyer = '000215';
-icon.perfectbalance = '000217';
-icon.dragonkick = '002528';
-icon.rockbreaker = '002529';
-icon.elixirfield = '002533';
-icon.theforbiddenchakra = '002535';
-icon.riddleofearth = '002537';
-icon.riddleoffire = '002541';
-icon.brotherhood = '002542';
-icon.fourpointfury = '002544';
-icon.enlightenment = '002545';
-icon.anatman = '002546';
-icon.sixsidedstar = '002547';
+
 
 // NIN
 

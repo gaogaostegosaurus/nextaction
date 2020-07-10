@@ -50,15 +50,7 @@ duration.flamethrower = 10000;
 duration.reassemble = 5000;
 
 // MNK
-duration.twinsnakes = 15000;
-duration.demolish = 18000;
-duration.leadenfist = 30000;
-duration.perfectbalance = 10000;
-duration.riddleoffire = 20000;
-duration.form = 15000;
-duration.opoopoform = duration.form;
-duration.raptorform = duration.form;
-duration.coeurlform = duration.form;
+
 
 // NIN
 

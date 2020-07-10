@@ -25,9 +25,7 @@ nextActionOverlay.onJobChange.GNB = () => {
   ];
 
   nextActionOverlay.statusList = [
-    'Shade Shift', 'Shadow Fang', 'Kassatsu', 'Assassinate Ready', 'Ten Chi Jin', 'Bunshin',
-    'Mudra', 'Doton', 'Suiton',
-    'Bloodbath', 'Feint', 'Arm\'s Length', 'True North',
+    //
   ];
 
   const { recast } = nextActionOverlay;
@@ -90,7 +88,7 @@ nextActionOverlay.onPlayerChangedEvent.GNB = (e) => {
 nextActionOverlay.nextAction.GNB = ({
   delay = 0,
 } = {}) => {
-  const { nextAction } = nextActionOverlay;
+  const nextAction = nextActionOverlay.nextAction.GNB;
   const { checkStatus } = nextActionOverlay;
   const { checkRecast } = nextActionOverlay;
   const { duration } = nextActionOverlay;
@@ -131,8 +129,9 @@ nextActionOverlay.nextAction.GNB = ({
 
   let gcdTime = delay;
   let nextTime = 0; /* Amount of time looked ahead in loop */
+  const nextMaxTime = 15000;
 
-  while (nextTime < 15000) { /* Outside loop for GCDs, looks ahead this number ms */
+  while (nextTime < nextMaxTime) { /* Outside loop for GCDs, looks ahead this number ms */
     let loopTime = 0; /* Time elapsed for one loop */
 
     if (gcdTime <= 1000) {
@@ -408,7 +407,7 @@ nextActionOverlay.onAction.GNB = (actionMatch) => {
   const { addStatus } = nextActionOverlay;
   // const { checkStatus } = nextActionOverlay;
   const { removeStatus } = nextActionOverlay;
-  const { nextAction } = nextActionOverlay;
+  const nextAction = nextActionOverlay.nextAction.GNB;
 
   const { recast } = nextActionOverlay;
   // const { duration } = nextActionOverlay;

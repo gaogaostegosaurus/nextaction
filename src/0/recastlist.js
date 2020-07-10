@@ -71,12 +71,7 @@ recast.tactician = 180000;
 recast.wildfire = 120000;
 
 // MNK
-recast.anatman = 60000;
-recast.brotherhood = 90000;
-recast.elixirfield = 30000;
-recast.perfectbalance = 120000;
-recast.riddleoffire = 90000;
-recast.riddleofearth = 60000;
+
 
 // NIN
 recast.shadeshift = 120000;
