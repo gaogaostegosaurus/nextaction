@@ -365,6 +365,8 @@ nextActionOverlay.nextAction.NIN.gcd = ({
   const { playerData } = nextActionOverlay;
   const { level } = playerData;
   const { duration } = nextActionOverlay;
+  const { recast } = nextActionOverlay;
+
   /* Use Kassatsu if it's about to fade */
   if (loopStatus.kassatsu > 0 && loopStatus.kassatsu < playerData.gcd * 2) {
     if (level >= 76) {
@@ -411,26 +413,21 @@ nextActionOverlay.nextAction.NIN.gcd = ({
   }
 
   /* Trick priority */
-  if (loopStatus.trickattack > 0) {
-    if (loopStatus.kassatsu > 0 && loopStatus.kassatsu < playerData.gcd * 2) {
-      if (level >= 76) {
-        if (nextActionOverlay.targetCount > 1) {
-          return 'Goka Mekkyaku';
-        }
-        return 'Hyosho Ranryu';
-      } return nextAction.weaponskill();
-    } if (loopRecast.shadowfang < 0) {
-      return 'Shadow Fang';
-    } if (loopStatus.kassatsu > 0) {
-      if (level >= 76) {
-        if (nextActionOverlay.targetCount > 1) {
-          return 'Goka Mekkyaku';
-        }
-        return 'Hyosho Ranryu';
-      } return nextAction.ninjutsu();
-    } if (loopRecast.mudra1 < 0 && loopStatus.trickattack > 2000) {
-      return nextAction.ninjutsu();
-    } return nextAction.weaponskill({ comboStep, loopStatus });
+  if (loopStatus.trickattack > 0 && loopStatus.kassatsu > 0) {
+    if (level >= 76) {
+      if (nextActionOverlay.targetCount > 1) {
+        return 'Goka Mekkyaku';
+      }
+      return 'Hyosho Ranryu';
+    } return nextAction.ninjutsu();
+  }
+
+  if (loopRecast.trickattack > recast.shadowfang * 0.05 && loopRecast.shadowfang < 0) {
+    return 'Shadow Fang';
+  }
+
+  if (loopStatus.trickattack > 2000 && loopRecast.mudra1 < 0) {
+    return nextAction.ninjutsu();
   }
 
   /* Normal attacks */
