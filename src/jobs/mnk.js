@@ -380,11 +380,12 @@ nextActionOverlay.nextAction.MNK.gcd = ({
   loopRecast,
   loopStatus,
 } = {}) => {
-  const { playerData } = nextActionOverlay;
-  const { level } = playerData;
   const { duration } = nextActionOverlay;
   const { recast } = nextActionOverlay;
-  const { targetCount } = playerData;
+  
+  const { playerData } = nextActionOverlay;
+  const { level } = playerData;
+  const { targetCount } = nextActionOverlay;
 
   const gcd = playerData.gcd * (1 - greasedlightningStacks * 0.05);
 
