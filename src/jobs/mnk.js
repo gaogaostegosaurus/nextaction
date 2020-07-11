@@ -190,7 +190,7 @@ nextActionOverlay.nextAction.MNK = ({
   let gcdTime = delay;
   let nextTime = 0; /* Amount of time looked ahead in loop */
 
-  while (nextTime < 60000) { /* Outside loop for GCDs, looks ahead this number ms */
+  while (nextTime < 15000) { /* Outside loop for GCDs, looks ahead this number ms */
     let loopTime = 0; /* The elapsed time for current loop */
 
     /* Calculate max GL */
