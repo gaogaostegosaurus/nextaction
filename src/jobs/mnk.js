@@ -8,16 +8,6 @@ nextActionOverlay.onJobChange.MNK = () => {
     'Demolish', 'Snap Punch', 'Rockbreaker',
   ];
 
-  nextActionOverlay.actionList.weaponskills.opoopoform = [
-  ];
-
-  nextActionOverlay.actionList.weaponskills.raptorform = [
-
-  ];
-
-  nextActionOverlay.actionList.weaponskills.coeurlform = [
-  ];
-
   nextActionOverlay.actionList.abilities = [
     'Fists Of Earth', 'Fists Of Wind', 'Fists Of Fire', 'Shoulder Tackle',
     'Perfect Balance',
@@ -207,6 +197,9 @@ nextActionOverlay.nextAction.MNK = ({
     // console.log(gcdTime);
 
     if (gcdTime <= 1000) {
+      /* Cancel Anatman */
+      loopStatus.anatman = -1;
+
       /* GCD action if GCD is complete */
       const nextGCD = nextAction.gcd({
         combat,
@@ -221,11 +214,6 @@ nextActionOverlay.nextAction.MNK = ({
 
       if (!['Form Shift', 'Meditation'].includes(nextGCD)) {
         combat = true;
-      }
-
-      /* Cancel Anatman */
-      if (nextGCD !== 'Anatman') {
-        loopStatus.anatman = -1;
       }
 
       const property = nextGCD.replace(/[\s':-]/g, '').toLowerCase();
@@ -317,7 +305,7 @@ nextActionOverlay.nextAction.MNK = ({
 
       loopTime = gcdTime;
 
-      /* Fix times from Anatman */
+      /* Remove OGCD for Anatman */
       if (nextGCD === 'Anatman') {
         loopStatus.greasedlightning += gcdTime;
         gcdTime = 0;
@@ -370,13 +358,15 @@ nextActionOverlay.nextAction.MNK = ({
         combat = true;
       }
 
-      gcdTime -= 9999; /* Just so I don't hafta worry about it */
+      gcdTime -= 9999; /* Just not bothering with double weaves on MNK */
     }
 
     Object.keys(loopRecast).forEach((property) => { loopRecast[property] -= loopTime; });
     Object.keys(loopStatus).forEach((property) => { loopStatus[property] -= loopTime; });
-    nextTime += loopTime;
+    
     gcdTime = 0; /* Zero out for next loop */
+    
+    nextTime += loopTime;
   }
   nextActionOverlay.iconArrayB = mnkArray;
   nextActionOverlay.syncIcons();
