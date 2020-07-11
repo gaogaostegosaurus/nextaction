@@ -2,7 +2,7 @@ nextActionOverlay.onJobChange.RDM = () => {
   /* Set initial values */
   const { playerData } = nextActionOverlay;
   const { level } = playerData;
-  playerData.comboStep = '';
+  nextActionOverlay.comboStep = '';
 
   nextActionOverlay.actionList.spells = [
     'Jolt', 'Jolt II', 'Verfire', 'Verstone', 'Verthunder II', 'Veraero II',
@@ -427,7 +427,7 @@ nextActionOverlay.nextAction.RDM.gcd = ({
   const nextAction = nextActionOverlay.nextAction.RDM;
 
   let moulinetFloor = 40; /* Allows Reprise to be used until 40-59 mana is reached */
-  if (playerData.targetCount >= 3) {
+  if (nextActionOverlay.targetCount >= 3) {
     moulinetFloor = 50; /* Allows Reprise to be used until 50-69 mana is reached */
   }
 
@@ -488,7 +488,7 @@ nextActionOverlay.nextAction.RDM.gcd = ({
   } if (level >= 35 && level < 50 && Math.min(blackmana, whitemana) >= 25
   && comboStep === 'Enchanted Riposte') {
     return 'Enchanted Zwerchhau';
-  } if (level >= 52 && playerData.targetCount > 1 && Math.min(blackmana, whitemana) >= 20
+  } if (level >= 52 && nextActionOverlay.targetCount > 1 && Math.min(blackmana, whitemana) >= 20
   && moulinetTime > loopRecast.manafication) {
     return 'Enchanted Moulinet'; /* This should take care of general AoE but check later */
   } if (level >= 70 && Math.min(blackmana, whitemana) >= 80 && blackmana > whitemana
@@ -540,10 +540,10 @@ nextActionOverlay.nextAction.RDM.ogcd = ({
   const { playerData } = nextActionOverlay;
   const { level } = playerData;
 
-  if (level >= 60 && playerData.targetCount >= 2 && comboStep === ''
+  if (level >= 60 && nextActionOverlay.targetCount >= 2 && comboStep === ''
   && Math.min(blackmana, whitemana) >= 50 && gcdTime <= 2200 && loopRecast.manafication < 0) {
     return 'Manafication'; /* gcdTime <= 1500 places at end of double weave */
-  } if (level >= 60 && playerData.targetCount === 1 && comboStep === ''
+  } if (level >= 60 && nextActionOverlay.targetCount === 1 && comboStep === ''
   && Math.min(blackmana, whitemana) >= 40 && gcdTime <= 2200
   && loopRecast.manafication < 0) {
     return 'Manafication';
@@ -561,7 +561,7 @@ nextActionOverlay.nextAction.RDM.ogcd = ({
     return 'Engagement';
   } if (level >= 40
   && comboStep !== 'Enchanted Riposte' && comboStep !== 'Enchanted Zwerchhau'
-  && (playerData.targetCount === 1 || Math.min(blackmana, whitemana) < 20) && gcdTime >= 2200
+  && (nextActionOverlay.targetCount === 1 || Math.min(blackmana, whitemana) < 20) && gcdTime >= 2200
   && loopRecast.displacement < 0) {
     return 'Displacement';
   } if (level >= 18 && Math.max(blackmana, whitemana) < 80
@@ -614,13 +614,13 @@ nextActionOverlay.nextAction.RDM.dualcast = ({
     veraeroPotency = 370;
   }
 
-  let veraeroiiPotency = 100 * playerData.targetCount;
+  let veraeroiiPotency = 100 * nextActionOverlay.targetCount;
   if (level >= 78) {
-    veraeroiiPotency = 120 * playerData.targetCount;
+    veraeroiiPotency = 120 * nextActionOverlay.targetCount;
   }
 
-  const scatterPotency = 120 * playerData.targetCount;
-  const impactPotency = 220 * playerData.targetCount;
+  const scatterPotency = 120 * nextActionOverlay.targetCount;
+  const impactPotency = 220 * nextActionOverlay.targetCount;
 
   let hardcast = 'Jolt';
   let dualcast = 'Jolt';
@@ -752,14 +752,14 @@ nextActionOverlay.onAction.RDM = (actionMatch) => {
 
   if (multiTargetActions.includes(actionName) && actionMatch.groups.logType === '15') {
     /* Multi target only hits single target */
-    playerData.targetCount = 1;
+    nextActionOverlay.targetCount = 1;
   } else if (
     (level < 62 && actionName === 'Jolt')
     || (level >= 52 && ['Enchanted Riposte'].includes(actionName))
     || (level >= 66 && ['Verthunder', 'Veraero'].includes(actionName))
   ) {
     /* Unambiguous single target actions */
-    playerData.targetCount = 1;
+    nextActionOverlay.targetCount = 1;
   }
 
   /* Remove matched icon */
@@ -772,13 +772,13 @@ nextActionOverlay.onAction.RDM = (actionMatch) => {
     || (level < 80 && ['Verflare', 'Verholy'].includes(actionName))
     || (actionName === 'Scorch')) {
       removeStatus({ statusName: 'Combo' });
-      playerData.comboStep = '';
+      nextActionOverlay.comboStep = '';
     } else if (['Moulinet', 'Enchanted Moulinet', 'Reprise', 'Enchanted Reprise'].includes(actionName)) {
       removeStatus({ statusName: 'Combo' });
-      playerData.comboStep = '';
+      nextActionOverlay.comboStep = '';
     } else {
       addStatus({ statusName: 'Combo' });
-      playerData.comboStep = actionName;
+      nextActionOverlay.comboStep = actionName;
     }
 
     /* Call next function with appropriate GCD time */
@@ -866,7 +866,7 @@ nextActionOverlay.onCasting.RDM = (castingMatch) => {
   // }
   // console.log('test');
   playerData.hardcasting = castingMatch.groups.actionName;
-  playerData.comboStep = '';
+  nextActionOverlay.comboStep = '';
   nextActionOverlay.nextAction.RDM();
   fadeIcon({ name: 'Hardcast', match: 'contains' });
 };

@@ -135,7 +135,7 @@ nextActionOverlay.nextAction.NIN = ({
 
   /* Initial values for loops */
 
-  let { comboStep } = playerData;
+  let { comboStep } = nextActionOverlay;
   let { ninki } = playerData;
   let { bunshinCount } = playerData;
 
@@ -284,7 +284,7 @@ nextActionOverlay.nextAction.NIN = ({
       if (nextOGCD === 'Ten Chi Jin Suiton') {
         ninArray.push({ name: 'Ten Chi Jin', size: 'small' });
         ninArray.push({ name: 'Fuma Shuriken' });
-        if (playerData.targetCount > 1) {
+        if (nextActionOverlay.targetCount > 1) {
           ninArray.push({ name: 'Katon' });
         } else {
           ninArray.push({ name: 'Raiton' });
@@ -368,11 +368,11 @@ nextActionOverlay.nextAction.NIN.gcd = ({
   /* Use Kassatsu if it's about to fade */
   if (loopStatus.kassatsu > 0 && loopStatus.kassatsu < playerData.gcd * 2) {
     if (level >= 76) {
-      if (playerData.targetCount > 1) {
+      if (nextActionOverlay.targetCount > 1) {
         return 'Goka Mekkyaku';
       }
       return 'Hyosho Ranryu';
-    } if (playerData.targetCount > 1) {
+    } if (nextActionOverlay.targetCount > 1) {
       return 'Katon';
     } return 'Raiton';
   }
@@ -385,7 +385,7 @@ nextActionOverlay.nextAction.NIN.gcd = ({
   /* Prioritize Huton if it's really low for some reason */
   if (level >= 45 && loopRecast.mudra1 < 0 && loopStatus.huton < 500 * 3 + 1500) {
     return 'Huton';
-  } if (level >= 52 && playerData.targetCount >= 3
+  } if (level >= 52 && nextActionOverlay.targetCount >= 3
   && loopStatus.huton < 10000 && loopStatus.huton > 0) {
     if (comboStep === 'Death Blossom') {
       return 'Hakke Mujinsatsu';
@@ -414,7 +414,7 @@ nextActionOverlay.nextAction.NIN.gcd = ({
   if (loopStatus.trickattack > 0) {
     if (loopStatus.kassatsu > 0 && loopStatus.kassatsu < playerData.gcd * 2) {
       if (level >= 76) {
-        if (playerData.targetCount > 1) {
+        if (nextActionOverlay.targetCount > 1) {
           return 'Goka Mekkyaku';
         }
         return 'Hyosho Ranryu';
@@ -423,7 +423,7 @@ nextActionOverlay.nextAction.NIN.gcd = ({
       return 'Shadow Fang';
     } if (loopStatus.kassatsu > 0) {
       if (level >= 76) {
-        if (playerData.targetCount > 1) {
+        if (nextActionOverlay.targetCount > 1) {
           return 'Goka Mekkyaku';
         }
         return 'Hyosho Ranryu';
@@ -554,7 +554,7 @@ nextActionOverlay.nextAction.NIN.ogcd = ({
   && loopRecast.meisui < 0) {
     return 'Meisui';
   } if (level >= 62 && ninki >= ninkiTarget) {
-    if (playerData.targetCount > 1) {
+    if (nextActionOverlay.targetCount > 1) {
       return 'Hellfrog Medium';
     } if (level >= 68) {
       return 'Bhavacakra';
@@ -599,7 +599,7 @@ nextActionOverlay.onAction.NIN = (actionMatch) => {
   }
 
   if (singletargetActions.includes(actionName)) {
-    playerData.targetCount = 1;
+    nextActionOverlay.targetCount = 1;
   }
 
   if (weaponskills.includes(actionName)) {
@@ -608,17 +608,15 @@ nextActionOverlay.onAction.NIN = (actionMatch) => {
 
       /* Since Shadow Fang can't be on more than one target anyway, treat it like a buff */
       addStatus({ statusName: 'Shadow Fang' });
-    } else if ((level < 4)
-    || (level < 26 && actionName === 'Gust Slash')
-    || (level < 52 && actionName === 'Death Blossom')) {
-      removeStatus({ statusName: 'Combo' });
-      playerData.comboStep = '';
-    } else if (comboCheck) {
+    } else if (comboCheck
+    && ((level >= 4 && actionName === 'Spinning Edge')
+    || (level >= 26 && actionName === 'Gust Slash')
+    || (level >= 52 && actionName === 'Death Blossom'))) {
       addStatus({ statusName: 'Combo' });
-      playerData.comboStep = actionName;
+      nextActionOverlay.comboStep = actionName;
     } else {
       removeStatus({ statusName: 'Combo' });
-      playerData.comboStep = '';
+      nextActionOverlay.comboStep = '';
     }
     // console.log(checkStatus({ statusName: 'Combo' }));
     /* Call next with GCD active */

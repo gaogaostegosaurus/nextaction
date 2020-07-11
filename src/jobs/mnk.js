@@ -53,9 +53,11 @@ nextActionOverlay.onJobChange.MNK = () => {
 
   const { duration } = nextActionOverlay;
   duration.twinsnakes = 15000;
+  duration.anatman = 30000;
   duration.demolish = 18000;
   duration.leadenfist = 30000;
   duration.perfectbalance = 10000;
+  duration.twinsnakes = 15000;
   duration.riddleoffire = 20000;
   duration.fists = 99999999;
   duration.fistsofearth = duration.fists;
@@ -75,6 +77,9 @@ nextActionOverlay.onJobChange.MNK = () => {
   icon.twinsnakes = '000213';
   icon.armofthedestroyer = '000215';
   icon.perfectbalance = '000217';
+  icon.shouldertackle = '002526';
+  icon.shouldertackle1 = icon.shouldertackle;
+  icon.shouldertackle2 = icon.shouldertackle;
   icon.fistsofwind = '002527';
   icon.dragonkick = '002528';
   icon.rockbreaker = '002529';
@@ -99,15 +104,15 @@ nextActionOverlay.onPlayerChangedEvent.MNK = (e) => {
 
   playerData.greasedlightningStacks = e.detail.jobDetail.lightningStacks;
   if (level >= 76 && checkStatus({ statusName: 'Fists Of Wind' }) > 0) {
-    playerData.greasedlightningMaxStacks = 4;
+    playerData.greasedlightningMax = 4;
   } else if (level >= 40) {
-    playerData.greasedlightningMaxStacks = 3;
+    playerData.greasedlightningMax = 3;
   } else if (level >= 20) {
-    playerData.greasedlightningMaxStacks = 2;
+    playerData.greasedlightningMax = 2;
   } else if (level >= 6) {
-    playerData.greasedlightningMaxStacks = 1;
+    playerData.greasedlightningMax = 1;
   } else {
-    playerData.greasedlightningMaxStacks = 0;
+    playerData.greasedlightningMax = 0;
   }
   playerData.greasedlightningStatus = e.detail.jobDetail.lightningMilliseconds;
   if (playerData.greasedlightningStatus === 0) {
@@ -136,6 +141,7 @@ nextActionOverlay.onPlayerChangedEvent.MNK = (e) => {
 nextActionOverlay.nextAction.MNK = ({
   delay = 0,
 } = {}) => {
+  console.log(nextActionOverlay.playerData.greasedlightningStatus);
   const nextAction = nextActionOverlay.nextAction.MNK;
 
   const { checkRecast } = nextActionOverlay;
@@ -146,12 +152,12 @@ nextActionOverlay.nextAction.MNK = ({
   const { playerData } = nextActionOverlay;
   const { level } = playerData;
   const { gcd } = playerData;
-  let { greasedlightningStacks } = playerData;
-  let { chakra } = playerData;
 
   const { targetData } = nextActionOverlay;
 
   let { combat } = nextActionOverlay;
+  let { greasedlightningStacks } = playerData;
+  let { chakra } = playerData;
 
   const loopRecast = {};
   const loopRecastList = [
@@ -165,10 +171,10 @@ nextActionOverlay.nextAction.MNK = ({
 
   const loopStatus = {};
   const loopStatusList = [
-    'Opo Opo Form', 'Raptor Form', 'Coeurl Form',
+    'Opo-Opo Form', 'Raptor Form', 'Coeurl Form',
     'Twin Snakes', 'Leaden Fist',
     'Fists Of Fire', 'Fists Of Wind',
-    'Perfect Balance',
+    'Perfect Balance', 'Riddle Of Fire',
   ];
 
   loopStatusList.forEach((statusName) => {
@@ -177,14 +183,14 @@ nextActionOverlay.nextAction.MNK = ({
   });
 
   loopStatus.demolish = checkStatus({ statusName: 'Demolish', id: targetData.id }); /* Not self-targeted */
-  loopStatus.greasedlightning = playerData.greasedlightingStatus;
+  loopStatus.greasedlightning = playerData.greasedlightningStatus;
 
   const mnkArray = [];
 
   let gcdTime = delay;
   let nextTime = 0; /* Amount of time looked ahead in loop */
 
-  while (nextTime < 15000) { /* Outside loop for GCDs, looks ahead this number ms */
+  while (nextTime < 60000) { /* Outside loop for GCDs, looks ahead this number ms */
     let loopTime = 0; /* The elapsed time for current loop */
 
     /* Calculate max GL */
@@ -198,6 +204,7 @@ nextActionOverlay.nextAction.MNK = ({
     } else if (level >= 6) {
       greasedlightningMax = 1;
     }
+    // console.log(gcdTime);
 
     if (gcdTime <= 1000) {
       /* GCD action if GCD is complete */
@@ -214,30 +221,52 @@ nextActionOverlay.nextAction.MNK = ({
 
       if (!['Form Shift', 'Meditation'].includes(nextGCD)) {
         combat = true;
-        // console.log(nextGCD);
       }
 
-      /* Special stuff */
-      if (nextGCD === 'Twin Snakes') {
-        loopStatus.twinsnakes = duration.twinsnakes;
+      /* Cancel Anatman */
+      if (nextGCD !== 'Anatman') {
+        loopStatus.anatman = -1;
+      }
+
+      const property = nextGCD.replace(/[\s':-]/g, '').toLowerCase();
+
+      /* Recasts */
+      if (recast[property]) {
+        loopRecast[property] = recast[property];
+      }
+
+      /* Statuses */
+      if (nextGCD === 'Bootshine') {
+        loopStatus.leadenfist = -1;
       } else if (nextGCD === 'Four Point Fury' && loopStatus.twinsnakes > 0) {
         loopStatus.twinsnakes = Math.min(loopStatus.twinsnakes + 10000, 15000);
-      } else if (nextGCD === 'Demolish') {
-        loopStatus.demolish = duration.demolish;
-      } else if (nextGCD === 'Dragon Kick' && (loopStatus.opoopoform > 0 || loopStatus.perfectbalance
-         > 0)) {
+      } else if (nextGCD === 'Dragon Kick'
+      && (loopStatus.opoopoform > 0 || loopStatus.perfectbalance > 0)) {
         loopStatus.leadenfist = duration.leadenfist;
-      } else if (nextGCD === 'Bootshine') {
-        loopStatus.leadenfist = -1;
-      } else if (nextGCD === 'Meditation') {
+      } else if (duration[property]) {
+        loopStatus[property] = duration[property];
+      }
+
+      /* Resources */
+      if (nextGCD === 'Meditation') {
         if (!combat) {
           chakra = 5;
         } else {
           chakra += 1;
         }
+      } else if (nextGCD === 'Anatman' && greasedlightningStacks < greasedlightningMax) {
+        greasedlightningStacks += 1;
+      } else if (['Snap Punch', 'Demolish', 'Rockbreaker'].includes(nextGCD)) {
+        loopStatus.greasedlightning = 16000;
+        /* Increase GL up to max */
+        if (greasedlightningStacks < greasedlightningMax) {
+          greasedlightningStacks += 1;
+        }
+      } else if (nextGCD === 'Form Shift' && loopStatus.coeurlform > 0 && greasedlightningStacks > 0) {
+        loopStatus.greasedlightning = 16000;
       }
 
-      /* Stance change */
+      /* Form change */
       if (loopStatus.perfectbalance > 0) {
         loopStatus.opoopoform = -1;
         loopStatus.raptorform = -1;
@@ -254,17 +283,8 @@ nextActionOverlay.nextAction.MNK = ({
         loopStatus.opoopoform = 15000;
         loopStatus.raptorform = -1;
         loopStatus.coeurlform = -1;
-        loopStatus.greasedlightning = 16000;
-
-        /* Increase GL up to max */
-        if (greasedlightningStacks < greasedlightningMax) {
-          greasedlightningStacks += 1;
-          // console.log(greasedlightningStacks + ' / ' + greasedlightningMax);
-        }
       } else if (nextGCD === 'Form Shift') {
-        if (Math.max(loopStatus.opoopoform, loopStatus.raptorform, loopStatus.coeurlform) < 0) {
-          loopStatus.opoopoform = 15000;
-        } else if (loopStatus.opoopoform > 0) {
+        if (loopStatus.opoopoform > 0) {
           loopStatus.opoopoform = -1;
           loopStatus.raptorform = 15000;
           loopStatus.coeurlform = -1;
@@ -272,7 +292,7 @@ nextActionOverlay.nextAction.MNK = ({
           loopStatus.opoopoform = -1;
           loopStatus.raptorform = -1;
           loopStatus.coeurlform = 15000;
-        } else if (loopStatus.coeurlform > 0) {
+        } else {
           loopStatus.opoopoform = 15000;
           loopStatus.raptorform = -1;
           loopStatus.coeurlform = -1;
@@ -281,6 +301,8 @@ nextActionOverlay.nextAction.MNK = ({
 
       if (nextGCD === 'Meditation') {
         gcdTime = 1200;
+      } else if (nextGCD === 'Anatman') {
+        gcdTime = 3000;
       } else {
         gcdTime = gcd * (1 - 0.05 * greasedlightningStacks);
       }
@@ -294,13 +316,19 @@ nextActionOverlay.nextAction.MNK = ({
       }
 
       loopTime = gcdTime;
+
+      /* Fix times from Anatman */
+      if (nextGCD === 'Anatman') {
+        loopStatus.greasedlightning += gcdTime;
+        gcdTime = 0;
+      }
     }
 
     while (gcdTime > 1250) {
       const nextOGCD = nextAction.ogcd({
         combat,
-        greasedlightningMax,
         greasedlightningStacks,
+        greasedlightningMax,
         chakra,
         loopRecast,
         loopStatus,
@@ -310,19 +338,19 @@ nextActionOverlay.nextAction.MNK = ({
         mnkArray.push({ name: nextOGCD, size: 'small' });
       }
 
-      if (nextOGCD === 'Anatman' && greasedlightningStacks < greasedlightningMax) {
-        greasedlightningStacks += 1;
-      }
-
       if (['The Forbidden Chakra', 'Enlightenment'].includes(nextOGCD)) {
         chakra = 0;
       }
 
       const property = nextOGCD.replace(/[\s':-]/g, '').toLowerCase();
 
-      if (nextOGCD === 'Shoulder Tackle 2') {
-        loopRecast.shouldertackle1 = loopRecast.shouldertackle2;
-        loopRecast.shouldertackle2 += recast.shouldertackle2;
+      if (nextOGCD === 'Shoulder Tackle') {
+        if (level >= 66) {
+          loopRecast.shouldertackle1 = loopRecast.shouldertackle2;
+          loopRecast.shouldertackle2 += recast.shouldertackle;
+        } else {
+          loopRecast.shouldertackle1 += loopRecast.shouldertackle;
+        }
       } else if (recast[property]) {
         loopRecast[property] = recast[property];
       }
@@ -338,7 +366,7 @@ nextActionOverlay.nextAction.MNK = ({
         loopStatus[property] = duration[property];
       }
 
-      if (!['Fists Of Fire', 'Fists Of Wind', 'Anatman', ''].includes(nextOGCD)) {
+      if (!['Fists Of Fire', 'Fists Of Wind', ''].includes(nextOGCD)) {
         combat = true;
       }
 
@@ -348,6 +376,7 @@ nextActionOverlay.nextAction.MNK = ({
     Object.keys(loopRecast).forEach((property) => { loopRecast[property] -= loopTime; });
     Object.keys(loopStatus).forEach((property) => { loopStatus[property] -= loopTime; });
     nextTime += loopTime;
+    gcdTime = 0; /* Zero out for next loop */
   }
   nextActionOverlay.iconArrayB = mnkArray;
   nextActionOverlay.syncIcons();
@@ -355,48 +384,58 @@ nextActionOverlay.nextAction.MNK = ({
 
 nextActionOverlay.nextAction.MNK.gcd = ({
   combat,
-  chakra,
   greasedlightningStacks,
   greasedlightningMax,
-  loopStatus,
+  chakra,
   loopRecast,
+  loopStatus,
 } = {}) => {
   const { playerData } = nextActionOverlay;
   const { level } = playerData;
   const { duration } = nextActionOverlay;
+  const { recast } = nextActionOverlay;
   const { targetCount } = playerData;
 
   const gcd = playerData.gcd * (1 - greasedlightningStacks * 0.05);
-  const snappunchPotency = 230 + Math.ceil(loopStatus.demolish / 3000) * 65;
-  const rockbreakerPotency = 120 * targetCount + Math.ceil(loopStatus.demolish / 3000) * 65;
-  const demolishPotency = 90 + Math.floor((18000 - loopStatus.demolish) / 3000) * 65;
 
-  /* Demolish at start of Riddle of Fire */
-  if (loopStatus.riddleoffire > duration.riddleoffire - gcd
-  && Math.max(loopStatus.coeurlform, loopStatus.perfectbalance) > 0) {
-    return 'Demolish';
+  /* Checks if demolish was snapshotted */
+  const demolishStatusPotency = Math.ceil(Math.max(loopStatus.demolish, 0) / 3000) * 65;
+  let basePotencyMultiplier = 1;
+  let demolishStatusMultiplier = 1;
+  const windowMax = recast.riddleoffire - duration.demolish;
+  const windowMin = recast.riddleoffire - duration.riddleoffire - duration.demolish;
+  if (windowMax >= loopRecast.riddleoffire - loopStatus.demolish
+  && windowMin <= loopRecast.riddleoffire - loopStatus.demolish) {
+    demolishStatusMultiplier = 1.25;
+  } /* REALLY unsure about this formula but whatever */
+
+  if (loopStatus.riddleoffire > 0) {
+    basePotencyMultiplier = 1.25;
   }
 
-  /* Demolish at end of Riddle of Fire */
-  if (loopStatus.riddleoffire > 0 && loopStatus.riddleoffire < gcd
-  && Math.max(loopStatus.coeurlform, loopStatus.perfectbalance) > 0) {
-    return 'Demolish';
-  }
+  const snappunchPotency = 230 * basePotencyMultiplier
+    + demolishStatusPotency * demolishStatusMultiplier;
+  const rockbreakerPotency = 120 * targetCount * basePotencyMultiplier
+    + demolishStatusPotency * demolishStatusMultiplier;
+  const demolishPotency = (90 + (18000 / 3000) * 65) * basePotencyMultiplier
+    - demolishStatusPotency * demolishStatusMultiplier;
 
   /* Perfect Balance priorities */
   if (loopStatus.perfectbalance > 0) { /* Implies player level >= 50 */
     /* Increase GL stacks and refresh */
-    if (greasedlightningStacks < greasedlightningMax || loopStatus.greasedlightning < gcd * 3) {
+    if (greasedlightningStacks < greasedlightningMax || loopStatus.greasedlightning < gcd * 4) {
       if (rockbreakerPotency > Math.max(demolishPotency, snappunchPotency)) {
         return 'Rockbreaker';
       }
       if (demolishPotency > snappunchPotency) {
         return 'Demolish';
-      } return 'Snap Punch';
+      }
+      return 'Snap Punch';
     }
 
     /* Keep Twin Snakes up for AoE */
-    if (playerData.targetCount > 1 && loopStatus.twinsnakes < gcd) {
+    if (nextActionOverlay.targetCount > 1
+    && loopStatus.twinsnakes > 0 && loopStatus.twinsnakes < gcd) {
       return 'Four Point Fury';
     }
 
@@ -420,6 +459,12 @@ nextActionOverlay.nextAction.MNK.gcd = ({
     return 'Form Shift';
   }
 
+  /* Anatman */
+  if (level >= 78 && greasedlightningStacks < greasedlightningMax
+  && loopStatus.opoopoform > 0 && loopStatus.riddleoffire < 0 && loopRecast.anatman < 0) {
+    return 'Anatman';
+  }
+
   /* General priority (no PB) */
   if (level >= 30 && rockbreakerPotency > Math.max(demolishPotency, snappunchPotency)
   && loopStatus.coeurlform > 0) {
@@ -434,16 +479,17 @@ nextActionOverlay.nextAction.MNK.gcd = ({
     return 'Snap Punch';
   }
 
-  if (level >= 40 && playerData.targetCount > 1 && loopStatus.twinsnakes > 0
+  if (level >= 40 && nextActionOverlay.targetCount > 1 && loopStatus.twinsnakes > 0
   && loopStatus.raptorform > 0) {
     return 'Four Point Fury';
   }
 
-  if (level >= 50 && loopRecast.perfectbalance < gcd * 3 && loopStatus.raptorform > 0) {
+  if (level >= 50 && loopRecast.perfectbalance < gcd * 3 && greasedlightningStacks >= 3
+  && loopStatus.raptorform > 0) {
     return 'Twin Snakes'; /* Twin Snakes before Perfect Balance if able */
   }
 
-  if (level >= 18 && loopStatus.twinsnakes <= gcd * 3 && loopStatus.raptorform > 0) {
+  if (level >= 18 && loopStatus.twinsnakes <= gcd * 2 && loopStatus.raptorform > 0) {
     return 'Twin Snakes';
   }
 
@@ -451,7 +497,7 @@ nextActionOverlay.nextAction.MNK.gcd = ({
     return 'True Strike';
   }
 
-  if (level >= 26 && playerData.targetCount > 2) {
+  if (level >= 26 && nextActionOverlay.targetCount > 2) {
     return 'Arm Of The Destroyer';
   }
 
@@ -464,10 +510,10 @@ nextActionOverlay.nextAction.MNK.ogcd = ({
   combat,
   greasedlightningStacks,
   greasedlightningMax,
-  chakra,
   loopRecast,
   loopStatus,
 } = {}) => {
+  const { recast } = nextActionOverlay;
   const { playerData } = nextActionOverlay;
   const { level } = playerData;
 
@@ -476,7 +522,8 @@ nextActionOverlay.nextAction.MNK.ogcd = ({
     return 'Fists Of Wind';
   }
 
-  if (level >= 40 && loopStatus.fistsoffire < 0) {
+  if (level >= 40 && greasedlightningStacks <= 3 && (loopStatus.coeurlform < 0 || level < 76)
+  && loopStatus.fistsoffire < 0) {
     return 'Fists Of Fire';
   }
 
@@ -484,48 +531,49 @@ nextActionOverlay.nextAction.MNK.ogcd = ({
     return '';
   }
 
-  if (level >= 78 && greasedlightningStacks < greasedlightningMax
-  && loopStatus.opoopoform > 0 && loopRecast.anatman < 0) {
-    return 'Anatman';
-    /* Not sure why Opo-opo is needed...? Just opening shenanigans, maybe */
-  }
-  if (level >= 68 && loopRecast.riddleoffire < 0 && loopStatus.coeurlform > 0) {
+  if (level >= 68 && loopStatus.coeurlform > 0 && greasedlightningStacks >= 2
+  && loopRecast.riddleoffire < 0) {
     return 'Riddle Of Fire';
   }
-  if (level >= 70 && loopRecast.brotherhood < 0 && loopRecast.riddleoffire > 22500) {
+  if (level >= 70 && loopRecast.riddleoffire > recast.brotherhood * 0.25
+  && loopRecast.brotherhood < 0) {
     return 'Brotherhood';
   }
 
-  if (greasedlightningStacks >= 4 /* Implies 78 */
+  if (nextActionOverlay.targetCount <= 2 && greasedlightningStacks >= 4 /* Implies 78 */
   && loopStatus.raptorform > 0 && loopRecast.perfectbalance < 0) {
     return 'Perfect Balance';
   }
 
-  if (level >= 50 && level < 78 && greasedlightningStacks < greasedlightningMax
-  && loopStatus.opoopoform > 0 && loopRecast.perfectbalance < 0) {
+  if (level >= 50 && level < 78 && nextActionOverlay.targetCount <= 2
+  && greasedlightningStacks < greasedlightningMax && loopStatus.opoopoform > 0
+  && loopRecast.perfectbalance < 0) {
     return 'Perfect Balance';
   }
 
-  if (level >= 74 && playerData.targetCount > 1 && chakra === 5) {
-    return 'Enlightenment';
-  }
+  // if (level >= 74 && nextActionOverlay.targetCount > 1 && chakra === 5) {
+  //   return 'Enlightenment';
+  // }
 
-  if (level >= 56 && playerData.targetCount > 1 && loopRecast.elixirfield < 0
-  && loopRecast.riddleoffire > 7500) {
+  if (level >= 56 && nextActionOverlay.targetCount > 1
+  && loopRecast.riddleoffire > recast.elixirfield * 0.25 && loopRecast.elixirfield < 0) {
     return 'Elixir Field';
   }
 
-  if (level >= 54 && chakra === 5) {
-    return 'The Forbidden Chakra';
-  }
+  // if (level >= 54 && chakra === 5) {
+  //   return 'The Forbidden Chakra';
+  // }
 
-  if (level >= 56 && loopRecast.elixirfield < 0 && loopRecast.riddleoffire > 7500) {
+  if (level >= 56 && loopRecast.riddleoffire > recast.elixirfield * 0.25
+  && loopRecast.elixirfield < 0) {
     return 'Elixir Field';
   }
 
   if (level >= 66 && loopRecast.shouldertackle2 < 0) {
-    return 'Shoulder Tackle 2';
-  } return '';
+    return 'Shoulder Tackle';
+  }
+
+  return ''; /* Nothing available */
 };
 
 nextActionOverlay.onAction.MNK = (actionMatch) => {
@@ -536,6 +584,8 @@ nextActionOverlay.onAction.MNK = (actionMatch) => {
   const { addRecast } = nextActionOverlay;
   const { checkRecast } = nextActionOverlay;
   const { recast } = nextActionOverlay;
+  const { duration } = nextActionOverlay;
+
   const { targetData } = nextActionOverlay;
   const { weaponskills } = nextActionOverlay.actionList;
   // const nextAction = nextActionOverlay.nextAction.MNK;
@@ -543,6 +593,11 @@ nextActionOverlay.onAction.MNK = (actionMatch) => {
   const { addStatus } = nextActionOverlay;
   const { playerData } = nextActionOverlay;
   const { level } = playerData;
+
+  const gcd = playerData.gcd * (1 - playerData.greasedlightningStacks * 0.05);
+  const opoopoformWeaponskills = ['Bootshine', 'Dragon Kick', 'Arm Of The Destroyer'];
+  const raptorformWeaponskills = ['True Strike', 'Twin Snakes', 'Four-Point Fury'];
+  const coeurlformWeaponskills = ['Demolish', 'Snap Punch', 'Rockbreaker'];
 
   removeIcon({ name: actionName });
   // console.log(`${actionName}`);
@@ -573,59 +628,108 @@ nextActionOverlay.onAction.MNK = (actionMatch) => {
 
   /* Set probable target count */
   if (multitargetActions.includes(actionName) && actionMatch.groups.logType === '15') {
-    playerData.targetCount = 1; /* Multi target action only hits single target */
+    nextActionOverlay.targetCount = 1; /* Multi target action only hits single target */
   } else if (singletargetActions.includes(actionName)) {
-    playerData.targetCount = 1;
+    nextActionOverlay.targetCount = 1;
   }
 
-  /* Add recasts */
+  const property = actionName.replace(/[\s':-]/g, '').toLowerCase();
+
+  /* Recasts */
   if (actionName === 'Shoulder Tackle') {
-    addRecast({ actionName: 'Shoulder Tackle 1', time: checkRecast({ actionName: 'Shoulder Tackle 2' }) });
-    addRecast({ actionName: 'Shoulder Tackle 2', time: checkRecast({ actionName: 'Shoulder Tackle 2' }) + recast.shouldertackle });
-  } else if (nextActionOverlay.actionList.abilities.includes(actionName)) {
+    if (level >= 66) {
+      addRecast({ actionName: 'Shoulder Tackle 1', recast: checkRecast({ actionName: 'Shoulder Tackle 2' }) });
+      addRecast({
+        actionName: 'Shoulder Tackle 2',
+        recast: checkRecast({ actionName: 'Shoulder Tackle 2' }) + recast.shouldertackle,
+      });
+    } else {
+      addRecast({ actionName: 'Shoulder Tackle 1' });
+    }
+  } else if (recast[property]) {
     addRecast({ actionName });
   }
 
+  /* Statuses */
+  if (actionName === 'Bootshine') {
+    removeStatus({ statusName: 'Leaden Fist' });
+  } else if (actionName === 'Four-Point Fury' && checkStatus({ statusName: 'Twin Snakes' }) > 0) {
+    addStatus({
+      statusName: 'Twin Snakes',
+      duration: Math.min(duration.twinsnakes, checkStatus({ statusName: 'Twin Snakes' }) + 10000),
+    });
+  } else if (actionName === 'Dragon Kick'
+  && (checkStatus({ statusName: 'Opo-Opo Form' }) > 0 || checkStatus({ statusName: 'Perfect Balance' }) > 0)) {
+    addStatus({ statusName: 'Leaden Fist' });
+  } else if (['Perfect Balance', 'Riddle Of Fire'].includes(actionName)) {
+    addStatus({ statusName: actionName, duration: duration[property] + gcd });
+  } else if (duration[property]) {
+    addStatus({ statusName: actionName });
+  }
+
+  if (actionName === 'Meditation') {
+    if (nextActionOverlay.combat) {
+      playerData.chakra = 5;
+    } else {
+      playerData.chakra += 1;
+    }
+  } else if (actionName === 'Anatman' && playerData.greasedlightningStacks < playerData.greasedlightningMax) {
+    playerData.greasedlightningStacks += 1;
+  } else if (['Snap Punch', 'Demolish', 'Rockbreaker'].includes(actionName)) {
+    playerData.greasedlightningStatus = 16000;
+    /* Increase GL up to max */
+    if (playerData.greasedlightningStacks < playerData.greasedlightningMax) {
+      playerData.greasedlightningStacks += 1;
+    }
+  } else if (actionName === 'Form Shift' && checkStatus({ statusName: 'Coeurl Form' }) > 0 && playerData.greasedlightningStacks > 0) {
+    playerData.greasedlightningStatus = 16000;
+  }
+
   /* Form changes */
-  if (actionName === 'Form Shift') {
-    if (Math.max(
-      checkStatus({ statusName: 'Opo Opo Form' }),
-      checkStatus({ statusName: 'Raptor Form' }),
-      checkStatus({ statusName: 'Coeurl Form' }),
-    ) < 0) {
-      addStatus({ statusName: 'Opo Opo Form' });
-    } else if (checkStatus({ statusName: 'Opo Opo Form' }) > 0) {
-      removeStatus({ statusName: 'Opo Opo Form' });
-      removeStatus({ statusName: 'Coeurl Form' });
+  if (checkStatus({ statusName: 'Perfect Balance' }) > 0) {
+    removeStatus({ statusName: 'Opo-Opo Form' });
+    removeStatus({ statusName: 'Raptor Form' });
+    removeStatus({ statusName: 'Coeurl Form' });
+  } else if (actionName === 'Form Shift') {
+    if (checkStatus({ statusName: 'Opo-Opo Form' }) > 0) {
+      removeStatus({ statusName: 'Opo-Opo Form' });
       addStatus({ statusName: 'Raptor Form' });
+      removeStatus({ statusName: 'Coeurl Form' });
     } else if (checkStatus({ statusName: 'Raptor Form' }) > 0) {
-      removeStatus({ statusName: 'Opo Opo Form' });
+      removeStatus({ statusName: 'Opo-Opo Form' });
       removeStatus({ statusName: 'Raptor Form' });
       addStatus({ statusName: 'Coeurl Form' });
-    } else if (checkStatus({ statusName: 'Coeurl Form' }) > 0) {
+    } else {
+      addStatus({ statusName: 'Opo-Opo Form' });
       removeStatus({ statusName: 'Raptor Form' });
       removeStatus({ statusName: 'Coeurl Form' });
-      addStatus({ statusName: 'Opo Opo Form' });
     }
-  } else if (['Bootshine', 'Dragon Kick', 'Arm Of The Destroyer',
-  ].includes(actionName)) {
-    removeStatus({ statusName: 'Opo Opo Form' });
-    removeStatus({ statusName: 'Coeurl Form' });
+  } else if (opoopoformWeaponskills.includes(actionName)) {
+    removeStatus({ statusName: 'Opo-Opo Form' });
     addStatus({ statusName: 'Raptor Form' });
-  } else if (['True Strike', 'Twin Snakes', 'Four-Point Fury',
-  ].includes(actionName)) {
-    removeStatus({ statusName: 'Opo Opo Form' });
+    removeStatus({ statusName: 'Coeurl Form' });
+  } else if (raptorformWeaponskills.includes(actionName)) {
+    removeStatus({ statusName: 'Opo-Opo Form' });
     removeStatus({ statusName: 'Raptor Form' });
     addStatus({ statusName: 'Coeurl Form' });
-  } else if (['Demolish', 'Snap Punch', 'Rockbreaker'].includes(actionName)) {
+  } else if (coeurlformWeaponskills.includes(actionName)) {
+    addStatus({ statusName: 'Opo-Opo Form' });
     removeStatus({ statusName: 'Raptor Form' });
     removeStatus({ statusName: 'Coeurl Form' });
-    addStatus({ statusName: 'Opo Opo Form' });
+  }
+
+  /* Toggles combat flag for loop */
+  if (!['Fists Of Fire', 'Fists Of Wind', 'Form Change'].includes(actionName)) {
+    nextActionOverlay.combat = true;
   }
 
   /* Call next function */
-  if (Object.values(weaponskills).flat(Infinity).includes(actionName)) {
-    nextActionOverlay.nextAction.MNK({ delay: playerData.gcd });
+  if (weaponskills.includes(actionName)) {
+    nextActionOverlay.nextAction.MNK({ delay: gcd });
+  } else if (actionName === 'Anatman') {
+    nextActionOverlay.nextAction.MNK({ delay: 0 });
+  } else if (actionName === 'Six-Sided Star') {
+    nextActionOverlay.nextAction.MNK({ delay: gcd * 2 });
   }
 };
 

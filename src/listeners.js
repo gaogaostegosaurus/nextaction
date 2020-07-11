@@ -1,14 +1,5 @@
 /* https://github.com/quisquous/cactbot/blob/master/CactbotOverlay/JSEvents.cs shows all possible events */
 
-/* This seems useful to eventually add ?
-addOverlayListener('onInitializeOverlay', (e) => {
-}); */
-
-/* Store list of whatevers in property matching job abbreivations -
-  allows for some code reuse across jobs */
-
-// Objects
-
 const nextActionOverlay = {};
 nextActionOverlay.propertyList = [
   'nextAction',
@@ -50,35 +41,40 @@ nextActionOverlay.statsRegex = new RegExp(' 0C:Player Stats: (?<jobID>[\\d]+):(?
 addOverlayListener('onPlayerChangedEvent', (e) => { /* Fires after onZoneChangedEvent on reload */
   const { playerData } = nextActionOverlay;
 
-  /* This block activates on job/level change */
-  if (e.detail.job !== playerData.job
-    || e.detail.level !== playerData.level) {
+  if (e.detail.job !== playerData.job || e.detail.level !== playerData.level) {
+  /* "If job/level has changed" */
     /* Set new playerData */
-    // nextActionOverlay.playerData = e.detail;
-
     const { actionList } = nextActionOverlay;
     const { statusList } = nextActionOverlay;
     const { castingList } = nextActionOverlay;
     const { timeout } = nextActionOverlay;
     const { duration } = nextActionOverlay;
-    duration.combo = 15000;
 
-    /* Fix ID - defaults to decimal value */
+    /* Set new playerData */
     playerData.name = e.detail.name;
     playerData.level = e.detail.level;
     playerData.job = e.detail.job;
-    playerData.id = e.detail.id.toString(16).toUpperCase();
+    playerData.id = e.detail.id.toString(16).toUpperCase(); /* ID defaults to decimal value */
 
-    /* Reset playerData values from nextActionOverlay */
+    /* Shorten */
+    const { name } = playerData;
+    const { level } = playerData;
+    const { job } = playerData;
+    const { id } = playerData;
+
+    /* Set some initial values */
+    nextActionOverlay.targetCount = 1;
+    nextActionOverlay.comboStep = '';
+
+    duration.combo = 15000;
+
     playerData.gcd = 2500;
     playerData.mpRegen = 200;
-    playerData.targetCount = 1;
-    playerData.comboStep = '';
-    // playerData.comboTimeout = -1;
 
-    /* Clear overlay and reset timers */
+    /* Reset timers */
     Object.keys(timeout).forEach((property) => { clearTimeout(timeout[property]); });
-    // Object.keys(interval).forEach((property) => { clearInterval(interval[property]); });
+
+    /* Clear overlay */
     document.getElementById('icon-a').innerHTML = '';
     document.getElementById('icon-b').innerHTML = '';
     document.getElementById('icon-c').innerHTML = '';
@@ -87,46 +83,43 @@ addOverlayListener('onPlayerChangedEvent', (e) => { /* Fires after onZoneChanged
     document.getElementById('countdown-c').innerHTML = '';
 
     /* Assign functions */
-    if (!nextActionOverlay.onJobChange[playerData.job]) {
-      nextActionOverlay.onJobChange[playerData.job] = nextActionOverlay.onJobChange.NONE;
+    if (!nextActionOverlay.onJobChange[job]) {
+      nextActionOverlay.onJobChange[job] = nextActionOverlay.onJobChange.NONE;
     }
 
-    if (!nextActionOverlay.onPlayerChangedEvent[playerData.job]) {
-      nextActionOverlay
-        .onPlayerChangedEvent[playerData.job] = nextActionOverlay.onPlayerChangedEvent.NONE;
+    if (!nextActionOverlay.onPlayerChangedEvent[job]) {
+      nextActionOverlay.onPlayerChangedEvent[job] = nextActionOverlay.onPlayerChangedEvent.NONE;
     }
 
-    if (!nextActionOverlay.onTargetChange[playerData.job]) {
-      nextActionOverlay.onTargetChange[playerData.job] = nextActionOverlay.onTargetChange.NONE;
+    if (!nextActionOverlay.onTargetChange[job]) {
+      nextActionOverlay.onTargetChange[job] = nextActionOverlay.onTargetChange.NONE;
     }
 
-    if (!nextActionOverlay.nextAction[playerData.job]) {
-      nextActionOverlay.nextAction[playerData.job] = nextActionOverlay.nextAction.NONE;
+    if (!nextActionOverlay.nextAction[job]) {
+      nextActionOverlay.nextAction[job] = nextActionOverlay.nextAction.NONE;
     }
 
-    if (!nextActionOverlay.onAction[playerData.job]) {
-      nextActionOverlay.onAction[playerData.job] = nextActionOverlay.onAction.NONE;
+    if (!nextActionOverlay.onAction[job]) {
+      nextActionOverlay.onAction[job] = nextActionOverlay.onAction.NONE;
     }
 
-    if (!nextActionOverlay.onStatus[playerData.job]) {
-      nextActionOverlay.onStatus[playerData.job] = nextActionOverlay.onStatus.NONE;
+    if (!nextActionOverlay.onStatus[job]) {
+      nextActionOverlay.onStatus[job] = nextActionOverlay.onStatus.NONE;
     }
 
-    nextActionOverlay.onJobChange[playerData.job]();
-    nextActionOverlay.onPlayerChangedEvent[playerData.job](e); /* Links dynamic values */
+    nextActionOverlay.onJobChange[job]();
+    nextActionOverlay.onPlayerChangedEvent[job](e); /* Links dynamic values */
 
     /* Creates new regexes for matching */
     const actionNames = Object.values(actionList).flat(Infinity).join('|');
-    // console.log(actionNames);
     const statusNames = Object.values(statusList).flat(Infinity).join('|');
+    const castingNames = Object.values(castingList).flat(Infinity).join('|'); /* This relies on chat log output */
 
-    const castingNames = Object.values(castingList).flat(Infinity).join('|');
-    // console.log(castingNames);
     nextActionOverlay.actionRegex = new RegExp(
-      `^.{15}(?<logType>1[56]):(?<sourceID>${playerData.id}):(?<sourceName>${playerData.name}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${actionNames}):(?<targetID>[\\dA-F]{8}):(?<comboCheck>([^:]*:)*?1?1B:)?`,
+      `^.{15}(?<logType>1[56]):(?<sourceID>${id}):(?<sourceName>${name}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${actionNames}):(?<targetID>[\\dA-F]{8}):(?<comboCheck>([^:]*:)*?1?1B:)?`,
     );
     nextActionOverlay.statusRegex = new RegExp(
-      `^.{15}(?<logType>1[AE]):(?<targetID>[\\dA-F]{8}):(?<targetName>[ -~]+?) (?<gainsLoses>gains|loses) the effect of (?<statusName>${statusNames}) from (?<sourceName>${playerData.name})(?: for )?(?<statusDuration>\\d*\\.\\d*)?(?: Seconds)?\\.`,
+      `^.{15}(?<logType>1[AE]):(?<targetID>[\\dA-F]{8}):(?<targetName>[ -~]+?) (?<gainsLoses>gains|loses) the effect of (?<statusName>${statusNames}) from (?<sourceName>${name})(?: for )?(?<statusDuration>\\d*\\.\\d*)?(?: Seconds)?\\.`,
     );
     nextActionOverlay.castingRegex = new RegExp(
       `^.{15}00:(?<logType>[\\da-f]+):You begin casting (?<actionName>${castingNames})\\.`, 'i',
@@ -134,15 +127,12 @@ addOverlayListener('onPlayerChangedEvent', (e) => { /* Fires after onZoneChanged
     nextActionOverlay.cancelRegex = new RegExp(
       `^.{15}00:(?<logType>[\\da-f]+):You cancel (?<actionName>${castingNames})\\.`, 'i',
     );
-    /* NOTE: Casting matching relies on standard log output */
-    /* Not sure if there's a better solution since the network log line is suuuuuuper slow */
 
     /* Initialize overlay */
-    nextActionOverlay.nextAction[playerData.job]();
+    nextActionOverlay.nextAction[job]();
     // eslint-disable-next-line no-console
-    console.log(`Changed to ${playerData.job}${playerData.level}`);
+    console.log(`Changed to ${job}${level}`);
   }
-
   nextActionOverlay.onPlayerChangedEvent[playerData.job](e);
 
   /* Section below does job-specific stuff */
@@ -184,8 +174,6 @@ addOverlayListener('onPlayerChangedEvent', (e) => { /* Fires after onZoneChanged
   //     playerData.overheated = -1; /* Simplifies comparisons */
   //   }
   //   playerData.battery = e.detail.jobDetail.battery;
-  // } else if (playerData.job === 'MNK') {
-  //   playerData.onPlayerChangedEvent[playerData.job](e);
   // } else if (playerData.job === 'PLD') {
   //   playerData.oath = e.detail.jobDetail.oath;
   // } else if (playerData.job === 'SCH') {
@@ -210,10 +198,13 @@ addOverlayListener('onPlayerChangedEvent', (e) => { /* Fires after onZoneChanged
 });
 
 addOverlayListener('onLogEvent', (e) => { // Fires on log event
-  // console.log('onLogEvent');
   const { length } = e.detail.logs;
   const { logs } = e.detail;
-  let aoeTargetsHit = 0;
+
+  const { playerData } = nextActionOverlay;
+  const { level } = playerData;
+  const { job } = playerData;
+  let { gcd } = playerData;
 
   /* Shorten RegEx names */
   const { actionRegex } = nextActionOverlay;
@@ -227,15 +218,14 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
   const { onCasting } = nextActionOverlay;
   const { onCancel } = nextActionOverlay;
 
+  let aoeTargetsHit = 0;
+
   for (let i = 0; i < length; i += 1) {
     const actionMatch = logs[i].match(actionRegex);
     const statusMatch = logs[i].match(statusRegex);
     const castingMatch = logs[i].match(castingRegex);
     const cancelMatch = logs[i].match(cancelRegex);
     const statsMatch = logs[i].match(statsRegex);
-
-    const { playerData } = nextActionOverlay;
-    const { job } = playerData;
 
     if (actionMatch) {
       const { logType } = actionMatch.groups;
@@ -246,11 +236,10 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
       } else if (logType === '16') {
         const { timeout } = nextActionOverlay;
         const timeoutName = actionName.replace(/[\s':-]/g, '').toLowerCase();
-        if (targetID.startsWith('4') && actionName !== 'Dream Within A Dream') {
-          /* DWAW hits one target multiple times using logType 16 */
+        if (targetID.startsWith('4') && actionName !== 'Dream Within A Dream') { /* DWAW hits multiple times using logType 16 */
           aoeTargetsHit += 1;
-          if (playerData.targetCount !== aoeTargetsHit) {
-            playerData.targetCount = aoeTargetsHit;
+          if (nextActionOverlay.targetCount !== aoeTargetsHit) {
+            nextActionOverlay.targetCount = aoeTargetsHit;
           }
         }
         clearTimeout(timeout[`${timeoutName}`]);
@@ -350,17 +339,17 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
         [79, 10000, 335, 378, 3164, '??', '??', '??'], /* was 355 a typo? Fixed to 335 */
         [80, 10000, 340, 380, 3300, '??', '??', 569],
       ]; /* DEFINITELY keep this collapsed...... */
-      const levelMod = levelMods[playerData.level][4];
+      const levelMod = levelMods[level][4];
 
-      const mpBase = levelMods[playerData.level][2];
+      const mpBase = levelMods[level][2];
       const mpDelta = statsMatch.groups.piety - mpBase;
       playerData.mpRegen = 200 + Math.floor(150 * (mpDelta / levelMod));
 
       const speed = Math.max(statsMatch.groups.skillSpeed, statsMatch.groups.spellSpeed);
-      const speedBase = levelMods[playerData.level][3];
+      const speedBase = levelMods[level][3];
       const speedDelta = speed - speedBase;
 
-      playerData.gcd = Math.floor(
+      gcd = Math.floor(
         Math.floor(
           10000 * (
             Math.floor(
@@ -370,8 +359,8 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
       ) * 10; // Modified to output in ms
 
       /* Actions affected by speed here */
-      nextActionOverlay.recast.sonicbreak = playerData.gcd * 24;
-      nextActionOverlay.recast.gnashingfang = playerData.gcd * 12;
+      nextActionOverlay.recast.sonicbreak = gcd * 24;
+      nextActionOverlay.recast.gnashingfang = gcd * 12;
 
       nextActionOverlay.recast.shadowfang = Math.floor(
         Math.floor(
@@ -380,13 +369,13 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
               (70000 * (1000 - Math.floor(130 * (speedDelta / levelMod)))) / 1000,
             ) / 1000),
         ) / 100,
-      ) * 10; /* why? why. WHY */
+      ) * 10; /* why? why. WHY? */
 
-      nextActionOverlay.recast.drill = playerData.gcd * 8;
-      nextActionOverlay.recast.hotshot = playerData.gcd * 16;
+      nextActionOverlay.recast.drill = gcd * 8;
+      nextActionOverlay.recast.hotshot = gcd * 16;
       nextActionOverlay.recast.airanchor = nextActionOverlay.recast.hotshot;
 
-      const egiassaultRecast = playerData.gcd * 12;
+      const egiassaultRecast = gcd * 12;
       nextActionOverlay.recast.egiassault1 = egiassaultRecast;
       nextActionOverlay.recast.egiassault2 = egiassaultRecast;
       nextActionOverlay.recast.egiassaultii1 = egiassaultRecast;
@@ -422,8 +411,7 @@ addOverlayListener('EnmityTargetData', (e) => {
   const { targetData } = nextActionOverlay;
 
   if (e.Target) { /* Target exists */
-    if (targetData.id !== e.Target.ID.toString(16).toUpperCase()) {
-      /* Changed target */
+    if (targetData.id !== e.Target.ID.toString(16).toUpperCase()) { /* "If target has changed" */
       targetData.name = e.Target.Name;
       targetData.id = e.Target.ID.toString(16).toUpperCase();
       if (nextActionOverlay.onTargetChange[job]) {
@@ -447,20 +435,19 @@ addOverlayListener('EnmityTargetData', (e) => {
 
 addOverlayListener('onInCombatChangedEvent', (e) => {
   // console.log(`onInCombatChangedEvent: ${JSON.stringify(e)}`);
-  const { playerData } = nextActionOverlay;
   if (nextActionOverlay.combat !== e.detail.inGameCombat) {
     nextActionOverlay.combat = e.detail.inGameCombat;
     if (nextActionOverlay.combat === false) {
-      playerData.targetCount = 1; /* Reset targetCount when OOC */
+      nextActionOverlay.targetCount = 1; /* Reset targetCount when OOC */
     }
   }
 });
 
 addOverlayListener('onZoneChangedEvent', (e) => {
-  /* This appears to fire first on reload, so be careful of what is put here.
-    It probably won't work if it requires the character data to be loaded as well. */
+  /* This appears to fire first on reload, so be careful of what is put here. */
+  /* (It probably won't work if it requires playerData to be filled.) */
   // console.log(`onZoneChangedEvent: ${JSON.stringify(e)}`);
-  nextActionOverlay.playerData.zone = e.detail.zoneName;
+  nextActionOverlay.zone = e.detail.zoneName;
 });
 
 addOverlayListener('onPartyWipe', (e) => {
@@ -478,5 +465,9 @@ addOverlayListener('onGameActiveChangedEvent', (e) => {
   // console.log(`onGameActiveChangedEvent: ${JSON.stringify(e)}`);
   nextActionOverlay.gameActive = e.detail.active; /* Appears to only have this */
 });
+
+/* This seems useful to eventually add ?
+addOverlayListener('onInitializeOverlay', (e) => {
+}); */
 
 callOverlayHandler({ call: 'cactbotRequestState' });

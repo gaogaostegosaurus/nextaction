@@ -428,13 +428,13 @@ nextActionOverlay.onAction.GNB = (actionMatch) => {
   const multitargetActions = ['Demon Slice', 'Demon Slaughter', 'Fated Circle', 'Bow Shock'];
 
   /* Set probable target count */
-  if (playerData.targetCount > 1) {
+  if (nextActionOverlay.targetCount > 1) {
     if (multitargetActions.includes(actionName) && actionMatch.groups.logType === '15') {
       /* Multi target only hits single target */
-      playerData.targetCount = 1;
+      nextActionOverlay.targetCount = 1;
     } else if ((level >= 10 && actionName === 'Keen Edge')
       || (level >= 72 && actionName === 'Burst Strike')) {
-      playerData.targetCount = 1;
+      nextActionOverlay.targetCount = 1;
     }
   }
 
@@ -450,10 +450,10 @@ nextActionOverlay.onAction.GNB = (actionMatch) => {
     || (level >= 26 && actionName === 'Brutal Shell')
     || (level >= 40 && actionName === 'Demon Slice')) {
       addStatus({ statusName: 'Combo' });
-      playerData.comboStep = actionName;
+      nextActionOverlay.comboStep = actionName;
     } else {
       removeStatus({ statusName: 'Combo' });
-      playerData.comboStep = '';
+      nextActionOverlay.comboStep = '';
     }
   } else if (cartridgecomboweaponskills.includes(actionName)) {
     removeStatus({ statusName: 'Ready To Rip' });
