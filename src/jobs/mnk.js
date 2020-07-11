@@ -659,6 +659,8 @@ nextActionOverlay.onAction.MNK = (actionMatch) => {
       statusName: 'Twin Snakes',
       duration: Math.min(duration.twinsnakes, checkStatus({ statusName: 'Twin Snakes' }) + 10000),
     });
+  } else if (actionName === 'Demolish') {
+    addStatus({ statusName: 'Leaden Fist', id: targetData.id });
   } else if (actionName === 'Dragon Kick'
   && (checkStatus({ statusName: 'Opo-Opo Form' }) > 0 || checkStatus({ statusName: 'Perfect Balance' }) > 0)) {
     addStatus({ statusName: 'Leaden Fist' });
