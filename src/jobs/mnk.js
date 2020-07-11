@@ -382,7 +382,7 @@ nextActionOverlay.nextAction.MNK.gcd = ({
 } = {}) => {
   const { duration } = nextActionOverlay;
   const { recast } = nextActionOverlay;
-  
+
   const { playerData } = nextActionOverlay;
   const { level } = playerData;
   const { targetCount } = nextActionOverlay;
@@ -426,7 +426,7 @@ nextActionOverlay.nextAction.MNK.gcd = ({
     }
 
     /* Keep Twin Snakes up for AoE */
-    if (nextActionOverlay.targetCount > 1
+    if (targetCount > 1
     && loopStatus.twinsnakes > 0 && loopStatus.twinsnakes < gcd) {
       return 'Four Point Fury';
     }
@@ -471,7 +471,7 @@ nextActionOverlay.nextAction.MNK.gcd = ({
     return 'Snap Punch';
   }
 
-  if (level >= 40 && nextActionOverlay.targetCount > 1 && loopStatus.twinsnakes > 0
+  if (level >= 40 && targetCount > 1 && loopStatus.twinsnakes > 0
   && loopStatus.raptorform > 0) {
     return 'Four Point Fury';
   }
@@ -489,7 +489,7 @@ nextActionOverlay.nextAction.MNK.gcd = ({
     return 'True Strike';
   }
 
-  if (level >= 26 && nextActionOverlay.targetCount > 2) {
+  if (level >= 26 && targetCount > 2) {
     return 'Arm Of The Destroyer';
   }
 
@@ -507,6 +507,7 @@ nextActionOverlay.nextAction.MNK.ogcd = ({
 } = {}) => {
   const { recast } = nextActionOverlay;
   const { playerData } = nextActionOverlay;
+  const { targetCount } = nextActionOverlay;
   const { level } = playerData;
 
   if (level >= 76 && loopStatus.fistsofwind < 0 && greasedlightningStacks >= 3
@@ -532,12 +533,12 @@ nextActionOverlay.nextAction.MNK.ogcd = ({
     return 'Brotherhood';
   }
 
-  if (nextActionOverlay.targetCount <= 2 && greasedlightningStacks >= 4 /* Implies 78 */
+  if (targetCount <= 2 && greasedlightningStacks >= 4 /* Implies 78 */
   && loopStatus.raptorform > 0 && loopRecast.perfectbalance < 0) {
     return 'Perfect Balance';
   }
 
-  if (level >= 50 && level < 78 && nextActionOverlay.targetCount <= 2
+  if (level >= 50 && level < 78 && targetCount <= 2
   && greasedlightningStacks < greasedlightningMax && loopStatus.opoopoform > 0
   && loopRecast.perfectbalance < 0) {
     return 'Perfect Balance';
@@ -547,7 +548,7 @@ nextActionOverlay.nextAction.MNK.ogcd = ({
   //   return 'Enlightenment';
   // }
 
-  if (level >= 56 && nextActionOverlay.targetCount > 1
+  if (level >= 56 && targetCount > 1
   && loopRecast.riddleoffire > recast.elixirfield * 0.25 && loopRecast.elixirfield < 0) {
     return 'Elixir Field';
   }
@@ -599,7 +600,7 @@ nextActionOverlay.onAction.MNK = (actionMatch) => {
   ];
 
   if (checkStatus({ statusName: 'Leaden Fist' }) < 0) {
-    singletargetActions.push('Bootshine');
+    singletargetActions.push('Bootshine'); 
   }
 
   if (checkStatus({ statusName: 'Twin Snakes' }) > 0) {
