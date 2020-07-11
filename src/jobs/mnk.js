@@ -141,7 +141,7 @@ nextActionOverlay.onPlayerChangedEvent.MNK = (e) => {
 nextActionOverlay.nextAction.MNK = ({
   delay = 0,
 } = {}) => {
-  console.log(nextActionOverlay.playerData.greasedlightningStatus);
+  // console.log(nextActionOverlay.playerData.greasedlightningStatus);
   const nextAction = nextActionOverlay.nextAction.MNK;
 
   const { checkRecast } = nextActionOverlay;
@@ -423,6 +423,7 @@ nextActionOverlay.nextAction.MNK.gcd = ({
   /* Perfect Balance priorities */
   if (loopStatus.perfectbalance > 0) { /* Implies player level >= 50 */
     /* Increase GL stacks and refresh */
+    /* Something weird happens and this gets called multiple times in a row during PB */
     if (greasedlightningStacks < greasedlightningMax || loopStatus.greasedlightning < gcd * 4) {
       if (rockbreakerPotency > Math.max(demolishPotency, snappunchPotency)) {
         return 'Rockbreaker';
