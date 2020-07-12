@@ -385,7 +385,8 @@ nextActionOverlay.nextAction.NIN.gcd = ({
   }
 
   /* Prioritize Huton if it's really low for some reason */
-  if (level >= 45 && loopRecast.mudra1 < 0 && loopStatus.huton < 500 * 3 + 1500) {
+  if (level >= 45 && loopStatus.kassatsu < 0 && loopStatus.huton < 500 * 3 + 1500
+  && loopRecast.mudra1 < 0) {
     return 'Huton';
   } if (level >= 52 && nextActionOverlay.targetCount >= 3
   && loopStatus.huton < 10000 && loopStatus.huton > 0) {
@@ -505,7 +506,10 @@ nextActionOverlay.nextAction.NIN.ogcd = ({
   const { level } = playerData;
   const { gcd } = playerData;
 
+  const { recast } = nextActionOverlay;
   const { duration } = nextActionOverlay;
+
+  const trickattackBonus = 0.05;
 
   /* Prioritize these action if the related buff is about to wear off for some reason? */
   if (loopStatus.suiton > 0 && loopStatus.suiton < gcd * 2 && loopRecast.trickattack < 0) {
@@ -518,7 +522,8 @@ nextActionOverlay.nextAction.NIN.ogcd = ({
   }
 
   /* Normal priority */
-  if (level >= 50 && (loopStatus.suiton > gcd || loopRecast.trickattack > 3000)
+  if (level >= 50
+  && (loopStatus.suiton > gcd || loopRecast.trickattack > recast.kassatsu * trickattackBonus)
   && loopRecast.kassatsu < 0) {
     return 'Kassatsu';
   } if (level >= 15 && (level < 66 || ninki <= 60) && loopRecast.mug < 0) {
@@ -527,16 +532,17 @@ nextActionOverlay.nextAction.NIN.ogcd = ({
     return 'Bunshin';
   } if (loopStatus.suiton > 0 && loopRecast.trickattack < 0) {
     return 'Trick Attack';
-  } if (level >= 56 && loopRecast.trickattack > 3000 && loopRecast.dreamwithinadream < 0) {
+  } if (level >= 56 && loopRecast.trickattack > recast.dreamwithinadream * trickattackBonus
+  && loopRecast.dreamwithinadream < 0) {
     return 'Dream Within A Dream';
   } if (level >= 72
   && loopStatus.kassatsu < 0
   && loopRecast.meisui < duration.suiton - playerData.gcd
-  && loopRecast.trickattack > 6000
+  && loopRecast.trickattack > recast.tenchijin * trickattackBonus
   && (loopStatus.combo < 0 || loopStatus.combo > playerData.gcd * 2)
   && loopRecast.tenchijin < 0) {
     return 'Ten Chi Jin Suiton'; /* Use TCJ to set up Meisui */
-    /* TA > 6000 prevents waiting too long, also implies only when TA is on cooldown */
+    /* TA > whatever prevents waiting too long, also implies only when TA is on cooldown */
     /* Combo lines prevent a c-c-combo breaker */
   } if (level >= 70 && level < 72
   && loopStatus.kassatsu < 0

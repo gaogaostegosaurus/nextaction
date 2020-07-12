@@ -233,7 +233,7 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
       const { targetID } = actionMatch.groups;
       if (logType === '15') {
         onAction[job](actionMatch);
-      } else if (logType === '16') {
+      } else if (logType === '16') { /* This never works 100% I give up */
         const { timeout } = nextActionOverlay;
         const timeoutName = actionName.replace(/[\s':-]/g, '').toLowerCase();
         if (targetID.startsWith('4') && actionName !== 'Dream Within A Dream') { /* DWAW hits multiple times using logType 16 */
@@ -381,17 +381,12 @@ addOverlayListener('onLogEvent', (e) => { // Fires on log event
       nextActionOverlay.recast.egiassaultii1 = egiassaultRecast;
       nextActionOverlay.recast.egiassaultii2 = egiassaultRecast;
       // eslint-disable-next-line no-console
-      console.log('Speed recalculated');
+      // console.log('Speed recalculated');
     }
   }
 });
 
 addOverlayListener('EnmityTargetData', (e) => {
-  // console.log(`onTargetChangedEvent: ${JSON.stringify(e)}`);
-
-  /* Copied from stringify for notes:
-  {"type":"EnmityTargetData","Target":{"ID":1073746514,"OwnerID":0,"Type":2,"TargetID":275370607,"Job":0,"Name":"Striking Dummy","CurrentHP":254,"MaxHP":16000,"PosX":-706.4552,"PosY":23.5000038,"PosZ":-583.5873,"Rotation":-0.461016417,"Distance":"2.78","EffectiveDistance":0,"Effects":[{"BuffID":508,"Stack":0,"Timer":10.7531652,"ActorID":275370607,"isOwner":false}]},"Focus":null,"Hover":null,"TargetOfTarget":{"ID":275370607,"OwnerID":0,"Type":1,"TargetID":3758096384,"Job":30,"Name":"Lyn Tah'row","CurrentHP":87008,"MaxHP":87008,"PosX":-708.9726,"PosY":23.5000038,"PosZ":-582.397156,"Rotation":2.01241565,"Distance":"0.00","EffectiveDistance":0,"Effects":[{"BuffID":365,"Stack":10,"Timer":30,"ActorID":3758096384,"isOwner":false},{"BuffID":360,"Stack":10,"Timer":30,"ActorID":3758096384,"isOwner":false}]},"Entries":[{"ID":275370607,"OwnerID":0,"Name":"Lyn Tah'row","Enmity":100,"isMe":true,"HateRate":100,"Job":30}]} (Source: file:///C:/Users/Dan/Google%20Drive/Advanced%20Combat%20Tracker/Plugins/next/src/0/listeners.js, Line: 219) */
-
   /* Possible properties for e.Target are
     ID - as decimal number instead of hex
     OwnerID - often "0", I assume this is for pets or something
@@ -406,47 +401,52 @@ addOverlayListener('EnmityTargetData', (e) => {
     Effects - Array of effects (?)
   */
 
+  /* Copied from stringify for notes:
+  {"type":"EnmityTargetData","Target":{"ID":1111111111,"OwnerID":0,"Type":2,"TargetID":275370607,"Job":0,"Name":"Striking Dummy","CurrentHP":254,"MaxHP":16000,"PosX":-706.4552,"PosY":23.5000038,"PosZ":-583.5873,"Rotation":-0.461016417,"Distance":"2.78","EffectiveDistance":0,"Effects":[{"BuffID":508,"Stack":0,"Timer":10.7531652,"ActorID":275370607,"isOwner":false}]},"Focus":null,"Hover":null,"TargetOfTarget":{"ID":275370607,"OwnerID":0,"Type":1,"TargetID":3758096384,"Job":30,"Name":"Lyn Tah'row","CurrentHP":87008,"MaxHP":87008,"PosX":-708.9726,"PosY":23.5000038,"PosZ":-582.397156,"Rotation":2.01241565,"Distance":"0.00","EffectiveDistance":0,"Effects":[{"BuffID":365,"Stack":10,"Timer":30,"ActorID":3758096384,"isOwner":false},{"BuffID":360,"Stack":10,"Timer":30,"ActorID":3758096384,"isOwner":false}]},"Entries":[{"ID":275370607,"OwnerID":0,"Name":"Lyn Tah'row","Enmity":100,"isMe":true,"HateRate":100,"Job":30}]} (Source: file:///C:/asdf/asdf/asdf/listeners.js, Line: 219) */
+
   const { playerData } = nextActionOverlay;
   const { job } = playerData;
   const { targetData } = nextActionOverlay;
 
-  if (e.Target) { /* Target exists */
-    if (targetData.id !== e.Target.ID.toString(16).toUpperCase()) { /* "If target has changed" */
-      targetData.name = e.Target.Name;
-      targetData.id = e.Target.ID.toString(16).toUpperCase();
-      if (nextActionOverlay.onTargetChange[job]) {
-        nextActionOverlay.onTargetChange[job]();
-      }
+  /* Checks if target has changed */
+  if (e.Target && targetData.id !== e.Target.ID.toString(16).toUpperCase()) {
+    targetData.name = e.Target.Name; /* Set new targetData */
+    targetData.id = e.Target.ID.toString(16).toUpperCase();
+    if (nextActionOverlay.onTargetChange[job]) {
+      nextActionOverlay.onTargetChange[job](); /* Run changed to different target function */
     }
+  }
 
+  if (e.Target) { /* Put stuff that should be constantly updated here */
     targetData.distance = e.Target.EffectiveDistance; /* Distance to "outside of circle" */
+  }
 
-    if (nextActionOverlay.combat
-      || (targetData.id && targetData.id.startsWith('4') && targetData.distance <= 25)
-    ) {
-      document.getElementById('nextdiv').classList.replace('next-hide', 'next-show');
-    } else {
-      document.getElementById('nextdiv').classList.replace('next-show', 'next-hide');
-    }
+  if (nextActionOverlay.combat
+  || (targetData.id && targetData.id.startsWith('4') && targetData.distance <= 25)) {
+    /* Display overlay if in combat or (not in combat and) target is within 25y */
+    document.getElementById('nextdiv').classList.replace('next-hide', 'next-show');
   } else {
+    /* Fade overlay if out of combat with no target within range */
     document.getElementById('nextdiv').classList.replace('next-show', 'next-hide');
   }
 });
 
 addOverlayListener('onInCombatChangedEvent', (e) => {
   // console.log(`onInCombatChangedEvent: ${JSON.stringify(e)}`);
-  if (nextActionOverlay.combat !== e.detail.inGameCombat) {
+  if (nextActionOverlay.combat !== e.detail.inGameCombat) { /* Combat status changed */
     nextActionOverlay.combat = e.detail.inGameCombat;
-    if (nextActionOverlay.combat === false) {
+    if (nextActionOverlay.combat === true) {
+      document.getElementById('nextdiv').classList.replace('next-hide', 'next-show');
+    } else {
       nextActionOverlay.targetCount = 1; /* Reset targetCount when OOC */
     }
   }
 });
 
 addOverlayListener('onZoneChangedEvent', (e) => {
+  // console.log(`onZoneChangedEvent: ${JSON.stringify(e)}`);
   /* This appears to fire first on reload, so be careful of what is put here. */
   /* (It probably won't work if it requires playerData to be filled.) */
-  // console.log(`onZoneChangedEvent: ${JSON.stringify(e)}`);
   nextActionOverlay.zone = e.detail.zoneName;
 });
 

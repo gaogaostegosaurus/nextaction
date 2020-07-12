@@ -115,23 +115,6 @@ nextActionOverlay.onPlayerChangedEvent.MNK = (e) => {
   playerData.chakra = e.detail.jobDetail.chakraStacks;
 };
 
-// nextActionOverlay.nextAction.MNK.greasedlightningMaxStacks = ({
-//   loopStatus,
-// } = {}) => {
-//   const { playerData } = nextActionOverlay;
-//   const { level } = playerData;
-//   let greasedlightningMaxStacks = 0;
-//   if (level >= 76 && loopStatus.fistsofwind > 0) {
-//     greasedlightningMaxStacks = 4;
-//   } else if (level >= 40) {
-//     greasedlightningMaxStacks = 3;
-//   } else if (level >= 20) {
-//     greasedlightningMaxStacks = 2;
-//   } else if (level >= 6) {
-//     greasedlightningMaxStacks = 1;
-//   } return greasedlightningMaxStacks;
-// };
-
 nextActionOverlay.onTargetChange.MNK = () => {
   nextActionOverlay.nextAction.MNK();
 };
@@ -149,13 +132,13 @@ nextActionOverlay.nextAction.MNK = ({
 
   const { playerData } = nextActionOverlay;
   const { level } = playerData;
-  const { gcd } = playerData;
+  let { greasedlightningStacks } = playerData;
+  let { chakra } = playerData;
+  let { gcd } = playerData.gcd * (1 - 0.05 * greasedlightningStacks);
 
   const { targetData } = nextActionOverlay;
 
   let { combat } = nextActionOverlay;
-  let { greasedlightningStacks } = playerData;
-  let { chakra } = playerData;
 
   const loopRecast = {};
   const loopRecastList = [
@@ -190,6 +173,7 @@ nextActionOverlay.nextAction.MNK = ({
 
   while (nextTime < 15000) { /* Outside loop for GCDs, looks ahead this number ms */
     let loopTime = 0; /* The elapsed time for current loop */
+    gcd = playerData.gcd * (1 - 0.05 * greasedlightningStacks); /* Update new GCD */
 
     /* Calculate max GL in case Fists was used in previous loop */
     let greasedlightningMax = 0;
@@ -211,9 +195,10 @@ nextActionOverlay.nextAction.MNK = ({
       /* GCD action if GCD is complete */
       const nextGCD = nextAction.gcd({
         combat,
-        chakra,
         greasedlightningStacks,
         greasedlightningMax,
+        chakra,
+        gcd,
         loopRecast,
         loopStatus,
       });
@@ -300,7 +285,7 @@ nextActionOverlay.nextAction.MNK = ({
       } else if (nextGCD === 'Anatman') {
         gcdTime = 3000;
       } else {
-        gcdTime = gcd * (1 - 0.05 * greasedlightningStacks);
+        gcdTime = gcd;
       }
 
       // if (loopStatus.perfectbalance > 0 && loopStatus.perfectbalance < gcd) {
@@ -355,11 +340,9 @@ nextActionOverlay.nextAction.MNK = ({
         loopStatus.opoopoform = -1;
         loopStatus.raptorform = -1;
         loopStatus.coeurlform = -1;
-        loopStatus.perfectbalance = duration.perfectbalance
-          + gcd * (1 - 0.05 * greasedlightningStacks);
+        loopStatus.perfectbalance = duration.perfectbalance + gcd;
       } else if (nextOGCD === 'Riddle Of Fire') {
-        loopStatus.riddleoffire = duration.riddleoffire
-          + gcd * (1 - 0.05 * greasedlightningStacks);
+        loopStatus.riddleoffire = duration.riddleoffire + gcd;
       } else if (duration[property]) {
         loopStatus[property] = duration[property];
       }
@@ -383,7 +366,7 @@ nextActionOverlay.nextAction.MNK = ({
 
   clearTimeout(nextActionOverlay.timeout.nextAction);
   nextActionOverlay.timeout.nextAction = setTimeout(
-    nextAction, gcd * (1 - 0.05 * greasedlightningStacks) * 2,
+    nextAction, gcd * 2,
   );
 };
 
@@ -392,6 +375,7 @@ nextActionOverlay.nextAction.MNK.gcd = ({
   greasedlightningStacks,
   greasedlightningMax,
   chakra,
+  gcd,
   loopRecast,
   loopStatus,
 } = {}) => {
@@ -401,8 +385,6 @@ nextActionOverlay.nextAction.MNK.gcd = ({
   const { playerData } = nextActionOverlay;
   const { level } = playerData;
   const { targetCount } = nextActionOverlay;
-
-  const gcd = playerData.gcd * (1 - greasedlightningStacks * 0.05);
 
   /* Checks if demolish was snapshotted */
   const demolishStatusPotency = Math.ceil(Math.max(loopStatus.demolish, 0) / 3000) * 65;
@@ -429,8 +411,7 @@ nextActionOverlay.nextAction.MNK.gcd = ({
   /* Perfect Balance priorities */
   if (loopStatus.perfectbalance > 0) { /* Implies player level >= 50 */
     /* Increase GL stacks and refresh */
-    /* Something weird happens and this gets called multiple times in a row during PB */
-    if (greasedlightningStacks < greasedlightningMax || loopStatus.greasedlightning < gcd * 4) {
+    if (greasedlightningStacks < greasedlightningMax || loopStatus.greasedlightning < gcd * 3) {
       if (rockbreakerPotency > Math.max(demolishPotency, snappunchPotency)) {
         return 'Rockbreaker';
       }
@@ -468,7 +449,8 @@ nextActionOverlay.nextAction.MNK.gcd = ({
 
   /* Anatman */
   if (level >= 78 && greasedlightningStacks < greasedlightningMax
-  && loopStatus.opoopoform > 0 && loopStatus.riddleoffire < 0 && loopRecast.anatman < 0) {
+  && loopStatus.opoopoform > 0 && loopStatus.leadenfist < 0 && loopStatus.riddleoffire < 0
+  && loopRecast.anatman < 0) {
     return 'Anatman';
   }
 
@@ -550,7 +532,8 @@ nextActionOverlay.nextAction.MNK.ogcd = ({
     return 'Brotherhood';
   }
 
-  if (targetCount <= 2 && greasedlightningStacks >= 4 /* Implies 78 */
+  if (level >= 50 && targetCount <= 2
+  && (greasedlightningStacks >= 4 /* Implies 76 */ || (level < 76 && greasedlightningStacks === 3))
   && loopStatus.raptorform > 0 && loopRecast.perfectbalance < 0) {
     return 'Perfect Balance';
   }
@@ -558,7 +541,7 @@ nextActionOverlay.nextAction.MNK.ogcd = ({
   if (level >= 50 && level < 78 && targetCount <= 2
   && greasedlightningStacks < greasedlightningMax && loopStatus.opoopoform > 0
   && loopRecast.perfectbalance < 0) {
-    return 'Perfect Balance';
+    return 'Perfect Balance'; /* Use PB to boost to 3 stacks before 78) */
   }
 
   // if (level >= 74 && nextActionOverlay.targetCount > 1 && chakra === 5) {
