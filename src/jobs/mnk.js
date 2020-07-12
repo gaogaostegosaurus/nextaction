@@ -22,7 +22,8 @@ nextActionOverlay.onJobChange.MNK = () => {
 
   nextActionOverlay.statusList.self = [
     'Opo-Opo Form', 'Raptor Form', 'Coeurl Form',
-    'Fists Of Earth', 'Fists Of Wind', 'Fists Of Fire',
+    'Perfect Balance', 'Anatman',
+    'Fists Of Earth', 'Fists Of Wind', 'Fists Of Fire', 'Leaden Fist', 'Twin Snakes',
   ];
 
   nextActionOverlay.statusList.target = [
@@ -106,7 +107,10 @@ nextActionOverlay.onPlayerChangedEvent.MNK = (e) => {
   }
   playerData.greasedlightningStatus = e.detail.jobDetail.lightningMilliseconds;
   if (playerData.greasedlightningStatus === 0) {
+    /* Re-assess actions if GL hits 0 for whatever reason */
+    playerData.greasedlightningStacks = 0; /* Should already be this but just in case? */
     playerData.greasedlightningStatus = -1;
+    nextActionOverlay.nextAction.MNK({ delay: 0 });
   }
   playerData.chakra = e.detail.jobDetail.chakraStacks;
 };
@@ -127,6 +131,10 @@ nextActionOverlay.onPlayerChangedEvent.MNK = (e) => {
 //     greasedlightningMaxStacks = 1;
 //   } return greasedlightningMaxStacks;
 // };
+
+nextActionOverlay.onTargetChange.MNK = () => {
+  nextActionOverlay.nextAction.MNK();
+};
 
 nextActionOverlay.nextAction.MNK = ({
   delay = 0,
@@ -183,7 +191,7 @@ nextActionOverlay.nextAction.MNK = ({
   while (nextTime < 15000) { /* Outside loop for GCDs, looks ahead this number ms */
     let loopTime = 0; /* The elapsed time for current loop */
 
-    /* Calculate max GL */
+    /* Calculate max GL in case Fists was used in previous loop */
     let greasedlightningMax = 0;
     if (level >= 76 && loopStatus.fistsofwind > 0) {
       greasedlightningMax = 4;
@@ -295,13 +303,13 @@ nextActionOverlay.nextAction.MNK = ({
         gcdTime = gcd * (1 - 0.05 * greasedlightningStacks);
       }
 
-      if (loopStatus.perfectbalance > 0 && loopStatus.perfectbalance < gcd) {
-        mnkArray.push({ name: 'Perfect Balance' });
-      }
+      // if (loopStatus.perfectbalance > 0 && loopStatus.perfectbalance < gcd) {
+      //   mnkArray.push({ name: 'Perfect Balance' });
+      // }
 
-      if (loopStatus.riddleoffire > 0 && loopStatus.riddleoffire < gcd) {
-        mnkArray.push({ name: 'Riddle Of Fire' });
-      }
+      // if (loopStatus.riddleoffire > 0 && loopStatus.riddleoffire < gcd) {
+      //   mnkArray.push({ name: 'Riddle Of Fire' });
+      // }
 
       loopTime = gcdTime;
 
@@ -347,9 +355,11 @@ nextActionOverlay.nextAction.MNK = ({
         loopStatus.opoopoform = -1;
         loopStatus.raptorform = -1;
         loopStatus.coeurlform = -1;
-        loopStatus.perfectbalance = duration.perfectbalance + gcd;
+        loopStatus.perfectbalance = duration.perfectbalance
+          + gcd * (1 - 0.05 * greasedlightningStacks);
       } else if (nextOGCD === 'Riddle Of Fire') {
-        loopStatus.riddleoffire = duration.riddleoffire + gcd;
+        loopStatus.riddleoffire = duration.riddleoffire
+          + gcd * (1 - 0.05 * greasedlightningStacks);
       } else if (duration[property]) {
         loopStatus[property] = duration[property];
       }
@@ -370,6 +380,11 @@ nextActionOverlay.nextAction.MNK = ({
   }
   nextActionOverlay.iconArrayB = mnkArray;
   nextActionOverlay.syncIcons();
+
+  clearTimeout(nextActionOverlay.timeout.nextAction);
+  nextActionOverlay.timeout.nextAction = setTimeout(
+    nextAction, gcd * (1 - 0.05 * greasedlightningStacks) * 2,
+  );
 };
 
 nextActionOverlay.nextAction.MNK.gcd = ({
@@ -493,9 +508,11 @@ nextActionOverlay.nextAction.MNK.gcd = ({
     return 'Arm Of The Destroyer';
   }
 
-  if (level >= 50 && loopStatus.leadenfist < 0) {
+  if (level >= 50 && (loopStatus.leadenfist < 0 || loopStatus.opoopoform < 0)) {
     return 'Dragon Kick';
-  } return 'Bootshine';
+  }
+
+  return 'Bootshine';
 };
 
 nextActionOverlay.nextAction.MNK.ogcd = ({
@@ -549,7 +566,8 @@ nextActionOverlay.nextAction.MNK.ogcd = ({
   // }
 
   if (level >= 56 && targetCount > 1
-  && loopRecast.riddleoffire > recast.elixirfield * 0.25 && loopRecast.elixirfield < 0) {
+  && loopRecast.riddleoffire > recast.elixirfield * 0.25
+  && loopRecast.elixirfield < 0) {
     return 'Elixir Field';
   }
 
@@ -588,9 +606,9 @@ nextActionOverlay.onAction.MNK = (actionMatch) => {
   const { level } = playerData;
 
   const gcd = playerData.gcd * (1 - playerData.greasedlightningStacks * 0.05);
-  const opoopoformWeaponskills = ['Bootshine', 'Dragon Kick', 'Arm Of The Destroyer'];
-  const raptorformWeaponskills = ['True Strike', 'Twin Snakes', 'Four-Point Fury'];
-  const coeurlformWeaponskills = ['Demolish', 'Snap Punch', 'Rockbreaker'];
+  // const opoopoformWeaponskills = ['Bootshine', 'Dragon Kick', 'Arm Of The Destroyer'];
+  // const raptorformWeaponskills = ['True Strike', 'Twin Snakes', 'Four-Point Fury'];
+  // const coeurlformWeaponskills = ['Demolish', 'Snap Punch', 'Rockbreaker'];
 
   removeIcon({ name: actionName });
   // console.log(`${actionName}`);
@@ -600,7 +618,7 @@ nextActionOverlay.onAction.MNK = (actionMatch) => {
   ];
 
   if (checkStatus({ statusName: 'Leaden Fist' }) < 0) {
-    singletargetActions.push('Bootshine'); 
+    singletargetActions.push('Bootshine');
   }
 
   if (checkStatus({ statusName: 'Twin Snakes' }) > 0) {
@@ -652,7 +670,7 @@ nextActionOverlay.onAction.MNK = (actionMatch) => {
       duration: Math.min(duration.twinsnakes, checkStatus({ statusName: 'Twin Snakes' }) + 10000),
     });
   } else if (actionName === 'Demolish') {
-    addStatus({ statusName: 'Leaden Fist', id: targetData.id });
+    addStatus({ statusName: 'Demolish', id: targetData.id });
   } else if (actionName === 'Dragon Kick'
   && (checkStatus({ statusName: 'Opo-Opo Form' }) > 0 || checkStatus({ statusName: 'Perfect Balance' }) > 0)) {
     addStatus({ statusName: 'Leaden Fist' });
@@ -662,89 +680,123 @@ nextActionOverlay.onAction.MNK = (actionMatch) => {
     addStatus({ statusName: actionName });
   }
 
-  if (actionName === 'Meditation') {
-    if (nextActionOverlay.combat) {
-      playerData.chakra = 5;
-    } else {
-      playerData.chakra += 1;
-    }
-  } else if (actionName === 'Anatman' && playerData.greasedlightningStacks < playerData.greasedlightningMax) {
-    playerData.greasedlightningStacks += 1;
-  } else if (['Snap Punch', 'Demolish', 'Rockbreaker'].includes(actionName)) {
-    playerData.greasedlightningStatus = 16000;
-    /* Increase GL up to max */
-    if (playerData.greasedlightningStacks < playerData.greasedlightningMax) {
-      playerData.greasedlightningStacks += 1;
-    }
-  } else if (actionName === 'Form Shift' && checkStatus({ statusName: 'Coeurl Form' }) > 0 && playerData.greasedlightningStacks > 0) {
-    playerData.greasedlightningStatus = 16000;
-  }
+  // if (actionName === 'Meditation') {
+  //   if (nextActionOverlay.combat) {
+  //     playerData.chakra = 5;
+  //   } else {
+  //     playerData.chakra += 1;
+  //   }
+  // } else if (actionName === 'Anatman'
+  // && playerData.greasedlightningStacks < playerData.greasedlightningMax) {
+  //   playerData.greasedlightningStacks += 1;
+  // } else if (['Snap Punch', 'Demolish', 'Rockbreaker'].includes(actionName)) {
+  //   playerData.greasedlightningStatus = 16000;
+  //   /* Increase GL up to max */
+  //   if (playerData.greasedlightningStacks < playerData.greasedlightningMax) {
+  //     playerData.greasedlightningStacks += 1;
+  //   }
+  // } else if (actionName === 'Form Shift'
+  // && checkStatus({ statusName: 'Coeurl Form' }) > 0 && playerData.greasedlightningStacks > 0) {
+  //   playerData.greasedlightningStatus = 16000;
+  // }
 
-  /* Form changes */
-  if (checkStatus({ statusName: 'Perfect Balance' }) > 0) {
-    removeStatus({ statusName: 'Opo-Opo Form' });
-    removeStatus({ statusName: 'Raptor Form' });
-    removeStatus({ statusName: 'Coeurl Form' });
-  } else if (actionName === 'Form Shift') {
-    if (checkStatus({ statusName: 'Opo-Opo Form' }) > 0) {
-      removeStatus({ statusName: 'Opo-Opo Form' });
-      addStatus({ statusName: 'Raptor Form' });
-      removeStatus({ statusName: 'Coeurl Form' });
-    } else if (checkStatus({ statusName: 'Raptor Form' }) > 0) {
-      removeStatus({ statusName: 'Opo-Opo Form' });
-      removeStatus({ statusName: 'Raptor Form' });
-      addStatus({ statusName: 'Coeurl Form' });
-    } else {
-      addStatus({ statusName: 'Opo-Opo Form' });
-      removeStatus({ statusName: 'Raptor Form' });
-      removeStatus({ statusName: 'Coeurl Form' });
-    }
-  } else if (opoopoformWeaponskills.includes(actionName)) {
-    removeStatus({ statusName: 'Opo-Opo Form' });
-    addStatus({ statusName: 'Raptor Form' });
-    removeStatus({ statusName: 'Coeurl Form' });
-  } else if (raptorformWeaponskills.includes(actionName)) {
-    removeStatus({ statusName: 'Opo-Opo Form' });
-    removeStatus({ statusName: 'Raptor Form' });
-    addStatus({ statusName: 'Coeurl Form' });
-  } else if (coeurlformWeaponskills.includes(actionName)) {
-    addStatus({ statusName: 'Opo-Opo Form' });
-    removeStatus({ statusName: 'Raptor Form' });
-    removeStatus({ statusName: 'Coeurl Form' });
-  }
+  // /* Form changes */
+  // if (checkStatus({ statusName: 'Perfect Balance' }) > 0) {
+  //   removeStatus({ statusName: 'Opo-Opo Form' });
+  //   removeStatus({ statusName: 'Raptor Form' });
+  //   removeStatus({ statusName: 'Coeurl Form' });
+  // } else if (actionName === 'Form Shift') {
+  //   if (checkStatus({ statusName: 'Opo-Opo Form' }) > 0) {
+  //     removeStatus({ statusName: 'Opo-Opo Form' });
+  //     addStatus({ statusName: 'Raptor Form' });
+  //     removeStatus({ statusName: 'Coeurl Form' });
+  //   } else if (checkStatus({ statusName: 'Raptor Form' }) > 0) {
+  //     removeStatus({ statusName: 'Opo-Opo Form' });
+  //     removeStatus({ statusName: 'Raptor Form' });
+  //     addStatus({ statusName: 'Coeurl Form' });
+  //   } else {
+  //     addStatus({ statusName: 'Opo-Opo Form' });
+  //     removeStatus({ statusName: 'Raptor Form' });
+  //     removeStatus({ statusName: 'Coeurl Form' });
+  //   }
+  // }
+  //  else if (opoopoformWeaponskills.includes(actionName)) {
+  //   removeStatus({ statusName: 'Opo-Opo Form' });
+  //   addStatus({ statusName: 'Raptor Form' });
+  //   removeStatus({ statusName: 'Coeurl Form' });
+  // } else if (raptorformWeaponskills.includes(actionName)) {
+  //   removeStatus({ statusName: 'Opo-Opo Form' });
+  //   removeStatus({ statusName: 'Raptor Form' });
+  //   addStatus({ statusName: 'Coeurl Form' });
+  // } else if (coeurlformWeaponskills.includes(actionName)) {
+  //   addStatus({ statusName: 'Opo-Opo Form' });
+  //   removeStatus({ statusName: 'Raptor Form' });
+  //   removeStatus({ statusName: 'Coeurl Form' });
+  // }
 
   /* Toggles combat flag for loop */
-  if (!['Fists Of Fire', 'Fists Of Wind', 'Form Change'].includes(actionName)) {
+  if (!['Fists Of Fire', 'Fists Of Wind', 'Form Shift', 'Meditation'].includes(actionName)) {
     nextActionOverlay.combat = true;
   }
 
   /* Call next function */
-  if (weaponskills.includes(actionName)) {
-    nextActionOverlay.nextAction.MNK({ delay: gcd });
-  } else if (actionName === 'Anatman') {
-    nextActionOverlay.nextAction.MNK({ delay: 0 });
+  if (checkStatus({ statusName: 'Perfect Balance' }) > 0 && weaponskills.includes(actionName)) {
+    nextActionOverlay.nextAction.MNK({ delay: gcd }); /* No stance changes if PB is up */
   } else if (actionName === 'Six-Sided Star') {
     nextActionOverlay.nextAction.MNK({ delay: gcd * 2 });
   }
+  // console.log(gcd);
 };
 
 nextActionOverlay.onStatus.MNK = (statusMatch) => {
   /* Shorten common functions */
-  // const { playerData } = nextActionOverlay;
   const { addStatus } = nextActionOverlay;
-  // const checkStatus = nextActionOverlay.checkStatus;
   const { removeStatus } = nextActionOverlay;
+  // const { checkStatus } = nextActionOverlay;
+
+  const { playerData } = nextActionOverlay;
+  const { gcd } = playerData;
+
+  const { statusName } = statusMatch.groups;
 
   if (statusMatch.groups.gainsLoses === 'gains') {
     addStatus({
-      statusName: statusMatch.groups.statusName,
+      statusName,
       duration: parseFloat(statusMatch.groups.statusDuration) * 1000,
       id: statusMatch.groups.targetID,
     });
+
+    // if (['Anatman', 'Perfect Balance'].includes(statusName)) {
+    //   nextActionOverlay.nextAction.MNK({ delay: 0 });
+    // }
+
+    /* Triggers nextAction on form change */
+    /* This prevents weird shenanigans during invincibility etc. */
+    if (['Opo-Opo Form', 'Raptor Form', 'Coeurl Form'].includes(statusName)) {
+      nextActionOverlay.nextAction.MNK({ delay: gcd });
+    }
+
+    // if (['Twin Snakes', 'Leaden Fist'].includes(statusName)) {
+    //   //console.log(checkStatus({ statusName: 'Leaden Fist' }));
+    //   nextActionOverlay.nextAction.MNK({ delay: gcd });
+    // } /* For Perfect Balance mainly? Looks like above will usually catch it */
   } else {
     removeStatus({
-      statusName: statusMatch.groups.statusName,
+      statusName,
       id: statusMatch.groups.targetID,
     });
+
+    // if (['Opo-Opo Form', 'Raptor Form', 'Coeurl Form'].includes(statusName)) {
+    //   nextActionOverlay.nextAction.MNK({ delay: gcd });
+    // }
+
+    // if (['Anatman', 'Perfect Balance'].includes(statusName)) {
+    //   nextActionOverlay.nextAction.MNK({ delay: 0 });
+    // }
+
+    // if (['Twin Snakes', 'Leaden Fist'].includes(statusName)) {
+    //  // console.log(checkStatus({ statusName: 'Leaden Fist' }));
+    //   nextActionOverlay.nextAction.MNK({ delay: gcd });
+    // }
   }
 };
