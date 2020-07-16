@@ -122,7 +122,6 @@ nextActionOverlay.onTargetChange.MNK = () => {
 nextActionOverlay.nextAction.MNK = ({
   delay = 0,
 } = {}) => {
-  // console.log(nextActionOverlay.playerData.greasedlightningStatus);
   const nextAction = nextActionOverlay.nextAction.MNK;
 
   const { checkRecast } = nextActionOverlay;
@@ -170,8 +169,9 @@ nextActionOverlay.nextAction.MNK = ({
 
   let gcdTime = delay;
   let nextTime = 0; /* Amount of time looked ahead in loop */
+  const nextMaxTime = 15000;
 
-  while (nextTime < 15000) { /* Outside loop for GCDs, looks ahead this number ms */
+  while (nextTime < nextMaxTime) { /* Outside loop for GCDs, looks ahead this number ms */
     let loopTime = 0; /* The elapsed time for current loop */
     gcd = playerData.gcd * (1 - 0.05 * greasedlightningStacks); /* Update new GCD */
 
@@ -189,7 +189,7 @@ nextActionOverlay.nextAction.MNK = ({
     // console.log(gcdTime);
 
     if (gcdTime <= 1000) {
-      /* Cancel Anatman */
+      /* Everything cancels Anatman */
       loopStatus.anatman = -1;
 
       /* GCD action if GCD is complete */
@@ -280,6 +280,7 @@ nextActionOverlay.nextAction.MNK = ({
         }
       }
 
+      /* GCD */
       if (nextGCD === 'Meditation') {
         gcdTime = 1200;
       } else if (nextGCD === 'Anatman') {
@@ -288,19 +289,11 @@ nextActionOverlay.nextAction.MNK = ({
         gcdTime = gcd;
       }
 
-      // if (loopStatus.perfectbalance > 0 && loopStatus.perfectbalance < gcd) {
-      //   mnkArray.push({ name: 'Perfect Balance' });
-      // }
-
-      // if (loopStatus.riddleoffire > 0 && loopStatus.riddleoffire < gcd) {
-      //   mnkArray.push({ name: 'Riddle Of Fire' });
-      // }
-
       loopTime = gcdTime;
 
       /* Remove OGCD for Anatman */
       if (nextGCD === 'Anatman') {
-        loopStatus.greasedlightning += gcdTime;
+        loopStatus.greasedlightning += gcdTime; /* Offsets adjustment later */
         gcdTime = 0;
       }
     }
@@ -317,38 +310,38 @@ nextActionOverlay.nextAction.MNK = ({
 
       if (nextOGCD) {
         mnkArray.push({ name: nextOGCD, size: 'small' });
-      }
 
-      if (['The Forbidden Chakra', 'Enlightenment'].includes(nextOGCD)) {
-        chakra = 0;
-      }
-
-      const property = nextOGCD.replace(/[\s':-]/g, '').toLowerCase();
-
-      if (nextOGCD === 'Shoulder Tackle') {
-        if (level >= 66) {
-          loopRecast.shouldertackle1 = loopRecast.shouldertackle2;
-          loopRecast.shouldertackle2 += recast.shouldertackle;
-        } else {
-          loopRecast.shouldertackle1 += loopRecast.shouldertackle;
+        if (['The Forbidden Chakra', 'Enlightenment'].includes(nextOGCD)) {
+          chakra = 0;
         }
-      } else if (recast[property]) {
-        loopRecast[property] = recast[property];
-      }
 
-      if (nextOGCD === 'Perfect Balance') {
-        loopStatus.opoopoform = -1;
-        loopStatus.raptorform = -1;
-        loopStatus.coeurlform = -1;
-        loopStatus.perfectbalance = duration.perfectbalance + gcd;
-      } else if (nextOGCD === 'Riddle Of Fire') {
-        loopStatus.riddleoffire = duration.riddleoffire + gcd;
-      } else if (duration[property]) {
-        loopStatus[property] = duration[property];
-      }
+        const property = nextOGCD.replace(/[\s':-]/g, '').toLowerCase();
 
-      if (!['Fists Of Fire', 'Fists Of Wind', ''].includes(nextOGCD)) {
-        combat = true;
+        if (nextOGCD === 'Shoulder Tackle') {
+          if (level >= 66) {
+            loopRecast.shouldertackle1 = loopRecast.shouldertackle2;
+            loopRecast.shouldertackle2 += recast.shouldertackle;
+          } else {
+            loopRecast.shouldertackle1 += loopRecast.shouldertackle;
+          }
+        } else if (recast[property]) {
+          loopRecast[property] = recast[property];
+        }
+
+        if (nextOGCD === 'Perfect Balance') {
+          loopStatus.opoopoform = -1;
+          loopStatus.raptorform = -1;
+          loopStatus.coeurlform = -1;
+          loopStatus.perfectbalance = duration.perfectbalance + gcd;
+        } else if (nextOGCD === 'Riddle Of Fire') {
+          loopStatus.riddleoffire = duration.riddleoffire + gcd;
+        } else if (duration[property]) {
+          loopStatus[property] = duration[property];
+        }
+
+        if (!['Fists Of Fire', 'Fists Of Wind', ''].includes(nextOGCD)) {
+          combat = true;
+        }
       }
 
       gcdTime -= 9999; /* Just not bothering with double weaves on MNK */
@@ -379,12 +372,12 @@ nextActionOverlay.nextAction.MNK.gcd = ({
   loopRecast,
   loopStatus,
 } = {}) => {
+  const { targetCount } = nextActionOverlay;
   const { duration } = nextActionOverlay;
   const { recast } = nextActionOverlay;
 
   const { playerData } = nextActionOverlay;
   const { level } = playerData;
-  const { targetCount } = nextActionOverlay;
 
   /* Checks if demolish was snapshotted */
   const demolishStatusPotency = Math.ceil(Math.max(loopStatus.demolish, 0) / 3000) * 65;
@@ -596,31 +589,37 @@ nextActionOverlay.onAction.MNK = (actionMatch) => {
   removeIcon({ name: actionName });
   // console.log(`${actionName}`);
 
-  const singletargetActions = [
-    'True Strike', 'Snap Punch',
-  ];
+  const singletargetActions = [];
 
-  if (checkStatus({ statusName: 'Leaden Fist' }) < 0) {
+  if (level >= 26 && checkStatus({ statusName: 'Leaden Fist' }) < 0) {
     singletargetActions.push('Bootshine');
   }
 
-  if (checkStatus({ statusName: 'Twin Snakes' }) > 0) {
-    singletargetActions.push('Twin Snakes');
+  if (level >= 30) {
+    singletargetActions.push('Snap Punch');
   }
 
-  if (checkStatus({ statusName: 'Demolish', id: targetData.id }) > 0) {
-    singletargetActions.push('Demolish');
+  if (level >= 45) {
+    singletargetActions.push('True Strike');
+  }
+
+  if (level >= 45 && checkStatus({ statusName: 'Twin Snakes' }) > 0) {
+    singletargetActions.push('Twin Snakes');
   }
 
   if (level >= 74) {
     singletargetActions.push('The Forbidden Chakra');
   }
 
-  const multitargetActions = [
-    'Arm Of The Destroyer', 'Four-Point Fury', 'Rockbreaker', 'Elixir Field', 'Enlightenment',
-  ]; /* Actions that can hit multiple targets */
+  if (checkStatus({ statusName: 'Demolish', id: targetData.id }) > 0) {
+    singletargetActions.push('Demolish');
+  }
 
-  /* Set probable target count */
+  const multitargetActions = [ /* Actions that can hit multiple targets */
+    'Arm Of The Destroyer', 'Four-Point Fury', 'Rockbreaker', 'Elixir Field', 'Enlightenment',
+  ];
+
+  /* Set probable target count 1 */
   if (multitargetActions.includes(actionName) && actionMatch.groups.logType === '15') {
     nextActionOverlay.targetCount = 1; /* Multi target action only hits single target */
   } else if (singletargetActions.includes(actionName)) {

@@ -138,6 +138,7 @@ nextActionOverlay.nextAction.NIN = ({
   let { comboStep } = nextActionOverlay;
   let { ninki } = playerData;
   let { bunshinCount } = playerData;
+  let { gcd } = playerData;
 
   const loopRecast = {};
   const loopRecastList = [
@@ -174,6 +175,8 @@ nextActionOverlay.nextAction.NIN = ({
     if (loopStatus.huton > 0) {
       hutonModifier = 0.85;
     }
+
+    gcd = playerData.gcd * hutonModifier;
 
     if (gcdTime <= 1000) { /* "If not enough time for oGCD" */
       const nextGCD = nextAction.gcd({
@@ -252,7 +255,7 @@ nextActionOverlay.nextAction.NIN = ({
       if (ninjutsu.includes(nextGCD)) {
         gcdTime = 1500;
       } else {
-        gcdTime = playerData.gcd * hutonModifier;
+        gcdTime = gcd;
       }
 
       loopTime = mudraTime + gcdTime;
@@ -352,8 +355,10 @@ nextActionOverlay.nextAction.NIN = ({
 
   nextActionOverlay.iconArrayB = ninArray;
   nextActionOverlay.syncIcons();
-  // clearTimeout(nextActionOverlay.timeout.nextAction);
-  // nextActionOverlay.timeout.nextAction = setTimeout(nextAction, playerData.gcd * 2);
+  clearTimeout(nextActionOverlay.timeout.nextAction);
+  nextActionOverlay.timeout.nextAction = setTimeout(
+    nextAction, gcd * 2,
+  );
 };
 
 nextActionOverlay.nextAction.NIN.gcd = ({
@@ -447,7 +452,7 @@ nextActionOverlay.nextAction.NIN.weaponskill = ({
 } = {}) => {
   const { playerData } = nextActionOverlay;
   const { level } = playerData;
-  const { targetCount } = playerData;
+  const { targetCount } = nextActionOverlay;
 
   let aeolianedgeComboPotency = 220;
   if (level >= 26) {
@@ -487,7 +492,7 @@ nextActionOverlay.nextAction.NIN.weaponskill = ({
 nextActionOverlay.nextAction.NIN.ninjutsu = () => {
   const { playerData } = nextActionOverlay;
   const { level } = playerData;
-  const { targetCount } = playerData;
+  const { targetCount } = nextActionOverlay;
 
   if (level >= 35 && targetCount > 1) {
     return 'Katon';
