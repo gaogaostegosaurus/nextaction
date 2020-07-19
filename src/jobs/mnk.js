@@ -1,4 +1,4 @@
-nextActionOverlay.onJobChange.MNK = () => {
+nextActionOverlay.mnkJobChange = () => {
   // const { playerData } = nextActionOverlay;
 
   nextActionOverlay.actionList.weaponskills = [
@@ -87,7 +87,7 @@ nextActionOverlay.onJobChange.MNK = () => {
   icon.sixsidedstar = '002547';
 }; /* Keep collapsed, usually */
 
-nextActionOverlay.onPlayerChangedEvent.MNK = (e) => {
+nextActionOverlay.mnkPlayerChange = (e) => {
   const { checkStatus } = nextActionOverlay;
 
   const { playerData } = nextActionOverlay;
@@ -110,19 +110,19 @@ nextActionOverlay.onPlayerChangedEvent.MNK = (e) => {
     /* Re-assess actions if GL hits 0 for whatever reason */
     playerData.greasedlightningStacks = 0; /* Should already be this but just in case? */
     playerData.greasedlightningStatus = -1;
-    nextActionOverlay.nextAction.MNK({ delay: 0 });
+    nextActionOverlay.nextAction.mnk({ delay: 0 });
   }
   playerData.chakra = e.detail.jobDetail.chakraStacks;
 };
 
-nextActionOverlay.onTargetChange.MNK = () => {
-  nextActionOverlay.nextAction.MNK();
+nextActionOverlay.mnkTargetChange = () => {
+  nextActionOverlay.nextAction.mnk();
 };
 
-nextActionOverlay.nextAction.MNK = ({
+nextActionOverlay.mnkNextAction = ({
   delay = 0,
 } = {}) => {
-  const nextAction = nextActionOverlay.nextAction.MNK;
+  const nextAction = nextActionOverlay.nextAction.mnk;
 
   const { checkRecast } = nextActionOverlay;
   const { checkStatus } = nextActionOverlay;
@@ -363,7 +363,7 @@ nextActionOverlay.nextAction.MNK = ({
   );
 };
 
-nextActionOverlay.nextAction.MNK.gcd = ({
+nextActionOverlay.mnkNextGCD = ({
   combat,
   greasedlightningStacks,
   greasedlightningMax,
@@ -490,7 +490,7 @@ nextActionOverlay.nextAction.MNK.gcd = ({
   return 'Bootshine';
 };
 
-nextActionOverlay.nextAction.MNK.ogcd = ({
+nextActionOverlay.mnkNextOGCD = ({
   combat,
   greasedlightningStacks,
   greasedlightningMax,
@@ -563,7 +563,7 @@ nextActionOverlay.nextAction.MNK.ogcd = ({
   return ''; /* Nothing available */
 };
 
-nextActionOverlay.onAction.MNK = (actionMatch) => {
+nextActionOverlay.mnkActionMatch = (actionMatch) => {
   const { actionName } = actionMatch.groups;
   const { removeIcon } = nextActionOverlay;
   const { checkStatus } = nextActionOverlay;
@@ -575,7 +575,7 @@ nextActionOverlay.onAction.MNK = (actionMatch) => {
 
   const { targetData } = nextActionOverlay;
   const { weaponskills } = nextActionOverlay.actionList;
-  // const nextAction = nextActionOverlay.nextAction.MNK;
+  // const nextAction = nextActionOverlay.nextAction.mnk;
 
   const { addStatus } = nextActionOverlay;
   const { playerData } = nextActionOverlay;
@@ -723,14 +723,14 @@ nextActionOverlay.onAction.MNK = (actionMatch) => {
 
   /* Call next function */
   if (checkStatus({ statusName: 'Perfect Balance' }) > 0 && weaponskills.includes(actionName)) {
-    nextActionOverlay.nextAction.MNK({ delay: gcd }); /* No stance changes if PB is up */
+    nextActionOverlay.nextAction.mnk({ delay: gcd }); /* No stance changes if PB is up */
   } else if (actionName === 'Six-Sided Star') {
-    nextActionOverlay.nextAction.MNK({ delay: gcd * 2 });
+    nextActionOverlay.nextAction.mnk({ delay: gcd * 2 });
   }
   // console.log(gcd);
 };
 
-nextActionOverlay.onStatus.MNK = (statusMatch) => {
+nextActionOverlay.mnkStatusMatch = (statusMatch) => {
   /* Shorten common functions */
   const { addStatus } = nextActionOverlay;
   const { removeStatus } = nextActionOverlay;
@@ -749,18 +749,18 @@ nextActionOverlay.onStatus.MNK = (statusMatch) => {
     });
 
     // if (['Anatman', 'Perfect Balance'].includes(statusName)) {
-    //   nextActionOverlay.nextAction.MNK({ delay: 0 });
+    //   nextActionOverlay.nextAction.mnk({ delay: 0 });
     // }
 
     /* Triggers nextAction on form change */
     /* This prevents weird shenanigans during invincibility etc. */
     if (['Opo-Opo Form', 'Raptor Form', 'Coeurl Form'].includes(statusName)) {
-      nextActionOverlay.nextAction.MNK({ delay: gcd });
+      nextActionOverlay.nextAction.mnk({ delay: gcd });
     }
 
     // if (['Twin Snakes', 'Leaden Fist'].includes(statusName)) {
     //   //console.log(checkStatus({ statusName: 'Leaden Fist' }));
-    //   nextActionOverlay.nextAction.MNK({ delay: gcd });
+    //   nextActionOverlay.nextAction.mnk({ delay: gcd });
     // } /* For Perfect Balance mainly? Looks like above will usually catch it */
   } else {
     removeStatus({
@@ -769,16 +769,16 @@ nextActionOverlay.onStatus.MNK = (statusMatch) => {
     });
 
     // if (['Opo-Opo Form', 'Raptor Form', 'Coeurl Form'].includes(statusName)) {
-    //   nextActionOverlay.nextAction.MNK({ delay: gcd });
+    //   nextActionOverlay.nextAction.mnk({ delay: gcd });
     // }
 
     // if (['Anatman', 'Perfect Balance'].includes(statusName)) {
-    //   nextActionOverlay.nextAction.MNK({ delay: 0 });
+    //   nextActionOverlay.nextAction.mnk({ delay: 0 });
     // }
 
     // if (['Twin Snakes', 'Leaden Fist'].includes(statusName)) {
     //  // console.log(checkStatus({ statusName: 'Leaden Fist' }));
-    //   nextActionOverlay.nextAction.MNK({ delay: gcd });
+    //   nextActionOverlay.nextAction.mnk({ delay: gcd });
     // }
   }
 };

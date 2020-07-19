@@ -428,7 +428,7 @@ onAction.DRK = (actionMatch) => {
   }
 };
 
-onJobChange.DRK = () => {
+onJobChanged.DRK = () => {
   drkNext();
 };
 

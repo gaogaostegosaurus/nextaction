@@ -309,7 +309,7 @@ const brdNext = ({
 };
 
 
-onJobChange.BRD = () => {
+onJobChanged.BRD = () => {
   brdNext();
 };
 

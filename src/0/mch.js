@@ -427,7 +427,7 @@ const mchNext = ({
   syncIcons();
 };
 
-onJobChange.MCH = () => {
+onJobChanged.MCH = () => {
   mchNext();
 };
 

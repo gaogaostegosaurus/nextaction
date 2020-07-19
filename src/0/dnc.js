@@ -312,7 +312,7 @@ const dncNext = ({
   syncIcons();
 };
 
-onJobChange.DNC = () => {
+onJobChanged.DNC = () => {
   if (player.level >= 15) {
     addCountdown({ name: 'Standard Step' });
   }

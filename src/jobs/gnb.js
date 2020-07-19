@@ -1,6 +1,5 @@
-nextActionOverlay.onJobChange.GNB = () => {
-  // const { playerData } = nextActionOverlay;
-
+// Keep collapsed, probably
+nextActionOverlay.gnbJobChange = () => {
   nextActionOverlay.actionList.comboweaponskills = [
     'Keen Edge', 'Brutal Shell', 'Solid Barrel',
     'Demon Slice', 'Demon Slaughter',
@@ -77,19 +76,19 @@ nextActionOverlay.onJobChange.GNB = () => {
   icon.fatedcircle = '003427';
   icon.bloodfest = '003428';
   icon.blastingzone = '003429';
-}; /* Keep collapsed, usually */
+}; // Keep collapsed, probably
 
-nextActionOverlay.onPlayerChangedEvent.GNB = (e) => {
+nextActionOverlay.gnbPlayerChange = (e) => {
   const { playerData } = nextActionOverlay;
 
   playerData.cartridges = e.detail.jobDetail.cartridges;
   // playerData.cartridges = parseInt(debugJobArray[0], 16); /* Keeping as reference */
 };
 
-nextActionOverlay.nextAction.GNB = ({
+nextActionOverlay.gnbNextAction = ({
   delay = 0,
 } = {}) => {
-  const nextAction = nextActionOverlay.nextAction.GNB;
+  const nextAction = nextActionOverlay.gnbNext;
 
   const { checkStatus } = nextActionOverlay;
   const { checkRecast } = nextActionOverlay;
@@ -140,7 +139,7 @@ nextActionOverlay.nextAction.GNB = ({
       loopStatus.readytotear = -1;
       loopStatus.readytogouge = -1;
 
-      const nextGCD = nextAction.gcd({
+      const nextGCD = nextActionOverlay.gnbNextGCD({
         comboStep,
         cartridgecomboStep,
         cartridges,
@@ -213,7 +212,7 @@ nextActionOverlay.nextAction.GNB = ({
     }
 
     while (gcdTime > 1250) {
-      const nextOGCD = nextAction.ogcd({
+      const nextOGCD = nextActionOverlay.gnbNextOGCD({
         gcdTime, /* For second weave */
         cartridges,
         loopRecast,
@@ -265,7 +264,7 @@ nextActionOverlay.nextAction.GNB = ({
   );
 };
 
-nextActionOverlay.nextAction.GNB.gcd = ({ /* All GNB GCDs are weaponskills so... */
+nextActionOverlay.gnbNextGCD = ({ // All GNB GCDs are weaponskills so...
   comboStep,
   cartridgecomboStep,
   cartridges,
@@ -387,7 +386,7 @@ nextActionOverlay.nextAction.GNB.gcd = ({ /* All GNB GCDs are weaponskills so...
   return 'Keen Edge'; /* Always returns Keen Edge if nothing else matches */
 };
 
-nextActionOverlay.nextAction.GNB.ogcd = ({
+nextActionOverlay.gnbNextOGCD = ({
   gcdTime,
   cartridges,
   loopRecast,
@@ -451,14 +450,14 @@ nextActionOverlay.nextAction.GNB.ogcd = ({
   } return ''; /* Returns nothing if no OGCD matches */
 };
 
-nextActionOverlay.onAction.GNB = (actionMatch) => {
+nextActionOverlay.gnbActionMatch = (actionMatch) => {
   const { removeIcon } = nextActionOverlay;
   const { addRecast } = nextActionOverlay;
   const { checkRecast } = nextActionOverlay;
   const { addStatus } = nextActionOverlay;
   // const { checkStatus } = nextActionOverlay;
   const { removeStatus } = nextActionOverlay;
-  const nextAction = nextActionOverlay.nextAction.GNB;
+  const nextAction = nextActionOverlay.gnbNextAction;
 
   const { recast } = nextActionOverlay;
   const { duration } = nextActionOverlay;
@@ -572,6 +571,6 @@ nextActionOverlay.onAction.GNB = (actionMatch) => {
   }
 };
 
-nextActionOverlay.onTargetChange.GNB = () => {
+nextActionOverlay.gnbTargetChange = () => {
   // nextAction();
 };

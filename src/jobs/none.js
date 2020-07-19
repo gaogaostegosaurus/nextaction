@@ -1,17 +1,17 @@
-nextActionOverlay.onJobChange.NONE = () => {
+nextActionOverlay.changedJob.none = () => {
 };
 
-nextActionOverlay.onPlayerChangedEvent.NONE = () => {
+nextActionOverlay.PlayerChangedEvent.none = () => {
 };
 
-nextActionOverlay.onTargetChange.NONE = () => {
+nextActionOverlay.changedTarget.none = () => {
 };
 
-nextActionOverlay.nextAction.NONE = () => {
+nextActionOverlay.nextAction.none = () => {
 };
 
-nextActionOverlay.onAction.NONE = () => {
+nextActionOverlay.actionLog.none = () => {
 };
 
-nextActionOverlay.onStatus.NONE = () => {
+nextActionOverlay.statusLog.none = () => {
 };

@@ -1,4 +1,4 @@
-nextActionOverlay.onJobChange.magicDPS = () => {
+nextActionOverlay.changedJob.magicDPS = () => {
   const { recast } = nextActionOverlay;
   const { duration } = nextActionOverlay;
   const { icon } = nextActionOverlay;

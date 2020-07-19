@@ -218,7 +218,7 @@ const schNext = ({
   syncIcons();
 };
 
-onJobChange.SCH = () => {
+onJobChanged.SCH = () => {
   //
   delete toggle.aetherflow;
   //  delete toggle.luciddreaming;

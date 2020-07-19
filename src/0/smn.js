@@ -378,7 +378,7 @@ const smnNext = ({
   syncIcons();
 };
 
-onJobChange.SMN = () => {
+onJobChanged.SMN = () => {
   if (player.level >= 66) {
     player.bioSpell = 'Bio III';
     next.bioStatus = checkStatus({ name: 'Bio III', id: target.id });

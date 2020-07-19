@@ -1,4 +1,4 @@
-nextActionOverlay.onJobChange.meleeDPS = () => {
+nextActionOverlay.changedJob.meleeDPS = () => {
   const { recast } = nextActionOverlay;
   const { duration } = nextActionOverlay;
   const { icon } = nextActionOverlay;

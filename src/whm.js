@@ -202,7 +202,7 @@ const whmNext = ({
   // Anything?
 };
 
-onJobChange.WHM = () => {
+onJobChanged.WHM = () => {
 
 
   if (player.level >= 72) {

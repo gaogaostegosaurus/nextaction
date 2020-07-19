@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 // Duration properties - list by alphabetical job then alphabetical status
 
 duration.combo = 15000;
@@ -48,28 +49,6 @@ duration.continuation = 10000;
 duration.wildfire = 10000;
 duration.flamethrower = 10000;
 duration.reassemble = 5000;
-
-// MNK
-
-
-// NIN
-
-
-// PLD
-duration.fightorflight = 25000;
-duration.ironwill = 999999;
-duration.sheltron = 6000;
-duration.sentinel = 10000;
-// duration.cover = 12000;
-// duration.circleofscorn = 15000;
-duration.hallowedground = 10000;
-duration.goringblade = 21000;
-// duration.divineveil = 30000;
-duration.requiescat = 12000;
-duration.swordoath = 15000;
-
-// RDM
-
 
 // SAM
 duration.jinpu = 40000;

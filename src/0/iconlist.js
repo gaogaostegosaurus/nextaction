@@ -1,5 +1,4 @@
-const icon = {};
-
+/* eslint-disable no-undef */
 icon.default = '000000';
 
 // Role Actions
@@ -164,55 +163,6 @@ icon.drill = '003043';
 icon.bioblaster = '003044';
 icon.airanchor = '003045';
 icon.automatonqueen = '003501';
-
-// MNK
-
-
-// NIN
-
-// PLD
-icon.sentinel = '000151';
-icon.shieldbash = '000154';
-icon.rageofhalone = '000155';
-icon.riotblade = '000156';
-icon.fastblade = '000158';
-icon.circleofscorn = '000161';
-icon.shieldlob = '000164';
-icon.fightorflight = '000166';
-icon.cover = '002501';
-icon.hallowedground = '002502';
-icon.spiritswithin = '002503';
-icon.ironwill = '002505';
-icon.goringblade = '002506';
-icon.royalauthority = '002507';
-icon.divineveil = '002508';
-icon.clemency = '002509';
-icon.sheltron = '002510';
-icon.totaleclipse = '002511';
-icon.intervention = '002512';
-icon.requiescat = '002513';
-icon.holyspirit = '002514';
-icon.holyspirit1 = icon.holyspirit;
-icon.holyspirit2 = icon.holyspirit;
-icon.holyspirit3 = icon.holyspirit;
-icon.holyspirit4 = icon.holyspirit;
-icon.holyspirit5 = icon.holyspirit;
-icon.passageofarms = '002515';
-icon.prominence = '002516';
-icon.holycircle = '002517';
-icon.holycircle1 = icon.holycircle;
-icon.holycircle2 = icon.holycircle;
-icon.holycircle3 = icon.holycircle;
-icon.holycircle4 = icon.holycircle;
-icon.holycircle5 = icon.holycircle;
-icon.confiteor = '002518';
-icon.atonement = '002519';
-icon.atonement1 = icon.atonement;
-icon.atonement2 = icon.atonement;
-icon.atonement3 = icon.atonement;
-icon.intervene = '002520';
-icon.intervene1 = icon.intervene;
-icon.intervene2 = icon.intervene;
 
 // RDM
 icon.jolt = '003202';

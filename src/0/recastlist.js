@@ -1,10 +1,10 @@
+/* eslint-disable no-undef */
 // Recast properties - list by alphabetical job then alphabetical action
 
 // Role actions
 recast.luciddreaming = 60000;
 recast.peloton = 5000;
 recast.swiftcast = 60000;
-
 
 // BLM
 recast.enochian = 30000;
@@ -72,7 +72,6 @@ recast.wildfire = 120000;
 
 // MNK
 
-
 // NIN
 recast.shadeshift = 120000;
 recast.hide = 20000;
@@ -91,19 +90,6 @@ recast.meisui = 120000;
 recast.bunshin = 90000;
 
 // PLD
-recast.fightorflight = 60000;
-recast.sentinel = 120000;
-recast.circleofscorn = 25000;
-recast.spiritswithin = 30000;
-recast.cover = 120000;
-recast.hallowedground = 420000;
-recast.divineveil = 90000;
-recast.intervention = 10000;
-recast.requiescat = 60000;
-recast.passageofarms = 120000;
-recast.intervene = 30000;
-recast.intervene1 = recast.intervene;
-recast.intervene2 = recast.intervene;
 
 // RDM
 recast.acceleration = 55000;

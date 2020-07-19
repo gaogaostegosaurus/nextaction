@@ -1,6 +1,6 @@
-nextActionOverlay.onJobChange.NIN = () => {
+// Keep collapsed, probably
+nextActionOverlay.ninJobChange = () => {
   const { playerData } = nextActionOverlay;
-  playerData.ninjutsuCount = 0;
   playerData.mudraCount = 0;
 
   nextActionOverlay.actionList.weaponskills = [
@@ -99,9 +99,9 @@ nextActionOverlay.onJobChange.NIN = () => {
   icon.gokamekkyaku = '002925';
   icon.hyoshoranryu = '002926';
   icon.bunshin = '002927';
-}; /* Keep collapsed, usually */
+}; // Keep collapsed, probably
 
-nextActionOverlay.onPlayerChangedEvent.NIN = (e) => {
+nextActionOverlay.ninPlayerChange = (e) => {
   const { playerData } = nextActionOverlay;
   playerData.huton = e.detail.jobDetail.hutonMilliseconds;
   if (playerData.huton === 0) {
@@ -110,13 +110,13 @@ nextActionOverlay.onPlayerChangedEvent.NIN = (e) => {
   playerData.ninki = e.detail.jobDetail.ninkiAmount;
 };
 
-nextActionOverlay.onTargetChange.NIN = () => {
-  if (nextActionOverlay.combat === 0) {
-    nextActionOverlay.nextAction.NIN();
+nextActionOverlay.ninTargetChange = () => {
+  if (nextActionOverlay.combat) {
+    nextActionOverlay.ninNextAction();
   }
 };
 
-nextActionOverlay.nextAction.NIN = ({
+nextActionOverlay.ninNextAction = ({
   delay = 0,
 } = {}) => {
   /* Shorten names */
@@ -131,7 +131,7 @@ nextActionOverlay.nextAction.NIN = ({
   const { weaponskills } = nextActionOverlay.actionList;
   const { ninjutsu } = nextActionOverlay.actionList;
 
-  const nextAction = nextActionOverlay.nextAction.NIN;
+  const nextAction = nextActionOverlay.ninNextAction;
 
   /* Initial values for loops */
 
@@ -179,7 +179,7 @@ nextActionOverlay.nextAction.NIN = ({
     gcd = playerData.gcd * hutonModifier;
 
     if (gcdTime <= 1000) { /* "If not enough time for oGCD" */
-      const nextGCD = nextAction.gcd({
+      const nextGCD = nextActionOverlay.ninNextGCD({
         comboStep,
         loopRecast,
         loopStatus,
@@ -276,7 +276,7 @@ nextActionOverlay.nextAction.NIN = ({
     }
 
     while (gcdTime > 1000) {
-      const nextOGCD = nextAction.ogcd({
+      const nextOGCD = nextActionOverlay.ninNextOGCD({
         ninki,
         ninkiTarget,
         loopRecast,
@@ -361,12 +361,11 @@ nextActionOverlay.nextAction.NIN = ({
   );
 };
 
-nextActionOverlay.nextAction.NIN.gcd = ({
+nextActionOverlay.ninNextGCD = ({
   comboStep,
   loopRecast,
   loopStatus,
 } = {}) => {
-  const nextAction = nextActionOverlay.nextAction.NIN;
   const { playerData } = nextActionOverlay;
   const { level } = playerData;
   const { duration } = nextActionOverlay;
@@ -386,7 +385,7 @@ nextActionOverlay.nextAction.NIN.gcd = ({
 
   /* Continue Combo if timer is low */
   if (loopStatus.combo > 0 && loopStatus.combo < playerData.gcd * 2) {
-    return nextAction.weaponskill({ comboStep, loopStatus });
+    return nextActionOverlay.ninNextWeaponskill({ comboStep, loopStatus });
   }
 
   /* Prioritize Huton if it's really low for some reason */
@@ -425,7 +424,7 @@ nextActionOverlay.nextAction.NIN.gcd = ({
         return 'Goka Mekkyaku';
       }
       return 'Hyosho Ranryu';
-    } return nextAction.ninjutsu();
+    } return nextActionOverlay.ninNextNinjutsu();
   }
 
   if (loopRecast.trickattack > recast.shadowfang * 0.05 && loopRecast.shadowfang < 0) {
@@ -433,20 +432,20 @@ nextActionOverlay.nextAction.NIN.gcd = ({
   }
 
   if (loopStatus.trickattack > 2000 && loopRecast.mudra1 < 0) {
-    return nextAction.ninjutsu();
+    return nextActionOverlay.ninNextNinjutsu();
   }
 
   /* Normal attacks */
   if (level >= 45 && loopRecast.mudra2 < (500 * 2 + 1500)) {
-    return nextAction.ninjutsu(); /* Keep one Ninjutsu charge on cooldown */
+    return nextActionOverlay.ninNextNinjutsu(); /* Keep one Ninjutsu charge on cooldown */
   } if (level >= 30 && level < 45 && loopRecast.shadowfang < 0) {
     return 'Shadow Fang'; /* Use Shadow Fang on cooldown before Trick */
   } if (level >= 30 && level < 45 && loopRecast.mudra1 < 0) {
-    return nextAction.ninjutsu(); /* Use all mudra on cooldown prior to 45 */
-  } return nextAction.weaponskill({ comboStep, loopStatus });
+    return nextActionOverlay.ninNextNinjutsu(); /* Use all mudra on cooldown prior to 45 */
+  } return nextActionOverlay.ninNextWeaponskill({ comboStep, loopStatus });
 };
 
-nextActionOverlay.nextAction.NIN.weaponskill = ({
+nextActionOverlay.ninNextWeaponskill = ({
   comboStep,
   loopStatus,
 } = {}) => {
@@ -489,7 +488,7 @@ nextActionOverlay.nextAction.NIN.weaponskill = ({
   } return 'Spinning Edge';
 };
 
-nextActionOverlay.nextAction.NIN.ninjutsu = () => {
+nextActionOverlay.ninNextNinjutsu = () => {
   const { playerData } = nextActionOverlay;
   const { level } = playerData;
   const { targetCount } = nextActionOverlay;
@@ -501,7 +500,7 @@ nextActionOverlay.nextAction.NIN.ninjutsu = () => {
   } return 'Fuma Shuriken';
 };
 
-nextActionOverlay.nextAction.NIN.ogcd = ({
+nextActionOverlay.ninNextOGCD = ({
   loopStatus,
   loopRecast,
   ninki,
@@ -571,7 +570,7 @@ nextActionOverlay.nextAction.NIN.ogcd = ({
   } return ''; /* No OGCD */
 };
 
-nextActionOverlay.onAction.NIN = (actionMatch) => {
+nextActionOverlay.ninActionMatch = (actionMatch) => {
   const singletargetActions = [
     'Raiton', 'Hyosho Ranryu',
   ];
@@ -587,7 +586,6 @@ nextActionOverlay.onAction.NIN = (actionMatch) => {
   const { ninjutsu } = nextActionOverlay.actionList;
   const { level } = playerData;
   const { huton } = playerData;
-  const nextAction = nextActionOverlay.nextAction.NIN;
   const { gcd } = playerData;
 
   /* Shorten common functions */
@@ -596,6 +594,7 @@ nextActionOverlay.onAction.NIN = (actionMatch) => {
   const { removeStatus } = nextActionOverlay;
   const { addRecast } = nextActionOverlay;
   const { checkRecast } = nextActionOverlay;
+  const nextAction = nextActionOverlay.ninNextAction;
 
   /* Remove icon before reflow */
   nextActionOverlay.removeIcon({ name: actionName });
@@ -681,7 +680,7 @@ nextActionOverlay.onAction.NIN = (actionMatch) => {
   }
 };
 
-nextActionOverlay.onStatus.NIN = (statusMatch) => {
+nextActionOverlay.ninStatusMatch = (statusMatch) => {
   /* Shorten common functions */
   const { playerData } = nextActionOverlay;
   const { addStatus } = nextActionOverlay;

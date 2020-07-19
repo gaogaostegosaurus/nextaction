@@ -1,9 +1,7 @@
 /.git
 /.gitignore
-
-/.eslintrc*
+/.eslintrc.js
 /node_modules
+/reference
 /package.json
 /package-lock.json
-
-/resources

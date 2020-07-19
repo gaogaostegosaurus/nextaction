@@ -1,4 +1,4 @@
-nextActionOverlay.onJobChange.RDM = () => {
+nextActionOverlay.rdmJobChange = () => {
   /* Set initial values */
   const { playerData } = nextActionOverlay;
   const { level } = playerData;
@@ -39,7 +39,7 @@ nextActionOverlay.onJobChange.RDM = () => {
     'Swiftcast',
   ];
 
-  nextActionOverlay.onJobChange.magicDPS();
+  nextActionOverlay.changedJob.magicDPS();
 
   const { recast } = nextActionOverlay;
   recast.acceleration = 55000;
@@ -100,18 +100,18 @@ nextActionOverlay.onJobChange.RDM = () => {
   }
 }; /* Keep collapsed, usually */
 
-nextActionOverlay.onPlayerChangedEvent.RDM = (e) => {
+nextActionOverlay.rdmPlayerChange = (e) => {
   const { playerData } = nextActionOverlay;
   playerData.blackmana = e.detail.jobDetail.blackMana;
   playerData.whitemana = e.detail.jobDetail.whiteMana;
   playerData.mp = e.detail.jobDetail.mp;
 };
 
-nextActionOverlay.onTargetChange.RDM = () => {
-  nextActionOverlay.nextAction.RDM(); // ?
+nextActionOverlay.rdmTargetChange = () => {
+  nextActionOverlay.nextAction.rdm(); // ?
 };
 
-nextActionOverlay.nextAction.RDM = ({
+nextActionOverlay.rdmNextAction = ({
   gcd = 0,
 } = {}) => {
   const { playerData } = nextActionOverlay;
@@ -121,7 +121,7 @@ nextActionOverlay.nextAction.RDM = ({
   const { checkStatus } = nextActionOverlay;
   const { duration } = nextActionOverlay;
   const { recast } = nextActionOverlay;
-  const nextAction = nextActionOverlay.nextAction.RDM;
+  const nextAction = nextActionOverlay.nextAction.rdm;
 
   let gcdTime = gcd;
   let nextTime = 0; /* Tracks how far next loop has "looked ahead" */
@@ -162,7 +162,7 @@ nextActionOverlay.nextAction.RDM = ({
 
     /* If no time for OGCD, use GCD */
     if (gcdTime <= 1000) {
-      const nextGCD = nextActionOverlay.nextAction.RDM.gcd({
+      const nextGCD = nextActionOverlay.nextAction.rdm.gcd({
         comboStep,
         hardcasting,
         blackmana,
@@ -414,7 +414,7 @@ nextActionOverlay.nextAction.RDM = ({
   nextActionOverlay.syncIcons();
 };
 
-nextActionOverlay.nextAction.RDM.gcd = ({
+nextActionOverlay.rdmNextGCD = ({
   comboStep,
   // hardcasting,
   blackmana,
@@ -424,7 +424,7 @@ nextActionOverlay.nextAction.RDM.gcd = ({
 } = {}) => {
   const { playerData } = nextActionOverlay;
   const { level } = playerData;
-  const nextAction = nextActionOverlay.nextAction.RDM;
+  const nextAction = nextActionOverlay.nextAction.rdm;
 
   let moulinetFloor = 40; /* Allows Reprise to be used until 40-59 mana is reached */
   if (nextActionOverlay.targetCount >= 3) {
@@ -528,7 +528,7 @@ nextActionOverlay.nextAction.RDM.gcd = ({
   });
 };
 
-nextActionOverlay.nextAction.RDM.ogcd = ({
+nextActionOverlay.rdmNextOGCD = ({
   gcdTime,
   mp,
   comboStep,
@@ -588,7 +588,7 @@ nextActionOverlay.nextAction.RDM.ogcd = ({
   } return '';
 };
 
-nextActionOverlay.nextAction.RDM.dualcast = ({
+nextActionOverlay.rdmNextDualcast = ({
   blackmana,
   whitemana,
   loopStatus,
@@ -726,14 +726,14 @@ nextActionOverlay.nextAction.RDM.dualcast = ({
   return [hardcast, dualcast];
 };
 
-nextActionOverlay.onAction.RDM = (actionMatch) => {
+nextActionOverlay.rdmActionMatch = (actionMatch) => {
   const { removeStatus } = nextActionOverlay;
 
   const { weaponskills } = nextActionOverlay.actionList;
   const { abilities } = nextActionOverlay.actionList;
   const { playerData } = nextActionOverlay;
   const { level } = playerData;
-  const nextAction = nextActionOverlay.nextAction.RDM;
+  const nextAction = nextActionOverlay.nextAction.rdm;
 
   const { addRecast } = nextActionOverlay;
   // const { checkRecast } = nextActionOverlay;
@@ -804,7 +804,7 @@ nextActionOverlay.onAction.RDM = (actionMatch) => {
       }
       addRecast({ actionName: 'Corps-A-Corps', recast: -1 });
       addRecast({ actionName: 'Displacement', recast: -1 });
-      nextActionOverlay.nextAction.RDM();
+      nextActionOverlay.nextAction.rdm();
     } else if (actionName === 'Engagement') {
       addRecast({ actionName: 'Displacement' }); /* Set Displacement cooldown with Engagement */
     } else if (actionName === 'Swiftcast') {
@@ -816,11 +816,11 @@ nextActionOverlay.onAction.RDM = (actionMatch) => {
   }
 };
 
-nextActionOverlay.onStatus.RDM = (statusMatch) => {
+nextActionOverlay.rdmStatusMatch = (statusMatch) => {
   const { removeIcon } = nextActionOverlay;
   const { removeStatus } = nextActionOverlay;
   const { addStatus } = nextActionOverlay;
-  const nextAction = nextActionOverlay.nextAction.RDM;
+  const nextAction = nextActionOverlay.nextAction.rdm;
 
   const { playerData } = nextActionOverlay;
 
@@ -856,7 +856,7 @@ nextActionOverlay.onStatus.RDM = (statusMatch) => {
   }
 };
 
-nextActionOverlay.onCasting.RDM = (castingMatch) => {
+nextActionOverlay.rdmCastingMatch = (castingMatch) => {
   const { playerData } = nextActionOverlay;
   const { fadeIcon } = nextActionOverlay;
   // if (rdmMultiTarget.includes(castingMatch.groups.actionName)) {
@@ -867,16 +867,16 @@ nextActionOverlay.onCasting.RDM = (castingMatch) => {
   // console.log('test');
   playerData.hardcasting = castingMatch.groups.actionName;
   nextActionOverlay.comboStep = '';
-  nextActionOverlay.nextAction.RDM();
+  nextActionOverlay.nextAction.rdm();
   fadeIcon({ name: 'Hardcast', match: 'contains' });
 };
 
-// nextActionOverlay.onCancel.RDM = (cancelledMatch) => {
-nextActionOverlay.onCancel.RDM = () => {
+// eslint-disable-next-line no-unused-vars
+nextActionOverlay.rdmCancelMatch = (cancelMatch) => {
   const { playerData } = nextActionOverlay;
   const { unfadeIcon } = nextActionOverlay;
 
   playerData.hardcasting = '';
   unfadeIcon({ name: 'Hardcast', match: 'contains' });
-  nextActionOverlay.next.RDM();
+  nextActionOverlay.next.rdm();
 };
