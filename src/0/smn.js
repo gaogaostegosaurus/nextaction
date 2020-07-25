@@ -1,4 +1,3 @@
-
 const smnCastedGCDs = [
   'Ruin', 'Ruin III',
   'Outburst',
@@ -479,6 +478,5 @@ onStatus.SMN = (statusMatch) => {
     removeStatus({ name: statusMatch.groups.statusName, id: statusMatch.groups.targetID });
   }
 };
-
 
 onTargetChanged.SMN = () => {};

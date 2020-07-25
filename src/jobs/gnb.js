@@ -15,38 +15,49 @@ nextActionOverlay.gnbJobChange = () => {
   ];
 
   nextActionOverlay.actionList.abilities = [
-    'No Mercy',
-    'Danger Zone', 'Blasting Zone',
+    'No Mercy', 'Camouflage', 'Danger Zone', 'Nebula', 'Aurora', 'Superbolide',
     'Rough Divide',
-    'Bow Shock',
-    'Jugular Rip', 'Abdomen Tear', 'Eye Gouge',
-    'Bloodfest',
+    'Bow Shock', 'Heart Of Stone', 'Jugular Rip', 'Abdomen Tear', 'Eye Gouge',
+    'Bloodfest', 'Blasting Zone',
+    'Rampart', 'Reprisal', 'Arm\'s Length',
   ];
 
-  nextActionOverlay.statusList = [
-    //
+  nextActionOverlay.statusList.mitigation = [
+    'Camouflage', 'Nebula', 'Superbolide', 'Heart Of Stone',
+    'Rampart', 'Reprisal', 'Arm\'s Length',
   ];
 
   const { recast } = nextActionOverlay;
+
   recast.nomercy = 60000;
+  recast.camouflage = 90000;
   recast.dangerzone = 30000;
+  recast.nebula = 120000;
+  recast.superbolide = 360000;
   recast.roughdivide = 30000;
   recast.roughdivide1 = recast.roughdivide;
   recast.roughdivide2 = recast.roughdivide;
   recast.bowshock = 60000;
+  recast.heartofstone = 25000;
   recast.continuation = 1000;
   recast.bloodfest = 90000;
   recast.gnashingfang = 30000;
   recast.sonicbreak = 60000;
 
   const { duration } = nextActionOverlay;
+
   duration.nomercy = 20000;
+  duration.camouflage = 20000;
+  duration.nebula = 15000;
+  duration.superbolide = 8000;
+  duration.heartofstone = 7000;
   duration.continuation = 10000;
   duration.readytorip = duration.continuation;
   duration.readytotear = duration.continuation;
   duration.readytogouge = duration.continuation;
 
   const { icon } = nextActionOverlay;
+
   icon.keenedge = '003401';
   icon.nomercy = '003402';
   icon.brutalshell = '003403';
@@ -76,20 +87,24 @@ nextActionOverlay.gnbJobChange = () => {
   icon.fatedcircle = '003427';
   icon.bloodfest = '003428';
   icon.blastingzone = '003429';
+
+  nextActionOverlay.tankJobChange();
 }; // Keep collapsed, probably
 
 nextActionOverlay.gnbPlayerChange = (e) => {
   const { playerData } = nextActionOverlay;
 
   playerData.cartridges = e.detail.jobDetail.cartridges;
-  // playerData.cartridges = parseInt(debugJobArray[0], 16); /* Keeping as reference */
+  // playerData.cartridges = parseInt(debugJobArray[0], 16); // Keeping as reference
+};
+
+nextActionOverlay.gnbTargetChange = () => {
+  nextActionOverlay.gnbNextAction();
 };
 
 nextActionOverlay.gnbNextAction = ({
   delay = 0,
 } = {}) => {
-  const nextAction = nextActionOverlay.gnbNext;
-
   const { checkStatus } = nextActionOverlay;
   const { checkRecast } = nextActionOverlay;
   const { duration } = nextActionOverlay;
@@ -108,15 +123,16 @@ nextActionOverlay.gnbNextAction = ({
 
   const loopRecast = {};
   const loopRecastList = [
-    'No Mercy', 'Danger Zone', 'Sonic Break', 'Rough Divide 1', 'Rough Divide 2', 'Gnashing Fang', 'Bow Shock',
-    'Bloodfest'];
+    'No Mercy', 'Danger Zone', 'Aurora', 'Sonic Break', 'Rough Divide 1', 'Rough Divide 2', 'Gnashing Fang', 'Bow Shock',
+    'Bloodfest',
+  ];
   loopRecastList.forEach((actionName) => {
     const propertyName = actionName.replace(/[\s':-]/g, '').toLowerCase();
     loopRecast[propertyName] = checkRecast({ actionName }) - 1000;
   });
 
   const loopStatus = {};
-  const loopStatusList = ['Combo', 'No Mercy', 'Ready To Rip', 'Ready To Tear', 'Ready To Gouge'];
+  const loopStatusList = ['No Mercy', 'Ready To Rip', 'Ready To Tear', 'Ready To Gouge'];
   loopStatusList.forEach((statusName) => {
     const propertyName = statusName.replace(/[\s':-]/g, '').toLowerCase();
     loopStatus[propertyName] = checkStatus({ statusName });
@@ -128,14 +144,14 @@ nextActionOverlay.gnbNextAction = ({
   const gnbArray = [];
 
   let gcdTime = delay;
-  let nextTime = 0; /* Amount of time looked ahead in loop */
+  let nextTime = 0; // Amount of time looked ahead in loop
   const nextMaxTime = 15000;
 
-  while (nextTime < nextMaxTime) { /* Outside loop for GCDs, looks ahead this number ms */
-    let loopTime = 0; /* Time elapsed for one loop */
+  while (nextTime < nextMaxTime) { // Outside loop for GCDs, looks ahead this number ms
+    let loopTime = 0; // Time elapsed for one loop
 
     if (gcdTime <= 1000) {
-      loopStatus.readytorip = -1; /* It appears that any GCD removes Continuation buff */
+      loopStatus.readytorip = -1; // It appears that any GCD removes Continuation buff
       loopStatus.readytotear = -1;
       loopStatus.readytogouge = -1;
 
@@ -150,7 +166,7 @@ nextActionOverlay.gnbNextAction = ({
       gnbArray.push({ name: nextGCD });
 
       if (comboweaponskills.includes(nextGCD)) {
-        loopStatus.cartridgecombo = -1; /* Regular combo interrupts cartridge combo */
+        loopStatus.cartridgecombo = -1; // Regular combo interrupts cartridge combo
         cartridgecomboStep = '';
 
         if ((level >= 4 && nextGCD === 'Keen Edge')
@@ -184,14 +200,14 @@ nextActionOverlay.gnbNextAction = ({
 
       const property = nextGCD.replace(/[\s':-]/g, '').toLowerCase();
 
-      /* Recasts */
+      // Recasts
       if (recast[property]) {
         loopRecast[property] = recast[property];
       }
 
-      /* Statuses (no need to track here) */
+      // Statuses (no need to track here)
 
-      /* Resources */
+      // Resources
       if (nextGCD === 'Burst Strike' || nextGCD === 'Gnashing Fang' || nextGCD === 'Fated Circle') {
         cartridges -= 1;
       } else if ((level >= 30 && nextGCD === 'Solid Barrel')
@@ -199,21 +215,21 @@ nextActionOverlay.gnbNextAction = ({
         cartridges += 1;
       }
 
-      /* Just in case? */
+      // Just in case?
       if (cartridges > 2) {
         cartridges = 2;
       } else if (cartridges < 0) {
         cartridges = 0;
       }
 
-      /* GCD */
-      gcdTime = gcd; /* All GNB GCDs are just the standard GCD, so no need to do more */
+      // GCD
+      gcdTime = gcd; // All GNB GCDs are just the standard GCD, so no need to do more
       loopTime = gcdTime;
     }
 
     while (gcdTime > 1250) {
       const nextOGCD = nextActionOverlay.gnbNextOGCD({
-        gcdTime, /* For second weave */
+        gcdTime, // For second weave
         cartridges,
         loopRecast,
         loopStatus,
@@ -222,23 +238,23 @@ nextActionOverlay.gnbNextAction = ({
       if (nextOGCD) {
         gnbArray.push({ name: nextOGCD, size: 'small' });
 
-        const property = nextOGCD.replace(/[\s':-]/g, '').toLowerCase();
+        const actionLowercase = nextOGCD.replace(/[\s':-]/g, '').toLowerCase();
 
         if (nextOGCD === 'Rough Divide') {
           loopRecast.roughdivide1 = loopRecast.roughdivide2;
           loopRecast.roughdivide2 += recast.roughdivide;
-        } else if (recast[property]) {
-          loopRecast[property] = recast[property];
+        } else if (recast[actionLowercase]) {
+          loopRecast[actionLowercase] = recast[actionLowercase];
         }
 
         if (nextOGCD === 'No Mercy') {
-          loopStatus.nomercy = duration.nomercy + 1000; /* Extra buffer to assist with prediction */
+          loopStatus.nomercy = duration.nomercy + 1000; // Extra buffer to assist with prediction
         } else if (['Jugular Rip', 'Abdomen Tear', 'Eye Gouge'].includes(nextOGCD)) {
           loopStatus.readytorip = -1;
           loopStatus.readytotear = -1;
           loopStatus.readytogouge = -1;
-        } else if (duration[property]) {
-          loopStatus[property] = duration[property];
+        } else if (duration[actionLowercase]) {
+          loopStatus[actionLowercase] = duration[actionLowercase];
         }
 
         if (nextOGCD === 'Bloodfest') {
@@ -251,16 +267,17 @@ nextActionOverlay.gnbNextAction = ({
     Object.keys(loopRecast).forEach((property) => { loopRecast[property] -= loopTime; });
     Object.keys(loopStatus).forEach((property) => { loopStatus[property] -= loopTime; });
 
-    gcdTime = 0; /* Zero out for next loop */
+    gcdTime = 0; // Zero out for next loop
 
     nextTime += loopTime;
   }
   nextActionOverlay.iconArrayB = gnbArray;
   nextActionOverlay.syncIcons();
+  nextActionOverlay.gnbNextMitigation();
 
   clearTimeout(nextActionOverlay.timeout.nextAction);
   nextActionOverlay.timeout.nextAction = setTimeout(
-    nextAction, gcd * 2,
+    nextActionOverlay.gnbNextAction, gcd * 2,
   );
 };
 
@@ -289,9 +306,9 @@ nextActionOverlay.gnbNextGCD = ({ // All GNB GCDs are weaponskills so...
     solidbarrelComboPotency = 250;
   }
 
-  let demonslaughterComboPotency = 150 * targetCount; /* Combo average */
+  let demonslaughterComboPotency = 150 * targetCount; // Combo average
   if (level >= 40) {
-    demonslaughterComboPotency = 200 * targetCount; /* Combo average */
+    demonslaughterComboPotency = 200 * targetCount; // Combo average
   }
 
   let wickedtalonComboPotency = 550;
@@ -299,7 +316,7 @@ nextActionOverlay.gnbNextGCD = ({ // All GNB GCDs are weaponskills so...
     wickedtalonComboPotency = 550 + 280;
   }
 
-  /* Don't drop cartridge combo */
+  // Don't drop cartridge combo
   if (loopStatus.cartridgecombo < gcd * 2 && loopStatus.cartridgecombo > 0) {
     if (cartridgecomboStep === 'Savage Claw') {
       return 'Wicked Talon';
@@ -310,7 +327,7 @@ nextActionOverlay.gnbNextGCD = ({ // All GNB GCDs are weaponskills so...
     }
   }
 
-  /* Don't drop combo */
+  // Don't drop combo
   if (loopStatus.combo < gcd * 2 && loopStatus.combo > 0) {
     if (level >= 40 && comboStep === 'Demon Slice') {
       return 'Demon Slaughter';
@@ -325,7 +342,7 @@ nextActionOverlay.gnbNextGCD = ({ // All GNB GCDs are weaponskills so...
     }
   }
 
-  /* Use Sonic Break unless AOEing is better */
+  // Use Sonic Break unless AOEing is better
   if (level >= 54 && sonicbreakPotency >= demonslaughterComboPotency
   && loopRecast.nomercy >= recast.gnashingfang * 0.20
   && loopRecast.sonicbreak < 0) {
@@ -340,14 +357,14 @@ nextActionOverlay.gnbNextGCD = ({ // All GNB GCDs are weaponskills so...
     return 'Savage Claw';
   }
 
-  /* Start cartridge combo when able, unless just spamming AoE combo is better */
+  // Start cartridge combo when able, unless just spamming AoE combo is better
   if (level >= 60 && cartridges > 0 && wickedtalonComboPotency >= demonslaughterComboPotency
   && loopRecast.nomercy >= recast.gnashingfang * 0.20
   && loopRecast.gnashingfang < 0) {
     return 'Gnashing Fang';
   }
 
-  /* Dump remaining cartridges during No Mercy or if Bloodfest is coming up soon */
+  // Dump remaining cartridges during No Mercy or if Bloodfest is coming up soon
   if (cartridges > 0
   && (loopStatus.nomercy > 0 || (level >= 76 && loopRecast.bloodfest < gcd * cartridges))) {
     if (level >= 72 && fatedcirclePotency > burststrikePotency) {
@@ -357,7 +374,7 @@ nextActionOverlay.gnbNextGCD = ({ // All GNB GCDs are weaponskills so...
     return 'Burst Strike';
   }
 
-  /* Use a cartridge if about to overcap with combo */
+  // Use a cartridge if about to overcap with combo
   if (cartridges >= 2 && (comboStep === 'Brutal Shell' || comboStep === 'Demon Slice')) {
     if (level >= 72 && fatedcirclePotency > burststrikePotency) {
       return 'Fated Circle';
@@ -366,7 +383,7 @@ nextActionOverlay.gnbNextGCD = ({ // All GNB GCDs are weaponskills so...
     return 'Burst Strike';
   }
 
-  /* Combos */
+  // Combos
   if (level >= 40 && comboStep === 'Demon Slice') {
     return 'Demon Slaughter';
   }
@@ -383,7 +400,7 @@ nextActionOverlay.gnbNextGCD = ({ // All GNB GCDs are weaponskills so...
     return 'Demon Slice';
   }
 
-  return 'Keen Edge'; /* Always returns Keen Edge if nothing else matches */
+  return 'Keen Edge'; // Always returns Keen Edge if nothing else matches
 };
 
 nextActionOverlay.gnbNextOGCD = ({
@@ -421,7 +438,7 @@ nextActionOverlay.gnbNextOGCD = ({
   }
 
   if (level >= 2 && gcdTime <= 1500 && loopRecast.nomercy < 0) {
-    return 'No Mercy'; /* gcdTime <= 1500 places it in second part of GCD */
+    return 'No Mercy'; // gcdTime <= 1500 places it in second part of GCD
   }
 
   if (level >= 62 && loopStatus.nomercy > 0 && bowshockPotency > dangerzonePotency
@@ -436,7 +453,7 @@ nextActionOverlay.gnbNextOGCD = ({
 
   if (level >= 62
   && loopRecast.nomercy >= recast.bowshock * 0.20 && loopRecast.bowshock < 0) {
-    return 'Bow Shock'; /* Weaker than Blasting Zone but stronger than Danger Zone on one target */
+    return 'Bow Shock'; // Weaker than Blasting Zone but stronger than Danger Zone on one target
   }
 
   if (level >= 56 && gcdTime <= 1500
@@ -447,7 +464,39 @@ nextActionOverlay.gnbNextOGCD = ({
   if (level >= 56 && gcdTime <= 1500
   && loopRecast.nomercy >= recast.roughdivide2 * 0.20 && loopRecast.roughdivide2 < 0) {
     return 'Rough Divide';
-  } return ''; /* Returns nothing if no OGCD matches */
+  } return ''; // Returns nothing if no OGCD matches
+};
+
+nextActionOverlay.gnbNextMitigation = () => {
+  const mitigationList = nextActionOverlay.statusList.mitigation;
+  let mitigationStatus = -1;
+  const { checkStatus } = nextActionOverlay;
+
+  mitigationList.forEach((ability) => {
+    if (mitigationStatus < checkStatus({ statusName: ability })) {
+      mitigationStatus = checkStatus({ statusName: ability });
+    }
+  });
+
+  const iconArray = [];
+  const { level } = nextActionOverlay.playerData;
+  const { checkRecast } = nextActionOverlay;
+
+  if (mitigationStatus < 0) {
+    mitigationList.forEach((ability) => {
+      if (checkRecast({ actionName: ability }) < 0) {
+        if (level >= 6 && ability === 'Camouflage') { iconArray.push({ name: ability, size: 'small' }); }
+        if (level >= 38 && ability === 'Nebula') { iconArray.push({ name: ability, size: 'small' }); }
+        if (level >= 50 && ability === 'Superbolide') { iconArray.push({ name: ability, size: 'small' }); }
+        if (level >= 68 && ability === 'Heart Of Stone') { iconArray.push({ name: ability, size: 'small' }); }
+        if (level >= 8 && ability === 'Rampart') { iconArray.push({ name: ability, size: 'small' }); }
+        if (level >= 22 && ability === 'Reprisal') { iconArray.push({ name: ability, size: 'small' }); }
+        if (level >= 32 && ability === 'Arm\'s Length') { iconArray.push({ name: ability, size: 'small' }); }
+      }
+    });
+  }
+  nextActionOverlay.iconArrayC = iconArray;
+  nextActionOverlay.syncIcons({ iconArray: nextActionOverlay.iconArrayC });
 };
 
 nextActionOverlay.gnbActionMatch = (actionMatch) => {
@@ -485,14 +534,14 @@ nextActionOverlay.gnbActionMatch = (actionMatch) => {
     singletargetActions.push('Burst Strike');
   }
 
-  const multitargetActions = [ /* Actions that can hit multiple targets */
+  const multitargetActions = [ // Actions that can hit multiple targets
     'Demon Slice', 'Demon Slaughter', 'Fated Circle', 'Bow Shock',
   ];
 
-  /* Set probable target count 1 */
+  // Set probable target count 1
   if (nextActionOverlay.targetCount > 1) {
     if (multitargetActions.includes(actionName) && actionMatch.groups.logType === '15') {
-      /* Multi target only hits single target */
+      // Multi target only hits single target
       nextActionOverlay.targetCount = 1;
     } else if (singletargetActions.includes(actionName)) {
       nextActionOverlay.targetCount = 1;
@@ -501,9 +550,9 @@ nextActionOverlay.gnbActionMatch = (actionMatch) => {
 
   const property = actionName.replace(/[\s':-]/g, '').toLowerCase();
 
-  /* Add recasts */
+  // Add recasts
   if (actionName === 'Rough Divide') {
-    /* Catch Rough Divide since it has stacks and needs to be handled differently */
+    // Catch Rough Divide since it has stacks and needs to be handled differently
     addRecast({ actionName: 'Rough Divide 1', time: checkRecast({ actionName: 'Rough Divide 2' }) });
     addRecast({ actionName: 'Rough Divide 2', time: checkRecast({ actionName: 'Rough Divide 2' }) + recast.roughdivide });
   } else if (actionName === 'Blasting Zone') {
@@ -512,12 +561,12 @@ nextActionOverlay.gnbActionMatch = (actionMatch) => {
     addRecast({ actionName });
   }
 
-  /* Add statuses */
+  // Add statuses
   if (duration[property]) {
     addStatus({ statusName: actionName });
   }
 
-  /* Combo */
+  // Combo
   if (comboweaponskills.includes(actionName)) {
     removeStatus({ statusName: 'Cartridge Combo' });
     nextActionOverlay.cartridgecomboStep = '';
@@ -563,11 +612,28 @@ nextActionOverlay.gnbActionMatch = (actionMatch) => {
     removeStatus({ statusName: 'Ready To Gouge' });
   }
 
-  /* Call next function */
+  // Call next function
   if (comboweaponskills.includes(actionName)
   || cartridgecomboweaponskills.includes(actionName)
   || otherweaponskills.includes(actionName)) {
     nextAction({ delay: gcd });
+  }
+};
+
+nextActionOverlay.gnbStatusMatch = (statusMatch) => {
+  const { logType } = statusMatch.groups;
+  const { statusName } = statusMatch.groups;
+  const { addStatus } = nextActionOverlay;
+  const { removeStatus } = nextActionOverlay;
+
+  if (logType === '1A') {
+    addStatus({ statusName });
+  } else {
+    removeStatus({ statusName });
+  }
+
+  if (nextActionOverlay.statusList.mitigation.includes(statusName)) {
+    nextActionOverlay.gnbNextMitigation();
   }
 };
 

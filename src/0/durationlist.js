@@ -40,7 +40,6 @@ duration.technicalfinish = 20000;
 duration.devilment = 20000;
 
 // DRK
-duration.delirium = 10000;
 
 // GNB
 duration.nomercy = 20000;

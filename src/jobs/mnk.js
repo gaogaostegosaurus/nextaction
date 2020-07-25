@@ -110,19 +110,19 @@ nextActionOverlay.mnkPlayerChange = (e) => {
     /* Re-assess actions if GL hits 0 for whatever reason */
     playerData.greasedlightningStacks = 0; /* Should already be this but just in case? */
     playerData.greasedlightningStatus = -1;
-    nextActionOverlay.nextAction.mnk({ delay: 0 });
+    nextActionOverlay.mnkNextAction({ delay: 0 });
   }
   playerData.chakra = e.detail.jobDetail.chakraStacks;
 };
 
 nextActionOverlay.mnkTargetChange = () => {
-  nextActionOverlay.nextAction.mnk();
+  nextActionOverlay.mnkNextAction();
 };
 
 nextActionOverlay.mnkNextAction = ({
   delay = 0,
 } = {}) => {
-  const nextAction = nextActionOverlay.nextAction.mnk;
+  const nextAction = nextActionOverlay.mnkNextAction;
 
   const { checkRecast } = nextActionOverlay;
   const { checkStatus } = nextActionOverlay;
@@ -375,31 +375,25 @@ nextActionOverlay.mnkNextGCD = ({
   const { targetCount } = nextActionOverlay;
   const { duration } = nextActionOverlay;
   const { recast } = nextActionOverlay;
-
+  
   const { playerData } = nextActionOverlay;
   const { level } = playerData;
 
-  /* Checks if demolish was snapshotted */
-  const demolishStatusPotency = Math.ceil(Math.max(loopStatus.demolish, 0) / 3000) * 65;
-  let basePotencyMultiplier = 1;
-  let demolishStatusMultiplier = 1;
-  const windowMax = recast.riddleoffire - duration.demolish;
-  const windowMin = recast.riddleoffire - duration.riddleoffire - duration.demolish;
-  if (windowMax >= loopRecast.riddleoffire - loopStatus.demolish
-  && windowMin <= loopRecast.riddleoffire - loopStatus.demolish) {
-    demolishStatusMultiplier = 1.25;
-  } /* REALLY unsure about this formula but whatever */
+  const snappunchPotency = 230;
+  const rockbreakerPotency = 120 * targetCount;
 
-  if (loopStatus.riddleoffire > 0) {
-    basePotencyMultiplier = 1.25;
+  // Checks if demolish was snapshotted
+  // Taken from PLD Goring Blade check
+  const riddleoffireCutoff = recast.riddleoffire - duration.riddleoffire;
+  let dotPotencyLoss = 65 * (Math.ceil(Math.max(loopStatus.demolish, 0) / 3000));
+  if (loopStatus.riddleoffire < 0
+  && loopRecast.riddleoffire + loopStatus.demolish > riddleoffireCutoff) {
+    dotPotencyLoss *= 1.25;
+  } else if (loopStatus.riddleoffire > 0
+  && loopRecast.riddleoffire + loopStatus.demolish > recast.riddleoffire) {
+    dotPotencyLoss *= 0.8;
   }
-
-  const snappunchPotency = 230 * basePotencyMultiplier
-    + demolishStatusPotency * demolishStatusMultiplier;
-  const rockbreakerPotency = 120 * targetCount * basePotencyMultiplier
-    + demolishStatusPotency * demolishStatusMultiplier;
-  const demolishPotency = (90 + (18000 / 3000) * 65) * basePotencyMultiplier
-    - demolishStatusPotency * demolishStatusMultiplier;
+  const demolishPotency = 90 + 65 * 6 - dotPotencyLoss;
 
   /* Perfect Balance priorities */
   if (loopStatus.perfectbalance > 0) { /* Implies player level >= 50 */
@@ -723,9 +717,9 @@ nextActionOverlay.mnkActionMatch = (actionMatch) => {
 
   /* Call next function */
   if (checkStatus({ statusName: 'Perfect Balance' }) > 0 && weaponskills.includes(actionName)) {
-    nextActionOverlay.nextAction.mnk({ delay: gcd }); /* No stance changes if PB is up */
+    nextActionOverlay.mnkNextAction({ delay: gcd }); /* No stance changes if PB is up */
   } else if (actionName === 'Six-Sided Star') {
-    nextActionOverlay.nextAction.mnk({ delay: gcd * 2 });
+    nextActionOverlay.mnkNextAction({ delay: gcd * 2 });
   }
   // console.log(gcd);
 };
@@ -755,7 +749,7 @@ nextActionOverlay.mnkStatusMatch = (statusMatch) => {
     /* Triggers nextAction on form change */
     /* This prevents weird shenanigans during invincibility etc. */
     if (['Opo-Opo Form', 'Raptor Form', 'Coeurl Form'].includes(statusName)) {
-      nextActionOverlay.nextAction.mnk({ delay: gcd });
+      nextActionOverlay.mnkNextAction({ delay: gcd });
     }
 
     // if (['Twin Snakes', 'Leaden Fist'].includes(statusName)) {

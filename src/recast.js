@@ -44,3 +44,42 @@ nextActionOverlay.checkRecast = ({
     return Math.max(recastTracker[propertyName][match].recast - Date.now(), -1);
   } return -1; /* Return -1 if no match */
 };
+
+nextActionOverlay.NEWaddRecast = ({
+  actionName,
+  id = nextActionOverlay.playerData.id,
+  propertyName = actionName.replace(/[\s':-]/g, '').toLowerCase(),
+  recast = nextActionOverlay.recast[propertyName], /* Assign -1 to "reset" recast */
+} = {}) => {
+  if (!actionName) { return; }
+
+  const { recastArray } = nextActionOverlay;
+
+  const actionMatch = (entry) => entry.id === id
+    && entry.actionName.toLowerCase() === actionName.toLowerCase();
+  const index = recastArray.findIndex(actionMatch);
+
+  if (index > -1) {
+    recastArray[index] = [{ id, actionName, recast: Date.now() + recast }];
+  } else {
+    recastArray.push({ id, actionName, recast: Date.now() + recast });
+  }
+};
+
+nextActionOverlay.NEWcheckRecast = ({
+  actionName,
+  id = nextActionOverlay.playerData.id,
+} = {}) => {
+  if (!actionName) { return -1; } // eslint wants me to return a value
+
+  const { recastArray } = nextActionOverlay;
+
+  // Find matching ID in array
+  const actionMatch = (entry) => entry.id === id
+    && entry.actionName.toLowerCase() === actionName.toLowerCase();
+  const index = recastArray.findIndex(actionMatch);
+
+  if (index > -1) {
+    return Math.max(recastArray[index].recast - Date.now(), -1);
+  } return -1; // Return -1 if no match
+};

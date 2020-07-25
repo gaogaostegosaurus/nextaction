@@ -1,4 +1,4 @@
-nextActionOverlay.changedJob.tank = () => {
+nextActionOverlay.tankJobChange = () => {
   const { recast } = nextActionOverlay;
   const { duration } = nextActionOverlay;
   const { icon } = nextActionOverlay;
@@ -13,6 +13,7 @@ nextActionOverlay.changedJob.tank = () => {
 
   duration.rampart = 20000;
   duration.reprisal = 10000;
+  duration.armslength = 15000;
 
   icon.rampart = '000801';
   icon.lowblow = '000802';
@@ -20,4 +21,5 @@ nextActionOverlay.changedJob.tank = () => {
   icon.reprisal = '000806';
   icon.interject = '000808';
   icon.shirk = '000810';
+  icon.armslength = '000822';
 };

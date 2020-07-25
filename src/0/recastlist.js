@@ -34,15 +34,6 @@ recast.flourish = 60000;
 recast.devilment = 120000;
 
 // DRK
-recast.abyssaldrain = 60000;
-recast.bloodweapon = 60000;
-recast.carveandspit = 60000;
-recast.delirium = 90000;
-recast.floodofdarkness = 2000;
-recast.plunge = 30000;
-recast.saltedearth = 90000;
-recast.shadowwall = 120000;
-recast.theblackestnight = 15000;
 
 // DRG
 recast.battlelitany = 180000;

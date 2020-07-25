@@ -44,7 +44,29 @@ nextActionOverlay.propertyList.forEach((property) => {
 });
 
 // Supported job list
-nextActionOverlay.supportedJobs = ['GNB', 'MNK', 'NIN', 'RDM'];
+nextActionOverlay.supportedJobs = ['GNB', 'MNK', 'NIN', 'PLD', 'RDM'];
+
+// Toggles overlay appropriately (hopefully)
+nextActionOverlay.overlayToggle = (
+  // { targetData, combat, display, }
+) => {
+  if (!document.getElementById('nextdiv')) { return; }
+  const { targetData } = nextActionOverlay;
+  if (targetData.id && targetData.id.startsWith('4') && targetData.distance <= 30) {
+    if (nextActionOverlay.display !== true) {
+      document.getElementById('nextdiv').classList.replace('next-hide', 'next-show');
+      nextActionOverlay.display = true;
+    }
+  } else if (nextActionOverlay.combat === true) {
+    if (nextActionOverlay.display !== true) {
+      document.getElementById('nextdiv').classList.replace('next-hide', 'next-show');
+      nextActionOverlay.display = true;
+    }
+  } else {
+    document.getElementById('nextdiv').classList.replace('next-show', 'next-hide');
+    nextActionOverlay.display = false;
+  }
+};
 
 // Use these to call the correct function for each job.js
 // These functions wrap some of the specific code so that I can find errors easier (hopefully)
@@ -100,16 +122,19 @@ nextActionOverlay.EnmityTargetData = (e) => {
   if (e.Target) { // Put stuff that should be constantly updated here
     targetData.distance = e.Target.EffectiveDistance; // Distance to "outside of circle"
   }
+
+  nextActionOverlay.overlayToggle();
 };
 
 nextActionOverlay.onInCombatChangedEvent = (e) => {
   if (nextActionOverlay.combat !== e.detail.inGameCombat) { // Combat status changed
     nextActionOverlay.combat = e.detail.inGameCombat; // true or false
+    nextActionOverlay.overlayToggle();
   }
 };
 
 nextActionOverlay.onPlayerChangedEvent = (e) => {
-  if (!document) { return; } // See if this will prevent innerHTML from being not ready?
+  if (!document) { return; } // Seeing if this will prevent innerHTML from being not ready...
 
   const { playerData } = nextActionOverlay;
 
@@ -130,7 +155,7 @@ nextActionOverlay.onPlayerChangedEvent = (e) => {
     nextActionOverlay.comboStep = '';
     playerData.gcd = 2500;
     playerData.mpRegen = 200;
-    duration.combo = 15000;
+    duration.combo = 14000; // I don't know what this is actually supposed to be
 
     const { job } = playerData;
     const jobLowercase = job.toLowerCase();
@@ -139,16 +164,16 @@ nextActionOverlay.onPlayerChangedEvent = (e) => {
     if (!supportedJobs.includes(job)) { return; }
 
     // Reset all timeouts
-    const { timeout } = nextActionOverlay;
+    const { timeout } = nextActionOverlay; // Timeout object
     Object.keys(timeout).forEach((timeoutProperty) => { clearTimeout(timeout[timeoutProperty]); });
 
     // Clear overlay
     document.getElementById('icon-a').innerHTML = '';
     document.getElementById('icon-b').innerHTML = '';
     document.getElementById('icon-c').innerHTML = '';
-    document.getElementById('countdown-a').innerHTML = '';
-    document.getElementById('countdown-b').innerHTML = '';
-    document.getElementById('countdown-c').innerHTML = '';
+    // document.getElementById('countdown-a').innerHTML = '';
+    // document.getElementById('countdown-b').innerHTML = '';
+    // document.getElementById('countdown-c').innerHTML = '';
 
     // Reset lists
     // Probably a more elegant way to do this, but whatever for now...
@@ -166,7 +191,6 @@ nextActionOverlay.onPlayerChangedEvent = (e) => {
     const actionNames = Object.values(actionList).flat(Infinity).join('|');
     const statusNames = Object.values(statusList).flat(Infinity).join('|');
     const castingNames = Object.values(castingList).flat(Infinity).join('|'); // This relies on chat log output
-
     // Shorten some static (or semi-static) variables
     const { name } = playerData;
     const { level } = playerData;
@@ -205,11 +229,10 @@ nextActionOverlay.onPlayerChangedEvent = (e) => {
 nextActionOverlay.onLogEvent = (e) => {
   const { playerData } = nextActionOverlay;
   const { job } = playerData;
-  const jobLowercase = job.toLowerCase();
   const { supportedJobs } = nextActionOverlay;
-  if (!supportedJobs.includes(job)) {
-    return;
-  }
+
+  if (!job) { return; }
+  if (!supportedJobs.includes(job)) { return; }
 
   const { logs } = e.detail;
   const { length } = e.detail.logs;
@@ -220,6 +243,8 @@ nextActionOverlay.onLogEvent = (e) => {
   const { castingRegex } = nextActionOverlay;
   const { cancelRegex } = nextActionOverlay;
   const { playerstatsRegex } = nextActionOverlay;
+
+  const jobLowercase = job.toLowerCase();
 
   let aoeTargetsHit = 0;
   // This doesn't seem to be a perfect way to do this, but whatever until I find a better one
@@ -391,6 +416,7 @@ nextActionOverlay.onLogEvent = (e) => {
       const mpDelta = piety - mpBase;
 
       playerData.mpRegen = 200 + Math.floor(150 * (mpDelta / levelMod));
+      console.log(nextActionOverlay.playerData.gcd);
     }
   }
 };
