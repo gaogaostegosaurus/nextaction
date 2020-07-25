@@ -416,7 +416,6 @@ nextActionOverlay.onLogEvent = (e) => {
       const mpDelta = piety - mpBase;
 
       playerData.mpRegen = 200 + Math.floor(150 * (mpDelta / levelMod));
-      console.log(nextActionOverlay.playerData.gcd);
     }
   }
 };
