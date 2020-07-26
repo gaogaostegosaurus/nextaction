@@ -28,10 +28,7 @@ recast.empyrealarrow = 15000;
 recast.sidewinder = 60000;
 
 // DNC
-recast.technicalstep = 120000;
-recast.standardstep = 30000;
-recast.flourish = 60000;
-recast.devilment = 120000;
+
 
 // DRK
 

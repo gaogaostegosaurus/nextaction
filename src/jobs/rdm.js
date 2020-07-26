@@ -1,7 +1,7 @@
 nextActionOverlay.rdmJobChange = () => {
+  const { level } = nextActionOverlay.playerData;
+
   // Set initial values
-  const { playerData } = nextActionOverlay;
-  const { level } = playerData;
   nextActionOverlay.comboStep = '';
 
   nextActionOverlay.actionList.spells = [
@@ -42,13 +42,14 @@ nextActionOverlay.rdmJobChange = () => {
 
   const { recast } = nextActionOverlay;
 
-  recast.acceleration = 55000;
-  recast.contresixte = 45000;
   recast.corpsacorps = 40000;
   recast.displacement = 35000;
-  recast.embolden = 120000;
   recast.fleche = 25000;
+  recast.acceleration = 55000;
+  recast.contresixte = 45000;
+  recast.embolden = 120000;
   recast.manafication = 120000;
+  recast.engagement = recast.displacement;
 
   if (level >= 74) { recast.manafication = 110000; }
   if (level >= 78) { recast.contresixte = 35000; }
@@ -128,7 +129,6 @@ nextActionOverlay.rdmTargetChange = () => {
 nextActionOverlay.rdmNextAction = ({
   delay = 0,
 } = {}) => {
-  // const { weaponskills } = nextActionOverlay.actionList;
   const { checkRecast } = nextActionOverlay;
   const { checkStatus } = nextActionOverlay;
   const { duration } = nextActionOverlay;
@@ -147,7 +147,7 @@ nextActionOverlay.rdmNextAction = ({
   const loopRecastList = nextActionOverlay.actionList.abilities;
   loopRecastList.forEach((actionName) => {
     const propertyName = actionName.replace(/[\s':-]/g, '').toLowerCase();
-    loopRecast[propertyName] = checkRecast({ actionName }) - gcd;
+    loopRecast[propertyName] = checkRecast({ actionName });
   });
 
   const loopStatus = {};
@@ -163,8 +163,8 @@ nextActionOverlay.rdmNextAction = ({
   let nextTime = 0; // Amount of time looked ahead in loop
   const nextMaxTime = 15000;
 
-  const { weaponskills } = nextActionOverlay.actionList;
-  const { spells } = nextActionOverlay.actionList;
+  // const { weaponskills } = nextActionOverlay.actionList;
+  // const { spells } = nextActionOverlay.actionList;
 
   while (nextTime < nextMaxTime) { // Outside loop for GCDs, stops looking ahead at this number ms
     let loopTime = 0;
@@ -263,7 +263,7 @@ nextActionOverlay.rdmNextAction = ({
         gcdTime = 2200;
         loopTime = gcdTime;
       } else if (nextGCD.startsWith('Hardcast') && loopStatus.dualcast < 0 && loopStatus.swiftcast < 0) {
-        gcdTime = 0;
+        gcdTime = 0; // Due to cast time
         loopTime = gcd;
       } else {
         gcdTime = gcd;
@@ -273,8 +273,8 @@ nextActionOverlay.rdmNextAction = ({
       if (loopStatus.dualcast > 0) {
         // Apparently everything deletes Dualcast
         loopStatus.dualcast = -1;
-      } else if (loopStatus.swiftcast > 0 && nextGCD.startsWith('Dualcast ')) {
-        // Swiftcast only consumed on spells
+      } else if (loopStatus.swiftcast > 0 && nextGCD.startsWith('Dualcast')) {
+        // Swiftcast only consumed on spells (and no dualcast)
         loopStatus.swiftcast = -1;
       } else if (nextGCD.startsWith('Hardcast')) {
         // Add Dualcast if nothing above was used
@@ -282,9 +282,22 @@ nextActionOverlay.rdmNextAction = ({
       }
     }
 
-    while (gcdTime > 1000) { // Inside loop for OGCDs
+    Object.keys(loopRecast).forEach((property) => { loopRecast[property] -= loopTime; });
+    Object.keys(loopStatus).forEach((property) => { loopStatus[property] -= loopTime; });
+
+    let weaveMax = 0;
+    if (gcdTime > 2200) {
+      weaveMax = 2;
+    } else if (gcdTime > 1000) {
+      weaveMax = 1;
+    }
+
+    let weave = 0;
+
+    while (weave < weaveMax) { // Inside loop for OGCDs
       const nextOGCD = nextActionOverlay.rdmNextOGCD({
-        gcdTime,
+        weave,
+        weaveMax,
         comboStep,
         blackmana,
         whitemana,
@@ -313,13 +326,10 @@ nextActionOverlay.rdmNextAction = ({
         }
       }
 
-      gcdTime -= 1000;
+      weave += 1; // Increment anyway because some skills only "activate" on weave 2
     }
 
-    Object.keys(loopRecast).forEach((property) => { loopRecast[property] -= loopTime; });
-    Object.keys(loopStatus).forEach((property) => { loopStatus[property] -= loopTime; });
-
-    // Remove Acceleration
+    // Remove Acceleration if out of charges or time
     if (loopStatus.acceleration <= 0 || accelerationCount <= 0) {
       loopStatus.acceleration = -1;
       accelerationCount = 0;
@@ -491,7 +501,8 @@ nextActionOverlay.rdmNextGCD = ({
 };
 
 nextActionOverlay.rdmNextOGCD = ({
-  gcdTime,
+  weave,
+  weaveMax,
   mp,
   comboStep,
   blackmana,
@@ -505,35 +516,34 @@ nextActionOverlay.rdmNextOGCD = ({
   const { level } = playerData;
   const lowerMana = Math.min(blackmana, whitemana);
 
-  if (level >= 60 && targetCount === 1 && comboStep === '' && lowerMana >= 40 && gcdTime <= 2200 && loopRecast.manafication < 0) {
+  if (level >= 60 && targetCount === 1 && comboStep === '' && lowerMana >= 40 && weave === weaveMax && loopRecast.manafication < 0) {
     return 'Manafication';
   }
-  if (level >= 60 && comboStep === '' && lowerMana >= 50 && gcdTime <= 2200 && loopRecast.manafication < 0) {
+  if (level >= 60 && comboStep === '' && lowerMana >= 50 && weave === weaveMax && loopRecast.manafication < 0) {
     return 'Manafication';
-  } if (level >= 56 && loopRecast.contresixte < 0 && playerData.countTargets > 1) {
+  } if (level >= 56 && targetCount > 1 && loopRecast.contresixte < 0) {
     return 'Contre Sixte';
   } if (level >= 45 && loopRecast.fleche < 0) {
     return 'Fleche';
   } if (level >= 56 && loopRecast.contresixte < 0) {
     return 'Contre Sixte';
-  } if (level >= 58 && gcdTime <= 2200 && loopRecast.embolden < 0) {
+  } if (level >= 58 && weave === weaveMax && loopRecast.embolden < 0) {
     return 'Embolden';
-  } if (level >= 6 && gcdTime <= 2200 && loopRecast.corpsacorps < 0) {
+  } if (level >= 6 && loopRecast.corpsacorps < 0) {
     return 'Corps-A-Corps';
   } if (level >= 72 && loopRecast.displacement < 0) {
     return 'Engagement';
-  } if (level >= 40
-  && comboStep !== 'Enchanted Riposte' && comboStep !== 'Enchanted Zwerchhau'
-  && (nextActionOverlay.targetCount === 1 || lowerMana < 20) && gcdTime >= 2200
+  } if (level >= 40 && comboStep !== 'Enchanted Riposte' && comboStep !== 'Enchanted Zwerchhau'
+  && (nextActionOverlay.targetCount === 1 || lowerMana < 20) && weave < weaveMax
   && loopRecast.displacement < 0) {
-    return 'Displacement';
+    return 'Displacement'; // Implies weave 1 of max 2, also cancels any other OGCD
   } if (level >= 18 && Math.max(blackmana, whitemana) < 80
-  && Math.max(loopStatus.verfireready, loopStatus.verstoneready) < 0 && comboStep === '' && gcdTime <= 2200
+  && Math.max(loopStatus.verfireready, loopStatus.verstoneready) < 0 && comboStep === ''
   && loopRecast.swiftcast < 0) {
     // "If < 80|80 Mana & with no procs, fish for proc."
     return 'Swiftcast';
   } if (level >= 18 && Math.max(blackmana, whitemana) < 60
-  && Math.min(loopStatus.verfireready, loopStatus.verstoneready) < 0 && comboStep === '' && gcdTime <= 2200
+  && Math.min(loopStatus.verfireready, loopStatus.verstoneready) < 0 && comboStep === ''
   && loopRecast.swiftcast < 0) {
     // "If < 60|60 Mana with one proc, fish other proc."
     return 'Swiftcast';

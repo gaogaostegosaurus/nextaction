@@ -193,7 +193,7 @@ nextActionOverlay.mnkNextAction = ({
       loopStatus.anatman = -1;
 
       /* GCD action if GCD is complete */
-      const nextGCD = nextAction.gcd({
+      const nextGCD = nextActionOverlay.mnkNextGCD({
         combat,
         greasedlightningStacks,
         greasedlightningMax,
@@ -299,7 +299,7 @@ nextActionOverlay.mnkNextAction = ({
     }
 
     while (gcdTime > 1250) {
-      const nextOGCD = nextAction.ogcd({
+      const nextOGCD = nextActionOverlay.mnkNextOGCD({
         combat,
         greasedlightningStacks,
         greasedlightningMax,
@@ -375,7 +375,7 @@ nextActionOverlay.mnkNextGCD = ({
   const { targetCount } = nextActionOverlay;
   const { duration } = nextActionOverlay;
   const { recast } = nextActionOverlay;
-  
+
   const { playerData } = nextActionOverlay;
   const { level } = playerData;
 

@@ -16,6 +16,8 @@ nextActionOverlay.getArrayRow = ({
   return rowID;
 };
 
+// Uses an array of objects to create a new set of icons
+// If icons exist, it removes any icons that don't match first and then adds any necessary ones
 nextActionOverlay.NEWsyncIcons = ({
   iconArray,
   row = 'icon-b',
@@ -36,8 +38,10 @@ nextActionOverlay.NEWsyncIcons = ({
   for (let i = 0; i < rowLength; i += 1) {
     const iconDiv = rowDiv.children[i];
     if (iconArray[arrayIndex] && iconArray[arrayIndex].name === iconDiv.dataset.name) {
+      // Go on to next array item if the div already contains the icon
       arrayIndex += 1;
     } else {
+      // Remove icon if it doesn't match
       // void iconDiv.offsetWidth; // Forgot why I commented this out...
       iconDiv.dataset.name = 'none';
       iconDiv.classList.replace('icon-show', 'icon-hide');
