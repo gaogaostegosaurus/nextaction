@@ -44,7 +44,11 @@ nextActionOverlay.propertyList.forEach((property) => {
 });
 
 // Supported job list
-nextActionOverlay.supportedJobs = ['GNB', 'MNK', 'NIN', 'PLD', 'RDM'];
+nextActionOverlay.supportedJobs = [
+  'PLD', 'GNB',
+  'MNK', 'NIN', 'DNC',
+  'RDM',
+];
 
 // Toggles overlay appropriately (hopefully)
 nextActionOverlay.overlayToggle = (

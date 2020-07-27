@@ -43,6 +43,7 @@ nextActionOverlay.dncJobChange = () => {
   duration.flourishingfountain = duration.flourishingcascade;
   duration.flourishingwindmill = duration.flourishingcascade;
   duration.flourishingshower = duration.flourishingcascade;
+  duration.closedposition = 99999000;
   duration.standardstep = 15000;
   duration.standardfinish = 20000;
   duration.doublestandardfinish = duration.standardfinish;
@@ -84,6 +85,8 @@ nextActionOverlay.dncJobChange = () => {
   icon.technicalfinish = '003474';
   icon.flourish = '003475';
   icon.saberdance = '003476';
+
+  icon.step = '066313';
 };
 
 nextActionOverlay.dncPlayerChange = (e) => {
@@ -93,8 +96,7 @@ nextActionOverlay.dncPlayerChange = (e) => {
   playerData.steps = e.detail.jobDetail.steps;
   playerData.currentstep = e.detail.jobDetail.currentStep;
   playerData.fourfoldfeathers = e.detail.jobDetail.feathers;
-  playerData.esprit = parseInt(debugJobArray[1], 16); // 0-100
-
+  playerData.esprit = parseInt(debugJobArray[2], 16); // 0-100
   // Steps - 1 is Emboite, 2 is Entrechat, 3 is Jete, 4 is Pirouette
   // playerData.step1 = parseInt(debugJobArray[2], 16);
   // playerData.step2 = parseInt(debugJobArray[3], 16);
@@ -103,38 +105,31 @@ nextActionOverlay.dncPlayerChange = (e) => {
   // playerData.stepTotal = debugJobArray[6]; /* 0-4 */
 };
 
-const dncSingleTarget = ['Cascade', 'Fountain', 'Reverse Cascade', 'Fountainfall', 'Fan Dance'];
-
-const dncSteps = ['Standard Step', 'Technical Step'];
-const dncStepActions = ['Emboite', 'Entrechat', 'Jete', 'Pirouette'];
-const dncStandardFinishes = ['Standard Finish', 'Single Standard Finish', 'Double Standard Finish'];
-const dncTechnicalFinishes = [
-  'Technical Finish', 'Single Technical Finish', 'Double Technical Finish',
-  'Triple Technical Finish', 'Quadruple Technical Finish',
-];
-const dncFanDances = ['Fan Dance', 'Fan Dance II', 'Fan Dance III'];
-const dncCooldowns = ['Devilment', 'Flourish'];
-const dncWeaponskills = [
-  'Cascade', 'Fountain', 'Windmill', 'Bladeshower',
-  'Reverse Cascade', 'Fountainfall', 'Rising Windmill', 'Bloodshower',
-];
-
-const dncFlourishingBuff = [
-  'Flourishing Cascade', 'Flourishing Cascade', 'Flourishing Windmill', 'Flourishing Fountain',
-  'Flourishing Shower', 'Flourishing Fan Dance',
-];
-
 nextActionOverlay.dncNextAction = ({
   delay = 0,
 } = {}) => {
   const { checkRecast } = nextActionOverlay;
   const { checkStatus } = nextActionOverlay;
 
+  const { duration } = nextActionOverlay;
+  const { recast } = nextActionOverlay;
+
+  let { comboStep } = nextActionOverlay;
+
+  const { weaponskills } = nextActionOverlay.actionList;
+  const { abilities } = nextActionOverlay.actionList;
+
+  const { gcd } = nextActionOverlay.playerData;
+  const { level } = nextActionOverlay.playerData;
+  let { steps } = nextActionOverlay.playerData;
+  let { fourfoldfeathers } = nextActionOverlay.playerData;
+  let { esprit } = nextActionOverlay.playerData;
+
   const loopRecast = {};
   const loopRecastList = nextActionOverlay.actionList.abilities;
   loopRecastList.forEach((actionName) => {
     const propertyName = actionName.replace(/[\s':-]/g, '').toLowerCase();
-    loopRecast[propertyName] = checkRecast({ actionName });
+    loopRecast[propertyName] = checkRecast({ actionName }) - 1000;
   });
 
   const loopStatus = {};
@@ -153,32 +148,97 @@ nextActionOverlay.dncNextAction = ({
   while (nextTime < nextMaxTime) {
     let loopTime = 0;
 
-    if (steps) {
+    if (steps !== 'None') {
+      // console.log(steps);
       // Split steps into array
       const stepArray = steps.split(', ');
 
       // Add to icon array
-      stepArray.forEach((step) => {
-        iconArray.push({ name: step });
-      });
+      stepArray.forEach((step) => { iconArray.push({ name: step }); });
 
       // Add finish
       if (stepArray.length === 4) {
         iconArray.push({ name: 'Technical Finish' });
+        loopStatus.technicalstep = -1;
+        loopStatus.technicalfinish = duration.technicalfinish;
       } else {
         iconArray.push({ name: 'Standard Finish' });
+        loopStatus.standardstep = -1;
+        loopStatus.standardfinish = duration.standardfinish;
       }
+
+      steps = 'None';
 
       // GCD
       gcdTime = 1500;
       loopTime = stepArray.length * 1000 + 1500;
-    } else if (gcdTime <= 1000) {
+    } else if (loopStatus.standardstep > 0) {
+      // Split steps into array
+      // iconArray.push({ name: 'Step' });
+      // iconArray.push({ name: 'Step' });
+      iconArray.push({ name: 'Standard Finish' });
+      loopStatus.standardstep = -1;
+      loopStatus.standardfinish = duration.standardfinish;
+      gcdTime = 1500;
+      loopTime = 2 * 1000 + 1500;
+    } else if (loopStatus.technicalstep > 0) {
+      // iconArray.push({ name: 'Step' });
+      // iconArray.push({ name: 'Step' });
+      // iconArray.push({ name: 'Step' });
+      // iconArray.push({ name: 'Step' });
+      iconArray.push({ name: 'Technical Finish' });
+      loopStatus.technicalstep = -1;
+      loopStatus.technicalfinish = duration.technicalfinish;
+      gcdTime = 1500;
+      loopTime = 4 * 1000 + 1500;
+    } else if (gcdTime < 1500) {
       const nextGCD = nextActionOverlay.dncNextGCD({
+        comboStep,
+        esprit,
         loopRecast,
         loopStatus,
       });
 
       iconArray.push({ name: nextGCD });
+
+      // Combo
+      if ((level >= 2 && nextGCD === 'Cascade')
+      || (level >= 25 && nextGCD === 'Windmill')) {
+        comboStep = nextGCD;
+        loopStatus.combo = duration.combo;
+      } else if (['Fountain', 'Bladeshower'].includes(nextGCD)) {
+        comboStep = '';
+        loopStatus.combo = duration.combo;
+      } // DNC kinda weird in that most things don't interrupt?
+
+      // Add recasts and status durations
+      const propertyName = nextGCD.replace(/[\s':-]/g, '').toLowerCase();
+      if (recast[propertyName]) { loopRecast[propertyName] = recast[propertyName]; }
+      if (duration[propertyName]) { loopStatus[propertyName] = duration[propertyName]; }
+
+      if (nextGCD === 'Reverse Cascade') {
+        loopStatus.flourishingcascade = -1;
+      } else if (nextGCD === 'Fountainfall') {
+        loopStatus.flourishingfountain = -1;
+      } else if (nextGCD === 'Rising Windmill') {
+        loopStatus.flourishingwindmill = -1;
+      } else if (nextGCD === 'Bloodshower') {
+        loopStatus.flourishingshower = -1;
+      } else if (nextGCD === 'Saber Dance') {
+        esprit -= 50;
+      }
+
+      // GCD
+      if (weaponskills.includes(nextGCD)) {
+        gcdTime = gcd;
+        loopTime = gcdTime;
+      } else if (['Standard Step', 'Technical Step'].includes(nextGCD)) {
+        gcdTime = 0;
+        loopTime = 1500;
+      } else if (abilities.includes(nextGCD)) {
+        gcdTime = 1500;
+        loopTime = gcdTime;
+      }
     }
 
     Object.keys(loopRecast).forEach((property) => { loopRecast[property] -= loopTime; });
@@ -194,17 +254,41 @@ nextActionOverlay.dncNextAction = ({
     let weave = 0;
 
     while (weave < weaveMax) { // Inside loop for OGCDs
+      const nextOGCD = nextActionOverlay.dncNextOGCD({
+        fourfoldfeathers,
+        loopRecast,
+        loopStatus,
+      });
+      if (nextOGCD) {
+        iconArray.push({ name: nextOGCD, size: 'small' });
+
+        const propertyName = nextOGCD.replace(/[\s':-]/g, '').toLowerCase();
+        if (recast[propertyName]) { loopRecast[propertyName] = recast[propertyName]; }
+        if (duration[propertyName]) { loopStatus[propertyName] = duration[propertyName]; }
+
+        if (nextOGCD === 'Flourish') {
+          loopStatus.flourishingcascade = duration.flourishingcascade;
+          loopStatus.flourishingfountain = duration.flourishingfountain;
+          loopStatus.flourishingwindmill = duration.flourishingwindmill;
+          loopStatus.flourishingshower = duration.flourishingshower;
+          loopStatus.flourishingfandance = duration.flourishingfandance;
+        } else if (nextOGCD === 'Fan Dance' || nextOGCD === 'Fan Dance II') {
+          fourfoldfeathers -= 1;
+        } else if (nextOGCD === 'Fan Dance III') {
+          loopStatus.flourishingfandance = -1;
+        }
+      }
+
       weave += 1; // Increment anyway because some skills only "activate" on weave 2
     }
     gcdTime = 0;
     nextTime += loopTime;
   }
 
-  iconArrayB = dncArray;
-  syncIcons();
+  nextActionOverlay.NEWsyncIcons({ iconArray });
 };
 
-nextActionOverlay.dncNextAction = ({
+nextActionOverlay.dncNextGCD = ({
   comboStep,
   esprit,
   loopRecast,
@@ -213,7 +297,7 @@ nextActionOverlay.dncNextAction = ({
   const { targetCount } = nextActionOverlay;
   const { gcd } = nextActionOverlay.playerData;
   const { level } = nextActionOverlay.playerData;
-  
+
   let procCount = 0;
   if (loopStatus.flourishingcascade > 0) { procCount += 1; }
   if (loopStatus.flourishingfountain > 0) { procCount += 1; }
@@ -230,22 +314,26 @@ nextActionOverlay.dncNextAction = ({
 
   // Use any procs that appear to be in danger of falling off
   if (procFloor > 0) {
-    if (loopStatus.flourishingshower < procFloor && targetCount > 1) { return 'Bloodshower'; }
-    if (loopStatus.flourishingfountain < procFloor) { return 'Fountainfall'; }
-    if (loopStatus.flourishingshower < procFloor) { return 'Bloodshower'; }
-    if (loopStatus.flourishingwindmill < procFloor && targetCount > 1) { return 'Rising Windmill'; }
-    if (loopStatus.flourishingcascade < procFloor) { return 'Reverse Cascade'; }
-    if (loopStatus.flourishingwindmill < procFloor) { return 'Rising Windmill'; }
+    if (loopStatus.flourishingshower > 0 && loopStatus.flourishingshower < procFloor && targetCount > 1) { return 'Bloodshower'; }
+    if (loopStatus.flourishingfountain > 0 && loopStatus.flourishingfountain < procFloor) { return 'Fountainfall'; }
+    if (loopStatus.flourishingshower > 0 && loopStatus.flourishingshower < procFloor) { return 'Bloodshower'; }
+    if (loopStatus.flourishingwindmill > 0 && loopStatus.flourishingwindmill < procFloor && targetCount > 1) { return 'Rising Windmill'; }
+    if (loopStatus.flourishingcascade > 0 && loopStatus.flourishingcascade < procFloor) { return 'Reverse Cascade'; }
+    if (loopStatus.flourishingwindmill > 0 && loopStatus.flourishingwindmill < procFloor) { return 'Rising Windmill'; }
   }
 
+  // Slightly different priorities based on Technical Finish
   if (loopStatus.technicalfinish > 0) { // Implies 70+
-    if (level >= 76 && esprit >= 80) { return 'Sabre Dance'; }
-    if (loopRecast.standardstep < 0) { return 'Standard Step'; }
-    if (level >= 76 && esprit >= 50) { return 'Sabre Dance'; }
+    if (level >= 76 && esprit >= 80) { return 'Saber Dance'; }
+    if (loopRecast.standardstep < 0 && Math.min(loopRecast.devilment, loopRecast.flourish) > 0) {
+      // Standard Step after both of these are used (with other GCDs)
+      return 'Standard Step';
+    }
+    if (level >= 76 && esprit >= 50) { return 'Saber Dance'; }
   } else {
     if (level >= 15 && loopRecast.standardstep < 0) { return 'Standard Step'; }
     if (level >= 70 && loopRecast.technicalstep < 0) { return 'Technical Step'; }
-    if (level >= 76 && esprit >= 90) { return 'Sabre Dance'; }
+    if (level >= 76 && esprit >= 90) { return 'Saber Dance'; }
   }
 
   // Clear proc for combo
@@ -253,327 +341,195 @@ nextActionOverlay.dncNextAction = ({
   if (loopStatus.flourishingfountain > 0 && comboStep === 'Cascade') { return 'Fountainfall'; }
   if (loopStatus.flourishingshower > 0 && comboStep === 'Windmill') { return 'Bloodshower'; }
 
+  // Don't drop combo
   if (loopStatus.combo < gcd * 2) {
-    if (level >= 1 && targetCount > 1 && comboStep === 'Windmill') { return 'Bladeshower'; }
+    if (level >= 45 && targetCount > 1 && comboStep === 'Windmill') { return 'Bladeshower'; }
+    if (level >= 2 && comboStep === 'Cascade') { return 'Fountain'; }
+    if (level >= 45 && comboStep === 'Windmill') { return 'Bladeshower'; }
   }
 
-  
+  // Use procs (AOE)
+  if (targetCount > 1) {
+    if (loopStatus.flourishingshower > 0) { return 'Bloodshower'; }
+    if (loopStatus.flourishingwindmill > 0) { return 'Rising Windmill'; }
+  }
+
+  // Use procs
+  if (loopStatus.flourishingfountain > 0) { return 'Fountainfall'; }
+  if (loopStatus.flourishingshower > 0) { return 'Bloodshower'; }
+  if (loopStatus.flourishingcascade > 0) { return 'Reverse Cascade'; }
+  if (loopStatus.flourishingwindmill > 0) { return 'Rising Windmill'; }
+
+  // Continue combo
+  if (level >= 45 && targetCount > 1 && comboStep === 'Windmill') { return 'Bladeshower'; }
+  if (level >= 2 && comboStep === 'Cascade') { return 'Fountain'; }
+  if (level >= 45 && comboStep === 'Windmill') { return 'Bladeshower'; }
+
+  // Start combo
+  if (level >= 15 && targetCount > 1) { return 'Windmill'; }
   return 'Cascade';
-
-  if (level >= 15 && loopRecast.standardstep < 0) { return 'Standard Step'; }
-  
-  if (next.technicalstepStatus - next.elapsedTime > 0) {
-    dncArray.push({ name: 'Technical Finish' });
-    next.technicalstepStatus = -1;
-    next.technicalfinishStatus = 20000 + next.elapsedTime;
-    next.ogcd = 1;
-    next.elapsedTime += 1500;
-  } else if (next.standardstepStatus - next.elapsedTime > 0) {
-    dncArray.push({ name: 'Standard Finish' });
-    next.standardstepStatus = -1;
-    next.standardfinishStatus = 60000 + next.elapsedTime;
-    next.ogcd = 1;
-    next.elapsedTime += 1500;
-  } else if (player.level >= 15 && next.standardstepRecast - next.elapsedTime < 0
-  && !next.combat) { /* Pre-pull stuff, maybe */
-    dncArray.push({ name: 'Standard Step' });
-    next.standardstepStatus = duration.standardstep + next.elapsedTime;
-    next.standardstepRecast = 30000 + next.elapsedTime;
-    next.combat = 1;
-    next.elapsedTime += 1500;
-  } else if (next.ogcd > 0 && player.level >= 70
-  && next.technicalfinishStatus - next.elapsedTime > 0
-  && next.devilmentRecast - next.elapsedTime < 0) {
-    dncArray.push({ name: 'Devilment', size: 'small' });
-    next.ogcd -= 1;
-    next.devilmentRecast = recast.devilment + next.elapsedTime;
-  } else if (next.ogcd > 0 && player.level >= 72 && next.flourishRecast - next.elapsedTime < 0
-  && next.combo === 0 && Math.max(
-    next.flourishingcascadeStatus, next.flourishingfountainStatus, next.flourishingwindmillStatus,
-    next.flourishingshowerStatus, next.flourishingfandanceStatus,
-  ) - next.elapsedTime < 0) {
-    dncArray.push({ name: 'Flourish', size: 'small' });
-    next.ogcd -= 1;
-    next.flourishingcascadeStatus = 20000 + next.elapsedTime;
-    next.flourishingfountainStatus = 20000 + next.elapsedTime;
-    next.flourishingwindmillStatus = 20000 + next.elapsedTime;
-    next.flourishingshowerStatus = 20000 + next.elapsedTime;
-    next.flourishingfandanceStatus = 20000 + next.elapsedTime;
-    next.flourishRecast = recast.flourish + next.elapsedTime;
-  } else if (next.ogcd > 0 && player.level >= 62 && player.level < 70
-  && next.devilmentRecast - next.elapsedTime < 0) {
-    dncArray.push({ name: 'Devilment', size: 'small' });
-    next.ogcd -= 1;
-    next.devilmentRecast = recast.devilment + next.elapsedTime;
-  } else if (next.ogcd > 0 && player.level >= 50 && count.targets >= 2
-  && next.fourfoldFeathers > 0) {
-    if (next.flourishingfandanceStatus - next.elapsedTime > 0) {
-      dncArray.push({ name: 'Fan Dance III', size: 'small' });
-      next.flourishingfandanceStatus = -1;
-    } else {
-      dncArray.push({ name: 'Fan Dance II', size: 'small' });
-    }
-    next.fourfoldFeathers -= 1;
-    next.ogcd -= 1;
-  } else if (next.ogcd > 0 && next.technicalfinishStatus - next.elapsedTime > 0
-  && next.fourfoldFeathers > 0) {
-    if (next.flourishingfandanceStatus - next.elapsedTime > 0) {
-      dncArray.push({ name: 'Fan Dance III', size: 'small' });
-      next.flourishingfandanceStatus = -1;
-    } else {
-      dncArray.push({ name: 'Fan Dance', size: 'small' });
-    }
-    next.fourfoldFeathers -= 1;
-    next.ogcd -= 1;
-  } else if (next.ogcd > 0 && next.fourfoldFeathers >= 4) {
-    if (next.flourishingfandanceStatus - next.elapsedTime > 0) {
-      dncArray.push({ name: 'Fan Dance III', size: 'small' });
-      next.flourishingfandanceStatus = -1;
-    } else {
-      dncArray.push({ name: 'Fan Dance', size: 'small' });
-    }
-    next.fourfoldFeathers -= 1;
-    next.ogcd -= 1;
-  } else if (player.level >= 70 && next.technicalstepRecast - next.elapsedTime < 0) {
-    dncArray.push({ name: 'Technical Step' });
-    next.technicalstepStatus = 15000 + next.elapsedTime;
-    next.technicalstepRecast = 120000 + next.elapsedTime;
-    next.elapsedTime += 1500;
-    next.elapsedTime += 1000 * 4;
-  } else if (count.targets > 1 && player.level >= 15) {
-    if (player.level >= 76 && next.esprit >= 50) {
-      dncArray.push({ name: 'Saber Dance' });
-      next.esprit -= 50;
-      next.ogcd = 1;
-      next.elapsedTime += player.gcd;
-    } else if (count.targets <= 5 && player.level >= 15
-    && next.standardstepRecast - next.elapsedTime < 0) {
-      dncArray.push({ name: 'Standard Step' });
-      next.standardstepStatus = duration.standardstep + next.elapsedTime;
-      next.standardstepRecast = recast.standardstep + next.elapsedTime;
-      next.elapsedTime += 1500;
-      next.elapsedTime += 1000 * 2;
-    } else if (player.level >= 15 && next.standardfinishStatus - next.elapsedTime < 2000
-    && next.standardstepRecast - next.elapsedTime < 0) {
-      dncArray.push({ name: 'Standard Step' });
-      next.standardstepStatus = duration.standardstep + next.elapsedTime;
-      next.standardstepRecast = recast.standardstep + next.elapsedTime;
-      next.elapsedTime += 1500;
-      next.elapsedTime += 1000 * 2;
-    } else if (next.combo === 0 && next.flourishingshowerStatus - next.elapsedTime > 0) {
-      dncArray.push({ name: 'Bloodshower' });
-      next.flourishingshowerStatus = -1;
-      next.ogcd = 1;
-      next.elapsedTime += player.gcd;
-    } else if (next.combo === 0 && next.flourishingwindmillStatus - next.elapsedTime > 0) {
-      dncArray.push({ name: 'Rising Windmill' });
-      next.flourishingwindmillStatus = -1;
-      next.ogcd = 1;
-      next.elapsedTime += player.gcd;
-    } else if (count.targets === 2 && next.combo === 0
-    && next.flourishingfountainStatus - next.elapsedTime > 0) {
-      dncArray.push({ name: 'Fountainfall' });
-      next.flourishingfountainStatus = -1;
-      next.ogcd = 1;
-      next.elapsedTime += player.gcd;
-    } else if (count.targets === 2 && next.combo === 0
-    && next.flourishingcascadeStatus - next.elapsedTime > 0) {
-      dncArray.push({ name: 'Reverse Cascade' });
-      next.flourishingcascadeStatus = -1;
-      next.ogcd = 1;
-      next.elapsedTime += player.gcd;
-    } else if (player.level >= 25 && next.combo === 11) {
-      dncArray.push({ name: 'Bladeshower' });
-      next.combo = 0;
-      next.ogcd = 1;
-      next.elapsedTime += player.gcd;
-    } else {
-      dncArray.push({ name: 'Windmill' });
-      next.combo = 11;
-      next.ogcd = 1;
-      next.elapsedTime += player.gcd;
-    }
-  } else if (next.combo === 0 && next.technicalfinishStatus - next.elapsedTime > 0) {
-    if (next.combo === 0 && player.level >= 76 && next.esprit >= 80) {
-      dncArray.push({ name: 'Saber Dance' });
-      next.esprit -= 50;
-      next.ogcd = 1;
-      next.elapsedTime += player.gcd;
-    } else if (player.level >= 15 && next.standardstepRecast - next.elapsedTime < 0
-    && next.devilmentStatus - next.elapsedTime > 2000) {
-      dncArray.push({ name: 'Standard Step' });
-      next.standardstepStatus = 15000 + next.elapsedTime;
-      next.standardstepRecast = 30000 + next.elapsedTime;
-      next.elapsedTime += 1500;
-      next.elapsedTime += 1000 * 2;
-    } else if (next.combo === 0 && next.flourishingfountainStatus - next.elapsedTime > 0) {
-      dncArray.push({ name: 'Fountainfall' });
-      next.flourishingfountainStatus = -1;
-      next.ogcd = 1;
-      next.elapsedTime += player.gcd;
-    } else if (next.combo === 0 && next.flourishingshowerStatus - next.elapsedTime > 0) {
-      dncArray.push({ name: 'Bloodshower' });
-      next.flourishingshowerStatus = -1;
-      next.ogcd = 1;
-      next.elapsedTime += player.gcd;
-    } else if (next.combo === 0 && next.flourishingcascadeStatus - next.elapsedTime > 0) {
-      dncArray.push({ name: 'Reverse Cascade' });
-      next.flourishingcascadeStatus = -1;
-      next.ogcd = 1;
-      next.elapsedTime += player.gcd;
-    } else if (next.combo === 0 && next.flourishingwindmillStatus - next.elapsedTime > 0) {
-      dncArray.push({ name: 'Rising Windmill' });
-      next.flourishingwindmillStatus = -1;
-      next.ogcd = 1;
-      next.elapsedTime += player.gcd;
-    } else if (next.combo === 0 && player.level >= 76 && next.esprit >= 50) {
-      dncArray.push({ name: 'Saber Dance' });
-      next.esprit -= 50;
-      next.ogcd = 1;
-      next.elapsedTime += player.gcd;
-    } else if (player.level >= 2 && next.combo === 1) {
-      dncArray.push({ name: 'Fountain' });
-      next.combo = 0;
-      next.ogcd = 1;
-      next.elapsedTime += player.gcd;
-    } else {
-      dncArray.push({ name: 'Cascade' });
-      next.combo = 1;
-      next.ogcd = 1;
-      next.elapsedTime += player.gcd;
-    }
-  } else if (player.level >= 15 && next.standardstepRecast - next.elapsedTime < 0) {
-    dncArray.push({ name: 'Standard Step' });
-    next.standardstepStatus = 15000 + next.elapsedTime;
-    next.standardstepRecast = 30000 + next.elapsedTime;
-    next.elapsedTime += 1500;
-    next.elapsedTime += 1000 * 2;
-  } else if (player.level >= 76 && next.esprit >= 80) {
-    dncArray.push({ name: 'Saber Dance' });
-    next.esprit -= 50;
-    next.ogcd = 1;
-    next.elapsedTime += player.gcd;
-  } else if (next.combo === 0 && next.flourishingfountainStatus - next.elapsedTime > 0) {
-    dncArray.push({ name: 'Fountainfall' });
-    next.flourishingfountainStatus = -1;
-    next.ogcd = 1;
-    next.elapsedTime += player.gcd;
-  } else if (next.combo === 0 && next.flourishingshowerStatus - next.elapsedTime > 0) {
-    dncArray.push({ name: 'Bloodshower' });
-    next.flourishingshowerStatus = -1;
-    next.ogcd = 1;
-    next.elapsedTime += player.gcd;
-  } else if (next.combo === 0 && next.flourishingcascadeStatus - next.elapsedTime > 0) {
-    dncArray.push({ name: 'Reverse Cascade' });
-    next.flourishingcascadeStatus = -1;
-    next.ogcd = 1;
-    next.elapsedTime += player.gcd;
-  } else if (next.combo === 0 && next.flourishingwindmillStatus - next.elapsedTime > 0) {
-    dncArray.push({ name: 'Rising Windmill' });
-    next.flourishingwindmillStatus = -1;
-    next.ogcd = 1;
-    next.elapsedTime += player.gcd;
-  } else if (player.level >= 2 && next.combo === 1) {
-    dncArray.push({ name: 'Fountain' });
-    next.combo = 0;
-    next.ogcd = 1;
-    next.elapsedTime += player.gcd;
-  } else {
-    dncArray.push({ name: 'Cascade' });
-    next.combo = 1;
-    next.ogcd = 1;
-    next.elapsedTime += player.gcd;
-  }
 };
 
-onJobChanged.DNC = () => {
-  if (player.level >= 15) {
-    addCountdown({ name: 'Standard Step' });
-  }
-  if (player.level >= 70) {
-    addCountdown({ name: 'Technical Step' });
-  }
-  if (player.level >= 72) {
-    addCountdown({ name: 'Flourish' });
-  }
-  if (player.level >= 62) {
-    addCountdown({ name: 'Devilment' });
-  }
-  dncNext({ time: 0 });
-};
-
-onAction.DNC = (actionMatch) => {
-  removeIcon({ name: actionMatch.groups.actionName });
-
-  if (dncSingleTarget.includes(actionMatch.groups.actionName)) {
-    count.targets = 1;
-  }
-  // console.log(count.targets);
-
-  if (dncSteps.includes(actionMatch.groups.actionName)) {
-    addRecast({ name: actionMatch.groups.actionName });
-    addStatus({ name: actionMatch.groups.actionName });
-    dncNext({ time: 1500 });
-  } else if (dncStepActions.includes(actionMatch.groups.actionName)) {
-    // dncNext({ time: 1000 });
-  } else if (dncStandardFinishes.includes(actionMatch.groups.actionName)) {
-    removeStatus({ name: 'Standard Step' });
-    toggle.ogcd = 1;
-    dncNext({ time: 1500 });
-  } else if (dncTechnicalFinishes.includes(actionMatch.groups.actionName)) {
-    removeStatus({ name: 'Technical Step' });
-    toggle.ogcd = 1;
-    dncNext({ time: 1500 });
-  } else if (dncFanDances.includes(actionMatch.groups.actionName)) {
-    toggle.ogcd -= 1;
-    dncNext({ time: 1000 });
-  } else if (dncCooldowns.includes(actionMatch.groups.actionName)) {
-    addRecast({ name: actionMatch.groups.actionName });
-    if (actionMatch.groups.actionName === 'Devilment') {
-      addStatus({ name: 'Devilment' });
-    } else if (actionMatch.groups.actionName === 'Flourish') {
-      addStatus({ name: 'Flourishing Cascade' });
-      addStatus({ name: 'Flourishing Fountain' });
-      addStatus({ name: 'Flourishing Windmill' });
-      addStatus({ name: 'Flourishing Shower' });
-      addStatus({ name: 'Flourishing Fan Dance' });
-    }
-    toggle.ogcd -= 1;
-    dncNext({ time: 1000 });
-  } else if (dncWeaponskills.includes(actionMatch.groups.actionName)) {
-    if (actionMatch.groups.actionName === 'Bloodshower') {
-      removeStatus({ name: 'Flourishing Shower' });
-    } else if (actionMatch.groups.actionName === 'Rising Windmill') {
-      removeStatus({ name: 'Flourishing Windmill' });
-    } else if (actionMatch.groups.actionName === 'Fountainfall') {
-      removeStatus({ name: 'Flourishing Fountain' });
-    } else if (actionMatch.groups.actionName === 'Reverse Cascade') {
-      removeStatus({ name: 'Flourishing Cascade' });
-    } else if (['Fountain', 'Bladeshower'].includes(actionMatch.groups.actionName)) {
-      toggle.combo = 0;
-    } else if (actionMatch.groups.actionName === 'Cascade') {
-      toggle.combo = 1;
-    } else if (actionMatch.groups.actionName === 'Windmill') {
-      toggle.combo = 11;
-    }
-    toggle.ogcd = 1;
-    dncNext();
-  }
-};
-
-onStatus.DNC = (statusMatch) => {
-  if (statusMatch.groups.gainsLoses === 'gains') {
-    addStatus({ name: statusMatch.groups.statusName });
-    if (dncFlourishingBuff.includes(statusMatch.groups.statusName)) {
-      dncNext();
-    }
-  } else {
-    removeStatus({ name: statusMatch.groups.statusName });
-  }
-};
-
-const dncTimeoutNext = ({
-  time,
+nextActionOverlay.dncNextOGCD = ({
+  fourfoldfeathers,
+  loopRecast,
+  loopStatus,
 } = {}) => {
-  // Something
+  const { level } = nextActionOverlay.playerData;
+  const { gcd } = nextActionOverlay.playerData;
+  const { targetCount } = nextActionOverlay;
+
+  let procCount = 0;
+  if (loopStatus.flourishingcascade > 0) { procCount += 1; }
+  if (loopStatus.flourishingfountain > 0) { procCount += 1; }
+  if (loopStatus.flourishingwindmill > 0) { procCount += 1; }
+  if (loopStatus.flourishingshower > 0) { procCount += 1; }
+
+  // I mean, I guess
+  if (level >= 60 && loopStatus.closedposition < 0) { return 'Closed Position'; }
+
+  // Technical Finish
+  if (loopStatus.technicalfinish > 0) {
+    if (loopRecast.devilment < 0) { return 'Devilment'; }
+    if (loopStatus.flourishingfandance > 0) { return 'Fan Dance III'; }
+    if (fourfoldfeathers > 0) {
+      if (level >= 50 && targetCount > 1) { return 'Fan Dance II'; }
+      return 'Fan Dance';
+    }
+  }
+
+  // Flourish only if no procs
+  if (level >= 72 && procCount === 0 && loopStatus.flourishingfandance < 0
+  && loopRecast.flourish < 0) {
+    return 'Flourish';
+  }
+
+  // Stuff I guess
+  if (level >= 62 && level < 70 && loopRecast.devilment < 0) { return 'Devilment'; }
+  if (fourfoldfeathers >= 4 || (procCount > 0 && loopRecast.flourish < gcd)) {
+    if (level >= 50 && targetCount > 1) { return 'Fan Dance II'; }
+    return 'Fan Dance';
+  }
+
+  return ''; // No OGCD
+};
+
+nextActionOverlay.dncActionMatch = (actionMatch) => {
+  const { removeStatus } = nextActionOverlay;
+
+  const { weaponskills } = nextActionOverlay.actionList;
+  const { abilities } = nextActionOverlay.actionList;
+  const { playerData } = nextActionOverlay;
+  const { level } = playerData;
+  const { gcd } = playerData;
+
+  const { addRecast } = nextActionOverlay;
+  const { duration } = nextActionOverlay;
+  const { recast } = nextActionOverlay;
+
+  // const { checkRecast } = nextActionOverlay;
+  // const { checkStatus } = nextActionOverlay;
+  const { addStatus } = nextActionOverlay;
+
+  const singletargetActions = [
+    'Cascade', 'Fountain', 'Reverse Cascade', 'Fountainfall',
+    'Fan Dance',
+  ];
+
+  const multitargetActions = [
+    'Windmill', 'Bladeshower', 'Rising Windmill', 'Bloodshower', 'Saber Dance',
+    'Fan Dance II', 'Fan Dance III',
+    'Standard Finish', 'Technical Finish',
+  ];
+
+  const { actionName } = actionMatch.groups;
+
+  if (singletargetActions.includes(actionName)) {
+    nextActionOverlay.targetCount = 1;
+  } else if (multitargetActions.includes(actionName) && actionMatch.groups.logType === '15') {
+    // Multi target only hits single target
+    nextActionOverlay.targetCount = 1;
+  }
+
+  if (weaponskills.includes(actionName)) {
+    nextActionOverlay.NEWremoveIcon({ name: actionName });
+
+    // Set combo status/step
+    if ((level >= 2 && actionName === 'Cascade')
+    || (level >= 40 && actionName === 'Windmill')) {
+      addStatus({ statusName: 'Combo' });
+      nextActionOverlay.comboStep = actionName;
+    } else if (['Fountain', 'Bladeshower'].includes(actionName)) {
+      removeStatus({ statusName: 'Combo' });
+      nextActionOverlay.comboStep = '';
+    }
+
+    if (actionName === 'Reverse Cascade') {
+      removeStatus({ statusName: 'Flourishing Cascade' });
+    } else if (actionName === 'Fountainfall') {
+      removeStatus({ statusName: 'Flourishing Fountain' });
+    } else if (actionName === 'Rising Windmill') {
+      removeStatus({ statusName: 'Flourishing Windmill' });
+    } else if (actionName === 'Bloodshower') {
+      removeStatus({ statusName: 'Flourishing Shower' });
+    }
+
+    nextActionOverlay.dncNextAction({ delay: gcd });
+  } else if (abilities.includes(actionName)) {
+    nextActionOverlay.NEWremoveIcon({ name: actionName });
+
+    const propertyName = actionName.replace(/[\s':-]/g, '').toLowerCase();
+    if (recast[propertyName]) { addRecast({ actionName }); }
+    if (duration[propertyName]) { addStatus({ statusName: actionName }); }
+
+    if (actionName === 'Closed Position') {
+      addStatus({ statusName: 'Closed Position' });
+    } else if (actionName === 'Flourish') {
+      addStatus({ statusName: 'Flourishing Cascade' });
+      addStatus({ statusName: 'Flourishing Fountain' });
+      addStatus({ statusName: 'Flourishing Windmill' });
+      addStatus({ statusName: 'Flourishing Shower' });
+      addStatus({ statusName: 'Flourishing Fan Dance' });
+    } else if (actionName === 'Fan Dance III') {
+      removeStatus({ statusName: 'Flourishing Fan Dance' }); // Set Displacement cooldown with Engagement
+    }
+
+    // Since the actions are called Double whatever and such and such
+    if (actionName.endsWith('Standard Finish')) {
+      removeStatus({ statusName: 'Standard Step' });
+      addStatus({ statusName: 'Standard Finish' });
+    } else if (actionName.endsWith('Technical Finish')) {
+      removeStatus({ statusName: 'Technical Step' });
+      addStatus({ statusName: 'Technical Finish' });
+    }
+
+    if (['Standard Step', 'Technical Step'].includes(actionName) || actionName.endsWith('Finish')) {
+      nextActionOverlay.dncNextAction({ delay: 1500 });
+    }
+  }
+};
+
+nextActionOverlay.dncStatusMatch = (statusMatch) => {
+  const { statusName } = statusMatch.groups;
+  const { statusDuration } = statusMatch.groups;
+  const { gcd } = nextActionOverlay.playerData;
+  const procStatus = ['Flourishing Cascade', 'Flourishing Windmill', 'Flourishing Fountain', 'Flourishing Shower'];
+  // Control Dualcast/Swiftcast flow from here because it's a lot easier
+  if (statusMatch.groups.logType === '1A') {
+    nextActionOverlay.addStatus({ statusName, duration: parseFloat(statusDuration) * 1000 });
+
+    if (procStatus.includes(statusName)) {
+      nextActionOverlay.dncNextAction();
+    }
+    // Acceleration 'gains' a new line every time a stack is used
+  } else {
+    nextActionOverlay.removeStatus({ statusName });
+
+    if (['Dualcast', 'Swiftcast'].includes(statusMatch.groups.statusName)) {
+      nextActionOverlay.NEWremoveIcon({ name: 'Dualcast', match: 'contains' });
+      nextActionOverlay.rdmNextAction({ delay: gcd });
+    } else if (statusName === 'Acceleration') {
+      nextActionOverlay.accelerationCount = 0;
+    }
+  }
 };

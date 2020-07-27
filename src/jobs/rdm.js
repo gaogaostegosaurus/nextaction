@@ -147,7 +147,7 @@ nextActionOverlay.rdmNextAction = ({
   const loopRecastList = nextActionOverlay.actionList.abilities;
   loopRecastList.forEach((actionName) => {
     const propertyName = actionName.replace(/[\s':-]/g, '').toLowerCase();
-    loopRecast[propertyName] = checkRecast({ actionName });
+    loopRecast[propertyName] = checkRecast({ actionName }) - 1000;
   });
 
   const loopStatus = {};
@@ -586,7 +586,6 @@ nextActionOverlay.rdmActionMatch = (actionMatch) => {
     'Contre Sixte',
   ];
 
-  // Untoggle casting
   const { actionName } = actionMatch.groups;
 
   if (singletargetActions.includes(actionName)) {

@@ -275,6 +275,10 @@ nextActionOverlay.ninNextAction = ({
       }
     }
 
+    // Adjust all cooldown/status info
+    Object.keys(loopRecast).forEach((property) => { loopRecast[property] -= loopTime; });
+    Object.keys(loopStatus).forEach((property) => { loopStatus[property] -= loopTime; });
+
     while (gcdTime > 1000) {
       const nextOGCD = nextActionOverlay.ninNextOGCD({
         ninki,
@@ -345,9 +349,6 @@ nextActionOverlay.ninNextAction = ({
       }
     }
 
-    // Adjust all cooldown/status info
-    Object.keys(loopRecast).forEach((property) => { loopRecast[property] -= loopTime; });
-    Object.keys(loopStatus).forEach((property) => { loopStatus[property] -= loopTime; });
     nextTime += loopTime;
     // Go to next loop unless time has exceeded
   }
