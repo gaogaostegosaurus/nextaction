@@ -78,6 +78,7 @@ nextActionOverlay.dncJobChange = () => {
   icon.flourishingshower = icon.bloodshower;
   // icon.bloodshowersingletarget = icon.bloodshower;
   icon.fandanceii = '003466';
+  icon.closedposition = '003470';
   icon.devilment = '003471';
   icon.fandanceiii = '003472';
   icon.flourishingfandance = icon.fandance3;
@@ -406,7 +407,13 @@ nextActionOverlay.dncNextOGCD = ({
 
   // Stuff I guess
   if (level >= 62 && level < 70 && loopRecast.devilment < 0) { return 'Devilment'; }
-  if (fourfoldfeathers >= 4 || (procCount > 0 && loopRecast.flourish < gcd)) {
+  if (fourfoldfeathers >= 4
+  || (fourfoldfeathers >= 3 && procCount > 0 && loopRecast.flourish < gcd)) {
+    if (level >= 50 && targetCount > 1) { return 'Fan Dance II'; }
+    return 'Fan Dance';
+  }
+
+  if (level < 70 && fourfoldfeathers > 0) {
     if (level >= 50 && targetCount > 1) { return 'Fan Dance II'; }
     return 'Fan Dance';
   }
@@ -432,7 +439,8 @@ nextActionOverlay.dncActionMatch = (actionMatch) => {
   const { addStatus } = nextActionOverlay;
 
   const singletargetActions = [
-    'Cascade', 'Fountain', 'Reverse Cascade', 'Fountainfall',
+    'Cascade', 'Fountain',
+    // 'Reverse Cascade', 'Fountainfall',
     'Fan Dance',
   ];
 
