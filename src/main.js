@@ -138,8 +138,6 @@ nextActionOverlay.onInCombatChangedEvent = (e) => {
 };
 
 nextActionOverlay.onPlayerChangedEvent = (e) => {
-  if (!document) { return; } // Seeing if this will prevent innerHTML from being not ready...
-
   const { playerData } = nextActionOverlay;
 
   if (e.detail.name !== playerData.name || e.detail.job !== playerData.job
@@ -172,6 +170,7 @@ nextActionOverlay.onPlayerChangedEvent = (e) => {
     Object.keys(timeout).forEach((timeoutProperty) => { clearTimeout(timeout[timeoutProperty]); });
 
     // Clear overlay
+    if (!document.getElementById('icon-a')) { return; }
     document.getElementById('icon-a').innerHTML = '';
     document.getElementById('icon-b').innerHTML = '';
     document.getElementById('icon-c').innerHTML = '';

@@ -4,12 +4,6 @@ nextActionOverlay.rdmJobChange = () => {
   // Set initial values
   nextActionOverlay.comboStep = '';
 
-  nextActionOverlay.actionList.spells = [
-    'Jolt', 'Jolt II', 'Verfire', 'Verstone', 'Verthunder II', 'Veraero II',
-    'Verthunder', 'Veraero', 'Scatter', 'Impact',
-    'Vercure', 'Veraise',
-  ];
-
   nextActionOverlay.actionList.weaponskills = [
     // Yes, some are technically not weaponskills, but close enough I don't care
     'Riposte', 'Enchanted Riposte',
@@ -18,6 +12,12 @@ nextActionOverlay.rdmJobChange = () => {
     'Verflare', 'Verholy', 'Scorch',
     'Moulinet', 'Enchanted Moulinet',
     'Reprise', 'Enchanted Reprise',
+  ];
+
+  nextActionOverlay.actionList.spells = [
+    'Jolt', 'Jolt II', 'Verfire', 'Verstone', 'Verthunder II', 'Veraero II',
+    'Verthunder', 'Veraero', 'Scatter', 'Impact',
+    'Vercure', 'Veraise',
   ];
 
   nextActionOverlay.actionList.abilities = [
@@ -128,6 +128,7 @@ nextActionOverlay.rdmTargetChange = () => {
 
 nextActionOverlay.rdmNextAction = ({
   delay = 0,
+  casting,
 } = {}) => {
   const { checkRecast } = nextActionOverlay;
   const { checkStatus } = nextActionOverlay;
@@ -166,18 +167,29 @@ nextActionOverlay.rdmNextAction = ({
   // const { weaponskills } = nextActionOverlay.actionList;
   // const { spells } = nextActionOverlay.actionList;
 
+  // If called by casting, add to array
+
+  if (casting) {
+  }
+
   while (nextTime < nextMaxTime) { // Outside loop for GCDs, stops looking ahead at this number ms
     let loopTime = 0;
 
     if (gcdTime <= 1000) {
-      const nextGCD = nextActionOverlay.rdmNextGCD({
-        comboStep,
-        blackmana,
-        whitemana,
-        loopRecast,
-        loopStatus,
-      });
+      let nextGCD = '';
 
+      if (nextTime === 0 && casting) {
+        nextGCD = `Hardcast ${casting}`;
+      } else {
+        nextGCD = nextActionOverlay.rdmNextGCD({
+          comboStep,
+          blackmana,
+          whitemana,
+          loopRecast,
+          loopStatus,
+        });  
+      }
+      
       iconArray.push({ name: nextGCD });
 
       // Sets comboStatus and Step
@@ -189,6 +201,7 @@ nextActionOverlay.rdmNextAction = ({
         comboStep = nextGCD;
         loopStatus.combo = duration.combo;
       } else {
+        // Everything else resets combo
         comboStep = '';
         loopStatus.combo = -1;
       }
@@ -200,31 +213,31 @@ nextActionOverlay.rdmNextAction = ({
       } else if (whitemana < blackmana && nextGCD === 'Verholy') {
         loopStatus.verstoneready = duration.verstoneready;
       } else if (accelerationCount > 0) {
-        if (nextGCD.endsWith('Veraero') || nextGCD === 'Verholy') {
-          accelerationCount -= 1;
-          loopStatus.verstoneready = duration.verstoneready;
-        } else if (nextGCD.endsWith('Verthunder') || nextGCD === 'Verflare') {
+        if (nextGCD.endsWith(' Verthunder') || nextGCD === 'Verflare') {
           accelerationCount -= 1;
           loopStatus.verfireready = duration.verfireready;
+        } else if (nextGCD.endsWith(' Veraero') || nextGCD === 'Verholy') {
+          accelerationCount -= 1;
+          loopStatus.verstoneready = duration.verstoneready;
         }
       }
 
       // Adjust mana from actions
-      if (nextGCD.endsWith('Jolt') || nextGCD.endsWith('Jolt II')) {
+      if (nextGCD.endsWith(' Jolt') || nextGCD.endsWith(' Jolt II')) {
         blackmana += 3; whitemana += 3;
-      } else if (nextGCD.endsWith('Verthunder')) {
+      } else if (nextGCD.endsWith(' Verthunder')) {
         blackmana += 11;
-      } else if (nextGCD.endsWith('Veraero')) {
+      } else if (nextGCD.endsWith(' Veraero')) {
         whitemana += 11;
-      } else if (nextGCD.endsWith('Scatter') || nextGCD.endsWith('Impact')) {
+      } else if (nextGCD.endsWith(' Scatter') || nextGCD.endsWith(' Impact')) {
         blackmana += 3; whitemana += 3;
-      } else if (nextGCD.endsWith('Verthunder II')) {
+      } else if (nextGCD.endsWith(' Verthunder II')) {
         blackmana += 7;
-      } else if (nextGCD.endsWith('Veraero II')) {
+      } else if (nextGCD.endsWith(' Veraero II')) {
         whitemana += 7;
-      } else if (nextGCD.endsWith('Verfire')) {
+      } else if (nextGCD.endsWith(' Verfire')) {
         blackmana += 9;
-      } else if (nextGCD.endsWith('Verstone')) {
+      } else if (nextGCD.endsWith(' Verstone')) {
         whitemana += 9;
       } else if (nextGCD === 'Enchanted Riposte') {
         blackmana -= 30; whitemana -= 30;
@@ -249,9 +262,9 @@ nextActionOverlay.rdmNextAction = ({
       if (whitemana > 100) { whitemana = 100; } else if (whitemana < 0) { whitemana = 0; }
 
       // Remove procs
-      if (nextGCD.endsWith('Verfire')) {
+      if (nextGCD.endsWith(' Verfire')) {
         loopStatus.verfireready = -1;
-      } else if (nextGCD.endsWith('Verstone')) {
+      } else if (nextGCD.endsWith(' Verstone')) {
         loopStatus.verstoneready = -1;
       }
 
@@ -262,10 +275,18 @@ nextActionOverlay.rdmNextAction = ({
       } else if (['Enchanted Redoublement', 'Enchanted Reprise'].includes(nextGCD)) {
         gcdTime = 2200;
         loopTime = gcdTime;
-      } else if (nextGCD.startsWith('Hardcast') && loopStatus.dualcast < 0 && loopStatus.swiftcast < 0) {
+      } else if (nextGCD.startsWith('Hardcast ') && loopStatus.dualcast < 0 && loopStatus.swiftcast < 0) {
+        // Hardcasted stuff
         gcdTime = 0; // Due to cast time
-        loopTime = gcd;
+        if (nextGCD.endsWith(' Verthunder') || nextGCD.endsWith(' Veraero') || nextGCD.endsWith(' Scatter') || nextGCD.endsWith(' Impact')) {
+          loopTime = gcd * 2;
+        } else if (nextGCD.endsWith(' Verraise')) {
+          loopTime = gcd * 4;
+        } else { 
+          loopTime = gcd;
+        }
       } else {
+        // Dualcasted/Swiftcasted stuff, spell finishers
         gcdTime = gcd;
         loopTime = gcdTime;
       }
@@ -273,10 +294,10 @@ nextActionOverlay.rdmNextAction = ({
       if (loopStatus.dualcast > 0) {
         // Apparently everything deletes Dualcast
         loopStatus.dualcast = -1;
-      } else if (loopStatus.swiftcast > 0 && nextGCD.startsWith('Dualcast')) {
+      } else if (loopStatus.swiftcast > 0 && nextGCD.startsWith('Dualcast ')) {
         // Swiftcast only consumed on spells (and no dualcast)
         loopStatus.swiftcast = -1;
-      } else if (nextGCD.startsWith('Hardcast')) {
+      } else if (nextGCD.startsWith('Hardcast ')) {
         // Add Dualcast if nothing above was used
         loopStatus.dualcast = duration.dualcast;
       }
@@ -292,9 +313,9 @@ nextActionOverlay.rdmNextAction = ({
       weaveMax = 1;
     }
 
-    let weave = 0;
+    let weave = 1;
 
-    while (weave < weaveMax) { // Inside loop for OGCDs
+    while (weave <= weaveMax) { // Inside loop for OGCDs
       const nextOGCD = nextActionOverlay.rdmNextOGCD({
         weave,
         weaveMax,
@@ -340,6 +361,12 @@ nextActionOverlay.rdmNextAction = ({
   }
 
   nextActionOverlay.NEWsyncIcons({ iconArray });
+
+  // Refresh after a few GCDs if nothing's happening
+  clearTimeout(nextActionOverlay.timeout.nextAction); // Keep this the same across jobs
+  nextActionOverlay.timeout.nextAction = setTimeout(
+    nextActionOverlay.rdmNextAction, gcd * 2, // 2 GCDs seems like a good number... maybe 3?
+  );
 };
 
 nextActionOverlay.rdmNextGCD = ({
@@ -389,24 +416,9 @@ nextActionOverlay.rdmNextGCD = ({
     // All other cases (I hope)
     if (level >= 10 && blackmana >= whitemana) { return 'Dualcast Veraero'; }
     if (level >= 4) { return 'Dualcast Verthunder'; }
+    if (level >= 62) { return 'Dualcast Jolt II'; }
     return 'Dualcast Jolt';
   }
-
-  let moulinetFloor = 40; // Allows Reprise to be used until 40-59 mana is reached
-  if (nextActionOverlay.targetCount >= 3) {
-    moulinetFloor = 50; // Allows Reprise to be used until 50-69 mana is reached
-  }
-
-  let repriseFloor = 45; // Allows Reprise to be used until 45-49 mana is reached
-  if (blackmana === whitemana) {
-    repriseFloor = 46; // Allows Reprise to be used until 46-50 mana is reached
-  }
-
-  // Calculate how many Reprise/Moulinet can be used and how much time it will take
-  const repriseCount = Math.floor(Math.max(lowerMana - repriseFloor, 0) / 5);
-  const moulinetCount = Math.floor(Math.max(lowerMana - moulinetFloor, 0) / 5);
-  const repriseTime = repriseCount * 2200; // Reprise and Moulinet have set recast times
-  const moulinetTime = moulinetCount * 1500;
 
   // Always Scorch
   if (level >= 80 && ['Verflare', 'Verholy'].includes(comboStep)) { return 'Scorch'; }
@@ -436,8 +448,10 @@ nextActionOverlay.rdmNextGCD = ({
   // Prevent accidental combo continuation?
   if (level >= 35 && level < 50 && lowerMana >= 25 && comboStep === 'Enchanted Riposte') { return 'Enchanted Zwerchhau'; }
 
-  // AoE
-  if (level >= 52 && targetCount > 1 && lowerMana >= 20 && moulinetTime > loopRecast.manafication) { return 'Enchanted Moulinet'; } // This should take care of general AoE but check later
+  // Moulinet
+  if (level >= 52 && targetCount > 1 && lowerMana >= 70) { return 'Enchanted Moulinet'; }
+  // No Manafication? No problem
+  if (level >= 52 && level < 60 && targetCount > 1 && lowerMana >= 20) { return 'Enchanted Moulinet'; }
 
   // Start combos
   if (level >= 70 && loopStatus.verstoneready < comboTime
@@ -455,9 +469,23 @@ nextActionOverlay.rdmNextGCD = ({
   if (level >= 2 && level < 50 && lowerMana >= 55) { return 'Enchanted Riposte'; } // Before Redoublement
   if (level >= 2 && level < 35 && lowerMana >= 30) { return 'Enchanted Riposte'; } // Before Zwerchhau
 
-  // Spend excess mana
-  if (level >= 76 && lowerMana >= repriseFloor + 5 && repriseTime > loopRecast.manafication) { return 'Enchanted Reprise'; }
-  if (level >= 52 && lowerMana >= moulinetFloor + 20 && moulinetTime > loopRecast.manafication) { return 'Enchanted Moulinet'; }
+
+  let moulinetFloor = 50;
+  if (nextActionOverlay.targetCount === 1) { moulinetFloor = 40; }
+
+  let repriseFloor = 50
+  // Unbalance mana before Manafication
+  if (blackmana !== whitemana) { repriseFloor = 45; }
+
+  // Calculate how many Reprise/Moulinet can be used and how much time it will take
+  const repriseCount = Math.floor(Math.max(lowerMana - repriseFloor, 0) / 5);
+  const moulinetCount = Math.floor(Math.max(lowerMana - moulinetFloor, 0) / 20);
+  const repriseTime = repriseCount * 2200; // Reprise and Moulinet have set recast times
+  const moulinetTime = moulinetCount * 1500;
+
+  // Spend excess mana with Reprise or Moulinet
+  if (level >= 76 && repriseTime > Math.max(loopRecast.manafication, 0)) { return 'Enchanted Reprise'; }
+  if (level >= 52 && moulinetTime > Math.max(loopRecast.manafication, 0)) { return 'Enchanted Moulinet'; }
 
   const lowerProc = Math.min(loopStatus.verfireready, loopStatus.verstoneready);
   const higherProc = Math.max(loopStatus.verfireready, loopStatus.verstoneready);
@@ -481,11 +509,15 @@ nextActionOverlay.rdmNextGCD = ({
 
   // Prevent unbalanced mana
   if (Math.min(blackmana + 9, 100) > whitemana + 30) {
-    if (loopStatus.verstoneready > gcd) { return 'Hardcast Verstone'; } return 'Hardcast Jolt';
+    if (loopStatus.verstoneready > gcd) { return 'Hardcast Verstone'; }
+    if (level >= 62) { return 'Hardcast Jolt II'; }
+    return 'Hardcast Jolt';
   }
 
   if (Math.min(whitemana + 9, 100) > blackmana + 30) {
-    if (loopStatus.verfireready > gcd) { return 'Hardcast Verfire'; } return 'Hardcast Jolt';
+    if (loopStatus.verfireready > gcd) { return 'Hardcast Verfire'; }
+    if (level >= 62) { return 'Hardcast Jolt II'; }
+    return 'Hardcast Jolt';
   }
 
   // Use proc with less time
@@ -497,6 +529,7 @@ nextActionOverlay.rdmNextGCD = ({
   if (loopStatus.verfireready > gcd) { return 'Hardcast Verfire'; }
 
   // Jolt
+  if (level >= 62) { return 'Hardcast Jolt II'; }
   return 'Hardcast Jolt';
 };
 
@@ -562,6 +595,7 @@ nextActionOverlay.rdmActionMatch = (actionMatch) => {
   const { removeStatus } = nextActionOverlay;
 
   const { weaponskills } = nextActionOverlay.actionList;
+  const { spells } = nextActionOverlay.actionList;
   const { abilities } = nextActionOverlay.actionList;
   const { playerData } = nextActionOverlay;
   const { level } = playerData;
@@ -572,11 +606,11 @@ nextActionOverlay.rdmActionMatch = (actionMatch) => {
   const { recast } = nextActionOverlay;
 
   // const { checkRecast } = nextActionOverlay;
-  // const { checkStatus } = nextActionOverlay;
+  const { checkStatus } = nextActionOverlay;
   const { addStatus } = nextActionOverlay;
 
   const singletargetActions = [
-    'Jolt', 'Jolt II',
+    'Jolt', 'Jolt II', 'Verfire', 'Verstone',
     'Enchanted Riposte', 'Riposte', 'Enchanted Reprise', 'Reprise',
   ];
 
@@ -619,6 +653,12 @@ nextActionOverlay.rdmActionMatch = (actionMatch) => {
     } else {
       nextActionOverlay.rdmNextAction({ delay: gcd });
     }
+  } else if (spells.includes(actionName)) {
+    if (checkStatus({ statusName: 'Dualcast'}) < 0 && checkStatus({ statusName: 'Swiftcast'}) < 0 ) {
+      nextActionOverlay.NEWremoveIcon({ name: `Hardcast ${actionName}` });  
+    } else {
+      nextActionOverlay.NEWremoveIcon({ name: `Dualcast ${actionName}` });  
+    }
   } else if (abilities.includes(actionName)) {
     nextActionOverlay.NEWremoveIcon({ name: actionName });
 
@@ -649,7 +689,7 @@ nextActionOverlay.rdmStatusMatch = (statusMatch) => {
     nextActionOverlay.addStatus({ statusName, duration: parseFloat(statusDuration) * 1000 });
 
     if (statusName === 'Dualcast') {
-      nextActionOverlay.NEWremoveIcon({ name: 'Hardcast', match: 'contains' });
+      // nextActionOverlay.NEWremoveIcon({ name: 'Hardcast ', match: 'contains' });
       // nextActionOverlay.rdmNextAction();
     } else if (statusName === 'Verfire Ready') {
       nextActionOverlay.rdmNextAction({ delay: gcd });
@@ -663,7 +703,7 @@ nextActionOverlay.rdmStatusMatch = (statusMatch) => {
     nextActionOverlay.removeStatus({ statusName });
 
     if (['Dualcast', 'Swiftcast'].includes(statusMatch.groups.statusName)) {
-      nextActionOverlay.NEWremoveIcon({ name: 'Dualcast', match: 'contains' });
+      nextActionOverlay.NEWremoveIcon({ name: 'Dualcast ', match: 'contains' });
       nextActionOverlay.rdmNextAction({ delay: gcd });
     } else if (statusName === 'Acceleration') {
       nextActionOverlay.accelerationCount = 0;
@@ -677,12 +717,13 @@ nextActionOverlay.rdmCastingMatch = (castingMatch) => {
   nextActionOverlay.comboStep = '';
   nextActionOverlay.removeStatus({ statusName: 'Combo' });
 
-  // nextActionOverlay.rdmNextAction();
-  nextActionOverlay.NEWfadeIcon({ name: 'Hardcast', match: 'contains' });
+  nextActionOverlay.rdmNextAction({ casting: castingMatch.groups.actionName});
+  // nextActionOverlay.NEWfadeIcon({ name: `Hardcast ${castingMatch.groups.actionName}`, match: 'contains' });
+  nextActionOverlay.NEWfadeIcon({ name: `Hardcast ${castingMatch.groups.actionName}`});
 };
 
 // eslint-disable-next-line no-unused-vars
 nextActionOverlay.rdmCancelMatch = (cancelMatch) => {
-  nextActionOverlay.NEWunfadeIcon({ name: 'Hardcast', match: 'contains' });
+  nextActionOverlay.NEWunfadeIcon({ name: `Hardcast ${cancelMatch.groups.actionName}`});
   nextActionOverlay.rdmNextAction();
 };
