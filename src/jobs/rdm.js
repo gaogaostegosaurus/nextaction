@@ -35,6 +35,7 @@ nextActionOverlay.rdmJobChange = () => {
     'Verfire Ready',
     'Verstone Ready',
     'Acceleration',
+    'Manafication',
     'Swiftcast',
   ];
 
@@ -59,6 +60,7 @@ nextActionOverlay.rdmJobChange = () => {
   duration.dualcast = 15000;
   duration.verfireready = 30000;
   duration.verstoneready = duration.verfireready;
+  duration.manafication = 10000;
   duration.acceleration = 20000;
 
   const { icon } = nextActionOverlay;
@@ -73,20 +75,22 @@ nextActionOverlay.rdmJobChange = () => {
   icon.displacement = '003211';
   icon.fleche = '003212';
   icon.acceleration = '003214';
+  icon.vercure = '003216';
   icon.contresixte = '003217';
   icon.embolden = '003218';
   icon.manafication = '003219';
   icon.joltii = '003220';
+  icon.verraise = '003221';
   icon.impact = '003222';
   icon.verflare = '003223';
   icon.verholy = '003224';
-  icon.engagement = '003231';
   icon.enchantedriposte = '003225';
   icon.enchantedzwerchhau = '003226';
   icon.enchantedredoublement = '003227';
   icon.enchantedmoulinet = '003228';
   icon.verthunderii = '003229';
   icon.veraeroii = '003230';
+  icon.engagement = '003231';
   icon.enchantedreprise = '003232';
   icon.scorch = '003234';
 
@@ -94,9 +98,15 @@ nextActionOverlay.rdmJobChange = () => {
   if (level >= 66) { icon.scatter = icon.impact; }
 
   icon.hardcastjolt = icon.jolt;
+  icon.hardcastverthunder = icon.verthunder;
+  icon.hardcastveraero = icon.veraero;
+  icon.hardcastscatter = icon.scatter;
   icon.hardcastverfire = icon.verfire;
   icon.hardcastverstone = icon.verstone;
+  icon.hardcastvercure = icon.vercure;
   icon.hardcastjoltii = icon.joltii;
+  icon.hardcastverraise = icon.verraise;
+  icon.hardcastimpact = icon.impact;
   icon.hardcastverthunderii = icon.verthunderii;
   icon.hardcastveraeroii = icon.veraeroii;
 
@@ -148,7 +158,7 @@ nextActionOverlay.rdmNextAction = ({
   const loopRecastList = nextActionOverlay.actionList.abilities;
   loopRecastList.forEach((actionName) => {
     const propertyName = actionName.replace(/[\s':-]/g, '').toLowerCase();
-    loopRecast[propertyName] = checkRecast({ actionName }) - 1000;
+    loopRecast[propertyName] = checkRecast({ actionName });
   });
 
   const loopStatus = {};
@@ -166,11 +176,6 @@ nextActionOverlay.rdmNextAction = ({
 
   // const { weaponskills } = nextActionOverlay.actionList;
   // const { spells } = nextActionOverlay.actionList;
-
-  // If called by casting, add to array
-
-  if (casting) {
-  }
 
   while (nextTime < nextMaxTime) { // Outside loop for GCDs, stops looking ahead at this number ms
     let loopTime = 0;
@@ -449,7 +454,9 @@ nextActionOverlay.rdmNextGCD = ({
   if (level >= 35 && level < 50 && lowerMana >= 25 && comboStep === 'Enchanted Riposte') { return 'Enchanted Zwerchhau'; }
 
   // Moulinet
-  if (level >= 52 && targetCount > 1 && lowerMana >= 70) { return 'Enchanted Moulinet'; }
+  if (level >= 60 && targetCount > 1 && lowerMana >= 70) { return 'Enchanted Moulinet'; }
+  // Spam AoE if under Manafication buff
+  if (level >= 74 && targetCount > 1 && loopStatus.manafication > 0 && lowerMana >= 20) { return 'Enchanted Moulinet'; }
   // No Manafication? No problem
   if (level >= 52 && level < 60 && targetCount > 1 && lowerMana >= 20) { return 'Enchanted Moulinet'; }
 
