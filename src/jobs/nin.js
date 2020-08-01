@@ -167,9 +167,10 @@ nextActionOverlay.ninNextAction = ({
   const nextMaxTime = 15000;
 
   while (nextTime < nextMaxTime) {
-    let loopTime = 0; // Used at end of loop to move things "forward"
+    let loopTime = 0;
 
-    let mudraTime = 0; // NIN specific, also shifts things forward
+    // NIN specific, also shifts things forward
+    let mudraTime = 0;
     let hutonModifier = 1;
 
     if (loopStatus.huton > 0) {

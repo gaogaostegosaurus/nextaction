@@ -174,11 +174,8 @@ nextActionOverlay.rdmNextAction = ({
   let nextTime = 0; // Amount of time looked ahead in loop
   const nextMaxTime = 15000;
 
-  // const { weaponskills } = nextActionOverlay.actionList;
-  // const { spells } = nextActionOverlay.actionList;
-
   while (nextTime < nextMaxTime) { // Outside loop for GCDs, stops looking ahead at this number ms
-    let loopTime = 0;
+    let loopTime = 0; // Keep track of how "long" GCD loop is
 
     if (gcdTime <= 1000) {
       let nextGCD = '';
@@ -339,7 +336,7 @@ nextActionOverlay.rdmNextAction = ({
         if (duration[propertyName]) { loopStatus[propertyName] = duration[propertyName]; }
 
         if (nextOGCD === 'Displacement') {
-          gcdTime = 0;
+          weave = 9; // End OGCD section if Displacement used
         } else if (nextOGCD === 'Acceleration') {
           accelerationCount = 3;
         } else if (nextOGCD === 'Manafication') {
@@ -361,7 +358,7 @@ nextActionOverlay.rdmNextAction = ({
       accelerationCount = 0;
     }
 
-    gcdTime = 0;
+    gcdTime = 0; // Set up for next GCD
     nextTime += loopTime;
   }
 
@@ -491,6 +488,7 @@ nextActionOverlay.rdmNextGCD = ({
   const moulinetTime = moulinetCount * 1500;
 
   // Spend excess mana with Reprise or Moulinet
+  // There's probably some improvements that can be made here but I don't know what they are
   if (level >= 76 && repriseTime > Math.max(loopRecast.manafication, 0)) { return 'Enchanted Reprise'; }
   if (level >= 60 && moulinetTime > Math.max(loopRecast.manafication, 0)) { return 'Enchanted Moulinet'; }
 
@@ -574,9 +572,9 @@ nextActionOverlay.rdmNextOGCD = ({
   } if (level >= 72 && loopRecast.displacement < 0) {
     return 'Engagement';
   } if (level >= 40 && comboStep !== 'Enchanted Riposte' && comboStep !== 'Enchanted Zwerchhau'
-  && (nextActionOverlay.targetCount === 1 || lowerMana < 20) && weave < weaveMax
+  && (nextActionOverlay.targetCount === 1 || lowerMana < 20) && weave === 1
   && loopRecast.displacement < 0) {
-    return 'Displacement'; // Implies weave 1 of max 2, also cancels any other OGCD
+    return 'Displacement';
   } if (level >= 18 && Math.max(blackmana, whitemana) < 80
   && Math.max(loopStatus.verfireready, loopStatus.verstoneready) < 0 && comboStep === ''
   && loopRecast.swiftcast < 0) {
