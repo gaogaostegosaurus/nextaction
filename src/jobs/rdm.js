@@ -485,7 +485,7 @@ nextActionOverlay.rdmNextGCD = ({
 
   // Spend excess mana with Reprise or Moulinet
   if (level >= 76 && repriseTime > Math.max(loopRecast.manafication, 0)) { return 'Enchanted Reprise'; }
-  if (level >= 52 && moulinetTime > Math.max(loopRecast.manafication, 0)) { return 'Enchanted Moulinet'; }
+  if (level >= 60 && moulinetTime > Math.max(loopRecast.manafication, 0)) { return 'Enchanted Moulinet'; }
 
   const lowerProc = Math.min(loopStatus.verfireready, loopStatus.verstoneready);
   const higherProc = Math.max(loopStatus.verfireready, loopStatus.verstoneready);
