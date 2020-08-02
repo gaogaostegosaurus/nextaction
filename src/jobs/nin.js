@@ -131,8 +131,6 @@ nextActionOverlay.ninNextAction = ({
   const { weaponskills } = nextActionOverlay.actionList;
   const { ninjutsu } = nextActionOverlay.actionList;
 
-  const nextAction = nextActionOverlay.ninNextAction;
-
   // Initial values for loops
 
   let { comboStep } = nextActionOverlay;
@@ -160,7 +158,7 @@ nextActionOverlay.ninNextAction = ({
   loopStatus.huton = playerData.huton;
 
   // Clear array
-  const ninArray = [];
+  const iconArray = [];
 
   let gcdTime = delay;
   let nextTime = 0;
@@ -185,7 +183,7 @@ nextActionOverlay.ninNextAction = ({
         loopRecast,
         loopStatus,
       });
-      ninArray.push({ name: nextGCD });
+      iconArray.push({ name: nextGCD });
 
       // Weaponskills
       if (weaponskills.includes(nextGCD)) {
@@ -276,11 +274,17 @@ nextActionOverlay.ninNextAction = ({
       }
     }
 
-    // Adjust all cooldown/status info
     Object.keys(loopRecast).forEach((property) => { loopRecast[property] -= loopTime; });
     Object.keys(loopStatus).forEach((property) => { loopStatus[property] -= loopTime; });
 
-    while (gcdTime > 1000) {
+    let weaveMax = 0;
+    if (gcdTime > 1000) {
+      weaveMax = 1; // Too much of a pain to double weave on NIN
+    }
+
+    let weave = 1;
+
+    while (weave <= weaveMax) {
       const nextOGCD = nextActionOverlay.ninNextOGCD({
         ninki,
         ninkiTarget,
@@ -288,21 +292,19 @@ nextActionOverlay.ninNextAction = ({
         loopStatus,
       });
 
-      // Push nextOGCD to end of ninArray - TCJ is special
       if (nextOGCD === 'Ten Chi Jin Suiton') {
-        ninArray.push({ name: 'Ten Chi Jin', size: 'small' });
-        ninArray.push({ name: 'Fuma Shuriken' });
+        iconArray.push({ name: 'Ten Chi Jin', size: 'small' });
+        iconArray.push({ name: 'Fuma Shuriken' });
         if (nextActionOverlay.targetCount > 1) {
-          ninArray.push({ name: 'Katon' });
+          iconArray.push({ name: 'Katon' });
         } else {
-          ninArray.push({ name: 'Raiton' });
+          iconArray.push({ name: 'Raiton' });
         }
-        ninArray.push({ name: 'Suiton' });
+        iconArray.push({ name: 'Suiton' });
       } else if (nextOGCD) {
-        ninArray.push({ name: nextOGCD, size: 'small' });
+        iconArray.push({ name: nextOGCD, size: 'small' });
       }
 
-      // OGCD status, recast, and resources
       if (nextOGCD === 'Assassinate') {
         loopStatus.assassinateready = -1;
       } else if (nextOGCD === 'Bhavacakra') {
@@ -343,23 +345,25 @@ nextActionOverlay.ninNextAction = ({
 
       if (nextOGCD === 'Ten Chi Jin Suiton') {
         // This is a little awkward but probably fine as long as it's defined out of loop
-        loopTime += 2000; // To account for the first two Ninjutsu steps
-        gcdTime = 1500; // Ends with a GCD
+        // 3500 is total GCD time for all three TCJ uses
+        Object.keys(loopRecast).forEach((property) => { loopRecast[property] -= 3500; });
+        Object.keys(loopStatus).forEach((property) => { loopStatus[property] -= 3500; });
+        loopTime += 3500;
+        weave = 1; // Ends with a GCD, allow one more weave
       } else {
-        gcdTime -= 1250;
+        weave += 1;
       }
     }
 
+    gcdTime = 0;
     nextTime += loopTime;
-    // Go to next loop unless time has exceeded
   }
-  // console.log(JSON.stringify(iconArrayB));
 
-  nextActionOverlay.iconArrayB = ninArray;
-  nextActionOverlay.syncIcons();
+  nextActionOverlay.NEWsyncIcons({ iconArray });
+
   clearTimeout(nextActionOverlay.timeout.nextAction);
   nextActionOverlay.timeout.nextAction = setTimeout(
-    nextAction, gcd * 2,
+    nextActionOverlay.ninNextAction, gcd * 2,
   );
 };
 
@@ -368,25 +372,23 @@ nextActionOverlay.ninNextGCD = ({
   loopRecast,
   loopStatus,
 } = {}) => {
-  const { playerData } = nextActionOverlay;
-  const { level } = playerData;
   const { duration } = nextActionOverlay;
   const { recast } = nextActionOverlay;
 
-  // Use Kassatsu if it's about to fade
-  if (loopStatus.kassatsu > 0 && loopStatus.kassatsu < playerData.gcd * 2) {
+  const { gcd } = nextActionOverlay.playerData;
+  const { level } = nextActionOverlay.playerData;
+
+  // Use Kassatsu buff if it's about to fade
+  if (loopStatus.kassatsu > 0 && loopStatus.kassatsu < gcd * 2) {
     if (level >= 76) {
-      if (nextActionOverlay.targetCount > 1) {
-        return 'Goka Mekkyaku';
-      }
+      if (nextActionOverlay.targetCount > 1) { return 'Goka Mekkyaku'; }
       return 'Hyosho Ranryu';
-    } if (nextActionOverlay.targetCount > 1) {
-      return 'Katon';
-    } return 'Raiton';
+    } if (nextActionOverlay.targetCount > 1) { return 'Katon'; }
+    return 'Raiton';
   }
 
   // Continue Combo if timer is low
-  if (loopStatus.combo > 0 && loopStatus.combo < playerData.gcd * 2) {
+  if (loopStatus.combo > 0 && loopStatus.combo < gcd * 2) {
     return nextActionOverlay.ninNextWeaponskill({ comboStep, loopStatus });
   }
 
@@ -394,13 +396,17 @@ nextActionOverlay.ninNextGCD = ({
   if (level >= 45 && loopStatus.kassatsu < 0 && loopStatus.huton < 500 * 3 + 1500
   && loopRecast.mudra1 < 0) {
     return 'Huton';
-  } if (level >= 52 && nextActionOverlay.targetCount >= 3
-  && loopStatus.huton < 10000 && loopStatus.huton > 0) {
+  }
+
+  if (level >= 52 && nextActionOverlay.targetCount >= 3
+  && loopStatus.huton < 20000 && loopStatus.huton > 0) {
     if (comboStep === 'Death Blossom') {
       return 'Hakke Mujinsatsu';
     } return 'Death Blossom';
-  } if (level >= 54
-  && loopStatus.huton < 10000 && loopStatus.huton > 0) {
+  }
+
+  if (level >= 54
+  && loopStatus.huton < 20000 && loopStatus.huton > 0) {
     if (comboStep === 'Gust Slash') {
       return 'Armor Crush';
     } if (comboStep === 'Spinning Edge') {
@@ -408,14 +414,23 @@ nextActionOverlay.ninNextGCD = ({
     } return 'Spinning Edge';
   }
 
+  // Use Kassatsu right away if there's no chance of TA
+  if (loopStatus.kassatsu < loopRecast.trickattack + gcd) {
+    if (level >= 76) {
+      if (nextActionOverlay.targetCount > 1) { return 'Goka Mekkyaku'; }
+      return 'Hyosho Ranryu';
+    } if (nextActionOverlay.targetCount > 1) { return 'Katon'; }
+    return 'Raiton';
+  }
+
   // Use Suiton to allow TA as soon as possible
   if (level >= 45 && (level < 70 || level >= 72)
   && loopStatus.suiton < 0 && loopStatus.kassatsu < 0 && loopRecast.mudra1 < 0
-  && loopRecast.trickattack < duration.suiton - playerData.gcd) {
+  && loopRecast.trickattack < duration.suiton - gcd) {
     return 'Suiton'; // Suiton for Trick before 70
   } if (level >= 70 && level < 72
   && loopStatus.suiton < 0 && loopStatus.kassatsu < 0 && loopRecast.mudra1 < 0
-  && loopRecast.trickattack < Math.min(duration.suiton, loopRecast.tenchijin) - playerData.gcd) {
+  && loopRecast.trickattack < Math.min(duration.suiton, loopRecast.tenchijin) - gcd) {
     return 'Suiton'; // Only use Suiton 70 and 71 if the timing prevents TCJ into Trick
   }
 

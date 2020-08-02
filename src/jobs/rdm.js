@@ -342,7 +342,7 @@ nextActionOverlay.rdmNextAction = ({
         if (duration[propertyName]) { loopStatus[propertyName] = duration[propertyName]; }
 
         if (nextOGCD === 'Displacement') {
-          weave = 9; // End OGCD section if Displacement used
+          weave = 9; // Force end OGCD section if Displacement used
         } else if (nextOGCD === 'Acceleration') {
           accelerationCount = 3;
         } else if (nextOGCD === 'Manafication') {
@@ -355,10 +355,10 @@ nextActionOverlay.rdmNextAction = ({
         }
       }
 
-      weave += 1; // Increment anyway because some skills only "activate" on weave 2
+      weave += 1; // Increment regardless if OGCD was added; some skills only go on weave 2
     }
 
-    gcdTime = 0; // Set up for next GCD
+    gcdTime = 0; // Zero out for next GCD
     nextTime += loopTime;
   }
 
