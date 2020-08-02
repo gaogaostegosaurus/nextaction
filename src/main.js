@@ -76,11 +76,9 @@ nextActionOverlay.overlayToggle = (
 // These functions wrap some of the specific code so that I can find errors easier (hopefully)
 
 nextActionOverlay.EnmityTargetData = (e) => {
+  if (!nextActionOverlay.ready) { return; }
   const { playerData } = nextActionOverlay;
   const { job } = playerData;
-  const { supportedJobs } = nextActionOverlay;
-  if (!supportedJobs.includes(job)) { return; }
-
   // Possible properties for e.Target are
   // ID - as decimal number instead of hex
   // OwnerID - often "0", I assume this is for pets or something
@@ -168,7 +166,12 @@ nextActionOverlay.onPlayerChangedEvent = (e) => {
     Object.keys(timeout).forEach((timeoutProperty) => { clearTimeout(timeout[timeoutProperty]); });
 
     // Clear overlay
-    if (!document.getElementById('icon-a')) { return; }
+    // Check if divs are ready
+    // (I don't really get it but sometimes they are null)
+    if (!document.getElementById('icon-a')) {
+      nextActionOverlay.ready = false;
+      return;
+    }
     document.getElementById('icon-a').innerHTML = '';
     document.getElementById('icon-b').innerHTML = '';
     document.getElementById('icon-c').innerHTML = '';
@@ -185,8 +188,11 @@ nextActionOverlay.onPlayerChangedEvent = (e) => {
     const { statusList } = nextActionOverlay;
     const { castingList } = nextActionOverlay;
 
-    // Return if job unsupported
-    if (!supportedJobs.includes(job)) { return; }
+    // Set ready as false and return if job unsupported
+    if (!supportedJobs.includes(job)) {
+      nextActionOverlay.ready = false;
+      return;
+    }
 
     // Tell overlay that job changed, which sets up some job-specific stuff
     nextActionOverlay[`${jobLowercase}JobChange`]();
@@ -216,6 +222,7 @@ nextActionOverlay.onPlayerChangedEvent = (e) => {
 
     // eslint-disable-next-line no-console
     console.log(`Changed to ${job}${level}`);
+    nextActionOverlay.ready = true;
   } else {
     const { job } = playerData;
     const jobLowercase = job.toLowerCase();
@@ -227,16 +234,13 @@ nextActionOverlay.onPlayerChangedEvent = (e) => {
 
   // This function loads all the character details
   // Probably best candidate for triggering "overlay is ready"?
-  nextActionOverlay.ready = true;
 };
 
 nextActionOverlay.onLogEvent = (e) => {
+  if (!nextActionOverlay.ready) { return; }
   const { playerData } = nextActionOverlay;
   const { job } = playerData;
-  const { supportedJobs } = nextActionOverlay;
-
-  if (!job) { return; }
-  if (!supportedJobs.includes(job)) { return; }
+  // const { supportedJobs } = nextActionOverlay;
 
   const { logs } = e.detail;
   const { length } = e.detail.logs;
@@ -425,11 +429,11 @@ nextActionOverlay.onLogEvent = (e) => {
 };
 
 nextActionOverlay.nextAction = () => {
+  if (!nextActionOverlay.ready) { return; }
+
   const { playerData } = nextActionOverlay;
   const { job } = playerData;
   const jobLowercase = job.toLowerCase();
-  const { supportedJobs } = nextActionOverlay;
-  if (!supportedJobs.includes(job)) { return; }
 
   if (nextActionOverlay[`${jobLowercase}NextAction`]) {
     nextActionOverlay[`${jobLowercase}NextAction`]();
