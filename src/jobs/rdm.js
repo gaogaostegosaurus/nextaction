@@ -195,7 +195,7 @@ nextActionOverlay.rdmNextAction = ({
       iconArray.push({ name: nextGCD });
 
       // Sets comboStatus and Step
-      // Probably fine to not separate weaponskills...
+      // Probably fine to not separate weaponskills?
       if ((level >= 35 && nextGCD === 'Enchanted Riposte')
       || (level >= 50 && nextGCD === 'Enchanted Zwerchhau')
       || (level >= 68 && nextGCD === 'Enchanted Redoublement')
