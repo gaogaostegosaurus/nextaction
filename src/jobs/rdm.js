@@ -308,6 +308,12 @@ nextActionOverlay.rdmNextAction = ({
     Object.keys(loopRecast).forEach((property) => { loopRecast[property] -= loopTime; });
     Object.keys(loopStatus).forEach((property) => { loopStatus[property] -= loopTime; });
 
+    // Remove Acceleration if out of charges or time
+    if (loopStatus.acceleration <= 0 || accelerationCount <= 0) {
+      loopStatus.acceleration = -1;
+      accelerationCount = 0;
+    }
+
     let weaveMax = 0;
     if (gcdTime > 2200) {
       weaveMax = 2;
@@ -350,12 +356,6 @@ nextActionOverlay.rdmNextAction = ({
       }
 
       weave += 1; // Increment anyway because some skills only "activate" on weave 2
-    }
-
-    // Remove Acceleration if out of charges or time
-    if (loopStatus.acceleration <= 0 || accelerationCount <= 0) {
-      loopStatus.acceleration = -1;
-      accelerationCount = 0;
     }
 
     gcdTime = 0; // Set up for next GCD
@@ -615,6 +615,7 @@ nextActionOverlay.rdmActionMatch = (actionMatch) => {
 
   const singletargetActions = [
     'Jolt', 'Jolt II', 'Verfire', 'Verstone',
+    'Verthunder', 'Veraero',
     'Enchanted Riposte', 'Riposte', 'Enchanted Reprise', 'Reprise',
   ];
 
@@ -628,6 +629,7 @@ nextActionOverlay.rdmActionMatch = (actionMatch) => {
 
   if (singletargetActions.includes(actionName)) {
     if (nextActionOverlay.targetCount > 2) {
+      // Allow second spell to dictate actual target count?
       nextActionOverlay.targetCount = 2;
     } else {
       nextActionOverlay.targetCount = 1;
