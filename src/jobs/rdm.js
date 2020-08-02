@@ -189,9 +189,9 @@ nextActionOverlay.rdmNextAction = ({
           whitemana,
           loopRecast,
           loopStatus,
-        });  
+        });
       }
-      
+
       iconArray.push({ name: nextGCD });
 
       // Sets comboStatus and Step
@@ -284,7 +284,7 @@ nextActionOverlay.rdmNextAction = ({
           loopTime = gcd * 2;
         } else if (nextGCD.endsWith(' Verraise')) {
           loopTime = gcd * 4;
-        } else { 
+        } else {
           loopTime = gcd;
         }
       } else {
@@ -473,11 +473,10 @@ nextActionOverlay.rdmNextGCD = ({
   if (level >= 2 && level < 50 && lowerMana >= 55) { return 'Enchanted Riposte'; } // Before Redoublement
   if (level >= 2 && level < 35 && lowerMana >= 30) { return 'Enchanted Riposte'; } // Before Zwerchhau
 
-
   let moulinetFloor = 50;
   if (nextActionOverlay.targetCount === 1) { moulinetFloor = 40; }
 
-  let repriseFloor = 50
+  let repriseFloor = 50;
   // Unbalance mana before Manafication
   if (blackmana !== whitemana) { repriseFloor = 45; }
 
@@ -628,7 +627,11 @@ nextActionOverlay.rdmActionMatch = (actionMatch) => {
   const { actionName } = actionMatch.groups;
 
   if (singletargetActions.includes(actionName)) {
-    nextActionOverlay.targetCount = 1;
+    if (nextActionOverlay.targetCount > 2) {
+      nextActionOverlay.targetCount = 2;
+    } else {
+      nextActionOverlay.targetCount = 1;
+    }
   } else if (multitargetActions.includes(actionName) && actionMatch.groups.logType === '15') {
     // Multi target only hits single target
     nextActionOverlay.targetCount = 1;
@@ -659,10 +662,10 @@ nextActionOverlay.rdmActionMatch = (actionMatch) => {
       nextActionOverlay.rdmNextAction({ delay: gcd });
     }
   } else if (spells.includes(actionName)) {
-    if (checkStatus({ statusName: 'Dualcast'}) < 0 && checkStatus({ statusName: 'Swiftcast'}) < 0 ) {
-      nextActionOverlay.NEWremoveIcon({ name: `Hardcast ${actionName}` });  
+    if (checkStatus({ statusName: 'Dualcast' }) < 0 && checkStatus({ statusName: 'Swiftcast' }) < 0) {
+      nextActionOverlay.NEWremoveIcon({ name: `Hardcast ${actionName}` });
     } else {
-      nextActionOverlay.NEWremoveIcon({ name: `Dualcast ${actionName}` });  
+      nextActionOverlay.NEWremoveIcon({ name: `Dualcast ${actionName}` });
     }
   } else if (abilities.includes(actionName)) {
     nextActionOverlay.NEWremoveIcon({ name: actionName });
@@ -716,19 +719,17 @@ nextActionOverlay.rdmStatusMatch = (statusMatch) => {
   }
 };
 
-// eslint-disable-next-line no-unused-vars
 nextActionOverlay.rdmCastingMatch = (castingMatch) => {
   // Casting breaks combo
   nextActionOverlay.comboStep = '';
   nextActionOverlay.removeStatus({ statusName: 'Combo' });
 
-  nextActionOverlay.rdmNextAction({ casting: castingMatch.groups.actionName});
-  // nextActionOverlay.NEWfadeIcon({ name: `Hardcast ${castingMatch.groups.actionName}`, match: 'contains' });
-  nextActionOverlay.NEWfadeIcon({ name: `Hardcast ${castingMatch.groups.actionName}`});
+  nextActionOverlay.rdmNextAction({ casting: castingMatch.groups.actionName });
+  nextActionOverlay.NEWfadeIcon({ name: `Hardcast ${castingMatch.groups.actionName}` });
 };
 
 // eslint-disable-next-line no-unused-vars
 nextActionOverlay.rdmCancelMatch = (cancelMatch) => {
-  nextActionOverlay.NEWunfadeIcon({ name: `Hardcast ${cancelMatch.groups.actionName}`});
+  nextActionOverlay.NEWunfadeIcon({ name: `Hardcast ${cancelMatch.groups.actionName}` });
   nextActionOverlay.rdmNextAction();
 };
