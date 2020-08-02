@@ -163,8 +163,6 @@ nextActionOverlay.onPlayerChangedEvent = (e) => {
     const jobLowercase = job.toLowerCase();
     const { supportedJobs } = nextActionOverlay;
 
-    if (!supportedJobs.includes(job)) { return; }
-
     // Reset all timeouts
     const { timeout } = nextActionOverlay; // Timeout object
     Object.keys(timeout).forEach((timeoutProperty) => { clearTimeout(timeout[timeoutProperty]); });
@@ -186,6 +184,9 @@ nextActionOverlay.onPlayerChangedEvent = (e) => {
     const { actionList } = nextActionOverlay;
     const { statusList } = nextActionOverlay;
     const { castingList } = nextActionOverlay;
+
+    // Return if job unsupported
+    if (!supportedJobs.includes(job)) { return; }
 
     // Tell overlay that job changed, which sets up some job-specific stuff
     nextActionOverlay[`${jobLowercase}JobChange`]();
