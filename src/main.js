@@ -424,6 +424,26 @@ nextActionOverlay.onLogEvent = (e) => {
       const mpDelta = piety - mpBase;
 
       playerData.mpRegen = 200 + Math.floor(150 * (mpDelta / levelMod));
+
+      // Display special cooldowns to for debug purposes
+      // eslint-disable-next-line no-console
+      if (job === 'GNB') {
+        // eslint-disable-next-line no-console
+        console.log(`Sonic Break recast: ${nextActionOverlay.recast.sonicbreak}`);
+        // eslint-disable-next-line no-console
+        console.log(`Gnashing Fang recast: ${nextActionOverlay.recast.gnashingfang}`);
+      } else if (job === 'NIN') {
+        // eslint-disable-next-line no-console
+        console.log(`Shadow Fang recast: ${nextActionOverlay.recast.shadowfang}`);
+      } else if (job === 'MCH') {
+        // eslint-disable-next-line no-console
+        console.log(`Drill recast: ${nextActionOverlay.recast.drill}`);
+        // eslint-disable-next-line no-console
+        console.log(`Hotshot recast: ${nextActionOverlay.recast.hotshot}`);
+      } else if (job === 'SMN') {
+        // eslint-disable-next-line no-console
+        console.log(`Egi Assault recast: ${egiassaultRecast}`);
+      }
     }
   }
 };
