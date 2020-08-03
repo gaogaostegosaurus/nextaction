@@ -138,22 +138,23 @@ nextActionOverlay.rdmTargetChange = () => {
 
 nextActionOverlay.rdmNextAction = ({
   delay = 0,
-  casting,
+  casting, // Use for calling function during casting
 } = {}) => {
+  // Static values
   const { checkRecast } = nextActionOverlay;
   const { checkStatus } = nextActionOverlay;
   const { duration } = nextActionOverlay;
   const { recast } = nextActionOverlay;
-  const { playerData } = nextActionOverlay;
+  const { level } = nextActionOverlay.playerData;
+  const { gcd } = nextActionOverlay.playerData;
 
-  const { level } = playerData;
-  const { gcd } = playerData;
-
+  // Initial values
   let { comboStep } = nextActionOverlay;
-  let { blackmana } = playerData;
-  let { whitemana } = playerData;
   let { accelerationCount } = nextActionOverlay;
+  let { blackmana } = nextActionOverlay.playerData;
+  let { whitemana } = nextActionOverlay.playerData;
 
+  // Set up object for tracking recast times in loops
   const loopRecast = {};
   const loopRecastList = nextActionOverlay.actionList.abilities;
   loopRecastList.forEach((actionName) => {
@@ -161,6 +162,7 @@ nextActionOverlay.rdmNextAction = ({
     loopRecast[propertyName] = checkRecast({ actionName });
   });
 
+  // Set up object for tracking status effects in loops
   const loopStatus = {};
   const loopStatusList = nextActionOverlay.statusList.self.concat(['Combo']);
   loopStatusList.forEach((statusName) => {
@@ -168,16 +170,19 @@ nextActionOverlay.rdmNextAction = ({
     loopStatus[propertyName] = checkStatus({ statusName });
   });
 
+  // Clear icon array
   const iconArray = [];
 
-  let gcdTime = delay;
+  // Initial values for loop control
+  let gcdTime = delay; // Time till next GCD action (or GCD length, whatever)
   let nextTime = 0; // Amount of time looked ahead in loop
-  const nextMaxTime = 15000;
+  const nextMaxTime = 15000; // Maximum predict time
 
-  while (nextTime < nextMaxTime) { // Outside loop for GCDs, stops looking ahead at this number ms
-    let loopTime = 0; // Keep track of how "long" GCD loop is
+  while (nextTime < nextMaxTime) {
+    let loopTime = 0; // This tracks of how "long" the loop takes
 
     if (gcdTime <= 1000) {
+      // Declare this ahead of time due to casting triggering this function (see if statement below)
       let nextGCD = '';
 
       if (nextTime === 0 && casting) {
@@ -192,10 +197,11 @@ nextActionOverlay.rdmNextAction = ({
         });
       }
 
+      // Push into array
       iconArray.push({ name: nextGCD });
 
       // Sets comboStatus and Step
-      // Probably fine to not separate weaponskills?
+      // Probably fine to not separate weaponskills for RDM... probably.
       if ((level >= 35 && nextGCD === 'Enchanted Riposte')
       || (level >= 50 && nextGCD === 'Enchanted Zwerchhau')
       || (level >= 68 && nextGCD === 'Enchanted Redoublement')
@@ -273,26 +279,27 @@ nextActionOverlay.rdmNextAction = ({
       // GCD
       if (['Enchanted Riposte', 'Enchanted Zwerchhau', 'Enchanted Moulinet'].includes(nextGCD)) {
         gcdTime = 1500;
-        loopTime = gcdTime;
+        loopTime += gcdTime;
       } else if (['Enchanted Redoublement', 'Enchanted Reprise'].includes(nextGCD)) {
         gcdTime = 2200;
-        loopTime = gcdTime;
+        loopTime += gcdTime;
       } else if (nextGCD.startsWith('Hardcast ') && loopStatus.dualcast < 0 && loopStatus.swiftcast < 0) {
         // Hardcasted stuff
         gcdTime = 0; // Due to cast time
         if (nextGCD.endsWith(' Verthunder') || nextGCD.endsWith(' Veraero') || nextGCD.endsWith(' Scatter') || nextGCD.endsWith(' Impact')) {
-          loopTime = gcd * 2;
+          loopTime += gcd * 2;
         } else if (nextGCD.endsWith(' Verraise')) {
-          loopTime = gcd * 4;
+          loopTime += gcd * 4;
         } else {
-          loopTime = gcd;
+          loopTime += gcd;
         }
       } else {
         // Dualcasted/Swiftcasted stuff, spell finishers
         gcdTime = gcd;
-        loopTime = gcdTime;
+        loopTime += gcdTime;
       }
 
+      // Dualcast/Swiftcast status
       if (loopStatus.dualcast > 0) {
         // Apparently everything deletes Dualcast
         loopStatus.dualcast = -1;
@@ -305,13 +312,23 @@ nextActionOverlay.rdmNextAction = ({
       }
     }
 
-    Object.keys(loopRecast).forEach((property) => { loopRecast[property] -= loopTime; });
-    Object.keys(loopStatus).forEach((property) => { loopStatus[property] -= loopTime; });
+    Object.keys(loopRecast).forEach((property) => {
+      loopRecast[property] = Math.max(loopRecast[property] - loopTime, -1);
+    });
+    Object.keys(loopStatus).forEach((property) => {
+      loopStatus[property] = Math.max(loopStatus[property] - loopTime, -1);
+    });
+
+    // Update Combo status
+    if (comboStep === '' || loopStatus.combo < 0) {
+      comboStep = '';
+      loopStatus.combo = -1;
+    }
 
     // Remove Acceleration if out of charges or time
-    if (loopStatus.acceleration <= 0 || accelerationCount <= 0) {
-      loopStatus.acceleration = -1;
+    if (accelerationCount <= 0 || loopStatus.acceleration <= 0) {
       accelerationCount = 0;
+      loopStatus.acceleration = -1;
     }
 
     let weaveMax = 0;
@@ -335,12 +352,15 @@ nextActionOverlay.rdmNextAction = ({
       });
 
       if (nextOGCD) {
+        // Push into array
         iconArray.push({ name: nextOGCD, size: 'small' });
 
+        // Generic recast/duration handling
         const propertyName = nextOGCD.replace(/[\s':-]/g, '').toLowerCase();
         if (recast[propertyName]) { loopRecast[propertyName] = recast[propertyName]; }
         if (duration[propertyName]) { loopStatus[propertyName] = duration[propertyName]; }
 
+        // Special effects
         if (nextOGCD === 'Displacement') {
           weave = 9; // Force end OGCD section if Displacement used
         } else if (nextOGCD === 'Acceleration') {
@@ -596,6 +616,7 @@ nextActionOverlay.rdmNextOGCD = ({
 };
 
 nextActionOverlay.rdmActionMatch = (actionMatch) => {
+  // No let declarations here - everything needs to modify current snapshot
   const { removeStatus } = nextActionOverlay;
 
   const { weaponskills } = nextActionOverlay.actionList;
@@ -690,6 +711,7 @@ nextActionOverlay.rdmActionMatch = (actionMatch) => {
 };
 
 nextActionOverlay.rdmStatusMatch = (statusMatch) => {
+  // No let declarations here - everything needs to modify current snapshot
   const { statusName } = statusMatch.groups;
   const { statusDuration } = statusMatch.groups;
   const { gcd } = nextActionOverlay.playerData;
@@ -722,6 +744,7 @@ nextActionOverlay.rdmStatusMatch = (statusMatch) => {
 };
 
 nextActionOverlay.rdmCastingMatch = (castingMatch) => {
+  // No let declarations here - everything needs to modify current snapshot
   // Casting breaks combo
   nextActionOverlay.comboStep = '';
   nextActionOverlay.removeStatus({ statusName: 'Combo' });
@@ -730,8 +753,8 @@ nextActionOverlay.rdmCastingMatch = (castingMatch) => {
   nextActionOverlay.NEWfadeIcon({ name: `Hardcast ${castingMatch.groups.actionName}` });
 };
 
-// eslint-disable-next-line no-unused-vars
 nextActionOverlay.rdmCancelMatch = (cancelMatch) => {
+  // No let declarations here - everything needs to modify current snapshot
   nextActionOverlay.NEWunfadeIcon({ name: `Hardcast ${cancelMatch.groups.actionName}` });
   nextActionOverlay.rdmNextAction();
 };
