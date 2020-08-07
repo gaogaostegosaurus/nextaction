@@ -130,29 +130,31 @@ nextActionOverlay.pldTargetChange = () => {
 };
 
 nextActionOverlay.pldNextAction = ({
-  delay = 0, // Time to next GCD
+  delay = 0,
+  casting,
 } = {}) => {
-  // Shorten objects and functions
+  // Static values
   const { checkStatus } = nextActionOverlay;
   const { checkRecast } = nextActionOverlay;
   const { duration } = nextActionOverlay;
   const { recast } = nextActionOverlay;
-  const { playerData } = nextActionOverlay;
-
-  // "Snapshot" current character
-  const { level } = playerData;
-  let { comboStep } = nextActionOverlay;
-  let { mp } = playerData;
-  let { swordoathCount } = nextActionOverlay;
-  const { gcd } = playerData;
+  const { gcd } = nextActionOverlay;
   const { weaponskills } = nextActionOverlay.actionList;
   const { spells } = nextActionOverlay.actionList;
+  const { level } = nextActionOverlay.playerData;
+
+  // Snapshot of current character
+  let { comboStep } = nextActionOverlay;
+  let { mp } = nextActionOverlay.playerData;
+  let { swordoathCount } = nextActionOverlay;
 
   const loopRecast = {};
-  const loopRecastList = nextActionOverlay.actionList.abilities.concat(['Intervene 1', 'Intervene 2']);
+  const loopRecastList = nextActionOverlay.actionList.abilities.concat(
+    ['Intervene 1', 'Intervene 2'], // Add Intervene manually
+  );
   loopRecastList.forEach((actionName) => {
     const propertyName = actionName.replace(/[\s':-]/g, '').toLowerCase();
-    loopRecast[propertyName] = checkRecast({ actionName }) - 1000;
+    loopRecast[propertyName] = checkRecast({ actionName });
   });
 
   const loopStatus = {};
@@ -162,26 +164,32 @@ nextActionOverlay.pldNextAction = ({
     loopStatus[propertyName] = checkStatus({ statusName });
   });
 
+  // Treat Goring like a buff for purposes of loop
+  // Loop resets if target changes anyway
   loopStatus.goringblade = checkStatus({ statusName: 'Goring Blade', id: nextActionOverlay.targetData.id });
 
   const iconArray = [];
 
   let gcdTime = delay;
   let mpTick = 0;
-  let nextTime = 0; // Amount of time looked ahead in loop
+  let nextTime = 0;
   const nextMaxTime = 15000;
 
-  while (nextTime < nextMaxTime) { // Outside loop for GCDs, looks ahead this number ms
-    let loopTime = 0; // The elapsed time for current loop
-
-    if (gcdTime <= 1000) {
-      const nextGCD = nextActionOverlay.pldNextGCD({
-        comboStep,
-        mp,
-        swordoathCount,
-        loopRecast,
-        loopStatus,
-      });
+  while (nextTime < nextMaxTime) {
+    let loopTime = 0;
+    if (gcdTime < 1000) {
+      let nextGCD = '';
+      if (nextTime === 0 && casting) {
+        nextGCD = casting;
+      } else {
+        nextGCD = nextActionOverlay.pldNextGCD({
+          comboStep,
+          mp,
+          swordoathCount,
+          loopRecast,
+          loopStatus,
+        });
+      }
 
       iconArray.push({ name: nextGCD });
 
@@ -201,7 +209,7 @@ nextActionOverlay.pldNextAction = ({
         mp -= 2000;
       }
 
-      // Special stuff
+      // Special effects
       if (nextGCD === 'Riot Blade') {
         mp += 1000;
       } else if (nextGCD === 'Prominence') {
@@ -218,6 +226,7 @@ nextActionOverlay.pldNextAction = ({
         loopStatus.requiescat = -1;
       }
 
+      // Remove Sword Oath if last charge was used
       if (swordoathCount <= 0) {
         swordoathCount = 0;
         loopStatus.swordoath = -1;
@@ -237,7 +246,32 @@ nextActionOverlay.pldNextAction = ({
       }
     }
 
-    while (gcdTime > 1000) {
+    Object.keys(loopRecast).forEach((property) => {
+      loopRecast[property] = Math.max(loopRecast[property] - loopTime, -1);
+    });
+    Object.keys(loopStatus).forEach((property) => {
+      loopStatus[property] = Math.max(loopStatus[property] - loopTime, -1);
+    });
+
+    if (comboStep === '' || loopStatus.combo < 0) {
+      comboStep = '';
+      loopStatus.combo = -1;
+    }
+
+    if (swordoathCount <= 0 || loopStatus.swordoath <= 0) {
+      swordoathCount = 0;
+      loopStatus.swordoath = -1;
+    }
+
+    let weave = 1;
+    let weaveMax = 0;
+    if (gcdTime >= 2200) {
+      weaveMax = 2;
+    } else if (gcdTime > 1000) {
+      weaveMax = 1;
+    }
+
+    while (weave <= weaveMax) {
       const nextOGCD = nextActionOverlay.pldNextOGCD({
         comboStep,
         gcdTime,
@@ -246,38 +280,41 @@ nextActionOverlay.pldNextAction = ({
         loopRecast,
         loopStatus,
       });
-      const propertyName = nextOGCD.replace(/[\s':-]/g, '').toLowerCase();
       if (nextOGCD) {
         iconArray.push({ name: nextOGCD, size: 'small' });
+
+        const propertyName = nextOGCD.replace(/[\s':-]/g, '').toLowerCase();
         if (recast[propertyName]) { loopRecast[propertyName] = recast[propertyName]; }
         if (duration[propertyName]) { loopStatus[propertyName] = duration[propertyName]; }
 
         if (nextOGCD === 'Requiescat') {
           // Aesthetic window adjustment
-          loopStatus.requiescat += 1000;
+          loopStatus.requiescat += gcd;
         } else if (nextOGCD === 'Spirits Within') { mp += 500; }
       }
 
-      gcdTime -= 1000;
+      weave += 1;
     }
 
-    Object.keys(loopRecast).forEach((property) => { loopRecast[property] -= loopTime; });
-    Object.keys(loopStatus).forEach((property) => { loopStatus[property] -= loopTime; });
+    gcdTime = 0;
+    nextTime += loopTime;
 
     // MP tick
     if (Math.floor(nextTime / 3000) > mpTick) {
       mp += 200;
       mpTick += 1;
     }
-
     // Fix MP just in case
     if (mp > 10000) { mp = 10000; } else if (mp < 0) { mp = 0; }
-    gcdTime = 0;
-
-    nextTime += loopTime;
   }
   nextActionOverlay.NEWsyncIcons({ iconArray });
   nextActionOverlay.pldNextMitigation();
+
+  // Refresh after a few GCDs if nothing's happening
+  clearTimeout(nextActionOverlay.timeout.nextAction);
+  nextActionOverlay.timeout.nextAction = setTimeout(
+    nextActionOverlay.pldNextAction, gcd * 2,
+  );
 };
 
 nextActionOverlay.pldNextGCD = ({
@@ -288,7 +325,7 @@ nextActionOverlay.pldNextGCD = ({
   const fightorflightCutoff = recast.fightorflight - duration.fightorflight;
   const { targetCount } = nextActionOverlay;
   const { level } = nextActionOverlay.playerData;
-  const { gcd } = nextActionOverlay.playerData;
+  const { gcd } = nextActionOverlay;
 
   // Calculate potency of remaining DoT ticks
   let dotPotency = 85 * Math.floor(loopStatus.goringblade / 3000);
@@ -334,14 +371,19 @@ nextActionOverlay.pldNextGCD = ({
     prominenceComboPotency = 120 * targetCount;
   }
 
-  // Sword Oath (probably prioritize this because potency-wise Atonement > Holy Spirit)
+  // Sword Oath (First probably? Because potency-wise Atonement > Holy Spirit)
   if (loopStatus.swordoath > 0) { // Implies 76
     if (loopStatus.requiescat > 0 && mp >= 2000) {
+      // AoE time for some reason
       if (level >= 80 && (loopStatus.requiescat <= 2500 || mp < 4000)) { return 'Confiteor'; }
       if (targetCount > 1) { return 'Holy Circle'; }
-      if (loopStatus.swordoath > swordoathCount * gcd + 2500) { return 'Holy Spirit'; }
+      if (loopStatus.swordoath > swordoathCount * gcd + 2500) {
+        // Best of both worlds
+        return 'Holy Spirit';
+      }
     }
-    if (prominenceComboPotency > atonementPotency) { // Better to AoE than to use Atonements
+    if (prominenceComboPotency > atonementPotency) {
+      // Better to AoE here than to use Atonements
       if (comboStep === 'Total Eclipse') { return 'Prominence'; } return 'Total Eclipse';
     }
     return 'Atonement';
@@ -351,7 +393,8 @@ nextActionOverlay.pldNextGCD = ({
   if (loopStatus.requiescat > 0 && mp >= 2000) {
     if (level >= 80 && (loopStatus.requiescat <= 2500 || mp < 4000)) { return 'Confiteor'; }
     if (level >= 72 && targetCount > 1) { return 'Holy Circle'; }
-    if (prominenceComboPotency > 350 * 1.5) { // Better to AoE than cast sometimes (before 72)
+    if (prominenceComboPotency > 350 * 1.5) {
+      // Better to AoE than cast sometimes (before 72)
       if (comboStep === 'Total Eclipse') { return 'Prominence'; } return 'Total Eclipse';
     }
     return 'Holy Spirit';
@@ -383,7 +426,7 @@ nextActionOverlay.pldNextOGCD = ({
 } = {}) => {
   const { level } = nextActionOverlay.playerData;
   const { recast } = nextActionOverlay;
-  // const { gcd } = nextActionOverlay.playerData;
+  // const { gcd } = nextActionOverlay;
   const { targetCount } = nextActionOverlay;
 
   if (level >= 2 && loopStatus.requiescat < 0
@@ -398,17 +441,17 @@ nextActionOverlay.pldNextOGCD = ({
     return 'Requiescat';
   }
 
-  if (level >= 50 && targetCount > 1 && loopRecast.fightorflight > recast.circleofscorn * 0.25
+  if (level >= 50 && targetCount > 1 && loopRecast.fightorflight > recast.circleofscorn * 0.5
   && loopRecast.circleofscorn < 0) {
     return 'Circle Of Scorn';
   }
 
-  if (level >= 30 && loopRecast.fightorflight > recast.spiritswithin * 0.25
+  if (level >= 30 && loopRecast.fightorflight > recast.spiritswithin * 0.5
   && loopRecast.spiritswithin < 0) {
     return 'Spirits Within';
   }
 
-  if (level >= 50 && loopRecast.fightorflight > recast.circleofscorn * 0.25
+  if (level >= 50 && loopRecast.fightorflight > recast.circleofscorn * 0.5
   && loopRecast.circleofscorn < 0) {
     return 'Circle Of Scorn';
   }
@@ -459,7 +502,7 @@ nextActionOverlay.pldActionMatch = (actionMatch) => {
   const { duration } = nextActionOverlay;
 
   const { level } = nextActionOverlay.playerData;
-  const { gcd } = nextActionOverlay.playerData;
+  const { gcd } = nextActionOverlay;
 
   const { weaponskills } = nextActionOverlay.actionList;
   const { spells } = nextActionOverlay.actionList;
@@ -471,7 +514,7 @@ nextActionOverlay.pldActionMatch = (actionMatch) => {
   const singletargetActions = [
     // Use these to switch to "single target mode"
     // Technically not always single target, but it gets too messy otherwise
-    'Fast Blade', 'Holy Spirit',
+    'Rage of Halone', 'Royal Authority', 'Holy Spirit',
   ];
 
   const multitargetActions = [
@@ -535,12 +578,11 @@ nextActionOverlay.pldActionMatch = (actionMatch) => {
 };
 
 nextActionOverlay.pldStatusMatch = (statusMatch) => {
-  const { logType } = statusMatch.groups;
   const { statusName } = statusMatch.groups;
   const { addStatus } = nextActionOverlay;
   const { removeStatus } = nextActionOverlay;
 
-  if (logType === '1A') { // Gains status
+  if (statusMatch.groups.logType === '1A') {
     addStatus({ statusName });
   } else { // 1E - loses status
     removeStatus({ statusName });
@@ -552,18 +594,13 @@ nextActionOverlay.pldStatusMatch = (statusMatch) => {
 };
 
 nextActionOverlay.pldCastingMatch = (castingMatch) => {
-  const { fadeIcon } = nextActionOverlay;
-  const { actionName } = castingMatch.groups;
-  if (['Holy Spirit', 'Holy Circle', 'Clemency'].includes(actionName)) {
-    fadeIcon({ name: 'Holy', match: 'contains' });
-  }
+  nextActionOverlay.comboStep = '';
+  nextActionOverlay.removeStatus({ statusName: 'Combo' });
+  nextActionOverlay.pldNextAction({ casting: castingMatch.groups.actionName });
+  nextActionOverlay.NEWfadeIcon({ name: castingMatch.groups.actionName });
 };
 
 nextActionOverlay.pldCancelMatch = (cancelMatch) => {
-  const { unfadeIcon } = nextActionOverlay;
-  const { actionName } = cancelMatch.groups;
-  if (['Holy Spirit', 'Holy Circle', 'Clemency'].includes(actionName)) {
-    unfadeIcon({ name: 'Holy', match: 'contains' });
-  }
+  nextActionOverlay.NEWunfadeIcon({ name: cancelMatch.groups.actionName });
   nextActionOverlay.pldNextAction();
 };

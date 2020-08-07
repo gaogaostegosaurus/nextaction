@@ -122,60 +122,49 @@ nextActionOverlay.mnkTargetChange = () => {
 nextActionOverlay.mnkNextAction = ({
   delay = 0,
 } = {}) => {
-  const nextAction = nextActionOverlay.mnkNextAction;
-
   const { checkRecast } = nextActionOverlay;
   const { checkStatus } = nextActionOverlay;
   const { recast } = nextActionOverlay;
   const { duration } = nextActionOverlay;
 
-  const { playerData } = nextActionOverlay;
-  const { level } = playerData;
-  let { greasedlightningStacks } = playerData;
-  let { chakra } = playerData;
-  let { gcd } = playerData.gcd * (1 - 0.05 * greasedlightningStacks);
+  const { level } = nextActionOverlay.playerData;
 
-  const { targetData } = nextActionOverlay;
-
+  // Snapshot of current character
   let { combat } = nextActionOverlay;
+  let { greasedlightningStacks } = nextActionOverlay.playerData;
+  let { chakra } = nextActionOverlay.playerData;
+  let greasedlightningMultiplier = 1 - 0.05 * greasedlightningStacks;
+  let { gcd } = nextActionOverlay.gcd * greasedlightningMultiplier;
 
   const loopRecast = {};
-  const loopRecastList = [
-    'Shoulder Tackle 1', 'Shoulder Tackle 2', 'Perfect Balance', 'Elixir Field', 'Brotherhood', 'Riddle Of Fire', 'Anatman',
-  ];
-
+  const loopRecastList = nextActionOverlay.actionList.abilities.concat(['Shoulder Tackle 1', 'Shoulder Tackle 2']);
   loopRecastList.forEach((actionName) => {
     const propertyName = actionName.replace(/[\s':-]/g, '').toLowerCase();
-    loopRecast[propertyName] = checkRecast({ actionName }) - 1000;
+    loopRecast[propertyName] = checkRecast({ actionName });
   });
 
   const loopStatus = {};
-  const loopStatusList = [
-    'Opo-Opo Form', 'Raptor Form', 'Coeurl Form',
-    'Twin Snakes', 'Leaden Fist',
-    'Fists Of Fire', 'Fists Of Wind',
-    'Perfect Balance', 'Riddle Of Fire',
-  ];
-
+  const loopStatusList = nextActionOverlay.statusList.self;
   loopStatusList.forEach((statusName) => {
     const propertyName = statusName.replace(/[\s':-]/g, '').toLowerCase();
     loopStatus[propertyName] = checkStatus({ statusName });
   });
 
-  loopStatus.demolish = checkStatus({ statusName: 'Demolish', id: targetData.id }); /* Not self-targeted */
-  loopStatus.greasedlightning = playerData.greasedlightningStatus;
+  // Only non-self-status, so do it manually
+  loopStatus.demolish = checkStatus({ statusName: 'Demolish', id: nextActionOverlay.targetData.id }); /* Not self-targeted */
+  // Not really status, but who cares
+  loopStatus.greasedlightning = nextActionOverlay.playerData.greasedlightningStatus;
 
-  const mnkArray = [];
+  const iconArray = [];
 
   let gcdTime = delay;
-  let nextTime = 0; /* Amount of time looked ahead in loop */
+  let nextTime = 0;
   const nextMaxTime = 15000;
 
-  while (nextTime < nextMaxTime) { /* Outside loop for GCDs, looks ahead this number ms */
-    let loopTime = 0; /* The elapsed time for current loop */
-    gcd = playerData.gcd * (1 - 0.05 * greasedlightningStacks); /* Update new GCD */
+  while (nextTime < nextMaxTime) {
+    let loopTime = 0;
 
-    /* Calculate max GL in case Fists was used in previous loop */
+    // Calculate max GL in case Fists was used in previous loop
     let greasedlightningMax = 0;
     if (level >= 76 && loopStatus.fistsofwind > 0) {
       greasedlightningMax = 4;
@@ -186,13 +175,15 @@ nextActionOverlay.mnkNextAction = ({
     } else if (level >= 6) {
       greasedlightningMax = 1;
     }
-    // console.log(gcdTime);
+
+    // Calculate GCD for this loop
+    greasedlightningMultiplier = 1 - 0.05 * greasedlightningStacks;
+    gcd = nextActionOverlay.gcd * greasedlightningMultiplier;
 
     if (gcdTime <= 1000) {
-      /* Everything cancels Anatman */
+      // Everything cancels Anatman
       loopStatus.anatman = -1;
 
-      /* GCD action if GCD is complete */
       const nextGCD = nextActionOverlay.mnkNextGCD({
         combat,
         greasedlightningStacks,
@@ -203,43 +194,37 @@ nextActionOverlay.mnkNextAction = ({
         loopStatus,
       });
 
-      mnkArray.push({ name: nextGCD });
+      // Toggle combat if GCD implies combat
+      if (!['Form Shift', 'Meditation'].includes(nextGCD)) { combat = true; }
 
-      if (!['Form Shift', 'Meditation'].includes(nextGCD)) {
-        combat = true;
-      }
+      iconArray.push({ name: nextGCD });
 
+      // Set general recast/status
       const property = nextGCD.replace(/[\s':-]/g, '').toLowerCase();
+      if (recast[property]) { loopRecast[property] = recast[property]; }
+      if (duration[property]) { loopStatus[property] = duration[property]; }
 
-      /* Recasts */
-      if (recast[property]) {
-        loopRecast[property] = recast[property];
-      }
-
-      /* Statuses */
+      // Special effects
       if (nextGCD === 'Bootshine') {
         loopStatus.leadenfist = -1;
       } else if (nextGCD === 'Four Point Fury' && loopStatus.twinsnakes > 0) {
-        loopStatus.twinsnakes = Math.min(loopStatus.twinsnakes + 10000, 15000);
+        loopStatus.twinsnakes += 15000;
       } else if (nextGCD === 'Dragon Kick'
       && (loopStatus.opoopoform > 0 || loopStatus.perfectbalance > 0)) {
         loopStatus.leadenfist = duration.leadenfist;
-      } else if (duration[property]) {
-        loopStatus[property] = duration[property];
       }
 
-      /* Resources */
+      // Set Twin Snakes to cap if over cap
+      if (loopStatus.twinsnakes > 15000) { loopStatus.twinsnakes = 15000; }
+
+      // Resources
       if (nextGCD === 'Meditation') {
-        if (!combat) {
-          chakra = 5;
-        } else {
-          chakra += 1;
-        }
+        if (!combat) { chakra = 5; } else { chakra += 1; }
       } else if (nextGCD === 'Anatman' && greasedlightningStacks < greasedlightningMax) {
         greasedlightningStacks += 1;
       } else if (['Snap Punch', 'Demolish', 'Rockbreaker'].includes(nextGCD)) {
         loopStatus.greasedlightning = 16000;
-        /* Increase GL up to max */
+        // Increase GL up to max
         if (greasedlightningStacks < greasedlightningMax) {
           greasedlightningStacks += 1;
         }
@@ -247,7 +232,7 @@ nextActionOverlay.mnkNextAction = ({
         loopStatus.greasedlightning = 16000;
       }
 
-      /* Form change */
+      // Form changes
       if (loopStatus.perfectbalance > 0) {
         loopStatus.opoopoform = -1;
         loopStatus.raptorform = -1;
@@ -280,26 +265,41 @@ nextActionOverlay.mnkNextAction = ({
         }
       }
 
-      /* GCD */
       if (nextGCD === 'Meditation') {
         gcdTime = 1200;
+        loopTime = gcdTime;
       } else if (nextGCD === 'Anatman') {
-        gcdTime = 3000;
+        gcdTime = 0;
+        loopTime = 3000; // Fix this number later maybe
+        loopStatus.greasedlightning += loopTime; // Offsets adjustment
       } else {
         gcdTime = gcd;
-      }
-
-      loopTime = gcdTime;
-
-      /* Remove OGCD for Anatman */
-      if (nextGCD === 'Anatman') {
-        loopStatus.greasedlightning += gcdTime; /* Offsets adjustment later */
-        gcdTime = 0;
+        loopTime = gcdTime;
       }
     }
 
-    while (gcdTime > 1250) {
+    Object.keys(loopRecast).forEach((property) => {
+      loopRecast[property] = Math.max(loopRecast[property] - loopTime, -1);
+    });
+    Object.keys(loopStatus).forEach((property) => {
+      loopStatus[property] = Math.max(loopStatus[property] - loopTime, -1);
+    });
+
+    // Reset GL if it's gone
+    if (loopStatus.greasedlightning < 0) { greasedlightningStacks = 0; }
+
+    let weave = 1;
+    let weaveMax = 0;
+    if (gcdTime > 2200) {
+      weaveMax = 2;
+    } else if (gcdTime >= 1500) {
+      weaveMax = 1;
+    }
+
+    while (weave <= weaveMax) {
       const nextOGCD = nextActionOverlay.mnkNextOGCD({
+        weave,
+        weaveMax,
         combat,
         greasedlightningStacks,
         greasedlightningMax,
@@ -309,14 +309,10 @@ nextActionOverlay.mnkNextAction = ({
       });
 
       if (nextOGCD) {
-        mnkArray.push({ name: nextOGCD, size: 'small' });
+        iconArray.push({ name: nextOGCD, size: 'small' });
 
-        if (['The Forbidden Chakra', 'Enlightenment'].includes(nextOGCD)) {
-          chakra = 0;
-        }
-
+        // Recast and Status
         const property = nextOGCD.replace(/[\s':-]/g, '').toLowerCase();
-
         if (nextOGCD === 'Shoulder Tackle') {
           if (level >= 66) {
             loopRecast.shouldertackle1 = loopRecast.shouldertackle2;
@@ -339,27 +335,21 @@ nextActionOverlay.mnkNextAction = ({
           loopStatus[property] = duration[property];
         }
 
-        if (!['Fists Of Fire', 'Fists Of Wind', ''].includes(nextOGCD)) {
-          combat = true;
-        }
+        if (['The Forbidden Chakra', 'Enlightenment'].includes(nextOGCD)) { chakra = 0; }
+        if (!['Fists Of Fire', 'Fists Of Wind', ''].includes(nextOGCD)) { combat = true; }
       }
 
-      gcdTime -= 9999; /* Just not bothering with double weaves on MNK */
+      weave += 1;
     }
 
-    Object.keys(loopRecast).forEach((property) => { loopRecast[property] -= loopTime; });
-    Object.keys(loopStatus).forEach((property) => { loopStatus[property] -= loopTime; });
-
-    gcdTime = 0; /* Zero out for next loop */
-
+    gcdTime = 0;
     nextTime += loopTime;
   }
-  nextActionOverlay.iconArrayB = mnkArray;
-  nextActionOverlay.syncIcons();
+  nextActionOverlay.NEWsyncIcons({ iconArray });
 
   clearTimeout(nextActionOverlay.timeout.nextAction);
   nextActionOverlay.timeout.nextAction = setTimeout(
-    nextAction, gcd * 2,
+    nextActionOverlay.mnkNextAction, gcd * 2,
   );
 };
 
@@ -382,8 +372,8 @@ nextActionOverlay.mnkNextGCD = ({
   const snappunchPotency = 230;
   const rockbreakerPotency = 120 * targetCount;
 
-  // Checks if demolish was snapshotted
-  // Taken from PLD Goring Blade check
+  // Checks if Demolish was snapshotted
+  // Taken from PLD Goring Blade check, so probably need to fix this if that's changed
   const riddleoffireCutoff = recast.riddleoffire - duration.riddleoffire;
   let dotPotencyLoss = 65 * (Math.ceil(Math.max(loopStatus.demolish, 0) / 3000));
   if (loopStatus.riddleoffire < 0
@@ -395,99 +385,66 @@ nextActionOverlay.mnkNextGCD = ({
   }
   const demolishPotency = 90 + 65 * 6 - dotPotencyLoss;
 
-  /* Perfect Balance priorities */
-  if (loopStatus.perfectbalance > 0) { /* Implies player level >= 50 */
-    /* Increase GL stacks and refresh */
-    if (greasedlightningStacks < greasedlightningMax || loopStatus.greasedlightning < gcd * 3) {
-      if (rockbreakerPotency > Math.max(demolishPotency, snappunchPotency)) {
-        return 'Rockbreaker';
-      }
-      if (demolishPotency > snappunchPotency) {
-        return 'Demolish';
-      }
+  // Perfect Balance (implies player level >= 50)
+  if (loopStatus.perfectbalance > 0) {
+    // Not at max stacks or need to refresh
+    if (greasedlightningStacks < greasedlightningMax || loopStatus.greasedlightning < gcd * 4) {
+      if (rockbreakerPotency > Math.max(demolishPotency, snappunchPotency)) { return 'Rockbreaker'; }
+      if (demolishPotency > snappunchPotency) { return 'Demolish'; }
       return 'Snap Punch';
     }
 
-    /* Keep Twin Snakes up for AoE */
+    // Keep Twin Snakes up for AoE
     if (targetCount > 1
-    && loopStatus.twinsnakes > 0 && loopStatus.twinsnakes < gcd) {
-      return 'Four Point Fury';
-    }
+    && loopStatus.twinsnakes > 0 && loopStatus.twinsnakes < gcd) { return 'Four Point Fury'; }
 
-    /* Apply Demolish if needed */
-    if (loopStatus.demolish < 0) {
-      return 'Demolish';
-    }
+    // Apply Demolish if needed
+    if (loopStatus.demolish < 0) { return 'Demolish'; }
 
-    /* DK/BS spam */
-    if (loopStatus.leadenfist < 0) {
-      return 'Dragon Kick';
-    } return 'Bootshine';
+    // DK/BS spam
+    if (loopStatus.leadenfist < 0) { return 'Dragon Kick'; }
+    return 'Bootshine';
   }
 
-  /* Out of combat actions */
-  if (!combat && chakra < 5) {
-    return 'Meditation';
-  }
+  // Out of combat
+  if (!combat && chakra < 5) { return 'Meditation'; }
+  if (!combat && loopStatus.coeurlform < gcd * 2) { return 'Form Shift'; }
 
-  if (!combat && loopStatus.coeurlform < gcd) {
-    return 'Form Shift';
-  }
-
-  /* Anatman */
+  // Anatman
   if (level >= 78 && greasedlightningStacks < greasedlightningMax
   && loopStatus.opoopoform > 0 && loopStatus.leadenfist < 0 && loopStatus.riddleoffire < 0
   && loopRecast.anatman < 0) {
     return 'Anatman';
   }
 
-  /* General priority (no PB) */
-  if (level >= 30 && rockbreakerPotency > Math.max(demolishPotency, snappunchPotency)
-  && loopStatus.coeurlform > 0) {
-    return 'Rockbreaker';
-  }
+  // General priority (no PB)
 
-  if (level >= 30 && demolishPotency > snappunchPotency && loopStatus.coeurlform > 0) {
-    return 'Demolish';
-  }
+  // Couerl Form
+  if (level >= 30 && rockbreakerPotency > Math.max(demolishPotency, snappunchPotency) && loopStatus.coeurlform > 0) { return 'Rockbreaker'; }
+  if (level >= 30 && demolishPotency > snappunchPotency && loopStatus.coeurlform > 0) { return 'Demolish'; }
+  if (level >= 6 && loopStatus.coeurlform > 0) { return 'Snap Punch'; }
 
-  if (level >= 6 && loopStatus.coeurlform > 0) {
-    return 'Snap Punch';
-  }
+  // Raptor Form
+  // Twin Snakes before Perfect Balance
+  if (level >= 50 && loopRecast.perfectbalance < gcd * 3 && greasedlightningStacks >= 3 && loopStatus.raptorform > 0) { return 'Twin Snakes'; }
+  if (level >= 40 && targetCount > 1 && loopStatus.twinsnakes > 0 && loopStatus.raptorform > 0) { return 'Four Point Fury'; }
+  if (level >= 18 && loopStatus.twinsnakes <= gcd * 2 && loopStatus.raptorform > 0) { return 'Twin Snakes'; }
+  if (level >= 4 && loopStatus.raptorform > 0) { return 'True Strike'; }
 
-  if (level >= 40 && targetCount > 1 && loopStatus.twinsnakes > 0
-  && loopStatus.raptorform > 0) {
-    return 'Four Point Fury';
-  }
-
-  if (level >= 50 && loopRecast.perfectbalance < gcd * 3 && greasedlightningStacks >= 3
-  && loopStatus.raptorform > 0) {
-    return 'Twin Snakes'; /* Twin Snakes before Perfect Balance if able */
-  }
-
-  if (level >= 18 && loopStatus.twinsnakes <= gcd * 2 && loopStatus.raptorform > 0) {
-    return 'Twin Snakes';
-  }
-
-  if (level >= 4 && loopStatus.raptorform > 0) {
-    return 'True Strike';
-  }
-
-  if (level >= 26 && targetCount > 2) {
-    return 'Arm Of The Destroyer';
-  }
-
-  if (level >= 50 && (loopStatus.leadenfist < 0 || loopStatus.opoopoform < 0)) {
-    return 'Dragon Kick';
-  }
-
+  // Opo-opo Form (or formless)
+  if (level >= 26 && targetCount > 2) { return 'Arm Of The Destroyer'; }
+  // Dragon Kick when formless when able
+  if (level >= 50 && (loopStatus.leadenfist < 0 || loopStatus.opoopoform < 0)) { return 'Dragon Kick'; }
   return 'Bootshine';
 };
 
 nextActionOverlay.mnkNextOGCD = ({
+  weave,
+  weaveMax,
   combat,
   greasedlightningStacks,
   greasedlightningMax,
+  chakra,
   loopRecast,
   loopStatus,
 } = {}) => {
@@ -506,46 +463,45 @@ nextActionOverlay.mnkNextOGCD = ({
     return 'Fists Of Fire';
   }
 
-  if (!combat) {
-    return '';
-  }
+  // Everything else starts combat so
+  if (!combat) { return ''; }
 
-  if (level >= 68 && loopStatus.coeurlform > 0 && greasedlightningStacks >= 2
-  && loopRecast.riddleoffire < 0) {
-    return 'Riddle Of Fire';
-  }
-  if (level >= 70 && loopRecast.riddleoffire > recast.brotherhood * 0.25
+  if (level >= 68 && loopStatus.coeurlform > 0 && greasedlightningStacks >= 2 && weave === weaveMax
+  && loopRecast.riddleoffire < 0) { return 'Riddle Of Fire'; }
+
+  if (level >= 70 && loopRecast.riddleoffire > recast.brotherhood * 0.5
   && loopRecast.brotherhood < 0) {
     return 'Brotherhood';
   }
 
-  if (level >= 50 && targetCount <= 2
+  if (level >= 50 && targetCount === 1
   && (greasedlightningStacks >= 4 /* Implies 76 */ || (level < 76 && greasedlightningStacks === 3))
   && loopStatus.raptorform > 0 && loopRecast.perfectbalance < 0) {
     return 'Perfect Balance';
   }
 
-  if (level >= 50 && level < 78 && targetCount <= 2
+  // Use PB to boost to 3 stacks before 78
+  if (level >= 50 && level < 78 && targetCount === 1
   && greasedlightningStacks < greasedlightningMax && loopStatus.opoopoform > 0
   && loopRecast.perfectbalance < 0) {
-    return 'Perfect Balance'; /* Use PB to boost to 3 stacks before 78) */
+    return 'Perfect Balance';
   }
 
-  // if (level >= 74 && nextActionOverlay.targetCount > 1 && chakra === 5) {
-  //   return 'Enlightenment';
-  // }
+  if (level >= 74 && nextActionOverlay.targetCount > 1 && chakra === 5) {
+    return 'Enlightenment';
+  }
 
   if (level >= 56 && targetCount > 1
-  && loopRecast.riddleoffire > recast.elixirfield * 0.25
+  && loopRecast.riddleoffire > recast.elixirfield * 0.5
   && loopRecast.elixirfield < 0) {
     return 'Elixir Field';
   }
 
-  // if (level >= 54 && chakra === 5) {
-  //   return 'The Forbidden Chakra';
-  // }
+  if (level >= 54 && chakra === 5) {
+    return 'The Forbidden Chakra';
+  }
 
-  if (level >= 56 && loopRecast.riddleoffire > recast.elixirfield * 0.25
+  if (level >= 56 && loopRecast.riddleoffire > recast.elixirfield * 0.5
   && loopRecast.elixirfield < 0) {
     return 'Elixir Field';
   }
@@ -554,33 +510,33 @@ nextActionOverlay.mnkNextOGCD = ({
     return 'Shoulder Tackle';
   }
 
-  return ''; /* Nothing available */
+  return '';
 };
 
 nextActionOverlay.mnkActionMatch = (actionMatch) => {
-  const { actionName } = actionMatch.groups;
-  const { removeIcon } = nextActionOverlay;
+  const { addStatus } = nextActionOverlay;
   const { checkStatus } = nextActionOverlay;
   const { removeStatus } = nextActionOverlay;
   const { addRecast } = nextActionOverlay;
   const { checkRecast } = nextActionOverlay;
   const { recast } = nextActionOverlay;
   const { duration } = nextActionOverlay;
-
   const { targetData } = nextActionOverlay;
+
   const { weaponskills } = nextActionOverlay.actionList;
   // const nextAction = nextActionOverlay.nextAction.mnk;
 
-  const { addStatus } = nextActionOverlay;
-  const { playerData } = nextActionOverlay;
-  const { level } = playerData;
+  const { level } = nextActionOverlay.playerData;
 
-  const gcd = playerData.gcd * (1 - playerData.greasedlightningStacks * 0.05);
+  const greasedlightningMultiplier = 1 - nextActionOverlay.playerData.greasedlightningStacks * 0.05;
+  const gcd = nextActionOverlay.gcd * greasedlightningMultiplier;
   // const opoopoformWeaponskills = ['Bootshine', 'Dragon Kick', 'Arm Of The Destroyer'];
   // const raptorformWeaponskills = ['True Strike', 'Twin Snakes', 'Four-Point Fury'];
   // const coeurlformWeaponskills = ['Demolish', 'Snap Punch', 'Rockbreaker'];
 
-  removeIcon({ name: actionName });
+  const { actionName } = actionMatch.groups;
+
+  nextActionOverlay.NEWremoveIcon({ name: actionName });
   // console.log(`${actionName}`);
 
   const singletargetActions = [];
@@ -728,10 +684,9 @@ nextActionOverlay.mnkStatusMatch = (statusMatch) => {
   /* Shorten common functions */
   const { addStatus } = nextActionOverlay;
   const { removeStatus } = nextActionOverlay;
-  // const { checkStatus } = nextActionOverlay;
 
-  const { playerData } = nextActionOverlay;
-  const { gcd } = playerData;
+  const greasedlightningMultiplier = 1 - nextActionOverlay.playerData.greasedlightningStacks * 0.05;
+  const gcd = nextActionOverlay.gcd * greasedlightningMultiplier;
 
   const { statusName } = statusMatch.groups;
 
@@ -742,37 +697,13 @@ nextActionOverlay.mnkStatusMatch = (statusMatch) => {
       id: statusMatch.groups.targetID,
     });
 
-    // if (['Anatman', 'Perfect Balance'].includes(statusName)) {
-    //   nextActionOverlay.nextAction.mnk({ delay: 0 });
-    // }
-
-    /* Triggers nextAction on form change */
-    /* This prevents weird shenanigans during invincibility etc. */
     if (['Opo-Opo Form', 'Raptor Form', 'Coeurl Form'].includes(statusName)) {
       nextActionOverlay.mnkNextAction({ delay: gcd });
     }
-
-    // if (['Twin Snakes', 'Leaden Fist'].includes(statusName)) {
-    //   //console.log(checkStatus({ statusName: 'Leaden Fist' }));
-    //   nextActionOverlay.nextAction.mnk({ delay: gcd });
-    // } /* For Perfect Balance mainly? Looks like above will usually catch it */
   } else {
     removeStatus({
       statusName,
       id: statusMatch.groups.targetID,
     });
-
-    // if (['Opo-Opo Form', 'Raptor Form', 'Coeurl Form'].includes(statusName)) {
-    //   nextActionOverlay.nextAction.mnk({ delay: gcd });
-    // }
-
-    // if (['Anatman', 'Perfect Balance'].includes(statusName)) {
-    //   nextActionOverlay.nextAction.mnk({ delay: 0 });
-    // }
-
-    // if (['Twin Snakes', 'Leaden Fist'].includes(statusName)) {
-    //  // console.log(checkStatus({ statusName: 'Leaden Fist' }));
-    //   nextActionOverlay.nextAction.mnk({ delay: gcd });
-    // }
   }
 };

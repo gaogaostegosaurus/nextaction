@@ -29,12 +29,9 @@ recast.sidewinder = 60000;
 
 // DNC
 
-
 // DRK
 
 // DRG
-recast.battlelitany = 180000;
-recast.dragonsight = 120000;
 
 // MCH
 recast.barrelstabilizer = 120000;
@@ -89,11 +86,6 @@ recast.fleche = 25000;
 recast.manafication = 120000; // Set to 110000 after level 74 inside script
 
 // SAM
-recast.guren = 120000;
-recast.ikishoten = 60000;
-recast.meikyoshisui = 60000;
-recast.senei = recast.guren;
-recast.tsubamegaeshi = 60000;
 
 // SCH
 recast.aetherflow = 60000;

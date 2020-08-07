@@ -60,32 +60,7 @@ icon.apexarrow = '002619';
 
 
 // DRG
-icon.lifesurge = '000304';
-icon.doomspike = '000306';
-icon.chaosthrust = '000308';
-icon.lancecharge = '000309';
-icon.truethrust = '000310';
-icon.vorpalthrust = '000311';
-icon.fullthrust = '000314';
-icon.piercingtalon = '000315';
-icon.disembowel = '000317';
-icon.jump = '002576';
-icon.elusivejump = '002577';
-icon.dragonfiredive = '002578';
-icon.spineshatterdive = '002580';
-icon.bloodofthedragon = '002581';
-icon.fangandclaw = '002582';
-icon.geirskogul = '002583';
-icon.wheelingthrust = '002584';
-icon.battlelitany = '002585';
-icon.sonicthrust = '002586';
-icon.dragonsight = '002587';
-icon.miragedive = '002588';
-icon.nastrond = '002589';
-icon.coerthantorment = '002590';
-icon.highjump = '002591';
-icon.raidenthrust = '002592';
-icon.stardiver = '002593';
+
 
 // DRK
 
@@ -145,32 +120,6 @@ icon.enchantedreprise = '003232';
 icon.scorch = '003234';
 
 // SAM
-icon.hakaze = '003151';
-icon.jinpu = '003152';
-icon.shifu = '003156';
-icon.fuga = '003157';
-icon.gekko = '003158';
-icon.iaijutsu = '003159';
-icon.higanbana = '003160';
-icon.tenkagoken = '003161';
-icon.midaresetsugekka = '003162';
-icon.mangetsu = '003163';
-icon.kasha = '003164';
-icon.oka = '003165';
-icon.yukikaze = '003166';
-icon.meikyoshisui = '003167';
-icon.kaiten = '003168';
-icon.shinten = '003173';
-icon.kyuten = '003174';
-icon.seigan = '003175';
-icon.guren = '003177';
-icon.senei = '003178';
-icon.ikishoten = '003179';
-icon.tsubamegaeshi = '003180';
-icon.kaeshihiganbana = '003181';
-icon.kaeshigoken = '003182';
-icon.kaeshisetsugekka = '003183';
-icon.shoha = '003184';
 
 // ACN
 icon.bio = '000503';

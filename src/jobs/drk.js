@@ -113,7 +113,7 @@ nextActionOverlay.drkNextGCD = ({
   loopStatus,
 } = {}) => {
   const { level } = nextActionOverlay.playerData;
-  const { gcd } = nextActionOverlay.playerData;
+  const { gcd } = nextActionOverlay;
   const { targetCount } = nextActionOverlay;
 
   let bloodCap = 50;
@@ -174,7 +174,7 @@ nextActionOverlay.drkNextOGCD = ({
   loopStatus,
 } = {}) => {
   const { level } = nextActionOverlay.playerData;
-  const { gcd } = nextActionOverlay.playerData;
+  const { gcd } = nextActionOverlay;
   const { targetCount } = nextActionOverlay;
 
   if (level >= 30 && targetCount >= 2 && mp >= 9000 && loopRecast.floodofdarkness < 0) {
@@ -211,16 +211,15 @@ nextActionOverlay.pldNextAction = ({
   const { checkRecast } = nextActionOverlay;
   const { duration } = nextActionOverlay;
   const { recast } = nextActionOverlay;
-  const { playerData } = nextActionOverlay;
 
   // "Snapshot" current character
-  const { level } = playerData;
+  const { level } = nextActionOverlay.layerData;
   let { comboStep } = nextActionOverlay;
-  let { mp } = playerData;
-  let { blood } = playerData;
-  let { darkarts } = playerData;
-  const { darkside } = playerData;
-  const { gcd } = playerData;
+  let { mp } = nextActionOverlay.playerData;
+  let { blood } = nextActionOverlay.playerData;
+  let { darkarts } = nextActionOverlay.playerData;
+  const { darkside } = nextActionOverlay.playerData;
+  const { gcd } = nextActionOverlay;
   const { weaponskills } = nextActionOverlay.actionList;
   const { spells } = nextActionOverlay.actionList;
 

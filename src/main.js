@@ -46,7 +46,8 @@ nextActionOverlay.propertyList.forEach((property) => {
 // Supported job list
 nextActionOverlay.supportedJobs = [
   'PLD', 'GNB',
-  'MNK', 'NIN', 'DNC',
+  'MNK', 'NIN', 'SAM',
+  'DNC',
   'RDM',
 ];
 
@@ -136,34 +137,38 @@ nextActionOverlay.onInCombatChangedEvent = (e) => {
 };
 
 nextActionOverlay.onPlayerChangedEvent = (e) => {
-  const { playerData } = nextActionOverlay;
+  if (e.detail.name !== nextActionOverlay.playerData.name
+  || e.detail.job !== nextActionOverlay.playerData.job
+  || e.detail.level !== nextActionOverlay.playerData.level) {
+    // "If name/job/level has changed, do this stuff"
 
-  if (e.detail.name !== playerData.name || e.detail.job !== playerData.job
-  || e.detail.level !== playerData.level) { // "If name/job/level has changed, do this stuff"
     // Set new playerData
     // This is the first point at which playerData properties are defined after reloading
-    playerData.name = e.detail.name;
-    playerData.level = e.detail.level;
-    playerData.job = e.detail.job;
-    playerData.decimalid = e.detail.id; // ID defaults to decimal value
-    playerData.id = playerData.decimalid.toString(16).toUpperCase();
+    nextActionOverlay.playerData = {};
+
+    nextActionOverlay.playerData.name = e.detail.name;
+    nextActionOverlay.playerData.level = e.detail.level;
+    nextActionOverlay.playerData.job = e.detail.job;
+    nextActionOverlay.playerData.decimalid = e.detail.id; // ID defaults to decimal value
+    nextActionOverlay.playerData.id = e.detail.id.toString(16).toUpperCase();
 
     const { duration } = nextActionOverlay;
 
     // Set some initial values
     nextActionOverlay.targetCount = 1;
     nextActionOverlay.comboStep = '';
-    playerData.gcd = 2500;
-    playerData.mpRegen = 200;
+    nextActionOverlay.gcd = 2500;
+    nextActionOverlay.mpRegen = 200;
     duration.combo = 14000; // I don't know what this is actually supposed to be
 
-    const { job } = playerData;
+    const { job } = nextActionOverlay.playerData;
     const jobLowercase = job.toLowerCase();
     const { supportedJobs } = nextActionOverlay;
 
     // Reset all timeouts
-    const { timeout } = nextActionOverlay; // Timeout object
-    Object.keys(timeout).forEach((timeoutProperty) => { clearTimeout(timeout[timeoutProperty]); });
+    Object.keys(nextActionOverlay.timeout).forEach((timeoutProperty) => {
+      clearTimeout(nextActionOverlay.timeout[timeoutProperty]);
+    });
 
     // Clear overlay
     // Check if divs are ready
@@ -175,9 +180,6 @@ nextActionOverlay.onPlayerChangedEvent = (e) => {
     document.getElementById('icon-a').innerHTML = '';
     document.getElementById('icon-b').innerHTML = '';
     document.getElementById('icon-c').innerHTML = '';
-    // document.getElementById('countdown-a').innerHTML = '';
-    // document.getElementById('countdown-b').innerHTML = '';
-    // document.getElementById('countdown-c').innerHTML = '';
 
     // Reset lists
     // Probably a more elegant way to do this, but whatever for now...
@@ -202,9 +204,9 @@ nextActionOverlay.onPlayerChangedEvent = (e) => {
     const statusNames = Object.values(statusList).flat(Infinity).join('|');
     const castingNames = Object.values(castingList).flat(Infinity).join('|'); // This relies on chat log output
     // Shorten some static (or semi-static) variables
-    const { name } = playerData;
-    const { level } = playerData;
-    const { id } = playerData;
+    const { name } = nextActionOverlay.playerData;
+    const { level } = nextActionOverlay.playerData;
+    const { id } = nextActionOverlay.playerData;
 
     nextActionOverlay.actionRegex = new RegExp(`^.{15}(?<logType>1[56]):(?<sourceID>${id}):(?<sourceName>${name}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${actionNames}):(?<targetID>[\\dA-F]{8}):(?<comboCheck>([^:]*:)*?1?1B:)?`);
     nextActionOverlay.statusRegex = new RegExp(`^.{15}(?<logType>1[AE]):(?<targetID>[\\dA-F]{8}):(?<targetName>[ -~]+?) (?<gainsLoses>gains|loses) the effect of (?<statusName>${statusNames}) from (?<sourceName>${name})(?: for )?(?<statusDuration>\\d*\\.\\d*)?(?: Seconds)?\\.`);
@@ -224,7 +226,7 @@ nextActionOverlay.onPlayerChangedEvent = (e) => {
     console.log(`Changed to ${job}${level}`);
     nextActionOverlay.ready = true;
   } else {
-    const { job } = playerData;
+    const { job } = nextActionOverlay.playerData;
     const jobLowercase = job.toLowerCase();
     // Just the usual player changed event
     if (nextActionOverlay[`${jobLowercase}PlayerChange`]) {
@@ -238,8 +240,8 @@ nextActionOverlay.onPlayerChangedEvent = (e) => {
 
 nextActionOverlay.onLogEvent = (e) => {
   if (!nextActionOverlay.ready) { return; }
-  const { playerData } = nextActionOverlay;
-  const { job } = playerData;
+  // const { playerData } = nextActionOverlay;
+  const { job } = nextActionOverlay.playerData;
   // const { supportedJobs } = nextActionOverlay;
 
   const { logs } = e.detail;
@@ -289,7 +291,7 @@ nextActionOverlay.onLogEvent = (e) => {
     } else if (cancelMatch && nextActionOverlay[`${jobLowercase}CancelMatch`]) {
       nextActionOverlay[`${jobLowercase}CancelMatch`](cancelMatch);
     } else if (playerstatsMatch) {
-      const { level } = playerData;
+      const { level } = nextActionOverlay.playerData;
       // Keep below collapsed
       const levelMods = [
         // Level, MP, Stat 1, Stat 2, "Level Mod", HP, ELMT?, THREAT?
@@ -384,7 +386,7 @@ nextActionOverlay.onLogEvent = (e) => {
       const speedBase = levelMods[level][3];
       const speedDelta = speed - speedBase;
 
-      playerData.gcd = Math.floor(
+      nextActionOverlay.gcd = Math.floor(
         Math.floor(
           10000 * (
             Math.floor(
@@ -393,7 +395,7 @@ nextActionOverlay.onLogEvent = (e) => {
         ) / 100,
       ) * 10; // Modified to output in ms
 
-      const { gcd } = playerData; // Save some typing
+      const { gcd } = nextActionOverlay; // Save some typing
 
       const { recast } = nextActionOverlay; // Shorten recast object
 
@@ -423,7 +425,7 @@ nextActionOverlay.onLogEvent = (e) => {
       const mpBase = levelMods[level][2];
       const mpDelta = piety - mpBase;
 
-      playerData.mpRegen = 200 + Math.floor(150 * (mpDelta / levelMod));
+      nextActionOverlay.mpRegen = 200 + Math.floor(150 * (mpDelta / levelMod));
 
       // Display special cooldowns to for debug purposes
       // eslint-disable-next-line no-console

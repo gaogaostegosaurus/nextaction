@@ -126,10 +126,9 @@ nextActionOverlay.rdmJobChange = () => {
 }; // Keep collapsed, usually
 
 nextActionOverlay.rdmPlayerChange = (e) => {
-  const { playerData } = nextActionOverlay;
-  playerData.mp = e.detail.currentMP;
-  playerData.blackmana = e.detail.jobDetail.blackMana;
-  playerData.whitemana = e.detail.jobDetail.whiteMana;
+  nextActionOverlay.playerData.mp = e.detail.currentMP;
+  nextActionOverlay.playerData.blackmana = e.detail.jobDetail.blackMana;
+  nextActionOverlay.playerData.whitemana = e.detail.jobDetail.whiteMana;
 };
 
 nextActionOverlay.rdmTargetChange = () => {
@@ -137,18 +136,17 @@ nextActionOverlay.rdmTargetChange = () => {
 };
 
 nextActionOverlay.rdmNextAction = ({
-  delay = 0,
-  casting, // Use for calling function during casting
+  delay = 0, casting, // Use for calling function during casting
 } = {}) => {
   // Static values
   const { checkRecast } = nextActionOverlay;
   const { checkStatus } = nextActionOverlay;
   const { duration } = nextActionOverlay;
   const { recast } = nextActionOverlay;
+  const { gcd } = nextActionOverlay; // Static GCD
   const { level } = nextActionOverlay.playerData;
-  const { gcd } = nextActionOverlay.playerData;
 
-  // Initial values
+  // Snapshot of current character
   let { comboStep } = nextActionOverlay;
   let { accelerationCount } = nextActionOverlay;
   let { blackmana } = nextActionOverlay.playerData;
@@ -156,19 +154,22 @@ nextActionOverlay.rdmNextAction = ({
 
   // Set up object for tracking recast times in loops
   const loopRecast = {};
+  // loopRecastList array contains all abilities that have recast, concat extra stuff here as needed
   const loopRecastList = nextActionOverlay.actionList.abilities;
   loopRecastList.forEach((actionName) => {
     const propertyName = actionName.replace(/[\s':-]/g, '').toLowerCase();
     loopRecast[propertyName] = checkRecast({ actionName });
   });
 
-  // Set up object for tracking status effects in loops
+  // Set up object for tracking status effects in loops (same as above)
   const loopStatus = {};
   const loopStatusList = nextActionOverlay.statusList.self.concat(['Combo']);
   loopStatusList.forEach((statusName) => {
     const propertyName = statusName.replace(/[\s':-]/g, '').toLowerCase();
     loopStatus[propertyName] = checkStatus({ statusName });
   });
+
+  // Add target statuses here if needed
 
   // Clear icon array
   const iconArray = [];
@@ -178,30 +179,26 @@ nextActionOverlay.rdmNextAction = ({
   let nextTime = 0; // Amount of time looked ahead in loop
   const nextMaxTime = 15000; // Maximum predict time
 
+  // Start loop
   while (nextTime < nextMaxTime) {
-    let loopTime = 0; // This tracks of how "long" the loop takes
-
-    if (gcdTime <= 1000) {
-      // Declare this ahead of time due to casting triggering this function (see if statement below)
+    let loopTime = 0; // Tracks of how "long" the current loop takes
+    if (gcdTime < 1500) { // I assume we're not weaving below that
+      // Special case for entering loop when casting
       let nextGCD = '';
-
       if (nextTime === 0 && casting) {
+        // If casting, current spell is first GCD
         nextGCD = `Hardcast ${casting}`;
       } else {
         nextGCD = nextActionOverlay.rdmNextGCD({
-          comboStep,
-          blackmana,
-          whitemana,
-          loopRecast,
-          loopStatus,
+          comboStep, blackmana, whitemana, loopRecast, loopStatus,
         });
       }
 
       // Push into array
       iconArray.push({ name: nextGCD });
 
-      // Sets comboStatus and Step
-      // Probably fine to not separate weaponskills for RDM... probably.
+      // Set comboStatus and comboStep
+      // Probably fine to not separate weaponskills for RDM since the list of combo actions is short
       if ((level >= 35 && nextGCD === 'Enchanted Riposte')
       || (level >= 50 && nextGCD === 'Enchanted Zwerchhau')
       || (level >= 68 && nextGCD === 'Enchanted Redoublement')
@@ -331,24 +328,20 @@ nextActionOverlay.rdmNextAction = ({
       loopStatus.acceleration = -1;
     }
 
+    let weave = 1;
     let weaveMax = 0;
     if (gcdTime > 2200) {
       weaveMax = 2;
-    } else if (gcdTime > 1000) {
+    } else if (gcdTime >= 1500) {
       weaveMax = 1;
     }
 
-    let weave = 1;
-
-    while (weave <= weaveMax) { // Inside loop for OGCDs
+    // Second loop for OGCDs
+    while (weave <= weaveMax) {
       const nextOGCD = nextActionOverlay.rdmNextOGCD({
-        weave,
-        weaveMax,
-        comboStep,
-        blackmana,
-        whitemana,
-        loopRecast,
-        loopStatus,
+        weave, weaveMax, comboStep, blackmana, whitemana, loopRecast, loopStatus,
+        // Put MP in later
+        // weave, weaveMax, mp, comboStep, blackmana, whitemana, loopRecast, loopStatus,
       });
 
       if (nextOGCD) {
@@ -392,15 +385,10 @@ nextActionOverlay.rdmNextAction = ({
 };
 
 nextActionOverlay.rdmNextGCD = ({
-  comboStep,
-  blackmana,
-  whitemana,
-  loopRecast,
-  loopStatus,
+  comboStep, blackmana, whitemana, loopRecast, loopStatus,
 } = {}) => {
-  const { playerData } = nextActionOverlay;
-  const { gcd } = nextActionOverlay.playerData;
-  const { level } = playerData;
+  const { gcd } = nextActionOverlay;
+  const { level } = nextActionOverlay.playerData;
   const { targetCount } = nextActionOverlay;
   const lowerMana = Math.min(blackmana, whitemana);
   const higherMana = Math.max(blackmana, whitemana);
@@ -558,14 +546,7 @@ nextActionOverlay.rdmNextGCD = ({
 };
 
 nextActionOverlay.rdmNextOGCD = ({
-  weave,
-  weaveMax,
-  mp,
-  comboStep,
-  blackmana,
-  whitemana,
-  loopRecast,
-  loopStatus,
+  weave, weaveMax, mp, comboStep, blackmana, whitemana, loopRecast, loopStatus,
 } = {}) => {
   const { targetCount } = nextActionOverlay;
   const { playerData } = nextActionOverlay;
@@ -599,11 +580,12 @@ nextActionOverlay.rdmNextOGCD = ({
   && loopRecast.swiftcast < 0) {
     // "If < 80|80 Mana & with no procs, fish for proc."
     return 'Swiftcast';
-  } if (level >= 18 && Math.max(blackmana, whitemana) < 60
-  && Math.min(loopStatus.verfireready, loopStatus.verstoneready) < 0 && comboStep === ''
-  && loopRecast.swiftcast < 0) {
-    // "If < 60|60 Mana with one proc, fish other proc."
-    return 'Swiftcast';
+  // } if (level >= 18 && Math.max(blackmana, whitemana) < 60
+  // && Math.min(loopStatus.verfireready, loopStatus.verstoneready) < 0 && comboStep === ''
+  // && loopRecast.swiftcast < 0) {
+  //   // "If < 60|60 Mana with one proc, fish other proc."
+  //   return 'Swiftcast';
+  // This is hard to queue practically without accidentally flubbing Swiftcast 50% of the time
   } if (loopRecast.acceleration < 0 && Math.max(blackmana, whitemana) < 80 && comboStep === ''
   && Math.min(loopStatus.verfireready, loopStatus.verstoneready) < 0) {
     // "If between 60|60 and 80|80 Mana with both procs, do NOT use Acceleration."
@@ -622,9 +604,8 @@ nextActionOverlay.rdmActionMatch = (actionMatch) => {
   const { weaponskills } = nextActionOverlay.actionList;
   const { spells } = nextActionOverlay.actionList;
   const { abilities } = nextActionOverlay.actionList;
-  const { playerData } = nextActionOverlay;
-  const { level } = playerData;
-  const { gcd } = playerData;
+  const { level } = nextActionOverlay.playerData;
+  const { gcd } = nextActionOverlay;
 
   const { addRecast } = nextActionOverlay;
   const { duration } = nextActionOverlay;
@@ -637,7 +618,10 @@ nextActionOverlay.rdmActionMatch = (actionMatch) => {
   const singletargetActions = [
     'Jolt', 'Jolt II', 'Verfire', 'Verstone',
     'Verthunder', 'Veraero',
-    'Enchanted Riposte', 'Riposte', 'Enchanted Reprise', 'Reprise',
+    'Enchanted Riposte', 'Riposte',
+    'Enchanted Zwerchhau', 'Zwerchhau',
+    'Enchanted Redoublement', 'Redoublement',
+    'Enchanted Reprise', 'Reprise',
   ];
 
   const multitargetActions = [
@@ -650,9 +634,9 @@ nextActionOverlay.rdmActionMatch = (actionMatch) => {
 
   if (singletargetActions.includes(actionName)) {
     if (nextActionOverlay.targetCount > 2) {
-      // Allow second spell to dictate actual target count?
       nextActionOverlay.targetCount = 2;
     } else {
+      // Two ST actions in a row brings it to 1
       nextActionOverlay.targetCount = 1;
     }
   } else if (multitargetActions.includes(actionName) && actionMatch.groups.logType === '15') {
@@ -714,7 +698,7 @@ nextActionOverlay.rdmStatusMatch = (statusMatch) => {
   // No let declarations here - everything needs to modify current snapshot
   const { statusName } = statusMatch.groups;
   const { statusDuration } = statusMatch.groups;
-  const { gcd } = nextActionOverlay.playerData;
+  const { gcd } = nextActionOverlay;
 
   // Control Dualcast/Swiftcast flow from here because it's a lot easier
   if (statusMatch.groups.logType === '1A') {

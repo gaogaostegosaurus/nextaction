@@ -1,7 +1,7 @@
 // Keep collapsed, probably
 nextActionOverlay.ninJobChange = () => {
-  const { playerData } = nextActionOverlay;
-  playerData.mudraCount = 0;
+  nextActionOverlay.comboStep = '';
+  nextActionOverlay.mudraCount = 0;
 
   nextActionOverlay.actionList.weaponskills = [
     'Spinning Edge', 'Gust Slash', 'Aeolian Edge', 'Armor Crush',
@@ -28,11 +28,13 @@ nextActionOverlay.ninJobChange = () => {
     'Second Wind', 'Leg Sweep', 'Bloodbath', 'Feint', 'Arm\'s Length', 'True North',
   ];
 
-  nextActionOverlay.statusList = [
-    'Shade Shift', 'Shadow Fang', 'Kassatsu', 'Assassinate Ready', 'Ten Chi Jin', 'Bunshin',
+  nextActionOverlay.statusList.self = [
+    'Shade Shift', 'Kassatsu', 'Assassinate Ready', 'Ten Chi Jin', 'Bunshin',
     'Mudra', 'Doton', 'Suiton',
     'Bloodbath', 'Feint', 'Arm\'s Length', 'True North',
   ];
+
+  nextActionOverlay.statusList.target = ['Shadow Fang'];
 
   const { recast } = nextActionOverlay;
   recast.shadeshift = 120000;
@@ -99,6 +101,8 @@ nextActionOverlay.ninJobChange = () => {
   icon.gokamekkyaku = '002925';
   icon.hyoshoranryu = '002926';
   icon.bunshin = '002927';
+
+  nextActionOverlay.changedJob.meleeDPS();
 }; // Keep collapsed, probably
 
 nextActionOverlay.ninPlayerChange = (e) => {
@@ -122,7 +126,6 @@ nextActionOverlay.ninNextAction = ({
   const { checkStatus } = nextActionOverlay;
   const { duration } = nextActionOverlay;
   const { recast } = nextActionOverlay;
-  const { gcd } = nextActionOverlay.playerData;
   const { level } = nextActionOverlay.playerData;
   const { weaponskills } = nextActionOverlay.actionList;
   const { ninjutsu } = nextActionOverlay.actionList;
@@ -138,7 +141,7 @@ nextActionOverlay.ninNextAction = ({
     'Ten Chi Jin', 'Meisui', 'Bunshin'];
   loopRecastList.forEach((actionName) => {
     const propertyName = actionName.replace(/[\s':-]/g, '').toLowerCase();
-    loopRecast[propertyName] = checkRecast({ actionName }) - 1000;
+    loopRecast[propertyName] = checkRecast({ actionName });
   });
 
   const loopStatus = {};
@@ -152,6 +155,8 @@ nextActionOverlay.ninNextAction = ({
   loopStatus.huton = nextActionOverlay.playerData.huton;
 
   let hutonModifier = 1;
+  if (loopStatus.huton > 0) { hutonModifier = 0.85; }
+  let gcd = nextActionOverlay.gcd * hutonModifier;
 
   const iconArray = [];
 
@@ -163,9 +168,10 @@ nextActionOverlay.ninNextAction = ({
     let loopTime = 0;
 
     // Huton makin' stuff complicated
-    if (loopStatus.huton > 0) { hutonModifier = 0.85; } else hutonModifier = 1;
+    if (loopStatus.huton > 0) { hutonModifier = 0.85; } else { hutonModifier = 1; }
+    gcd = nextActionOverlay.gcd * hutonModifier;
 
-    if (gcdTime <= 1000) {
+    if (gcdTime < 1500) {
       const nextGCD = nextActionOverlay.ninNextGCD({
         comboStep,
         loopRecast,
@@ -240,7 +246,7 @@ nextActionOverlay.ninNextAction = ({
       if (ninjutsu.includes(nextGCD)) {
         gcdTime = 1500;
       } else {
-        gcdTime = gcd * hutonModifier;
+        gcdTime = gcd;
       }
 
       loopTime += gcdTime;
@@ -357,7 +363,7 @@ nextActionOverlay.ninNextAction = ({
 
   clearTimeout(nextActionOverlay.timeout.nextAction);
   nextActionOverlay.timeout.nextAction = setTimeout(
-    nextActionOverlay.ninNextAction, gcd * hutonModifier * 2,
+    nextActionOverlay.ninNextAction, gcd * 2,
   );
 };
 
@@ -370,7 +376,7 @@ nextActionOverlay.ninNextGCD = ({
   const { recast } = nextActionOverlay;
   const { targetCount } = nextActionOverlay;
 
-  let { gcd } = nextActionOverlay.playerData;
+  let { gcd } = nextActionOverlay;
   const { level } = nextActionOverlay.playerData;
 
   if (loopStatus.huton > 0) { gcd *= 0.85; }
@@ -402,7 +408,7 @@ nextActionOverlay.ninNextGCD = ({
   }
 
   // Shadow Fang ASAP (1100 potency with 1 GCD)
-  if (level >= 45 && loopRecast.trickattack > recast.shadowfang * 0.05
+  if (level >= 45 && loopRecast.trickattack > recast.shadowfang * 0.1
   && loopRecast.shadowfang < 0) { return 'Shadow Fang'; }
 
   // Use Kassatsu buff (hopefully during TA)
@@ -528,12 +534,10 @@ nextActionOverlay.ninNextOGCD = ({
 
   const { level } = nextActionOverlay.playerData;
 
-  let { gcd } = nextActionOverlay.playerData;
+  let { gcd } = nextActionOverlay;
   if (loopStatus.huton > 0) {
     gcd *= 0.85;
   }
-
-  const trickattackBonus = 0.05;
 
   // Prioritize these actions if the related buff is about to wear off for some reason
   if (loopStatus.suiton > 0 && loopStatus.suiton < gcd * 2) {
@@ -548,7 +552,7 @@ nextActionOverlay.ninNextOGCD = ({
 
   // Kassatsu
   if (level >= 50
-  && (loopStatus.suiton > gcd || loopRecast.trickattack > recast.kassatsu * trickattackBonus)
+  && (loopStatus.suiton > gcd || loopRecast.trickattack > recast.kassatsu * 0.1)
   && loopRecast.kassatsu < 0) { return 'Kassatsu'; }
 
   // Mug (for Ninki)
@@ -561,7 +565,7 @@ nextActionOverlay.ninNextOGCD = ({
   if (loopStatus.suiton > 0 && loopRecast.trickattack < 0) { return 'Trick Attack'; }
 
   // Dream (during TA)
-  if (level >= 56 && loopRecast.trickattack > recast.dreamwithinadream * trickattackBonus
+  if (level >= 56 && loopRecast.trickattack > recast.dreamwithinadream * 0.1
   && loopRecast.dreamwithinadream < 0) { return 'Dream Within A Dream'; }
 
   // Assassinate
@@ -572,7 +576,7 @@ nextActionOverlay.ninNextOGCD = ({
   // Use TCJ to set up Meisui
   if (level >= 72 && loopStatus.kassatsu < 0
   && loopRecast.meisui < duration.suiton - gcd
-  && loopRecast.trickattack > recast.tenchijin * trickattackBonus
+  && loopRecast.trickattack > recast.tenchijin * 0.1
   && (loopStatus.combo < 0 || loopStatus.combo > gcd * 2)
   && loopRecast.tenchijin < 0) { return 'Ten Chi Jin Suiton'; }
 
@@ -593,8 +597,10 @@ nextActionOverlay.ninNextOGCD = ({
   }
 
   // Mug (before Ninki)
-  if (level >= 15 && level < 66 && loopRecast.trickattack > recast.mug * trickattackBonus
+  if (level >= 45 && level < 66 && loopRecast.trickattack > recast.mug * 0.1
   && loopRecast.mug < 0) { return 'Mug'; }
+
+  if (level >= 15 && level < 45 && loopRecast.mug < 0) { return 'Mug'; }
 
   // No OGCD
   return '';
@@ -635,7 +641,7 @@ nextActionOverlay.ninActionMatch = (actionMatch) => {
     hutonModifier = 0.85;
   }
 
-  const gcd = nextActionOverlay.playerData.gcd * hutonModifier;
+  const gcd = nextActionOverlay.gcd * hutonModifier;
 
   if (singletargetActions.includes(actionName)) {
     nextActionOverlay.targetCount = 1;
@@ -703,6 +709,7 @@ nextActionOverlay.ninActionMatch = (actionMatch) => {
       nextActionOverlay.tenchijinCount = 0;
     }
 
+    // Set gcd delay for ninjutsu (or final ninjutsu of TCJ)
     if (checkStatus({ statusName: 'Ten Chi Jin' }) < 0) {
       nextActionOverlay.ninNextAction({ delay: 1500 });
     }

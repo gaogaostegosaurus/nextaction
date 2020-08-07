@@ -120,7 +120,7 @@ nextActionOverlay.dncNextAction = ({
   const { weaponskills } = nextActionOverlay.actionList;
   const { abilities } = nextActionOverlay.actionList;
 
-  const { gcd } = nextActionOverlay.playerData;
+  const { gcd } = nextActionOverlay;
   const { level } = nextActionOverlay.playerData;
   let { steps } = nextActionOverlay.playerData;
   let { fourfoldfeathers } = nextActionOverlay.playerData;
@@ -296,7 +296,7 @@ nextActionOverlay.dncNextGCD = ({
   loopStatus,
 } = {}) => {
   const { targetCount } = nextActionOverlay;
-  const { gcd } = nextActionOverlay.playerData;
+  const { gcd } = nextActionOverlay;
   const { level } = nextActionOverlay.playerData;
 
   let procCount = 0;
@@ -377,7 +377,7 @@ nextActionOverlay.dncNextOGCD = ({
   loopStatus,
 } = {}) => {
   const { level } = nextActionOverlay.playerData;
-  const { gcd } = nextActionOverlay.playerData;
+  const { gcd } = nextActionOverlay;
   const { targetCount } = nextActionOverlay;
 
   let procCount = 0;
@@ -426,9 +426,8 @@ nextActionOverlay.dncActionMatch = (actionMatch) => {
 
   const { weaponskills } = nextActionOverlay.actionList;
   const { abilities } = nextActionOverlay.actionList;
-  const { playerData } = nextActionOverlay;
-  const { level } = playerData;
-  const { gcd } = playerData;
+  const { level } = nextActionOverlay.playerData;
+  const { gcd } = nextActionOverlay;
 
   const { addRecast } = nextActionOverlay;
   const { duration } = nextActionOverlay;
@@ -520,7 +519,7 @@ nextActionOverlay.dncActionMatch = (actionMatch) => {
 nextActionOverlay.dncStatusMatch = (statusMatch) => {
   const { statusName } = statusMatch.groups;
   const { statusDuration } = statusMatch.groups;
-  const { gcd } = nextActionOverlay.playerData;
+  const { gcd } = nextActionOverlay;
   const procStatus = ['Flourishing Cascade', 'Flourishing Windmill', 'Flourishing Fountain', 'Flourishing Shower'];
   // Control Dualcast/Swiftcast flow from here because it's a lot easier
   if (statusMatch.groups.logType === '1A') {

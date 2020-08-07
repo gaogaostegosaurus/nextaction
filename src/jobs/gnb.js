@@ -110,12 +110,11 @@ nextActionOverlay.gnbNextAction = ({
   const { duration } = nextActionOverlay;
   const { recast } = nextActionOverlay;
 
-  const { playerData } = nextActionOverlay;
-  const { level } = playerData;
+  const { level } = nextActionOverlay.playerData;
   let { comboStep } = nextActionOverlay;
   let { cartridgecomboStep } = nextActionOverlay;
-  let { cartridges } = playerData;
-  const { gcd } = playerData;
+  let { cartridges } = nextActionOverlay.playerData;
+  const { gcd } = nextActionOverlay;
 
   const { comboweaponskills } = nextActionOverlay.actionList;
   const { cartridgecomboweaponskills } = nextActionOverlay.actionList;
@@ -291,9 +290,8 @@ nextActionOverlay.gnbNextGCD = ({ // All GNB GCDs are weaponskills so...
   const { targetCount } = nextActionOverlay;
   const { recast } = nextActionOverlay;
 
-  const { playerData } = nextActionOverlay;
-  const { level } = playerData;
-  const { gcd } = playerData;
+  const { level } = nextActionOverlay.playerData;
+  const { gcd } = nextActionOverlay;
 
   const burststrikePotency = 500;
   const sonicbreakPotency = 300 + 90 * 10;
@@ -511,9 +509,8 @@ nextActionOverlay.gnbActionMatch = (actionMatch) => {
   const { recast } = nextActionOverlay;
   const { duration } = nextActionOverlay;
 
-  const { playerData } = nextActionOverlay;
-  const { level } = playerData;
-  const { gcd } = playerData;
+  const { level } = nextActionOverlay.playerData;
+  const { gcd } = nextActionOverlay;
 
   const { actionList } = nextActionOverlay;
   const { comboweaponskills } = actionList;
