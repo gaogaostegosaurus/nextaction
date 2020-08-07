@@ -196,14 +196,10 @@ nextActionOverlay.samNextAction = ({
   while (nextTime < nextMaxTime) {
     let loopTime = 0;
 
-    // Shifu (check every loop)
+    // Shifu (recalculate every loop)
     shifuModifier = 1;
     if (loopStatus.shifu > 0) {
-      if (level >= 78) {
-        shifuModifier = 0.87;
-      } else {
-        shifuModifier = 0.9;
-      }
+      if (level >= 78) { shifuModifier = 0.87; } else { shifuModifier = 0.9; }
     }
     gcd = nextActionOverlay.gcd * shifuModifier;
 
@@ -244,27 +240,17 @@ nextActionOverlay.samNextAction = ({
           loopStatus.combo = -1;
         }
 
-        // Jinpu/Shifu status
-        if (nextGCD === 'Jinpu') {
-          loopStatus.jinpu = 40000;
-        } else if (nextGCD === 'Shifu') {
-          loopStatus.shifu = 40000;
-        } else if (nextGCD === 'Mangetsu' && loopStatus.jinpu > 0) {
-          loopStatus.jinpu = Math.min(loopStatus.jinpu + 15000, 40000);
-        } else if (nextGCD === 'Oka' && loopStatus.shifu > 0) {
-          loopStatus.shifu = Math.min(loopStatus.shifu + 15000, 40000);
-        } else if (nextGCD === 'Enpi') {
-          loopStatus.enhancedenpi = -1;
-        }
+        // Weaponskill-related buffs status
+        if (nextGCD === 'Jinpu') { loopStatus.jinpu = 40000; } else
+        if (nextGCD === 'Shifu') { loopStatus.shifu = 40000; } else
+        if (nextGCD === 'Mangetsu' && loopStatus.jinpu > 0) { loopStatus.jinpu = Math.min(loopStatus.jinpu + 15000, 40000); } else
+        if (nextGCD === 'Oka' && loopStatus.shifu > 0) { loopStatus.shifu = Math.min(loopStatus.shifu + 15000, 40000); } else
+        if (nextGCD === 'Enpi') { loopStatus.enhancedenpi = -1; }
 
         // Sen
-        if (['Gekko', 'Mangetsu'].includes(nextGCD)) {
-          getsu = 1;
-        } else if (['Kasha', 'Oka'].includes(nextGCD)) {
-          ka = 1;
-        } else if (nextGCD === 'Yukikaze') {
-          setsu = 1;
-        }
+        if (['Gekko', 'Mangetsu'].includes(nextGCD)) { getsu = 1; } else
+        if (['Kasha', 'Oka'].includes(nextGCD)) { ka = 1; } else
+        if (nextGCD === 'Yukikaze') { setsu = 1; }
 
         // Kenki
         if (level >= 52 && ['Enpi', 'Gekko', 'Mangetsu', 'Kasha', 'Oka', 'Yukikaze'].includes(nextGCD)) { kenki = Math.min(kenki + 5, 100); }
@@ -279,25 +265,21 @@ nextActionOverlay.samNextAction = ({
           tsubamegaeshicomboStep = nextGCD;
           loopStatus.tsubamegaeshicombo = duration.combo;
         }
-
         // Higanbana
         if (nextGCD === 'Higanbana') { loopStatus.higanbana = duration.higanbana + 1300; }
-
-        gcdTime = gcd - 1300; // Iaijutsu cast time is 1300
+        // GCD and cast time
+        if (level >= 74) { gcdTime = gcd - 1300; } else { gcdTime = gcd - 1800 * (gcd / 2500); }
       } else if (tsubamegaeshi.includes(nextGCD)) {
         meditation = Math.min(meditation + 1, 3);
+        tsubamegaeshicomboStep = '';
         loopStatus.tsubamegaeshicombo = -1;
         loopRecast.tsubamegaeshi = recast.tsubamegaeshi;
-
-        // Higanbana - although probably never
+        // Kaeshi: Higanbana - not needed probably
         // if (nextGCD === 'Kaeshi: Higanbana') { loopStatus.higanbana = duration.higanbana; }
-
         gcdTime = gcd; // No cast time for Kaeshi abilities
       }
-
       // Uncomment this to check rotation timings
       // console.log(`${Math.ceil(loopRecast.tsubamegaeshi)} ${nextGCD}`);
-
       loopTime += gcd;
     }
 
@@ -540,6 +522,7 @@ nextActionOverlay.samNextOGCD = ({
 
   // Meikyo Shisui
   if (level >= 50 && comboStep === '' && Math.min(loopStatus.jinpu, loopStatus.shifu) > 0 && loopRecast.meikyoshisui < 0) {
+    // Use Meikyo to get final Sen
     if (level >= 76 && sen <= 2 && loopRecast.tsubamegaeshi < gcd * 2) { return 'Meikyo Shisui'; }
     if (level >= 76 && sen <= 1 && loopRecast.tsubamegaeshi < gcd * 3) { return 'Meikyo Shisui'; }
     if (level >= 76 && sen === 0 && loopRecast.tsubamegaeshi < gcd * 4) { return 'Meikyo Shisui'; }
