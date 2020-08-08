@@ -437,19 +437,20 @@ nextActionOverlay.samNextGCD = ({
 
   // Tsubame-gaeshi alignment
   if (level >= 76 && sen === 2 && loopRecast.tsubamegaeshi < gcd * 4) {
+    if (loopRecast.tsubamegaeshi < gcd * 2 && comboStep === 'Hakaze' && setsu === 0 && Math.min(loopStatus.jinpu, loopStatus.shifu) > 0) { return 'Yukikaze'; }
     if (loopRecast.tsubamegaeshi < gcd * 2 && comboStep === 'Jinpu') { return 'Gekko'; }
     if (loopRecast.tsubamegaeshi < gcd * 2 && comboStep === 'Shifu') { return 'Kasha'; }
-    if (loopRecast.tsubamegaeshi < gcd * 2 && comboStep === 'Hakaze' && setsu === 0 && Math.min(loopStatus.jinpu, loopStatus.shifu) > 0) { return 'Yukikaze'; }
     if (loopRecast.tsubamegaeshi < gcd * 3 && comboStep === 'Hakaze' && ka === 0 && loopStatus.shifu <= loopStatus.jinpu) { return 'Shifu'; }
     if (loopRecast.tsubamegaeshi < gcd * 3 && comboStep === 'Hakaze' && getsu === 0) { return 'Jinpu'; }
     if (loopRecast.tsubamegaeshi < gcd * 3 && comboStep === 'Hakaze' && ka === 0) { return 'Shifu'; }
+    if (loopRecast.tsubamegaeshi < gcd * 2 && comboStep === 'Hakaze' && setsu === 0) { return 'Yukikaze'; }
     if (comboStep === '') { return 'Hakaze'; }
   }
 
   if (level >= 76 && sen === 1 && loopRecast.tsubamegaeshi < gcd * 5) {
+    if (loopRecast.tsubamegaeshi < gcd * 3 && comboStep === 'Hakaze' && setsu === 0 && Math.min(loopStatus.jinpu, loopStatus.shifu) > 0) { return 'Yukikaze'; }
     if (loopRecast.tsubamegaeshi < gcd * 3 && comboStep === 'Jinpu') { return 'Gekko'; }
     if (loopRecast.tsubamegaeshi < gcd * 3 && comboStep === 'Shifu') { return 'Kasha'; }
-    if (loopRecast.tsubamegaeshi < gcd * 3 && comboStep === 'Hakaze' && setsu === 0 && Math.min(loopStatus.jinpu, loopStatus.shifu) > 0) { return 'Yukikaze'; }
     if (loopRecast.tsubamegaeshi < gcd * 4 && comboStep === 'Hakaze' && ka === 0 && loopStatus.shifu <= loopStatus.jinpu) { return 'Shifu'; }
     if (loopRecast.tsubamegaeshi < gcd * 4 && comboStep === 'Hakaze' && getsu === 0) { return 'Jinpu'; }
     if (loopRecast.tsubamegaeshi < gcd * 4 && comboStep === 'Hakaze' && ka === 0) { return 'Shifu'; }
@@ -458,9 +459,9 @@ nextActionOverlay.samNextGCD = ({
   }
 
   if (level >= 76 && sen === 0 && loopRecast.tsubamegaeshi < gcd * 7) {
+    if (loopRecast.tsubamegaeshi < gcd * 4 && comboStep === 'Hakaze' && Math.min(loopStatus.jinpu, loopStatus.shifu) > 0) { return 'Yukikaze'; }
     if (loopRecast.tsubamegaeshi < gcd * 5 && comboStep === 'Jinpu') { return 'Gekko'; }
     if (loopRecast.tsubamegaeshi < gcd * 5 && comboStep === 'Shifu') { return 'Kasha'; }
-    if (loopRecast.tsubamegaeshi < gcd * 4 && comboStep === 'Hakaze' && Math.min(loopStatus.jinpu, loopStatus.shifu) > 0) { return 'Yukikaze'; }
     if (loopRecast.tsubamegaeshi < gcd * 6 && comboStep === 'Hakaze' && loopStatus.shifu <= loopStatus.jinpu) { return 'Shifu'; }
     if (loopRecast.tsubamegaeshi < gcd * 6 && comboStep === 'Hakaze') { return 'Jinpu'; }
     if (loopRecast.tsubamegaeshi < gcd * 4 && comboStep === 'Hakaze') { return 'Yukikaze'; }
@@ -523,9 +524,9 @@ nextActionOverlay.samNextOGCD = ({
   // Meikyo Shisui
   if (level >= 50 && comboStep === '' && Math.min(loopStatus.jinpu, loopStatus.shifu) > 0 && loopRecast.meikyoshisui < 0) {
     // Use Meikyo to get final Sen
-    if (level >= 76 && sen <= 2 && loopRecast.tsubamegaeshi < gcd * 2) { return 'Meikyo Shisui'; }
-    if (level >= 76 && sen <= 1 && loopRecast.tsubamegaeshi < gcd * 3) { return 'Meikyo Shisui'; }
     if (level >= 76 && sen === 0 && loopRecast.tsubamegaeshi < gcd * 4) { return 'Meikyo Shisui'; }
+    if (level >= 76 && sen <= 1 && loopRecast.tsubamegaeshi < gcd * 3) { return 'Meikyo Shisui'; }
+    if (level >= 76 && sen <= 2 && loopRecast.tsubamegaeshi < gcd * 2) { return 'Meikyo Shisui'; }
     if (level < 76) { return 'Meikyo Shisui'; }
   }
 
