@@ -2,6 +2,7 @@
 
 ## What does it doooooo (generally)
 
+- Jobs supported: PLD GNB MNK NIN SAM DNC RDM
 - Snapshots your current character and suggests the next 15 seconds or so of actions. Ideally, it should suggest perfect or close-to-perfect single target dummy rotations.
 - Re-snapshots your character after every major action and modifies the action list. This means that the list will often change on proc-based jobs (DNC, RDM), and also that if you screw up or decide that a better action is available, it adjusts the action list to fit.
 - On jobs that have rotations revolving heavily around static cooldown abilities (NIN, DNC, SAM etc.) it will attempt to align actions around those abilities so that they can be used ASAP.
@@ -9,7 +10,7 @@
 
 ## Limitations
 
-- There's no good way that I know of to see how many targets actually exist in range, so during AOE you just kind of decide what to do.
+- There's no good way that I know of to see how many targets actually exist in range, so during AOE you just have to kind of know what to do.
 
 ## Setup
 
@@ -20,4 +21,6 @@
 
 ## Known issues
 
-- SAM Tsubame-gaeshi is 1 GCD late (always?)
+- MNK: Perfect Balance window is a little janky - doesn't appear to be consistently sure what the final WS will be
+- NIN: Mudra isn't detected under certain conditions - haven't been able to consistently replicate
+- SAM: Tsubame-gaeshi is always exactly 1 GCD late - NO CLUE WHY
