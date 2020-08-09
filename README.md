@@ -9,7 +9,7 @@
 
 ## Limitations
 
-- There's no good way that I know of to see how many targets actually exist, so during AOE you have to kind of decide what to do
+- There's no good way that I know of to see how many targets actually exist in range, so during AOE you have to kind of decide what to do
 
 ## Setup
 
