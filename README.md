@@ -1,10 +1,10 @@
 # nextActionOverlay
 
-## What does it doooooo
+## What does it doooooo (generally)
 
-- Snapshots your current character and decides what actions should be taken next
-- Re-snapshots your character after every major action to see if the actions have changed in any way
-- Switches to AoE mode if it detects multiple targets
+- Snapshots your current character and suggests the next 15 seconds or so of actions
+- Re-snapshots your character after every major action and modifies the action list
+- Switches to AoE mode if it detects multiple targets, switches back on certain actions that imply single targets
 - Ideally, it should suggest perfect or close-to-perfect dummy rotations
 
 ## Setup
