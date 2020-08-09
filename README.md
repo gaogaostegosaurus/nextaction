@@ -11,4 +11,5 @@
 
 - ACT FFXIV Plugin (obviously)
 - ngld OverlayPlugin and Cactbot should also both be installed
+- Add the overlay using the Custom preset, Miniparse type (actually not sure how much this matters)
 - Overlay URL should be `https://gaogaostegosaurus.github.io/nextActionOverlay/overlay.html`.
