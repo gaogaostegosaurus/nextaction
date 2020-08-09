@@ -3,8 +3,8 @@
 ## What does it doooooo (generally)
 
 - Snapshots your current character and suggests the next 15 seconds or so of actions
-- Re-snapshots your character after every major action and modifies the action list
-- Switches to AoE mode if it detects multiple targets, switches back on certain actions that imply single targets
+- Re-snapshots your character after every major action and modifies the action list. This means that if you screw up or decide that a better action is available (see below) it adjusts the action list to fit
+- Switches to AoE mode if it detects multiple targets being hit, switches back on certain actions that imply single targets
 - Ideally, it should suggest perfect or close-to-perfect dummy rotations
 
 ## Limitations
