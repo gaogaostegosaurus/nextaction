@@ -7,6 +7,10 @@
 - Switches to AoE mode if it detects multiple targets, switches back on certain actions that imply single targets
 - Ideally, it should suggest perfect or close-to-perfect dummy rotations
 
+## Limitations
+
+- There's no good way that I know of to see how many targets actually exist, so during AOE you have to kind of decide what to do
+
 ## Setup
 
 - ACT FFXIV Plugin (obviously)
