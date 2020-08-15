@@ -113,7 +113,7 @@ nextActionOverlay.warJobChange = () => {
 }; // Keep collapsed, usually
 
 nextActionOverlay.warPlayerChange = (e) => {
-  nextActionOverlay.playerData.hpp = e.detail.currentHP / e.detail.maxHP;
+  nextActionOverlay.playerData.hpp = (e.detail.currentHP / e.detail.maxHP) * 100;
   nextActionOverlay.playerData.beast = e.detail.jobDetail.beast;
 };
 
@@ -383,39 +383,22 @@ nextActionOverlay.warNextGCD = ({ // Copied from PLD
 };
 
 nextActionOverlay.warNextOGCD = ({
-  weave, loopRecast, loopStatus,
+  weave, weaveMax, hpp, beast, loopRecast, loopStatus,
 } = {}) => {
   const { level } = nextActionOverlay.playerData;
-  const { recast } = nextActionOverlay;
-  // const { gcd } = nextActionOverlay;
-  const { targetCount } = nextActionOverlay;
 
-  if (level >= 2 && loopStatus.requiescat < 0
-  && (['Fast Blade', 'Riot Blade'].includes(comboStep) || targetCount > 1)
-  && gcdTime <= 1500 && loopRecast.fightorflight < 0) {
-    return 'Fight Or Flight';
+  // Inner Release (should only activate if first Infuriate stack is already used)
+  if (level >= 70 && weave === weaveMax && loopStatus.nascentchaos < 0 && loopRecast.infuriate2 > 0 && loopRecast.innerrelease < 0) { return 'Inner Release'; }
+
+  // Use final Infuriate stack
+  if (level >= 50 && loopRecast.infuriate1 < 0) {
+    // After Nascent Chaos
+    if (level >= 72 && beast <= 50 && loopStatus.nascentchaos < 0 && loopStatus.innerrelease < 0) { return 'Infuriate'; }
+    // Before Nascent Chaos
+    if (level < 72 && beast <= 50) { return 'Infuriate'; }
   }
 
-  if (level >= 68 && loopStatus.fightorflight < 0 && loopStatus.swordoath < 0
-  && comboStep === '' && loopRecast.fightorflight > 0 // Requiescat goes second
-  && gcdTime <= 1500 && loopRecast.requiescat < 0) {
-    return 'Requiescat';
-  }
-
-  if (level >= 50 && targetCount > 1 && loopRecast.fightorflight > recast.circleofscorn * 0.5
-  && loopRecast.circleofscorn < 0) {
-    return 'Circle Of Scorn';
-  }
-
-  if (level >= 30 && loopRecast.fightorflight > recast.spiritswithin * 0.5
-  && loopRecast.spiritswithin < 0) {
-    return 'Spirits Within';
-  }
-
-  if (level >= 50 && loopRecast.fightorflight > recast.circleofscorn * 0.5
-  && loopRecast.circleofscorn < 0) {
-    return 'Circle Of Scorn';
-  }
+  if (level >= 58 && hpp < 75 && loopRecast.equilibrium < 0) { return 'Equilibrium'; }
 
   return '';
 };
