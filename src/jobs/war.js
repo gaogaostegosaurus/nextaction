@@ -126,6 +126,7 @@ nextActionOverlay.warNextAction = ({
   const { recast } = nextActionOverlay;
   const { gcd } = nextActionOverlay; // WAR has static GCD
   const { spenders } = nextActionOverlay.actionList;
+  const { weaponskills } = nextActionOverlay.actionList;
   const { level } = nextActionOverlay.playerData;
 
   // Snapshot of current character
@@ -158,12 +159,12 @@ nextActionOverlay.warNextAction = ({
   // Initial values for loop control
   let gcdTime = delay; // Time till next GCD action (or GCD length, whatever)
   let nextTime = 0; // Amount of time looked ahead in loop
-  const nextMaxTime = 15000; // Maximum predict time
+  const nextMaxTime = 15000; // Maximum prediction time
 
   // Start loop
   while (nextTime < nextMaxTime) {
-    let loopTime = 0; // Tracks of how "long" the current loop takes
-    if (gcdTime < 1500) { // I assume we're not weaving below that
+    let loopTime = 0; // Tracks of how "long" the current loop lasts
+    if (gcdTime < 1500) { // Let's assume we're not weaving below that
       const nextGCD = nextActionOverlay.rdmNextGCD({
         comboStep, beast, loopRecast, loopStatus,
       });
@@ -171,39 +172,50 @@ nextActionOverlay.warNextAction = ({
       // Push into array
       iconArray.push({ name: nextGCD });
 
-      // Set comboStatus and comboStep
-      if ((level >= 4 && nextGCD === 'Heavy Swing')
-      || (level >= 26 && nextGCD === 'Maim')
-      || (level >= 40 && nextGCD === 'Overpower')) {
-        comboStep = nextGCD;
-        loopStatus.combo = duration.combo;
-      } else if (spenders.includes(nextGCD)) {
-        // Do nothing here
-      } else {
-        // Everything else resets combo
-        comboStep = '';
-        loopStatus.combo = -1;
+      // Generic recast/duration handling
+      // Not enough generic actions on WAR to make this efficient
+      // const propertyName = nextOGCD.replace(/[\s':-]/g, '').toLowerCase();
+      // if (recast[propertyName]) { loopRecast[propertyName] = recast[propertyName]; }
+      // if (duration[propertyName]) { loopStatus[propertyName] = duration[propertyName]; }
+
+      // Weaponskills
+      if (weaponskills.includes(nextGCD)) {
+        // Set comboStatus and comboStep
+        if ((level >= 4 && nextGCD === 'Heavy Swing')
+        || (level >= 26 && nextGCD === 'Maim')
+        || (level >= 40 && nextGCD === 'Overpower')) {
+          // Continue combo
+          comboStep = nextGCD;
+          loopStatus.combo = duration.combo;
+        } else {
+          // Everything else resets combo
+          comboStep = '';
+          loopStatus.combo = -1;
+        }
+
+        // Beast Gauge
+        if (level >= 35) {
+          if (nextGCD === 'Maim') { beast = Math.min(100, beast + 10); } else
+          if (nextGCD === 'Storm\'s Path') { beast = Math.min(100, beast + 20); } else
+          if (nextGCD === 'Storm\'s Eye') { beast = Math.min(100, beast + 10); } else
+          if (level >= 74 && nextGCD === 'Mythril Tempest') { beast = Math.min(100, beast + 20); }
+        }
+
+        // Storm's Eye
+        if (nextGCD === 'Storm\'s Eye') { loopStatus.stormseye = Math.min(60000, loopStatus.stormseye + 30000); }
+        if (loopStatus.stormseye > 0 && nextGCD === 'Mythril Tempest') { loopStatus.stormseye = Math.min(60000, loopStatus.stormseye + 30000); }
       }
 
-      // Adjust Beast Gauge from actions
+      // Spenders
       if (spenders.includes(nextGCD) && loopStatus.innerrelease < 0) {
+        // Adjust Beast Gauge
         beast = Math.max(0, beast - 50);
+        // Remove Nascent Chaos
         if (['Chaotic Cyclone', 'Inner Chaos'].includes(nextGCD)) { loopStatus.nascentchaos = -1; }
-      } else
-      if (level >= 35) {
-        if (nextGCD === 'Maim') { beast = Math.min(100, beast + 10); } else
-        if (nextGCD === 'Storm\'s Path') { beast = Math.min(100, beast + 20); } else
-        if (nextGCD === 'Storm\'s Eye') { beast = Math.min(100, beast + 10); } else
-        if (level >= 74 && nextGCD === 'Mythril Tempest') { beast = Math.min(100, beast + 20); }
       }
-
-      // Storm's Eye buff
-      if (nextGCD === 'Storm\'s Eye') { loopStatus.stormseye = Math.min(60000, loopStatus.stormseye + 30000); }
-      if (loopStatus.stormseye > 0 && nextGCD === 'Mythril Tempest') { loopStatus.stormseye = Math.min(60000, loopStatus.stormseye + 30000); }
 
       // GCD
-      // WAR has no weird GCD lengths
-      loopTime += gcd;
+      loopTime += gcd; // WAR is all standard GCD lengths
     }
 
     Object.keys(loopRecast).forEach((property) => {
@@ -221,12 +233,10 @@ nextActionOverlay.warNextAction = ({
 
     let weave = 1; const weaveMax = 2;
 
-    // Second loop for OGCDs
+    // OGCD loop
     while (weave <= weaveMax) {
       const nextOGCD = nextActionOverlay.warNextOGCD({
         weave, weaveMax, hpp, beast, loopRecast, loopStatus,
-        // Put MP in later
-        // weave, weaveMax, mp, comboStep, blackmana, whitemana, loopRecast, loopStatus,
       });
 
       if (nextOGCD) {
@@ -239,6 +249,8 @@ nextActionOverlay.warNextAction = ({
         if (duration[propertyName]) { loopStatus[propertyName] = duration[propertyName]; }
 
         // Special effects
+        // "Heal" effects don't actually cap hpp - only for setting conditions
+        if (nextOGCD === 'Thrill Of Battle') { hpp = 100; } else
         if (nextOGCD === 'Infuriate') {
           loopRecast.infuriate1 = loopRecast.infuriate2;
           loopRecast.infuriate2 += recast.infuriate;
@@ -347,7 +359,138 @@ nextActionOverlay.warNextOGCD = ({
   if (level >= 70 && loopStatus.innerrelease > 0 && loopRecast.onslaught < 0) { return 'Onslaught'; }
 
   // Let's see if this is worth including...
+  if (level >= 30 && level < 78 && hpp < 75 && loopRecast.thrillofbattle < 0) { return 'Thrill Of Battle'; }
   if (level >= 58 && hpp < 75 && loopRecast.equilibrium < 0) { return 'Equilibrium'; }
 
   return '';
+};
+
+nextActionOverlay.warNextMitigation = () => {
+  const mitigationList = nextActionOverlay.statusList.mitigation;
+  let mitigationStatus = -1;
+  const { checkStatus } = nextActionOverlay;
+
+  // Set mitigationStatus to currently longest status
+  mitigationList.forEach((ability) => {
+    if (mitigationStatus < checkStatus({ statusName: ability })) {
+      mitigationStatus = checkStatus({ statusName: ability });
+    }
+  });
+
+  const iconArray = [];
+  const { level } = nextActionOverlay.playerData;
+  const { checkRecast } = nextActionOverlay;
+
+  if (mitigationStatus < 0) {
+    mitigationList.forEach((ability) => {
+      if (checkRecast({ actionName: ability }) < 0) {
+        if (level >= 76 && ability === 'Nascent Flash') { iconArray.push({ name: ability, size: 'small' }); }
+        if (level >= 78 && ability === 'Thrill Of Battle') { iconArray.push({ name: ability, size: 'small' }); }
+        if (level >= 38 && ability === 'Vengeance') { iconArray.push({ name: ability, size: 'small' }); }
+        if (level >= 56 && level < 76 && ability === 'Raw Intuition') { iconArray.push({ name: ability, size: 'small' }); }
+        if (level >= 68 && ability === 'Shake It Off') { iconArray.push({ name: ability, size: 'small' }); }
+        if (level >= 8 && ability === 'Rampart') { iconArray.push({ name: ability, size: 'small' }); }
+        if (level >= 22 && ability === 'Reprisal') { iconArray.push({ name: ability, size: 'small' }); }
+        if (level >= 32 && ability === 'Arm\'s Length') { iconArray.push({ name: ability, size: 'small' }); }
+      }
+    });
+  }
+
+  nextActionOverlay.NEWsyncIcons({ iconArray, row: 'icon-c' });
+};
+
+nextActionOverlay.warActionMatch = (actionMatch) => {
+  const { removeIcon } = nextActionOverlay;
+  const { addRecast } = nextActionOverlay;
+  const { checkRecast } = nextActionOverlay;
+  const { addStatus } = nextActionOverlay;
+  const { checkStatus } = nextActionOverlay;
+  const { removeStatus } = nextActionOverlay;
+  const { recast } = nextActionOverlay;
+  const { duration } = nextActionOverlay;
+
+  const { level } = nextActionOverlay.playerData;
+  const { gcd } = nextActionOverlay;
+
+  const { weaponskills } = nextActionOverlay.actionList;
+  const { spenders } = nextActionOverlay.actionList;
+  const { abilities } = nextActionOverlay.actionList;
+
+  const { actionName } = actionMatch.groups;
+  const { comboCheck } = actionMatch.groups;
+
+  const singletargetActions = [
+    // Use these to switch to "single target mode"
+    'Maim', 'Storm\'s Path', 'Storm\'s Eye',
+    'Inner Beast', 'Fell Cleave', 'Inner Chaos',
+  ];
+
+  // List all actions expected to hit multiple targets
+  const multitargetActions = [
+    'Overpower', 'Mythril Tempest',
+    'Steel Cyclone', 'Decimate', 'Chaotic Cyclone',
+  ];
+
+  // Set probable target count
+  if (singletargetActions.includes(actionName)) {
+    nextActionOverlay.targetCount = 1;
+  } else if (multitargetActions.includes(actionName) && actionMatch.groups.logType === '15') {
+    // Multi target only hits single target
+    nextActionOverlay.targetCount = 1;
+  }
+
+  // Remove action from overlay display
+  removeIcon({ name: actionName });
+
+  if (weaponskills.includes(actionName)) {
+    // Combo
+    if (comboCheck && ((level >= 4 && actionName === 'Heavy Swing')
+    || (level >= 26 && actionName === 'Maim')
+    || (level >= 40 && actionName === 'Overpower'))) {
+      addStatus({ statusName: 'Combo' });
+      nextActionOverlay.comboStep = actionName;
+    } else {
+      removeStatus({ statusName: 'Combo' });
+      nextActionOverlay.comboStep = '';
+    }
+
+    // Weaponskill-specific effects here
+    if (actionName === 'Storm\'s Eye') {
+      addStatus({ statusName: 'Storm\'s Eye', duration: Math.min(30000, checkStatus({ statusName: 'Storm\'s Eye' }) + 30000) });
+    } else if (actionName === 'Mythril Tempest' && checkStatus({ statusName: 'Storm\'s Eye' }) > 0) {
+      addStatus({ statusName: 'Storm\'s Eye', duration: Math.min(30000, checkStatus({ statusName: 'Storm\'s Eye' }) + 30000) });
+    }
+
+    // Find next actions
+    nextActionOverlay.warNextAction({ delay: gcd });
+  } else if (spenders.includes(actionName)) {
+    if (['Chaotic Cyclone', 'Inner Chaos'].includes(actionName)) { removeStatus({ statusName: 'Nascent Chaos' }); }
+  } else if (abilities.includes(actionName)) {
+    // Generic recast/duration handling
+    const propertyName = actionName.replace(/[\s':-]/g, '').toLowerCase();
+    if (recast[propertyName]) { addRecast({ actionName }); }
+    if (duration[propertyName]) { addStatus({ statusName: actionName }); }
+    if (actionName === 'Infuriate') {
+      addRecast({ actionName: 'Infuriate 1', recast: checkRecast({ actionName: 'Infuriate 2' }) });
+      addRecast({ actionName: 'Infuriate 2', recast: checkRecast({ actionName: 'Infuriate 2' }) + recast.infuriate });
+    }
+  }
+};
+
+nextActionOverlay.warStatusMatch = (statusMatch) => {
+  const { statusName } = statusMatch.groups;
+  const { addStatus } = nextActionOverlay;
+  const { removeStatus } = nextActionOverlay;
+
+  if (statusMatch.groups.logType === '1A') {
+    addStatus({ statusName });
+    // Check to see if this is needed
+    // if (statusName === 'Nascent Chaos') { nextActionOverlay.warNextAction(); }
+  } else { // 1E - loses status
+    removeStatus({ statusName });
+  }
+
+  if (nextActionOverlay.statusList.mitigation.includes(statusName)) {
+    nextActionOverlay.warNextMitigation();
+  }
 };
