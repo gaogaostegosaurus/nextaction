@@ -188,6 +188,7 @@ nextActionOverlay.warNextAction = ({
       // Adjust Beast Gauge from actions
       if (spenders.includes(nextGCD) && loopStatus.innerrelease < 0) {
         beast = Math.max(0, beast - 50);
+        if (['Chaotic Cyclone', 'Inner Chaos'].includes(nextGCD)) { loopStatus.nascentchaos = -1; }
       } else
       if (level >= 35) {
         if (nextGCD === 'Maim') { beast = Math.min(100, beast + 10); } else
@@ -222,7 +223,7 @@ nextActionOverlay.warNextAction = ({
 
     // Second loop for OGCDs
     while (weave <= weaveMax) {
-      const nextOGCD = nextActionOverlay.rdmNextOGCD({
+      const nextOGCD = nextActionOverlay.warNextOGCD({
         weave, weaveMax, hpp, beast, loopRecast, loopStatus,
         // Put MP in later
         // weave, weaveMax, mp, comboStep, blackmana, whitemana, loopRecast, loopStatus,
@@ -238,17 +239,20 @@ nextActionOverlay.warNextAction = ({
         if (duration[propertyName]) { loopStatus[propertyName] = duration[propertyName]; }
 
         // Special effects
-        // Force end OGCD section if Displacement used
-        if (nextOGCD === 'Displacement') { weave = 9; } else
-        if (nextOGCD === 'Acceleration') { accelerationCount = 3; } else
-        if (nextOGCD === 'Manafication') {
-          blackmana = Math.min(blackmana * 2, 100);
-          whitemana = Math.min(whitemana * 2, 100);
-          loopRecast.corpsacorps = -1;
-          loopRecast.displacement = -1;
+        if (nextOGCD === 'Infuriate') {
+          loopRecast.infuriate1 = loopRecast.infuriate2;
+          loopRecast.infuriate2 += recast.infuriate;
+          beast = Math.min(100, beast + 50);
+          if (level >= 72) { loopStatus.nascentchaos = duration.nascentchaos; }
         } else
-        if (nextOGCD === 'Engagement') {
-          loopRecast.displacement = recast.displacement;
+        if (nextOGCD === 'Equilibrium') { hpp = 100; } else
+        if (nextOGCD === 'Inner Release') {
+          loopRecast.berserk = recast.innerrelease;
+        } else
+        // Beast gauge changes
+        if (loopStatus.innerrelease < 0) {
+          if (nextOGCD === 'Onslaught') { beast = Math.max(0, beast - 10); }
+          if (nextOGCD === 'Upheaval') { beast = Math.max(0, beast - 20); }
         }
       }
 
@@ -321,24 +325,28 @@ nextActionOverlay.warNextOGCD = ({
   const { gcd } = nextActionOverlay;
   const { level } = nextActionOverlay.playerData;
 
-  // Inner Release (should only activate if first Infuriate stack is already used)
+  // Inner Release/Berserk as close to cooldown as possible
+  // Inner Release only activates if first Infuriate stack is already used
   if (level >= 70 && weave === weaveMax && loopStatus.nascentchaos < 0 && loopRecast.infuriate2 > 0 && loopRecast.innerrelease < 0) { return 'Inner Release'; }
+  if (level >= 6 && level < 70 && weave === weaveMax && loopRecast.berserk < 0) { return 'Berserk'; }
 
   // Upheaval
-  if (level >= 64 && (beast >= 20 || loopStatus.innerrelease > 0) && loopRecast.innerrelease > 20000 + gcd && loopRecast.upheaval < 0) { return 'Upheaval'; }
+  if (level >= 70 && (beast >= 20 || loopStatus.innerrelease > 0) && loopRecast.innerrelease > 20000 + gcd && loopRecast.upheaval < 0) { return 'Upheaval'; }
+  if (level >= 64 && level < 70 && beast >= 20 && loopRecast.berserk > 20000 + gcd && loopRecast.upheaval < 0) { return 'Upheaval'; }
 
   // Use final Infuriate stack
   if (level >= 50 && loopRecast.infuriate1 < 0) {
     // After Nascent Chaos
     if (level >= 72 && beast <= 50 && loopStatus.nascentchaos < 0 && loopStatus.innerrelease < 0) { return 'Infuriate'; }
     // Before Nascent Chaos
+    // Should be OK during Inner Release?
     if (level < 72 && beast <= 50) { return 'Infuriate'; }
   }
 
   // Use Onslaught if under Inner Release
   if (level >= 70 && loopStatus.innerrelease > 0 && loopRecast.onslaught < 0) { return 'Onslaught'; }
 
-  // Let's see if this is worth including lol
+  // Let's see if this is worth including...
   if (level >= 58 && hpp < 75 && loopRecast.equilibrium < 0) { return 'Equilibrium'; }
 
   return '';
