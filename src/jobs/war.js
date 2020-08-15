@@ -132,7 +132,7 @@ nextActionOverlay.warNextAction = ({
   let { comboStep } = nextActionOverlay;
   let { hpp } = nextActionOverlay.playerData;
   let { beast } = nextActionOverlay.playerData;
-  
+
   // Set up object for tracking recast times in loops
   const loopRecast = {};
   // loopRecastList array contains all abilities that have recast, concat extra stuff here as needed
