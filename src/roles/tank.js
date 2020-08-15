@@ -1,4 +1,4 @@
-nextActionOverlay.tankJobChange = () => {
+nextActionOverlay.tankRoleChange = () => {
   const { recast } = nextActionOverlay;
   const { duration } = nextActionOverlay;
   const { icon } = nextActionOverlay;

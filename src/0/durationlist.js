@@ -55,7 +55,6 @@ duration.miasmaiii = 30000;
 duration.hellishconduit = 30000;
 
 // WAR
-duration.stormseye = 30000;
 
 // WHM
 duration.aero = 18000;

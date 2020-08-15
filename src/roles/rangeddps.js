@@ -1,4 +1,4 @@
-nextActionOverlay.changedJob.rangedDPS = () => {
+nextActionOverlay.rangeddpsRoleChange = () => {
   const { recast } = nextActionOverlay;
   const { duration } = nextActionOverlay;
   const { icon } = nextActionOverlay;

@@ -1,607 +1,421 @@
-"use strict";
+nextActionOverlay.warJobChange = () => {
+  const { level } = nextActionOverlay.playerData;
 
-// Define actions to watch for
+  // Set initial values
+  nextActionOverlay.comboStep = '';
 
-const warActionList = [
+  nextActionOverlay.actionList.weaponskills = [
+    'Heavy Swing', 'Maim', 'Storm\'s Path', 'Storm\'s Eye',
+    'Overpower', 'Mythril Tempest',
+    'Tomahawk',
+  ];
 
-  // Role actions
-  "Rampart", "Arm\'s Length",
+  nextActionOverlay.actionList.beast = [
+    'Inner Beast', 'Fell Cleave', 'Inner Chaos',
+    'Steel Cyclone', 'Decimate', 'Chaotic Cyclone',
+  ];
 
-  // AoE actions
-  "Overpower", "Mythril Tempest", "Steel Cyclone", "Decimate",
+  nextActionOverlay.actionList.abilities = [
+    'Berserk',
+    'Thrill Of Battle',
+    'Vengeance',
+    'Holmgang',
+    'Infuriate',
+    'Raw Intuition',
+    'Equilibrium',
+    'Onslaught',
+    'Upheaval',
+    'Shake It Off',
+    'Inner Release',
+    'Nascent Flash',
+  ];
 
-  // Single target actions
-  "Storm\'s Path", "Fell Cleave", "Inner Chaos",
+  // Easier/more accurate controlling this via the buffs
+  // I think that means it won't work in Eureka but screw Eureka
 
-  // AoE or single target depending on level
-  "Inner Beast", "Chaotic Cyclone",
+  nextActionOverlay.statusList.self = [
+    'Berserk', 'Inner Release',
+    'Nascent Chaos',
+  ];
 
-  // Everything else
-  "Heavy Swing", "Maim", "Storm\'s Eye", "Tomahawk",
-  "Berserk", "Thrill Of Battle", "Vengeance", "Holmgang", "Infuriate", "Raw Intuition", "Upheaval", "Inner Release", "Nascent Flash"
+  nextActionOverlay.statusList.mitigation = [
+    'Vengeance',
+    'Holmgang',
+    'Raw Intuition',
+    'Nascent Flash',
+  ];
 
-];
+  const { recast } = nextActionOverlay;
 
-// Don't need to check these actions... yet?
-// "Onslaught", "Equilibrium", "Shake It Off",
-// "Low Blow", "Provoke", "Interject", "Reprisal", "Shirk",
+  recast.berserk = 90000;
+  recast.equilibrium = 60000;
+  recast.holmgang = 240000;
+  recast.infuriate = 60000;
+  recast.infuriate1 = recast.infuriate;
+  recast.infuriate2 = recast.infuriate;
+  recast.onslaught = 10000;
+  recast.rawintuition = 25000;
+  recast.shakeitoff = 90000;
+  recast.thrillofbattle = 90000;
+  recast.upheaval = 30000;
+  recast.vengeance = 120000;
 
-function warJobChange() {
+  recast.innerrelease = recast.berserk;
+  recast.nascentflash = recast.rawintuition;
 
-  nextid.mitigation = 0;
-  nextid.vengeance = nextid.mitigation;
-  nextid.rawintuition = nextid.mitigation;
-  nextid.rampart = nextid.mitigation;
-  nextid.innerbeast = 1;
-  nextid.steelcyclone = nextid.innerbeast;
-  nextid.fellcleave = nextid.innerbeast;
-  nextid.decimate = nextid.innerbeast;
-  nextid.chaoticcyclone = nextid.innerbeast;
-  nextid.innerchaos = nextid.innerbeast;
-  nextid.heavyswing = 2;
-  nextid.overpower = nextid.heavyswing;
-  nextid.maim = 3;
-  nextid.stormspath = 4;
-  nextid.stormseye = nextid.stormspath;
-  nextid.mythriltempest = nextid.stormspath;
-  nextid.infuriate = 10;
-  nextid.berserk = 11;
-  nextid.innerrelease = nextid.berserk;
-  nextid.upheaval = nextid.berserk;
+  const { duration } = nextActionOverlay;
 
-  previous.overpower = 0;
-  previous.mythriltempest = 0;
-  previous.steelcyclone = 0;
+  duration.berserk = 10000;
+  duration.defiance = 9999000;
+  duration.holmgang = 8000;
+  duration.nascentchaos = 30000;
+  duration.shakeitoff = 15000;
+  duration.stormseye = 30000;
+  duration.thrillofbattle = 20000;
 
-  if (player.level >= 54) {
-    icon.innerbeast = icon.fellcleave;
-  }
-  else {
-    icon.innerbeast = "002553";
-  }
+  duration.innerrelease = duration.berserk;
+  duration.nascentflash = duration.rawintuition;
 
-  if (player.level >= 60) {
-    icon.steelcyclone = icon.decimate;
-  }
-  else {
-    icon.steelcyclone = "002552";
-  }
+  const { icon } = nextActionOverlay;
 
-  if (player.level >= 70) {
-    icon.berserk = icon.innerrelease;
-  }
-  else {
-    icon.berserk = "000259";
-  }
+  icon.overpower = '000254';
+  icon.maim = '000255';
+  icon.stormspath = '000258';
+  icon.berserk = '000259';
+  icon.heavyswing = '000260';
+  icon.tomahawk = '000261';
+  icon.thrillofbattle = '000263';
+  icon.stormseye = '000264';
+  icon.holmgang = '000266';
+  icon.vengeance = '000267';
+  icon.defiance = '002551';
+  icon.steelcyclone = '002552';
+  icon.innerbeast = '002553';
+  icon.infuriate = '002555';
+  icon.fellcleave = '002557';
+  icon.decimate = '002558';
+  icon.rawintuition = '002559';
+  icon.equilibrium = '002560';
+  icon.onslaught = '002561';
+  icon.upheaval = '002562';
+  icon.shakeitoff = '002563';
+  icon.innerrelease = '002564';
+  icon.mythriltempest = '002565';
+  icon.chaoticcyclone = '002566';
+  icon.nascentflash = '002567';
+  icon.innerchaos = '002568';
 
-  if (count.targets > 1) {
-    if (player.level >= 56
-    && checkRecast("rawintuition") < 0) {
-      addIcon({ name: "rawintuition"});
-    }
-    else if (player.level >= 8
-    && checkRecast("rampart") < 0) {
-      addIcon({ name: "rampart"});
-    }
-    else if (player.level >= 46
-    && checkRecast("vengeance") < 0) {
-      addIcon({ name: "vengeance"});
-    }
-  }
+  if (level >= 54) { icon.innerbeast = icon.fellcleave; }
+  if (level >= 60) { icon.steelcyclone = icon.decimate; }
+  if (level >= 70) { icon.berserk = icon.innerrelease; }
 
-  if (player.level >= 50
-  && checkRecast("infuriate1", player.id) < 0) {
-    addIcon({ name: "infuriate"});
-  }
+  nextActionOverlay.tankRoleChange();
+}; // Keep collapsed, usually
 
-  // Berserk is complicated
-  if (player.level >= 64
-  && checkRecast("upheaval") < 0
-  && checkRecast("berserk") > 25000 ) {
-    addIcon({ name: "upheaval"}); // Show Upheaval if Berserk is far away
-  }
-  else if (player.level >= 74
-  && checkRecast("infuriate1", player.id) < 0) {
-    removeIcon("berserk"); // Hide Berserk to prevent wasting Nascent Chaos
-  }
-  else if (player.level >= 6
-  && checkRecast("berserk") < 0) {
-    addIcon({ name: "berserk"});
-  }
+nextActionOverlay.warPlayerChange = (e) => {
+  nextActionOverlay.playerData.hpp = e.detail.currentHP / e.detail.maxHP;
+  nextActionOverlay.playerData.beast = e.detail.jobDetail.beast;
+};
 
-  warCombo();
-  warGauge();
-}
+nextActionOverlay.warTargetChange = () => {
+  nextActionOverlay.warNextAction();
+};
 
-function warAction() {
+nextActionOverlay.warNextAction = ({
+  delay = 0,
+} = {}) => {
+  // Static values
+  const { checkRecast } = nextActionOverlay;
+  const { checkStatus } = nextActionOverlay;
+  const { duration } = nextActionOverlay;
+  const { recast } = nextActionOverlay;
+  const { gcd } = nextActionOverlay; // WAR has static GCD
+  const { level } = nextActionOverlay.playerData;
 
-  if (actionList.war.indexOf(actionLog.groups.actionName) > -1) {
+  // Snapshot of current character
+  let { comboStep } = nextActionOverlay;
+  let { hpp } = nextActionOverlay.playerData;
+  let { beast } = nextActionOverlay.playerData;
+  
+  // Set up object for tracking recast times in loops
+  const loopRecast = {};
+  // loopRecastList array contains all abilities that have recast, concat extra stuff here as needed
+  const loopRecastList = nextActionOverlay.actionList.abilities;
+  loopRecastList.forEach((actionName) => {
+    const propertyName = actionName.replace(/[\s':-]/g, '').toLowerCase();
+    loopRecast[propertyName] = checkRecast({ actionName });
+  });
 
+  // Set up object for tracking status effects in loops (same as above)
+  const loopStatus = {};
+  const loopStatusList = nextActionOverlay.statusList.self.concat(['Combo']);
+  loopStatusList.forEach((statusName) => {
+    const propertyName = statusName.replace(/[\s':-]/g, '').toLowerCase();
+    loopStatus[propertyName] = checkStatus({ statusName });
+  });
 
-    // These actions don't break combo
+  // Add target statuses here if needed
 
-    if (["Berserk", "Inner Release"].indexOf(actionLog.groups.actionName) > -1) {
-      removeIcon("berserk");
-      addStatus("berserk", duration.berserk, actionLog.groups.targetID);
-      addRecast("berserk");
-      addIconBlinkTimeout("berserk",recast.berserk,nextid.berserk,icon.berserk);
-      if (player.level >= 70) {
-        warGauge(); // Triggers gauge stuff for Inner Release
-      }
-    }
+  // Clear icon array
+  const iconArray = [];
 
-    else if ("Upheaval" == actionLog.groups.actionName) {
-      removeIcon("upheaval");
-      addRecast("upheaval");
-      warGauge();
-    }
+  // Initial values for loop control
+  let gcdTime = delay; // Time till next GCD action (or GCD length, whatever)
+  let nextTime = 0; // Amount of time looked ahead in loop
+  const nextMaxTime = 15000; // Maximum predict time
 
-    else if ("Infuriate" == actionLog.groups.actionName) { // Code treats Infuriate like two different skills to juggle the charges.
-      if (checkRecast("infuriate2", player.id) < 0) {
-        addRecast("infuriate1", player.id, -1);
-        addRecast("infuriate2", player.id, recast.infuriate);
-      }
-      else {
-        removeIcon("infuriate");
-        addRecast("infuriate1", player.id, checkRecast("infuriate2", player.id));
-        addRecast("infuriate2", player.id, checkRecast("infuriate2", player.id) + recast.infuriate);
-        addIconBlinkTimeout("infuriate", checkRecast("infuriate1", player.id), nextid.infuriate, icon.infuriate);
-      }
-      warGauge();
-    }
+  // Start loop
+  while (nextTime < nextMaxTime) {
+    let loopTime = 0; // Tracks of how "long" the current loop takes
+    if (gcdTime < 1500) { // I assume we're not weaving below that
+      // Special case for entering loop when casting
+     
+      const nextGCD = nextActionOverlay.rdmNextGCD({
+        comboStep, blackmana, whitemana, loopRecast, loopStatus,
+      });
 
-    else if ("Raw Intuition" == actionLog.groups.actionName) {
-      addRecast("rawintuition");
-      removeIcon("rawintuition");
-    }
+      // Push into array
+      iconArray.push({ name: nextGCD });
 
-    else if ("Rampart" == actionLog.groups.actionName) {
-      addRecast("rampart");
-      removeIcon("rampart");
-    }
-
-    else if ("Vengeance" == actionLog.groups.actionName) {
-      addRecast("vengeance");
-      removeIcon("vengeance");
-    }
-
-    else { // GCD actions
-
-      if (["Inner Beast", "Fell Cleave", "Inner Chaos"].indexOf(actionLog.groups.actionName) > -1) {
-        if (player.level >= 45
-        && player.level < 54) {
-          count.targets = 1; // Steel Cyclone is stronger than Inner Beast at 2+ targets
-        }
-        if (player.level >= 66) { // Enhanced Infuriate
-          addRecast("infuriate1", player.id, checkRecast("infuriate1", player.id) - 5000);
-          addRecast("infuriate2", player.id, checkRecast("infuriate2", player.id) - 5000);
-          removeIcon("infuriate");
-          addIconBlinkTimeout("infuriate",checkRecast("infuriate1", player.id),nextid.infuriate,icon.infuriate);
-        }
-        removeIcon("innerbeast");
-      }
-
-      else if (["Steel Cyclone", "Decimate", "Chaotic Cyclone"].indexOf(actionLog.groups.actionName) > -1) {
-        if (Date.now() - previous.steelcyclone > 1000) {
-          count.targets = 1;
-          previous.steelcyclone = Date.now();
-          if (player.level >= 66) { // Enhanced Infuriate
-            addRecast("infuriate1", player.id, checkRecast("infuriate1", player.id) - 5000);
-            addRecast("infuriate2", player.id, checkRecast("infuriate2", player.id) - 5000);
-            removeIcon("infuriate");
-            addIconBlinkTimeout("infuriate",checkRecast("infuriate1", player.id),nextid.infuriate,icon.infuriate);
-          }
-        }
-        else {
-          count.targets = count.targets + 1;
-        }
-        removeIcon("innerbeast");
+      // Set comboStatus and comboStep
+      // Probably fine to not separate weaponskills for RDM since the list of combo actions is short
+      if ((level >= 35 && nextGCD === 'Enchanted Riposte')
+      || (level >= 50 && nextGCD === 'Enchanted Zwerchhau')
+      || (level >= 68 && nextGCD === 'Enchanted Redoublement')
+      || (level >= 80 && ['Verflare', 'Verholy'].includes(nextGCD))) {
+        comboStep = nextGCD;
+        loopStatus.combo = duration.combo;
+      } else {
+        // Everything else resets combo
+        comboStep = '';
+        loopStatus.combo = -1;
       }
 
-      // These actions affect combo
-
-      else if ("Heavy Swing" == actionLog.groups.actionName
-      && actionLog.groups.result.length >= 2) {
-        count.targets = 1;
-        if ([1, 2].indexOf(next.combo) == -1) {
-          warCombo();
-          toggle.combo = Date.now();
-        }
-        removeIcon("heavyswing");
-        if (player.level >= 4) {
-          warComboTimeout();
-        }
-        else {
-          warCombo();
+      // Add procs
+      // This block needs to come before mana stuff for simplicity's sake
+      if (blackmana < whitemana && nextGCD === 'Verflare') { loopStatus.verfireready = duration.verfireready; } else
+      if (whitemana < blackmana && nextGCD === 'Verholy') { loopStatus.verstoneready = duration.verstoneready; } else
+      if (accelerationCount > 0) {
+        if (nextGCD.endsWith(' Verthunder') || nextGCD === 'Verflare') {
+          accelerationCount -= 1;
+          loopStatus.verfireready = duration.verfireready;
+        } else
+        if (nextGCD.endsWith(' Veraero') || nextGCD === 'Verholy') {
+          accelerationCount -= 1;
+          loopStatus.verstoneready = duration.verstoneready;
         }
       }
 
-      else if ("Maim" == actionLog.groups.actionName
-      && actionLog.groups.result.length >= 8) {
-        removeIcon("heavyswing");
-        removeIcon("maim");
-        if (player.level >= 26) {
-          warComboTimeout();
-        }
-        else {
-          warCombo();
-        }
+      // Adjust mana from actions
+      if (nextGCD.endsWith(' Jolt') || nextGCD.endsWith(' Jolt II')) { blackmana += 3; whitemana += 3; } else
+      if (nextGCD.endsWith(' Verthunder')) { blackmana += 11; } else
+      if (nextGCD.endsWith(' Veraero')) { whitemana += 11; } else
+      if (nextGCD.endsWith(' Scatter') || nextGCD.endsWith(' Impact')) { blackmana += 3; whitemana += 3; } else
+      if (nextGCD.endsWith(' Verthunder II')) { blackmana += 7; } else
+      if (nextGCD.endsWith(' Veraero II')) { whitemana += 7; } else
+      if (nextGCD.endsWith(' Verfire')) { blackmana += 9; } else
+      if (nextGCD.endsWith(' Verstone')) { whitemana += 9; } else
+
+      if (nextGCD === 'Enchanted Riposte') { blackmana -= 30; whitemana -= 30; } else
+      if (nextGCD === 'Enchanted Zwerchhau') { blackmana -= 25; whitemana -= 25; } else
+      if (nextGCD === 'Enchanted Redoublement') { blackmana -= 25; whitemana -= 25; } else
+      if (nextGCD === 'Enchanted Moulinet') { blackmana -= 20; whitemana -= 20; } else
+      if (nextGCD === 'Verflare') { blackmana += 21; } else
+      if (nextGCD === 'Verholy') { whitemana += 21; } else
+      if (nextGCD === 'Enchanted Reprise') { blackmana -= 5; whitemana -= 5; } else
+      if (nextGCD === 'Scorch') { blackmana += 7; whitemana += 7; }
+
+      // Fix mana
+      if (blackmana > 100) { blackmana = 100; } else if (blackmana < 0) { blackmana = 0; }
+      if (whitemana > 100) { whitemana = 100; } else if (whitemana < 0) { whitemana = 0; }
+
+      // Remove procs
+      if (nextGCD.endsWith(' Verfire')) { loopStatus.verfireready = -1; } else
+      if (nextGCD.endsWith(' Verstone')) { loopStatus.verstoneready = -1; }
+
+      // GCD
+      if (['Enchanted Riposte', 'Enchanted Zwerchhau', 'Enchanted Moulinet'].includes(nextGCD)) {
+        gcdTime = 1500;
+        loopTime += gcdTime;
+      } else
+      if (['Enchanted Redoublement', 'Enchanted Reprise'].includes(nextGCD)) {
+        gcdTime = 2200;
+        loopTime += gcdTime;
+      } else
+      if (nextGCD.startsWith('Hardcast ') && loopStatus.dualcast < 0 && loopStatus.swiftcast < 0) {
+        // Hardcasted stuff
+        gcdTime = 0; // Due to cast time
+        if (nextGCD.endsWith(' Verthunder') || nextGCD.endsWith(' Veraero') || nextGCD.endsWith(' Scatter') || nextGCD.endsWith(' Impact')) { loopTime += gcd * 2; } else
+        if (nextGCD.endsWith(' Verraise')) { loopTime += gcd * 4; } else { loopTime += gcd; }
+      } else {
+        // Dualcasted/Swiftcasted stuff, spell finishers
+        gcdTime = gcd;
+        loopTime += gcdTime;
       }
 
-      else if ("Storm's Path" == actionLog.groups.actionName
-      && actionLog.groups.result.length >= 8) {
-        warCombo();
-      }
-
-      else if ("Storm's Eye" == actionLog.groups.actionName
-      && actionLog.groups.result.length >= 8) {
-        addStatus("stormseye");
-        warCombo();
-      }
-
-      else if ("Overpower" == actionLog.groups.actionName
-      && actionLog.groups.result.length >= 2) {
-        if (Date.now() - previous.overpower > 1000) {
-          previous.overpower = Date.now();
-          count.targets = 1;
-        }
-        else {
-          count.targets = count.targets + 1;
-        }
-        if (next.combo != 3) {
-          warCombo();
-          toggle.combo = Date.now();
-        }
-        removeIcon("overpower");
-        if (player.level >= 40) {
-          warComboTimeout();
-        }
-        else {
-          warCombo();
-        }
-      }
-
-      else if ("Mythril Tempest" == actionLog.groups.actionName
-      && actionLog.groups.result.length >= 8) {
-
-        if (Date.now() - previous.mythriltempest > 1000) {
-          previous.mythriltempest = Date.now();
-          count.targets = 1;
-          if (checkStatus("stormseye", player.id) > 0) {
-            addStatus("stormseye", Math.min(checkStatus("stormseye", player.id) + 10000, duration.stormseye));
-          }
-        }
-        else {
-          count.targets = count.targets + 1;
-        }
-        warCombo();
-      }
-
-      else {
-        warCombo();
-      }
-
-      if (count.targets >= 3
-      && checkStatus("mitigation", statusLog.groups.targetID) < 1000) {
-        warMitigation();
-      }
-      else {
-        removeIcon("rampart");
-      }
-
-      warGauge(); // Check gauge after all GCD actions
-    }
-  }
-}
-
-function warStatus() {
-
-  if (statusLog.groups.targetID == player.id) { // Target is self
-
-    if (["Berserk", "Inner Release"].indexOf(statusLog.groups.statusName) > -1) {
-      if (statusLog.groups.gainsLoses == "gains") {
-        addStatus("berserk", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
-        if (checkRecast("upheaval") < parseInt(statusLog.groups.effectDuration) * 1000) {
-          addIconBlinkTimeout("upheaval", checkRecast("upheaval"), nextid.upheaval, icon.upheaval); // Show Upheaval if up during Berserk
-        }
-      }
-      else if (statusLog.groups.gainsLoses == "loses") {
-        removeStatus("berserk", statusLog.groups.targetID);
-      }
-
-      if ("Inner Release" == statusLog.groups.statusName) {
-        warGauge();
-      }
+      // Dualcast/Swiftcast status
+      // Apparently everything deletes Dualcast
+      if (loopStatus.dualcast > 0) { loopStatus.dualcast = -1; } else
+      // Swiftcast only consumed on spells (and no dualcast)
+      if (loopStatus.swiftcast > 0 && nextGCD.startsWith('Dualcast ')) { loopStatus.swiftcast = -1; } else
+      // Add Dualcast if nothing above was used
+      if (nextGCD.startsWith('Hardcast ')) { loopStatus.dualcast = duration.dualcast; }
     }
 
+    Object.keys(loopRecast).forEach((property) => {
+      loopRecast[property] = Math.max(loopRecast[property] - loopTime, -1);
+    });
+    Object.keys(loopStatus).forEach((property) => {
+      loopStatus[property] = Math.max(loopStatus[property] - loopTime, -1);
+    });
 
-    else if ("Storm's Eye" == statusLog.groups.statusName) {
-      if (statusLog.groups.gainsLoses == "gains") {
-        addStatus("stormseye", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
-      }
-      else if (statusLog.groups.gainsLoses == "loses") {
-        removeStatus("stormseye", statusLog.groups.targetID);
-      }
+    // Update Combo status
+    if (comboStep === '' || loopStatus.combo < 0) {
+      comboStep = '';
+      loopStatus.combo = -1;
     }
 
-    else if ("Raw Intuition" == statusLog.groups.statusName) {
-      if (statusLog.groups.gainsLoses == "gains") {
-        if (checkStatus("mitigation", statusLog.groups.targetID) < parseInt(statusLog.groups.effectDuration) * 1000) {
-          addStatus("mitigation", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
+    // Remove Acceleration if out of charges or time
+    if (accelerationCount <= 0 || loopStatus.acceleration <= 0) {
+      accelerationCount = 0;
+      loopStatus.acceleration = -1;
+    }
+
+    let weave = 1; let weaveMax = 0;
+    if (gcdTime > 2200) { weaveMax = 2; } else
+    if (gcdTime >= 1500) { weaveMax = 1; }
+
+    // Second loop for OGCDs
+    while (weave <= weaveMax) {
+      const nextOGCD = nextActionOverlay.rdmNextOGCD({
+        weave, weaveMax, comboStep, blackmana, whitemana, loopRecast, loopStatus,
+        // Put MP in later
+        // weave, weaveMax, mp, comboStep, blackmana, whitemana, loopRecast, loopStatus,
+      });
+
+      if (nextOGCD) {
+        // Push into array
+        iconArray.push({ name: nextOGCD, size: 'small' });
+
+        // Generic recast/duration handling
+        const propertyName = nextOGCD.replace(/[\s':-]/g, '').toLowerCase();
+        if (recast[propertyName]) { loopRecast[propertyName] = recast[propertyName]; }
+        if (duration[propertyName]) { loopStatus[propertyName] = duration[propertyName]; }
+
+        // Special effects
+        // Force end OGCD section if Displacement used
+        if (nextOGCD === 'Displacement') { weave = 9; } else
+        if (nextOGCD === 'Acceleration') { accelerationCount = 3; } else
+        if (nextOGCD === 'Manafication') {
+          blackmana = Math.min(blackmana * 2, 100);
+          whitemana = Math.min(whitemana * 2, 100);
+          loopRecast.corpsacorps = -1;
+          loopRecast.displacement = -1;
+        } else
+        if (nextOGCD === 'Engagement') {
+          loopRecast.displacement = recast.displacement;
         }
       }
-      else if (statusLog.groups.gainsLoses == "loses") {
-        if (checkStatus("mitigation", statusLog.groups.targetID) < 0
-        && count.targets >= 3) {
-          warMitigation();
-        }
-      }
+
+      weave += 1; // Increment regardless if OGCD was added; some skills only go on weave 2
     }
 
-    else if ("Rampart" == statusLog.groups.statusName) {
-      if (statusLog.groups.gainsLoses == "gains") {
-        if (checkStatus("mitigation", statusLog.groups.targetID) < parseInt(statusLog.groups.effectDuration) * 1000) {
-          addStatus("mitigation", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
-        }
-      }
-      else if (statusLog.groups.gainsLoses == "loses") {
-        if (checkStatus("mitigation", statusLog.groups.targetID) < 0 // Check for overlaps
-        && count.targets >= 3) {
-          warMitigation();
-        }
-      }
+    gcdTime = 0; // Zero out for next GCD
+    nextTime += loopTime;
+  }
+
+  nextActionOverlay.NEWsyncIcons({ iconArray });
+
+  // Refresh after a few GCDs if nothing's happening
+  clearTimeout(nextActionOverlay.timeout.nextAction); // Keep this the same across jobs
+  nextActionOverlay.timeout.nextAction = setTimeout(
+    nextActionOverlay.rdmNextAction, gcd * 2, // 2 GCDs seems like a good number... maybe 3?
+  );
+};
+
+nextActionOverlay.warNextGCD = ({ // Copied from PLD
+  comboStep, beast, loopRecast, loopStatus,
+} = {}) => {
+  const { recast } = nextActionOverlay;
+  const { duration } = nextActionOverlay;
+  const { targetCount } = nextActionOverlay;
+  const { level } = nextActionOverlay.playerData;
+  const { gcd } = nextActionOverlay;
+
+  // Gauge use toggle
+  let spender = false;
+
+  // Inner Release
+  if (loopStatus.innerrelease > 0) { spender = true; } else
+  // Avoid losing Nascent Chaos
+  if (loopStatus.nascentchaos > 0 && loopStatus.nascentchaos < gcd * 2) { spender = true; } else
+  // Avoid losing Upheaval uses
+  if (level >= 64 && (loopRecast.upheaval > loopRecast.infuriate1 || beast >= 70)) {
+    spender = true;
+  } else
+  // Use immediately before Upheaval is available
+  if (level < 64 && beast >= 50) { spender = true; }
+
+  if (spender === true) {
+    if (loopStatus.nascentchaos > 0) {
+      if (targetCount > 1) { return 'Chaotic Cyclone'; }
+      if (level >= 80) { return 'Inner Chaos'; }
+      return 'Chaotic Cyclone';
     }
-
-    else if ("Vengeance" == statusLog.groups.statusName) {
-      if (statusLog.groups.gainsLoses == "gains") {
-        if (checkStatus("mitigation", statusLog.groups.targetID) < parseInt(statusLog.groups.effectDuration) * 1000) {
-          addStatus("mitigation", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
-        }
-      }
-      else if (statusLog.groups.gainsLoses == "loses") {
-        if (checkStatus("mitigation", statusLog.groups.targetID) < 0
-        && count.targets >= 3) {
-          warMitigation();
-        }
-      }
+    if (targetCount > 1) {
+      if (level >= 60) { return 'Decimate'; } return 'Steel Cyclone';
     }
-
-    else if ("Nascent Chaos" == statusLog.groups.statusName) {
-      if (statusLog.groups.gainsLoses == "gains") {
-        addStatus("nascentchaos", parseInt(statusLog.groups.effectDuration) * 1000, statusLog.groups.targetID);
-        removeIcon("berserk");
-      }
-      else if (statusLog.groups.gainsLoses == "loses") {
-        removeStatus("nascentchaos", statusLog.groups.targetID);
-        addIconBlinkTimeout("berserk",checkRecast("berserk"),nextid.berserk,icon.berserk);
-      }
-      warGauge()
-    }
-  }
-}
-
-
-function warMitigation() {
-
-  // Shows next mitigation cooldown
-  // Ideally Vengeance > Raw Intuition > Rampart > Raw Intuition > DPS plz wake up and DPS
-
-  if (player.level >= 56) {
-    if (checkRecast("vengeance") <= Math.min(checkRecast("rampart"), checkRecast("rawintuition"))) {
-      addIconBlinkTimeout("mitigation",checkRecast("vengeance"),nextid.mitigation,icon.vengeance);
-    }
-    else if (checkRecast("rawintuition") <= Math.min(checkRecast("rampart"), checkRecast("vengeance"))) {
-      addIconBlinkTimeout("mitigation",checkRecast("rawintuition"),nextid.mitigation,icon.rawintuition);
-    }
-    else if (checkRecast("rampart") <= Math.min(checkRecast("vengeance"), checkRecast("rawintuition"))) {
-      addIconBlinkTimeout("mitigation",checkRecast("rampart"),nextid.mitigation,icon.rampart);
-    }
+    if (level >= 54) { return 'Fell Cleave'; } return 'Inner Beast';
   }
 
-  else if (player.level >= 46) {
-    if (checkRecast("vengeance") <= checkRecast("rampart")) {
-      addIconBlinkTimeout("mitigation",checkRecast("vengeance"),nextid.mitigation,icon.vengeance);
-    }
-    else if (checkRecast("rampart") <= checkRecast("vengeance")) {
-      addIconBlinkTimeout("mitigation",checkRecast("rampart"),nextid.mitigation,icon.rampart);
-    }
+  // Continue combos
+  if (level >= 40 && comboStep === 'Overpower') { return 'Mythril Tempest'; }
+  if (level >= 26 && comboStep === 'Maim') {
+    if (level >= 50 && loopStatus.stormseye < 30000) { return 'Storm\'s Eye'; }
+    return 'Storm\'s Path';
+  }
+  if (level >= 4 && comboStep === 'Heavy Swing') { return 'Maim'; }
+
+  // Start combos
+  if (level >= 50 && loopStatus.stormseye < gcd * 2) { return 'Heavy Swing'; }
+  if (level >= 10 && targetCount > 1) { return 'Overpower'; }
+  return 'Heavy Swing';
+};
+
+nextActionOverlay.warNextOGCD = ({
+  weave, loopRecast, loopStatus,
+} = {}) => {
+  const { level } = nextActionOverlay.playerData;
+  const { recast } = nextActionOverlay;
+  // const { gcd } = nextActionOverlay;
+  const { targetCount } = nextActionOverlay;
+
+  if (level >= 2 && loopStatus.requiescat < 0
+  && (['Fast Blade', 'Riot Blade'].includes(comboStep) || targetCount > 1)
+  && gcdTime <= 1500 && loopRecast.fightorflight < 0) {
+    return 'Fight Or Flight';
   }
 
-  else if (player.level >= 8) {
-    addIconBlinkTimeout("mitigation",checkRecast("rampart"),nextid.mitigation,icon.rampart);
-  }
-}
-
-function warGauge() {
-
-  let targetbeast = 50; // Display spender icon if Beast is this value or above
-
-  // Set Inner Beast icon - listed from highest to lowest minimum potency
-  if (checkStatus("nascentchaos", player.id) > 2500) {
-    if (count.targets >= 3) {
-      icon.innerbeast = icon.chaoticcyclone;
-    }
-    if (player.level >= 80) {
-      icon.innerbeast = icon.innerchaos;
-    }
-    else if (player.level >= 74) {
-      icon.innerbeast = icon.chaoticcyclone; // Use Cyclone on Single Target before 80? Not sure...
-    }
-  }
-  else if (player.level >= 60
-  && count.targets >= 3) {
-    icon.innerbeast = icon.decimate;
-  }
-  else if (player.level >= 45
-  && count.targets >= 3) {
-    icon.innerbeast = icon.steelcyclone;
-  }
-  else if (player.level >= 54) {
-    icon.innerbeast = icon.fellcleave;
-  }
-  else if (player.level >= 45
-  && player.level < 54
-  && count.targets >= 2) {
-    icon.innerbeast = icon.steelcyclone;
-  }
-  else {
-    icon.innerbeast = "002553";
+  if (level >= 68 && loopStatus.fightorflight < 0 && loopStatus.swordoath < 0
+  && comboStep === '' && loopRecast.fightorflight > 0 // Requiescat goes second
+  && gcdTime <= 1500 && loopRecast.requiescat < 0) {
+    return 'Requiescat';
   }
 
-  // Set Steel Cyclone icon
-  if (checkStatus("nascentchaos", player.id) > 2500) {
-    icon.steelcyclone = icon.chaoticcyclone;
-  }
-  else if (player.level >= 60) {
-    icon.steelcyclone = icon.decimate;
-  }
-  else {
-    icon.steelcyclone = "002552";
+  if (level >= 50 && targetCount > 1 && loopRecast.fightorflight > recast.circleofscorn * 0.5
+  && loopRecast.circleofscorn < 0) {
+    return 'Circle Of Scorn';
   }
 
-  if (player.level >= 70
-  && checkStatus("berserk", player.id) > 0) { // Possibly adjust this number
-    targetbeast = 0; // Spam during Inner Release
-  }
-  else if (player.level >= 70
-  && checkRecast("berserk") < 5000
-  && checkRecast("infuriate1", player.id) < 40000) {
-    targetbeast = 50; // Avoid overcapping during Inner Release
-  }
-  else if (player.level >= 66
-  && checkRecast("infuriate1", player.id) < 10000) {
-    targetbeast = 50; // Avoid overcapping from Enhanced Infuriate
-  }
-  else if (player.level < 66
-  && checkRecast("infuriate1", player.id) < 5000) {
-    targetbeast = 50; // Avoid overcapping from Infuriate
-  }
-  else if (player.level >= 74
-  && checkStatus("nascentchaos", player.id) > 2500
-  && checkStatus("nascentchaos", player.id) < 12500) {
-    targetbeast = 50; // Avoid wasting Nascent Chaos
-  }
-  else if (player.level >= 50
-  && count.targets <= 3 // AoE wins at 3
-  && checkStatus("stormseye", player.id) < 15000) {
-    targetbeast = 90; // Avoid letting Storm's Eye fall off during AoE
-  }
-  else if (player.level >= 50
-  && checkStatus("stormseye", player.id) < 5000) {
-    targetbeast = 90; // Avoid using spenders out of Storm's Eye
-  }
-  else if (player.level >= 45
-  && count.targets >= 3) {
-    targetbeast = 50; // Use AoE
-  }
-  else if (player.level >= 64
-  && checkRecast("upheaval") < 20000) { // Revisit if too conservative
-    targetbeast = 70; // Stay above 20 for Upheavals
-  }
-  else {
-    targetbeast = 50; // All other cases
+  if (level >= 30 && loopRecast.fightorflight > recast.spiritswithin * 0.5
+  && loopRecast.spiritswithin < 0) {
+    return 'Spirits Within';
   }
 
-  // Berserk/Inner Release
-  if (checkRecast("berserk") < 0
-  && checkStatus("stormseye", player.id) > 0) {
-    addIcon({ name: "berserk"});
-  }
-  else if (player.level >= 70
-  && checkRecast("upheaval") < 1000
-  && checkStatus("berserk", player.id) > 0) {
-    addIcon({ name: "upheaval"});
-  }
-  else if (player.level >= 64
-  && player.jobDetail.beast >= 20
-  && checkRecast("upheaval") < 1000
-  && checkRecast("berserk") > 25000) {
-    addIcon({ name: "upheaval"});
-  }
-  else {
-    removeIcon("upheaval");
+  if (level >= 50 && loopRecast.fightorflight > recast.circleofscorn * 0.5
+  && loopRecast.circleofscorn < 0) {
+    return 'Circle Of Scorn';
   }
 
-  if (player.level >= 35
-  && player.jobDetail.beast >= targetbeast) {
-    addIcon({ name: "innerbeast"});
-  }
-  else {
-    removeIcon("innerbeast");
-  }
-}
-
-function warCombo() {
-
-  delete toggle.combo;
-
-  removeIcon("heavyswing");
-  removeIcon("maim");
-  removeIcon("stormspath");
-
-  // Revisit this later if it is refreshing too much
-  if (player.level >= 50
-  && checkRecast("berserk") < 17500
-  && checkStatus("stormseye", player.id) - Math.max(checkRecast("berserk"), 0) < 20000) {
-    stormseyeCombo();
-  }
-
-  else if (player.level >= 74
-  && count.targets >= 2
-  && checkStatus("stormseye", player.id) > 7500) {
-    mythriltempestCombo();
-  }
-
-  else if (player.level >= 50
-  && count.targets >= 3
-  && checkStatus("stormseye", player.id) > 7500) {
-    mythriltempestCombo();
-  }
-
-  // Revisit this later if it is too conservative
-  else if (player.level >= 50
-  && checkStatus("stormseye", player.id) < 10000) {
-    stormseyeCombo();
-  }
-
-  else if (player.level >= 40
-  && count.targets >= 3) {
-    mythriltempestCombo();
-  }
-
-  else {
-    stormspathCombo();
-  }
-}
-
-function warComboTimeout() {
-  clearTimeout(timeout.combo);
-  timeout.combo = setTimeout(warCombo, 12500);
-}
-
-function stormspathCombo() {
-  next.combo = 1;
-  addIcon({ name: "heavyswing"});
-  if (player.level >= 18) {
-    addIcon({ name: "maim"});
-  }
-  if (player.level >= 38) {
-    addIcon({ name: "stormspath"});
-  }
-}
-
-function stormseyeCombo() {
-  next.combo = 2;
-  addIcon({ name: "heavyswing"});
-  addIcon({ name: "maim"});
-  addIcon({ name: "stormseye"});
-}
-
-function mythriltempestCombo() {
-  next.combo = 3;
-  addIcon({ name: "overpower"});
-  removeIcon("maim");
-  if (player.level >= 40) {
-    addIcon({ name: "mythriltempest"});
-  }
-}
+  return '';
+};

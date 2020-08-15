@@ -113,7 +113,7 @@ nextActionOverlay.pldJobChange = () => {
     icon.rageofhalone = icon.royalauthority;
   }
 
-  nextActionOverlay.tankJobChange();
+  nextActionOverlay.tankRoleChange();
 
   nextActionOverlay.swordoathCount = 0;
 }; // Keep collapsed, usually

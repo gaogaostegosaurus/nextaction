@@ -1,4 +1,4 @@
-nextActionOverlay.changedJob.healer = () => {
+nextActionOverlay.healerRoleChange = () => {
   const { recast } = nextActionOverlay;
   const { duration } = nextActionOverlay;
   const { icon } = nextActionOverlay;

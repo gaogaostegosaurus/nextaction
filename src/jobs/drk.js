@@ -90,7 +90,7 @@ nextActionOverlay.drkJobChange = () => {
     icon.edgeofdarkness = icon.edgeofshadow;
   }
 
-  nextActionOverlay.tankJobChange();
+  nextActionOverlay.tankRoleChange();
 }; // Keep collapsed, usually
 
 nextActionOverlay.drkPlayerChange = (e) => {

@@ -158,8 +158,9 @@ nextActionOverlay.onPlayerChangedEvent = (e) => {
     nextActionOverlay.targetCount = 1;
     nextActionOverlay.comboStep = '';
     nextActionOverlay.gcd = 2500;
+    document.getElementById('debug').innerText = `GCD: ${nextActionOverlay.gcd}`;
     nextActionOverlay.mpRegen = 200;
-    duration.combo = 14000; // I don't know what this is actually supposed to be
+    duration.combo = 16000; // I don't know how long this is actually supposed to be
 
     const { job } = nextActionOverlay.playerData;
     const jobLowercase = job.toLowerCase();
@@ -394,6 +395,8 @@ nextActionOverlay.onLogEvent = (e) => {
             ) / 1000),
         ) / 100,
       ) * 10; // Modified to output in ms
+
+      document.getElementById('debug').innerText = `GCD: ${nextActionOverlay.gcd}`;
 
       const { gcd } = nextActionOverlay; // Save some typing
 

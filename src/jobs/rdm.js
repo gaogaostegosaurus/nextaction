@@ -32,10 +32,8 @@ nextActionOverlay.rdmJobChange = () => {
 
   nextActionOverlay.statusList.self = [
     'Dualcast',
-    'Verfire Ready',
-    'Verstone Ready',
-    'Acceleration',
-    'Manafication',
+    'Verfire Ready', 'Verstone Ready',
+    'Acceleration', 'Manafication',
     'Swiftcast',
   ];
 
@@ -122,7 +120,7 @@ nextActionOverlay.rdmJobChange = () => {
   icon.swiftcastscatter = icon.scatter;
   icon.swiftcastimpact = icon.impact;
 
-  nextActionOverlay.changedJob.magicDPS();
+  nextActionOverlay.magicdpsRoleChange();
 }; // Keep collapsed, usually
 
 nextActionOverlay.rdmPlayerChange = (e) => {
@@ -143,7 +141,7 @@ nextActionOverlay.rdmNextAction = ({
   const { checkStatus } = nextActionOverlay;
   const { duration } = nextActionOverlay;
   const { recast } = nextActionOverlay;
-  const { gcd } = nextActionOverlay; // Static GCD
+  const { gcd } = nextActionOverlay; // RDM has static GCD
   const { level } = nextActionOverlay.playerData;
 
   // Snapshot of current character
@@ -213,83 +211,60 @@ nextActionOverlay.rdmNextAction = ({
 
       // Add procs
       // This block needs to come before mana stuff for simplicity's sake
-      if (blackmana < whitemana && nextGCD === 'Verflare') {
-        loopStatus.verfireready = duration.verfireready;
-      } else if (whitemana < blackmana && nextGCD === 'Verholy') {
-        loopStatus.verstoneready = duration.verstoneready;
-      } else if (accelerationCount > 0) {
+      if (blackmana < whitemana && nextGCD === 'Verflare') { loopStatus.verfireready = duration.verfireready; } else
+      if (whitemana < blackmana && nextGCD === 'Verholy') { loopStatus.verstoneready = duration.verstoneready; } else
+      if (accelerationCount > 0) {
         if (nextGCD.endsWith(' Verthunder') || nextGCD === 'Verflare') {
           accelerationCount -= 1;
           loopStatus.verfireready = duration.verfireready;
-        } else if (nextGCD.endsWith(' Veraero') || nextGCD === 'Verholy') {
+        } else
+        if (nextGCD.endsWith(' Veraero') || nextGCD === 'Verholy') {
           accelerationCount -= 1;
           loopStatus.verstoneready = duration.verstoneready;
         }
       }
 
       // Adjust mana from actions
-      if (nextGCD.endsWith(' Jolt') || nextGCD.endsWith(' Jolt II')) {
-        blackmana += 3; whitemana += 3;
-      } else if (nextGCD.endsWith(' Verthunder')) {
-        blackmana += 11;
-      } else if (nextGCD.endsWith(' Veraero')) {
-        whitemana += 11;
-      } else if (nextGCD.endsWith(' Scatter') || nextGCD.endsWith(' Impact')) {
-        blackmana += 3; whitemana += 3;
-      } else if (nextGCD.endsWith(' Verthunder II')) {
-        blackmana += 7;
-      } else if (nextGCD.endsWith(' Veraero II')) {
-        whitemana += 7;
-      } else if (nextGCD.endsWith(' Verfire')) {
-        blackmana += 9;
-      } else if (nextGCD.endsWith(' Verstone')) {
-        whitemana += 9;
-      } else if (nextGCD === 'Enchanted Riposte') {
-        blackmana -= 30; whitemana -= 30;
-      } else if (nextGCD === 'Enchanted Zwerchhau') {
-        blackmana -= 25; whitemana -= 25;
-      } else if (nextGCD === 'Enchanted Redoublement') {
-        blackmana -= 25; whitemana -= 25;
-      } else if (nextGCD === 'Enchanted Moulinet') {
-        blackmana -= 20; whitemana -= 20;
-      } else if (nextGCD === 'Verflare') {
-        blackmana += 21;
-      } else if (nextGCD === 'Verholy') {
-        whitemana += 21;
-      } else if (nextGCD === 'Enchanted Reprise') {
-        blackmana -= 5; whitemana -= 5;
-      } else if (nextGCD === 'Scorch') {
-        blackmana += 7; whitemana += 7;
-      }
+      if (nextGCD.endsWith(' Jolt') || nextGCD.endsWith(' Jolt II')) { blackmana += 3; whitemana += 3; } else
+      if (nextGCD.endsWith(' Verthunder')) { blackmana += 11; } else
+      if (nextGCD.endsWith(' Veraero')) { whitemana += 11; } else
+      if (nextGCD.endsWith(' Scatter') || nextGCD.endsWith(' Impact')) { blackmana += 3; whitemana += 3; } else
+      if (nextGCD.endsWith(' Verthunder II')) { blackmana += 7; } else
+      if (nextGCD.endsWith(' Veraero II')) { whitemana += 7; } else
+      if (nextGCD.endsWith(' Verfire')) { blackmana += 9; } else
+      if (nextGCD.endsWith(' Verstone')) { whitemana += 9; } else
+
+      if (nextGCD === 'Enchanted Riposte') { blackmana -= 30; whitemana -= 30; } else
+      if (nextGCD === 'Enchanted Zwerchhau') { blackmana -= 25; whitemana -= 25; } else
+      if (nextGCD === 'Enchanted Redoublement') { blackmana -= 25; whitemana -= 25; } else
+      if (nextGCD === 'Enchanted Moulinet') { blackmana -= 20; whitemana -= 20; } else
+      if (nextGCD === 'Verflare') { blackmana += 21; } else
+      if (nextGCD === 'Verholy') { whitemana += 21; } else
+      if (nextGCD === 'Enchanted Reprise') { blackmana -= 5; whitemana -= 5; } else
+      if (nextGCD === 'Scorch') { blackmana += 7; whitemana += 7; }
 
       // Fix mana
       if (blackmana > 100) { blackmana = 100; } else if (blackmana < 0) { blackmana = 0; }
       if (whitemana > 100) { whitemana = 100; } else if (whitemana < 0) { whitemana = 0; }
 
       // Remove procs
-      if (nextGCD.endsWith(' Verfire')) {
-        loopStatus.verfireready = -1;
-      } else if (nextGCD.endsWith(' Verstone')) {
-        loopStatus.verstoneready = -1;
-      }
+      if (nextGCD.endsWith(' Verfire')) { loopStatus.verfireready = -1; } else
+      if (nextGCD.endsWith(' Verstone')) { loopStatus.verstoneready = -1; }
 
       // GCD
       if (['Enchanted Riposte', 'Enchanted Zwerchhau', 'Enchanted Moulinet'].includes(nextGCD)) {
         gcdTime = 1500;
         loopTime += gcdTime;
-      } else if (['Enchanted Redoublement', 'Enchanted Reprise'].includes(nextGCD)) {
+      } else
+      if (['Enchanted Redoublement', 'Enchanted Reprise'].includes(nextGCD)) {
         gcdTime = 2200;
         loopTime += gcdTime;
-      } else if (nextGCD.startsWith('Hardcast ') && loopStatus.dualcast < 0 && loopStatus.swiftcast < 0) {
+      } else
+      if (nextGCD.startsWith('Hardcast ') && loopStatus.dualcast < 0 && loopStatus.swiftcast < 0) {
         // Hardcasted stuff
         gcdTime = 0; // Due to cast time
-        if (nextGCD.endsWith(' Verthunder') || nextGCD.endsWith(' Veraero') || nextGCD.endsWith(' Scatter') || nextGCD.endsWith(' Impact')) {
-          loopTime += gcd * 2;
-        } else if (nextGCD.endsWith(' Verraise')) {
-          loopTime += gcd * 4;
-        } else {
-          loopTime += gcd;
-        }
+        if (nextGCD.endsWith(' Verthunder') || nextGCD.endsWith(' Veraero') || nextGCD.endsWith(' Scatter') || nextGCD.endsWith(' Impact')) { loopTime += gcd * 2; } else
+        if (nextGCD.endsWith(' Verraise')) { loopTime += gcd * 4; } else { loopTime += gcd; }
       } else {
         // Dualcasted/Swiftcasted stuff, spell finishers
         gcdTime = gcd;
@@ -297,16 +272,12 @@ nextActionOverlay.rdmNextAction = ({
       }
 
       // Dualcast/Swiftcast status
-      if (loopStatus.dualcast > 0) {
-        // Apparently everything deletes Dualcast
-        loopStatus.dualcast = -1;
-      } else if (loopStatus.swiftcast > 0 && nextGCD.startsWith('Dualcast ')) {
-        // Swiftcast only consumed on spells (and no dualcast)
-        loopStatus.swiftcast = -1;
-      } else if (nextGCD.startsWith('Hardcast ')) {
-        // Add Dualcast if nothing above was used
-        loopStatus.dualcast = duration.dualcast;
-      }
+      // Apparently everything deletes Dualcast
+      if (loopStatus.dualcast > 0) { loopStatus.dualcast = -1; } else
+      // Swiftcast only consumed on spells (and no dualcast)
+      if (loopStatus.swiftcast > 0 && nextGCD.startsWith('Dualcast ')) { loopStatus.swiftcast = -1; } else
+      // Add Dualcast if nothing above was used
+      if (nextGCD.startsWith('Hardcast ')) { loopStatus.dualcast = duration.dualcast; }
     }
 
     Object.keys(loopRecast).forEach((property) => {
@@ -328,13 +299,9 @@ nextActionOverlay.rdmNextAction = ({
       loopStatus.acceleration = -1;
     }
 
-    let weave = 1;
-    let weaveMax = 0;
-    if (gcdTime > 2200) {
-      weaveMax = 2;
-    } else if (gcdTime >= 1500) {
-      weaveMax = 1;
-    }
+    let weave = 1; let weaveMax = 0;
+    if (gcdTime > 2200) { weaveMax = 2; } else
+    if (gcdTime >= 1500) { weaveMax = 1; }
 
     // Second loop for OGCDs
     while (weave <= weaveMax) {
@@ -354,16 +321,16 @@ nextActionOverlay.rdmNextAction = ({
         if (duration[propertyName]) { loopStatus[propertyName] = duration[propertyName]; }
 
         // Special effects
-        if (nextOGCD === 'Displacement') {
-          weave = 9; // Force end OGCD section if Displacement used
-        } else if (nextOGCD === 'Acceleration') {
-          accelerationCount = 3;
-        } else if (nextOGCD === 'Manafication') {
+        // Force end OGCD section if Displacement used
+        if (nextOGCD === 'Displacement') { weave = 9; } else
+        if (nextOGCD === 'Acceleration') { accelerationCount = 3; } else
+        if (nextOGCD === 'Manafication') {
           blackmana = Math.min(blackmana * 2, 100);
           whitemana = Math.min(whitemana * 2, 100);
           loopRecast.corpsacorps = -1;
           loopRecast.displacement = -1;
-        } else if (nextOGCD === 'Engagement') {
+        } else
+        if (nextOGCD === 'Engagement') {
           loopRecast.displacement = recast.displacement;
         }
       }
@@ -575,26 +542,24 @@ nextActionOverlay.rdmNextOGCD = ({
   && (nextActionOverlay.targetCount === 1 || lowerMana < 20) && weave === 1
   && loopRecast.displacement < 0) {
     return 'Displacement';
-  } if (level >= 18 && Math.max(blackmana, whitemana) < 80
+  }
+  // "If < 80|80 Mana & with no procs, fish for proc."
+  if (level >= 18 && Math.max(blackmana, whitemana) < 80
   && Math.max(loopStatus.verfireready, loopStatus.verstoneready) < 0 && comboStep === ''
-  && loopRecast.swiftcast < 0) {
-    // "If < 80|80 Mana & with no procs, fish for proc."
-    return 'Swiftcast';
-  // } if (level >= 18 && Math.max(blackmana, whitemana) < 60
-  // && Math.min(loopStatus.verfireready, loopStatus.verstoneready) < 0 && comboStep === ''
-  // && loopRecast.swiftcast < 0) {
-  //   // "If < 60|60 Mana with one proc, fish other proc."
-  //   return 'Swiftcast';
+  && loopRecast.swiftcast < 0) { return 'Swiftcast'; }
+  // "If < 60|60 Mana with one proc, fish other proc."
   // This is hard to queue practically without accidentally flubbing Swiftcast 50% of the time
-  } if (loopRecast.acceleration < 0 && Math.max(blackmana, whitemana) < 80 && comboStep === ''
-  && Math.min(loopStatus.verfireready, loopStatus.verstoneready) < 0) {
-    // "If between 60|60 and 80|80 Mana with both procs, do NOT use Acceleration."
-    return 'Acceleration';
-  } if (loopRecast.acceleration < 0 && Math.max(blackmana, whitemana) < 60 && comboStep === '') {
-    return 'Acceleration';
-  } if (level >= 24 && mp < 8000 && loopRecast.luciddreaming < 0) {
-    return 'Lucid Dreaming';
-  } return '';
+  // if (level >= 18 && Math.max(blackmana, whitemana) < 60
+  // && Math.min(loopStatus.verfireready, loopStatus.verstoneready) < 0 && comboStep === ''
+  // && loopRecast.swiftcast < 0) { return 'Swiftcast'; }
+  // "If between 60|60 and 80|80 Mana with both procs, do NOT use Acceleration."
+  // (So use acceleration before 80 with both procs and before 60 with one proc)
+  if (loopRecast.acceleration < 0 && Math.max(blackmana, whitemana) < 80 && comboStep === ''
+  && Math.min(loopStatus.verfireready, loopStatus.verstoneready) < 0) { return 'Acceleration'; }
+  if (loopRecast.acceleration < 0 && Math.max(blackmana, whitemana) < 60
+  && comboStep === '') { return 'Acceleration'; }
+  if (level >= 24 && mp < 8000 && loopRecast.luciddreaming < 0) { return 'Lucid Dreaming'; }
+  return '';
 };
 
 nextActionOverlay.rdmActionMatch = (actionMatch) => {
@@ -633,13 +598,12 @@ nextActionOverlay.rdmActionMatch = (actionMatch) => {
   const { actionName } = actionMatch.groups;
 
   if (singletargetActions.includes(actionName)) {
+    // Two ST actions in a row brings it to 1
     if (nextActionOverlay.targetCount > 2) {
       nextActionOverlay.targetCount = 2;
-    } else {
-      // Two ST actions in a row brings it to 1
-      nextActionOverlay.targetCount = 1;
-    }
-  } else if (multitargetActions.includes(actionName) && actionMatch.groups.logType === '15') {
+    } else { nextActionOverlay.targetCount = 1; }
+  } else
+  if (multitargetActions.includes(actionName) && actionMatch.groups.logType === '15') {
     // Multi target only hits single target
     nextActionOverlay.targetCount = 1;
   }
@@ -661,33 +625,28 @@ nextActionOverlay.rdmActionMatch = (actionMatch) => {
     }
 
     // Call next function with appropriate GCD time
-    if (['Enchanted Riposte', 'Enchanted Zwerchhau', 'Enchanted Moulinet'].includes(actionName)) {
-      nextActionOverlay.rdmNextAction({ delay: 1500 });
-    } else if (['Enchanted Redoublement', 'Enchanted Reprise'].includes(actionName)) {
+    if (['Enchanted Riposte', 'Enchanted Zwerchhau', 'Enchanted Moulinet'].includes(actionName)) { nextActionOverlay.rdmNextAction({ delay: 1500 }); } else
+    if (['Enchanted Redoublement', 'Enchanted Reprise'].includes(actionName)) {
       nextActionOverlay.rdmNextAction({ delay: 2200 });
-    } else {
-      nextActionOverlay.rdmNextAction({ delay: gcd });
-    }
-  } else if (spells.includes(actionName)) {
+    } else { nextActionOverlay.rdmNextAction({ delay: gcd }); }
+  } else
+  if (spells.includes(actionName)) {
     if (checkStatus({ statusName: 'Dualcast' }) < 0 && checkStatus({ statusName: 'Swiftcast' }) < 0) {
       nextActionOverlay.NEWremoveIcon({ name: `Hardcast ${actionName}` });
-    } else {
-      nextActionOverlay.NEWremoveIcon({ name: `Dualcast ${actionName}` });
-    }
-  } else if (abilities.includes(actionName)) {
+    } else { nextActionOverlay.NEWremoveIcon({ name: `Dualcast ${actionName}` }); }
+  } else
+  if (abilities.includes(actionName)) {
     nextActionOverlay.NEWremoveIcon({ name: actionName });
-
     const propertyName = actionName.replace(/[\s':-]/g, '').toLowerCase();
     if (recast[propertyName]) { addRecast({ actionName }); }
     if (duration[propertyName]) { addStatus({ statusName: actionName }); }
-
-    if (actionName === 'Acceleration') {
-      nextActionOverlay.accelerationCount = 3;
-    } else if (actionName === 'Manafication') {
+    if (actionName === 'Acceleration') { nextActionOverlay.accelerationCount = 3; } else
+    if (actionName === 'Manafication') {
       addRecast({ actionName: 'Corps-A-Corps', recast: -1 });
       addRecast({ actionName: 'Displacement', recast: -1 });
       nextActionOverlay.rdmNextAction();
-    } else if (actionName === 'Engagement') {
+    } else
+    if (actionName === 'Engagement') {
       addRecast({ actionName: 'Displacement' }); // Set Displacement cooldown with Engagement
     }
     // console.log(actionName + ' ' + checkRecast({ actionName: actionName }));
@@ -704,15 +663,18 @@ nextActionOverlay.rdmStatusMatch = (statusMatch) => {
   if (statusMatch.groups.logType === '1A') {
     nextActionOverlay.addStatus({ statusName, duration: parseFloat(statusDuration) * 1000 });
 
-    if (statusName === 'Dualcast') {
-      // nextActionOverlay.NEWremoveIcon({ name: 'Hardcast ', match: 'contains' });
-      // nextActionOverlay.rdmNextAction();
-    } else if (statusName === 'Verfire Ready') {
+    // if (statusName === 'Dualcast') {
+    //   // nextActionOverlay.NEWremoveIcon({ name: 'Hardcast ', match: 'contains' });
+    //   // nextActionOverlay.rdmNextAction();
+    // } else
+    if (statusName === 'Verfire Ready') {
       nextActionOverlay.rdmNextAction({ delay: gcd });
-    } else if (statusName === 'Verstone Ready') {
+    } else
+    if (statusName === 'Verstone Ready') {
       nextActionOverlay.rdmNextAction({ delay: gcd });
-    } else if (statusName === 'Swiftcast') {
-      // nextActionOverlay.rdmNextAction();
+    // } else
+    // if (statusName === 'Swiftcast') {
+    //   // nextActionOverlay.rdmNextAction();
     }
     // Acceleration 'gains' a new line every time a stack is used
   } else {
@@ -721,9 +683,8 @@ nextActionOverlay.rdmStatusMatch = (statusMatch) => {
     if (['Dualcast', 'Swiftcast'].includes(statusMatch.groups.statusName)) {
       nextActionOverlay.NEWremoveIcon({ name: 'Dualcast ', match: 'contains' });
       nextActionOverlay.rdmNextAction({ delay: gcd });
-    } else if (statusName === 'Acceleration') {
-      nextActionOverlay.accelerationCount = 0;
-    }
+    } else
+    if (statusName === 'Acceleration') { nextActionOverlay.accelerationCount = 0; }
   }
 };
 

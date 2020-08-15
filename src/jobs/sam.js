@@ -98,7 +98,7 @@ nextActionOverlay.samJobChange = () => {
   icon.kaeshisetsugekka = '003183';
   icon.shoha = '003184';
 
-  nextActionOverlay.changedJob.meleeDPS();
+  nextActionOverlay.meleedpsRoleChange();
 }; // Keep collapsed, probably
 
 nextActionOverlay.samPlayerChange = (e) => {

@@ -120,13 +120,7 @@ recast.aetherpact = 180000;
 recast.summonbahamut = 30000;
 
 // WAR
-recast.berserk = 90000;
-recast.infuriate = 60000;
-recast.rampart = 90000;
-recast.rawintuition = 25000;
-recast.upheaval = 30000;
-recast.vengeance = 120000;
-recast.innerrelease = recast.berserk;
+
 
 // WHM
 recast.assize = 45000;

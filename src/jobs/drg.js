@@ -111,7 +111,7 @@ nextActionOverlay.drgJobChange = () => {
 
   if (level >= 74) { icon.jump = icon.highjump; }
 
-  nextActionOverlay.changedJob.meleeDPS();
+  nextActionOverlay.meleedpsRoleChange();
 };
 
 nextActionOverlay.drgPlayerChange = (e) => {

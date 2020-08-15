@@ -1,4 +1,4 @@
-nextActionOverlay.changedJob.meleeDPS = () => {
+nextActionOverlay.meleedpsRoleChange = () => {
   const { recast } = nextActionOverlay;
 
   recast.secondwind = 120000;

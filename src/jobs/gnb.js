@@ -88,7 +88,7 @@ nextActionOverlay.gnbJobChange = () => {
   icon.bloodfest = '003428';
   icon.blastingzone = '003429';
 
-  nextActionOverlay.tankJobChange();
+  nextActionOverlay.tankRoleChange();
 }; // Keep collapsed, probably
 
 nextActionOverlay.gnbPlayerChange = (e) => {

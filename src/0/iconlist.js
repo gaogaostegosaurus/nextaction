@@ -182,32 +182,6 @@ icon.brandofpurgatory = '002736';
 icon.enkindlephoenix = '002737';
 
 // WAR
-icon.overpower = '000254';
-icon.maim = '000255';
-icon.stormspath = '000258';
-icon.berserk = '000259';
-icon.heavyswing = '000260';
-icon.tomahawk = '000261';
-icon.thrillofbattle = '000263';
-icon.stormseye = '000264';
-icon.holmgang = '000266';
-icon.vengeance = '000267';
-icon.defiance = '002551';
-icon.steelcyclone = '002552';
-icon.innerbeast = '002553';
-icon.infuriate = '002555';
-icon.fellcleave = '002557';
-icon.decimate = '002558';
-icon.rawintuition = '002559';
-icon.equilibrium = '002560';
-icon.onslaught = '002561';
-icon.upheaval = '002562';
-icon.shakeitoff = '002563';
-icon.innerrelease = '002564';
-icon.mythriltempest = '002565';
-icon.chaoticcyclone = '002566';
-icon.nascentflash = '002567';
-icon.innerchaos = '002568';
 
 // WHM
 icon.aero = '000401';

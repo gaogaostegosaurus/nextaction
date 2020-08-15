@@ -102,7 +102,7 @@ nextActionOverlay.ninJobChange = () => {
   icon.hyoshoranryu = '002926';
   icon.bunshin = '002927';
 
-  nextActionOverlay.changedJob.meleeDPS();
+  nextActionOverlay.meleedpsRoleChange();
 }; // Keep collapsed, probably
 
 nextActionOverlay.ninPlayerChange = (e) => {
