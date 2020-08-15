@@ -10,28 +10,23 @@ nextActionOverlay.warJobChange = () => {
     'Tomahawk',
   ];
 
-  nextActionOverlay.actionList.beast = [
+  nextActionOverlay.actionList.spenders = [
     'Inner Beast', 'Fell Cleave', 'Inner Chaos',
     'Steel Cyclone', 'Decimate', 'Chaotic Cyclone',
   ];
 
   nextActionOverlay.actionList.abilities = [
-    'Berserk',
+    'Berserk', 'Inner Release',
     'Thrill Of Battle',
     'Vengeance',
     'Holmgang',
     'Infuriate',
-    'Raw Intuition',
+    'Raw Intuition', 'Nascent Flash',
     'Equilibrium',
     'Onslaught',
     'Upheaval',
     'Shake It Off',
-    'Inner Release',
-    'Nascent Flash',
   ];
-
-  // Easier/more accurate controlling this via the buffs
-  // I think that means it won't work in Eureka but screw Eureka
 
   nextActionOverlay.statusList.self = [
     'Berserk', 'Inner Release',
@@ -130,6 +125,7 @@ nextActionOverlay.warNextAction = ({
   const { duration } = nextActionOverlay;
   const { recast } = nextActionOverlay;
   const { gcd } = nextActionOverlay; // WAR has static GCD
+  const { spenders } = nextActionOverlay.actionList;
   const { level } = nextActionOverlay.playerData;
 
   // Snapshot of current character
@@ -168,98 +164,45 @@ nextActionOverlay.warNextAction = ({
   while (nextTime < nextMaxTime) {
     let loopTime = 0; // Tracks of how "long" the current loop takes
     if (gcdTime < 1500) { // I assume we're not weaving below that
-      // Special case for entering loop when casting
-     
       const nextGCD = nextActionOverlay.rdmNextGCD({
-        comboStep, blackmana, whitemana, loopRecast, loopStatus,
+        comboStep, beast, loopRecast, loopStatus,
       });
 
       // Push into array
       iconArray.push({ name: nextGCD });
 
       // Set comboStatus and comboStep
-      // Probably fine to not separate weaponskills for RDM since the list of combo actions is short
-      if ((level >= 35 && nextGCD === 'Enchanted Riposte')
-      || (level >= 50 && nextGCD === 'Enchanted Zwerchhau')
-      || (level >= 68 && nextGCD === 'Enchanted Redoublement')
-      || (level >= 80 && ['Verflare', 'Verholy'].includes(nextGCD))) {
+      if ((level >= 4 && nextGCD === 'Heavy Swing')
+      || (level >= 26 && nextGCD === 'Maim')
+      || (level >= 40 && nextGCD === 'Overpower')) {
         comboStep = nextGCD;
         loopStatus.combo = duration.combo;
+      } else if (spenders.includes(nextGCD)) {
+        // Do nothing here
       } else {
         // Everything else resets combo
         comboStep = '';
         loopStatus.combo = -1;
       }
 
-      // Add procs
-      // This block needs to come before mana stuff for simplicity's sake
-      if (blackmana < whitemana && nextGCD === 'Verflare') { loopStatus.verfireready = duration.verfireready; } else
-      if (whitemana < blackmana && nextGCD === 'Verholy') { loopStatus.verstoneready = duration.verstoneready; } else
-      if (accelerationCount > 0) {
-        if (nextGCD.endsWith(' Verthunder') || nextGCD === 'Verflare') {
-          accelerationCount -= 1;
-          loopStatus.verfireready = duration.verfireready;
-        } else
-        if (nextGCD.endsWith(' Veraero') || nextGCD === 'Verholy') {
-          accelerationCount -= 1;
-          loopStatus.verstoneready = duration.verstoneready;
-        }
+      // Adjust Beast Gauge from actions
+      if (spenders.includes(nextGCD) && loopStatus.innerrelease < 0) {
+        beast = Math.max(0, beast - 50);
+      } else
+      if (level >= 35) {
+        if (nextGCD === 'Maim') { beast = Math.min(100, beast + 10); } else
+        if (nextGCD === 'Storm\'s Path') { beast = Math.min(100, beast + 20); } else
+        if (nextGCD === 'Storm\'s Eye') { beast = Math.min(100, beast + 10); } else
+        if (level >= 74 && nextGCD === 'Mythril Tempest') { beast = Math.min(100, beast + 20); }
       }
 
-      // Adjust mana from actions
-      if (nextGCD.endsWith(' Jolt') || nextGCD.endsWith(' Jolt II')) { blackmana += 3; whitemana += 3; } else
-      if (nextGCD.endsWith(' Verthunder')) { blackmana += 11; } else
-      if (nextGCD.endsWith(' Veraero')) { whitemana += 11; } else
-      if (nextGCD.endsWith(' Scatter') || nextGCD.endsWith(' Impact')) { blackmana += 3; whitemana += 3; } else
-      if (nextGCD.endsWith(' Verthunder II')) { blackmana += 7; } else
-      if (nextGCD.endsWith(' Veraero II')) { whitemana += 7; } else
-      if (nextGCD.endsWith(' Verfire')) { blackmana += 9; } else
-      if (nextGCD.endsWith(' Verstone')) { whitemana += 9; } else
-
-      if (nextGCD === 'Enchanted Riposte') { blackmana -= 30; whitemana -= 30; } else
-      if (nextGCD === 'Enchanted Zwerchhau') { blackmana -= 25; whitemana -= 25; } else
-      if (nextGCD === 'Enchanted Redoublement') { blackmana -= 25; whitemana -= 25; } else
-      if (nextGCD === 'Enchanted Moulinet') { blackmana -= 20; whitemana -= 20; } else
-      if (nextGCD === 'Verflare') { blackmana += 21; } else
-      if (nextGCD === 'Verholy') { whitemana += 21; } else
-      if (nextGCD === 'Enchanted Reprise') { blackmana -= 5; whitemana -= 5; } else
-      if (nextGCD === 'Scorch') { blackmana += 7; whitemana += 7; }
-
-      // Fix mana
-      if (blackmana > 100) { blackmana = 100; } else if (blackmana < 0) { blackmana = 0; }
-      if (whitemana > 100) { whitemana = 100; } else if (whitemana < 0) { whitemana = 0; }
-
-      // Remove procs
-      if (nextGCD.endsWith(' Verfire')) { loopStatus.verfireready = -1; } else
-      if (nextGCD.endsWith(' Verstone')) { loopStatus.verstoneready = -1; }
+      // Storm's Eye buff
+      if (nextGCD === 'Storm\'s Eye') { loopStatus.stormseye = Math.min(60000, loopStatus.stormseye + 30000); }
+      if (loopStatus.stormseye > 0 && nextGCD === 'Mythril Tempest') { loopStatus.stormseye = Math.min(60000, loopStatus.stormseye + 30000); }
 
       // GCD
-      if (['Enchanted Riposte', 'Enchanted Zwerchhau', 'Enchanted Moulinet'].includes(nextGCD)) {
-        gcdTime = 1500;
-        loopTime += gcdTime;
-      } else
-      if (['Enchanted Redoublement', 'Enchanted Reprise'].includes(nextGCD)) {
-        gcdTime = 2200;
-        loopTime += gcdTime;
-      } else
-      if (nextGCD.startsWith('Hardcast ') && loopStatus.dualcast < 0 && loopStatus.swiftcast < 0) {
-        // Hardcasted stuff
-        gcdTime = 0; // Due to cast time
-        if (nextGCD.endsWith(' Verthunder') || nextGCD.endsWith(' Veraero') || nextGCD.endsWith(' Scatter') || nextGCD.endsWith(' Impact')) { loopTime += gcd * 2; } else
-        if (nextGCD.endsWith(' Verraise')) { loopTime += gcd * 4; } else { loopTime += gcd; }
-      } else {
-        // Dualcasted/Swiftcasted stuff, spell finishers
-        gcdTime = gcd;
-        loopTime += gcdTime;
-      }
-
-      // Dualcast/Swiftcast status
-      // Apparently everything deletes Dualcast
-      if (loopStatus.dualcast > 0) { loopStatus.dualcast = -1; } else
-      // Swiftcast only consumed on spells (and no dualcast)
-      if (loopStatus.swiftcast > 0 && nextGCD.startsWith('Dualcast ')) { loopStatus.swiftcast = -1; } else
-      // Add Dualcast if nothing above was used
-      if (nextGCD.startsWith('Hardcast ')) { loopStatus.dualcast = duration.dualcast; }
+      // WAR has no weird GCD lengths
+      loopTime += gcd;
     }
 
     Object.keys(loopRecast).forEach((property) => {
@@ -275,20 +218,12 @@ nextActionOverlay.warNextAction = ({
       loopStatus.combo = -1;
     }
 
-    // Remove Acceleration if out of charges or time
-    if (accelerationCount <= 0 || loopStatus.acceleration <= 0) {
-      accelerationCount = 0;
-      loopStatus.acceleration = -1;
-    }
-
-    let weave = 1; let weaveMax = 0;
-    if (gcdTime > 2200) { weaveMax = 2; } else
-    if (gcdTime >= 1500) { weaveMax = 1; }
+    let weave = 1; const weaveMax = 2;
 
     // Second loop for OGCDs
     while (weave <= weaveMax) {
       const nextOGCD = nextActionOverlay.rdmNextOGCD({
-        weave, weaveMax, comboStep, blackmana, whitemana, loopRecast, loopStatus,
+        weave, weaveMax, hpp, beast, loopRecast, loopStatus,
         // Put MP in later
         // weave, weaveMax, mp, comboStep, blackmana, whitemana, loopRecast, loopStatus,
       });
@@ -333,11 +268,9 @@ nextActionOverlay.warNextAction = ({
   );
 };
 
-nextActionOverlay.warNextGCD = ({ // Copied from PLD
+nextActionOverlay.warNextGCD = ({ // Originally copied from PLD
   comboStep, beast, loopRecast, loopStatus,
 } = {}) => {
-  const { recast } = nextActionOverlay;
-  const { duration } = nextActionOverlay;
   const { targetCount } = nextActionOverlay;
   const { level } = nextActionOverlay.playerData;
   const { gcd } = nextActionOverlay;
@@ -385,10 +318,14 @@ nextActionOverlay.warNextGCD = ({ // Copied from PLD
 nextActionOverlay.warNextOGCD = ({
   weave, weaveMax, hpp, beast, loopRecast, loopStatus,
 } = {}) => {
+  const { gcd } = nextActionOverlay;
   const { level } = nextActionOverlay.playerData;
 
   // Inner Release (should only activate if first Infuriate stack is already used)
   if (level >= 70 && weave === weaveMax && loopStatus.nascentchaos < 0 && loopRecast.infuriate2 > 0 && loopRecast.innerrelease < 0) { return 'Inner Release'; }
+
+  // Upheaval
+  if (level >= 64 && (beast >= 20 || loopStatus.innerrelease > 0) && loopRecast.innerrelease > 20000 + gcd && loopRecast.upheaval < 0) { return 'Upheaval'; }
 
   // Use final Infuriate stack
   if (level >= 50 && loopRecast.infuriate1 < 0) {
@@ -398,6 +335,10 @@ nextActionOverlay.warNextOGCD = ({
     if (level < 72 && beast <= 50) { return 'Infuriate'; }
   }
 
+  // Use Onslaught if under Inner Release
+  if (level >= 70 && loopStatus.innerrelease > 0 && loopRecast.onslaught < 0) { return 'Onslaught'; }
+
+  // Let's see if this is worth including lol
   if (level >= 58 && hpp < 75 && loopRecast.equilibrium < 0) { return 'Equilibrium'; }
 
   return '';
