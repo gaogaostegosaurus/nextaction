@@ -386,31 +386,31 @@ nextActionOverlay.samNextGCD = ({
 
   // Iaijutsu
   if (level >= 76 && loopStatus.jinpu > 0) {
-    if (sen === 1 && loopRecast.tsubamegaeshi > gcd * 6 && loopStatus.higanbana < gcd * 8) {
+    if (sen === 1 && loopRecast.tsubamegaeshi > gcd * 5 && loopStatus.higanbana < gcd * 8) {
       // Higanbana
       return 'Higanbana';
     } if (sen === 2 && targetCount > 1) {
       if (loopRecast.tsubamegaeshi < gcd) { return 'Tenka Goken'; }
-      if (loopRecast.tsubamegaeshi >= gcd * 5) { return 'Tenka Goken'; }
-    } if (sen === 2 && loopRecast.tsubamegaeshi >= gcd * 5 && loopRecast.tsubamegaeshi < gcd * 6) {
+      if (loopRecast.tsubamegaeshi > gcd * 5) { return 'Tenka Goken'; }
+    } if (sen === 2 && loopRecast.tsubamegaeshi > gcd * 5 && loopRecast.tsubamegaeshi <= gcd * 6) {
       // Experimental Tenka on last possible GCD
       return 'Tenka Goken';
     } if (sen === 3) {
       // Use Midare immediately if Tsubame-gaeshi is ready
-      if (loopRecast.tsubamegaeshi < gcd) { return 'Midare Setsugekka'; }
+      if (loopRecast.tsubamegaeshi <= gcd * 1) { return 'Midare Setsugekka'; }
       // Use Sen to align for upcoming GCDs
-      if (loopRecast.tsubamegaeshi >= gcd * 5) {
-        // Fire immediately if this is final GCD to use
-        if (loopRecast.tsubamegaeshi < gcd * 6) { return 'Midare Setsugekka'; }
+      if (loopRecast.tsubamegaeshi > gcd * 5) {
+        // Fire immediately if last possible GCD to use
+        if (loopRecast.tsubamegaeshi <= gcd * 6) { return 'Midare Setsugekka'; }
         // Use if buffed
         if (loopStatus.jinpu > 0) { return 'Midare Setsugekka'; }
-        // Use if stuck
+        // Use if otherwise stuck
         if (['Jinpu', 'Shifu', 'Fuga'].includes(comboStep) || loopStatus.meikyoshisui > 0) { return 'Midare Setsugekka'; }
       }
     }
   }
 
-  // Iaijutsu (before Tsubame-gaeshi)
+  // Iaijutsu (before level 76 and Tsubame-gaeshi)
   if (level < 76) {
     if (sen === 1 && (loopStatus.higanbana < gcd * 8)) {
       if (loopStatus.jinpu > 0) { return 'Higanbana'; }
@@ -437,36 +437,39 @@ nextActionOverlay.samNextGCD = ({
   // Combo weaponskills
 
   // Tsubame-gaeshi alignment
-  if (level >= 76 && sen === 2 && loopRecast.tsubamegaeshi < gcd * 4) {
-    if (loopRecast.tsubamegaeshi < gcd * 2 && comboStep === 'Hakaze' && setsu === 0 && Math.min(loopStatus.jinpu, loopStatus.shifu) > 0) { return 'Yukikaze'; }
-    if (loopRecast.tsubamegaeshi < gcd * 2 && comboStep === 'Jinpu') { return 'Gekko'; }
-    if (loopRecast.tsubamegaeshi < gcd * 2 && comboStep === 'Shifu') { return 'Kasha'; }
-    if (loopRecast.tsubamegaeshi < gcd * 3 && comboStep === 'Hakaze' && ka === 0 && loopStatus.shifu <= loopStatus.jinpu) { return 'Shifu'; }
-    if (loopRecast.tsubamegaeshi < gcd * 3 && comboStep === 'Hakaze' && getsu === 0) { return 'Jinpu'; }
-    if (loopRecast.tsubamegaeshi < gcd * 3 && comboStep === 'Hakaze' && ka === 0) { return 'Shifu'; }
-    if (loopRecast.tsubamegaeshi < gcd * 2 && comboStep === 'Hakaze' && setsu === 0) { return 'Yukikaze'; }
+  if (level >= 76 && sen === 2 && loopRecast.tsubamegaeshi <= gcd * 4) {
+    // This block might only happen if Meikyo gets flubbed or something... not sure
+    if (loopRecast.tsubamegaeshi <= gcd * 2 && comboStep === 'Hakaze' && setsu === 0 && Math.min(loopStatus.jinpu, loopStatus.shifu) > 0) { return 'Yukikaze'; }
+    if (loopRecast.tsubamegaeshi <= gcd * 2 && comboStep === 'Jinpu') { return 'Gekko'; }
+    if (loopRecast.tsubamegaeshi <= gcd * 2 && comboStep === 'Shifu') { return 'Kasha'; }
+    if (loopRecast.tsubamegaeshi <= gcd * 3 && comboStep === 'Hakaze' && ka === 0 && loopStatus.shifu <= loopStatus.jinpu) { return 'Shifu'; }
+    if (loopRecast.tsubamegaeshi <= gcd * 3 && comboStep === 'Hakaze' && getsu === 0) { return 'Jinpu'; }
+    if (loopRecast.tsubamegaeshi <= gcd * 3 && comboStep === 'Hakaze' && ka === 0) { return 'Shifu'; }
+    if (loopRecast.tsubamegaeshi <= gcd * 2 && comboStep === 'Hakaze' && setsu === 0) { return 'Yukikaze'; }
     if (comboStep === '') { return 'Hakaze'; }
   }
 
-  if (level >= 76 && sen === 1 && loopRecast.tsubamegaeshi < gcd * 5) {
-    if (loopRecast.tsubamegaeshi < gcd * 3 && comboStep === 'Hakaze' && setsu === 0 && Math.min(loopStatus.jinpu, loopStatus.shifu) > 0) { return 'Yukikaze'; }
-    if (loopRecast.tsubamegaeshi < gcd * 3 && comboStep === 'Jinpu') { return 'Gekko'; }
-    if (loopRecast.tsubamegaeshi < gcd * 3 && comboStep === 'Shifu') { return 'Kasha'; }
-    if (loopRecast.tsubamegaeshi < gcd * 4 && comboStep === 'Hakaze' && ka === 0 && loopStatus.shifu <= loopStatus.jinpu) { return 'Shifu'; }
-    if (loopRecast.tsubamegaeshi < gcd * 4 && comboStep === 'Hakaze' && getsu === 0) { return 'Jinpu'; }
-    if (loopRecast.tsubamegaeshi < gcd * 4 && comboStep === 'Hakaze' && ka === 0) { return 'Shifu'; }
-    if (loopRecast.tsubamegaeshi < gcd * 3 && comboStep === 'Hakaze' && setsu === 0) { return 'Yukikaze'; }
+  if (level >= 76 && sen === 1 && loopRecast.tsubamegaeshi <= gcd * 5) {
+    if (loopRecast.tsubamegaeshi <= gcd * 3 && comboStep === 'Hakaze' && setsu === 0 && Math.min(loopStatus.jinpu, loopStatus.shifu) > 0) { return 'Yukikaze'; }
+    if (loopRecast.tsubamegaeshi <= gcd * 3 && comboStep === 'Jinpu') { return 'Gekko'; }
+    if (loopRecast.tsubamegaeshi <= gcd * 3 && comboStep === 'Shifu') { return 'Kasha'; }
+    if (loopRecast.tsubamegaeshi <= gcd * 4 && comboStep === 'Hakaze' && ka === 0 && loopStatus.shifu <= loopStatus.jinpu) { return 'Shifu'; }
+    if (loopRecast.tsubamegaeshi <= gcd * 4 && comboStep === 'Hakaze' && getsu === 0) { return 'Jinpu'; }
+    if (loopRecast.tsubamegaeshi <= gcd * 4 && comboStep === 'Hakaze' && ka === 0) { return 'Shifu'; }
+    if (loopRecast.tsubamegaeshi <= gcd * 3 && comboStep === 'Hakaze' && setsu === 0) { return 'Yukikaze'; }
     if (comboStep === '') { return 'Hakaze'; }
   }
 
-  if (level >= 76 && sen === 0 && loopRecast.tsubamegaeshi < gcd * 7) {
-    if (loopRecast.tsubamegaeshi < gcd * 4 && comboStep === 'Hakaze' && Math.min(loopStatus.jinpu, loopStatus.shifu) > 0) { return 'Yukikaze'; }
-    if (loopRecast.tsubamegaeshi < gcd * 5 && comboStep === 'Jinpu') { return 'Gekko'; }
-    if (loopRecast.tsubamegaeshi < gcd * 5 && comboStep === 'Shifu') { return 'Kasha'; }
-    if (loopRecast.tsubamegaeshi < gcd * 6 && comboStep === 'Hakaze' && loopStatus.shifu <= loopStatus.jinpu) { return 'Shifu'; }
-    if (loopRecast.tsubamegaeshi < gcd * 6 && comboStep === 'Hakaze') { return 'Jinpu'; }
-    if (loopRecast.tsubamegaeshi < gcd * 4 && comboStep === 'Hakaze') { return 'Yukikaze'; }
+  if (level >= 76 && sen === 0 && loopRecast.tsubamegaeshi <= gcd * 7) {
+    if (loopRecast.tsubamegaeshi <= gcd * 4 && comboStep === 'Hakaze' && Math.min(loopStatus.jinpu, loopStatus.shifu) > 0) { return 'Yukikaze'; }
+    if (loopRecast.tsubamegaeshi <= gcd * 5 && comboStep === 'Jinpu') { return 'Gekko'; }
+    if (loopRecast.tsubamegaeshi <= gcd * 5 && comboStep === 'Shifu') { return 'Kasha'; }
+    if (loopRecast.tsubamegaeshi <= gcd * 6 && comboStep === 'Hakaze' && loopStatus.shifu <= loopStatus.jinpu) { return 'Shifu'; }
+    if (loopRecast.tsubamegaeshi <= gcd * 6 && comboStep === 'Hakaze') { return 'Jinpu'; }
+    if (loopRecast.tsubamegaeshi <= gcd * 4 && comboStep === 'Hakaze') { return 'Yukikaze'; }
     if (comboStep === '') { return 'Hakaze'; }
+    // There is a solution for Yukikaze @ 6 GCDs away, but leaving it out makes things more stable
+    // Sen 1 above accounts for this accidentally happening or whatever, though
   }
 
   // Gekko/Kasha always after Jinpu/Shifu (even if you done messed up, probably)
@@ -525,16 +528,19 @@ nextActionOverlay.samNextOGCD = ({
   // Meikyo Shisui
   if (level >= 50 && comboStep === '' && Math.min(loopStatus.jinpu, loopStatus.shifu) > 0 && loopRecast.meikyoshisui < 0) {
     // Use Meikyo to get final Sen
-    if (level >= 76 && sen === 0 && loopRecast.tsubamegaeshi < gcd * 4) { return 'Meikyo Shisui'; }
-    if (level >= 76 && sen <= 1 && loopRecast.tsubamegaeshi < gcd * 3) { return 'Meikyo Shisui'; }
-    if (level >= 76 && sen <= 2 && loopRecast.tsubamegaeshi < gcd * 2) { return 'Meikyo Shisui'; }
+    if (level >= 76 && sen === 0 && loopRecast.tsubamegaeshi <= gcd * 5) { return 'Meikyo Shisui'; }
+    if (level >= 76 && sen <= 1 && loopRecast.tsubamegaeshi <= gcd * 4) { return 'Meikyo Shisui'; }
+    if (level >= 76 && sen <= 2 && loopRecast.tsubamegaeshi <= gcd * 3) { return 'Meikyo Shisui'; }
     if (level < 76) { return 'Meikyo Shisui'; }
   }
 
   // Hagakure alignment before Tsubame-gaeshi
-  if (level >= 76 && sen > 0 && comboStep === '' && loopRecast.tsubamegaeshi >= gcd * 4) {
-    if (loopRecast.tsubamegaeshi < gcd * 5) { return 'Hagakure'; }
-    if (loopRecast.tsubamegaeshi < gcd * 7 && sen < 3) { return 'Hagakure'; }
+  if (level >= 76 && sen > 0 && comboStep === '' && loopRecast.tsubamegaeshi > gcd * 5) {
+    // Must zero out sen at this GCD or annoying stuff happens
+    if (loopRecast.tsubamegaeshi <= gcd * 6) { return 'Hagakure'; }
+    // Zeroing out at 8 (or 6) allows 3 Gekko/Kasha under Meikyo
+    // Zeroing out at 7 necessitates 1 Yukikaze under Meikyo
+    if (loopRecast.tsubamegaeshi <= gcd * 8 && sen < 3) { return 'Hagakure'; }
   }
 
   // Ikishoten
@@ -550,14 +556,19 @@ nextActionOverlay.samNextOGCD = ({
 
   if (level >= 80 && meditation >= 3) { return 'Shoha'; }
 
-  // Spend excess kenki
-  let kenkiTarget = 20;
-  if (level >= 70 && loopRecast.hissatsuguren < loopRecast.ikishoten) { kenkiTarget = 70; }
-  if (level >= 66 && targetCount === 1 && kenki >= kenkiTarget + 15 && loopStatus.eyesopen > 0) { return 'Hissatsu: Seigan'; }
-  if (level >= 62 && kenki >= kenkiTarget + 25) {
-    if (level >= 64 && targetCount > 1) { return 'Hissatsu: Kyuten'; }
+  // Clear space for Ikishoten
+  if (level >= 68 && loopRecast.ikishoten < gcd && kenki >= 50) {
+    if (targetCount > 1) { return 'Hissatsu: Kyuten'; }
+    if (loopStatus.eyesopen > 0) { return 'Hissatsu: Seigan'; }
     return 'Hissatsu: Shinten';
   }
+
+  // Spend excess kenki
+  let kenkiTarget = 40;
+  if (level >= 70 && loopRecast.hissatsuguren < loopRecast.ikishoten) { kenkiTarget = 70; }
+  if (level >= 64 && targetCount > 1 && kenki >= kenkiTarget + 25) { return 'Hissatsu: Kyuten'; }
+  if (level >= 66 && kenki >= kenkiTarget + 15 && loopStatus.eyesopen > 0) { return 'Hissatsu: Seigan'; }
+  if (level >= 62 && kenki >= kenkiTarget + 25) { return 'Hissatsu: Shinten'; }
 
   // No OGCD action
   return '';
