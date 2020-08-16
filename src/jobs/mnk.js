@@ -180,7 +180,7 @@ nextActionOverlay.mnkNextAction = ({
     greasedlightningMultiplier = 1 - 0.05 * greasedlightningStacks;
     gcd = nextActionOverlay.gcd * greasedlightningMultiplier;
 
-    if (gcdTime <= 1000) {
+    if (gcdTime === 0) {
       // Everything cancels Anatman
       loopStatus.anatman = -1;
 
@@ -276,7 +276,7 @@ nextActionOverlay.mnkNextAction = ({
         gcdTime = gcd;
         loopTime = gcdTime;
       }
-    }
+    } else { loopTime = gcdTime; }
 
     Object.keys(loopRecast).forEach((property) => {
       loopRecast[property] = Math.max(loopRecast[property] - loopTime, -1);

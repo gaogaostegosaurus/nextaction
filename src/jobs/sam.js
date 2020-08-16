@@ -203,7 +203,7 @@ nextActionOverlay.samNextAction = ({
     }
     gcd = nextActionOverlay.gcd * shifuModifier;
 
-    if (gcdTime < 1500) {
+    if (gcdTime === 0) {
       let nextGCD = '';
       if (nextTime === 0 && casting) {
         nextGCD = casting;
@@ -281,7 +281,7 @@ nextActionOverlay.samNextAction = ({
       // Uncomment this to check rotation timings
       // console.log(`${Math.ceil(loopRecast.tsubamegaeshi)} ${nextGCD}`);
       loopTime += gcd;
-    }
+    } else { loopTime = gcdTime; }
 
     Object.keys(loopRecast).forEach((property) => {
       loopRecast[property] = Math.max(loopRecast[property] - loopTime, -1);
