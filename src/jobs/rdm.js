@@ -280,13 +280,6 @@ nextActionOverlay.rdmNextAction = ({
       if (nextGCD.startsWith('Hardcast ')) { loopStatus.dualcast = duration.dualcast; }
     } else { loopTime = gcdTime; }
 
-    Object.keys(loopRecast).forEach((property) => {
-      loopRecast[property] = Math.max(loopRecast[property] - loopTime, -1);
-    });
-    Object.keys(loopStatus).forEach((property) => {
-      loopStatus[property] = Math.max(loopStatus[property] - loopTime, -1);
-    });
-
     // Update Combo status
     if (comboStep === '' || loopStatus.combo < 0) {
       comboStep = '';
@@ -339,6 +332,14 @@ nextActionOverlay.rdmNextAction = ({
     }
 
     gcdTime = 0; // Zero out for next GCD
+
+    Object.keys(loopRecast).forEach((property) => {
+      loopRecast[property] = Math.max(loopRecast[property] - loopTime, -1);
+    });
+    Object.keys(loopStatus).forEach((property) => {
+      loopStatus[property] = Math.max(loopStatus[property] - loopTime, -1);
+    });
+
     nextTime += loopTime;
   }
 

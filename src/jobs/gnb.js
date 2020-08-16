@@ -263,10 +263,10 @@ nextActionOverlay.gnbNextAction = ({
       gcdTime -= 1000;
     }
 
+    gcdTime = 0; // Zero out for next loop
+
     Object.keys(loopRecast).forEach((property) => { loopRecast[property] -= loopTime; });
     Object.keys(loopStatus).forEach((property) => { loopStatus[property] -= loopTime; });
-
-    gcdTime = 0; // Zero out for next loop
 
     nextTime += loopTime;
   }

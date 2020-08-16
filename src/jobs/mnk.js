@@ -278,13 +278,6 @@ nextActionOverlay.mnkNextAction = ({
       }
     } else { loopTime = gcdTime; }
 
-    Object.keys(loopRecast).forEach((property) => {
-      loopRecast[property] = Math.max(loopRecast[property] - loopTime, -1);
-    });
-    Object.keys(loopStatus).forEach((property) => {
-      loopStatus[property] = Math.max(loopStatus[property] - loopTime, -1);
-    });
-
     // Reset GL if it's gone
     if (loopStatus.greasedlightning < 0) { greasedlightningStacks = 0; }
 
@@ -343,6 +336,14 @@ nextActionOverlay.mnkNextAction = ({
     }
 
     gcdTime = 0;
+
+    Object.keys(loopRecast).forEach((property) => {
+      loopRecast[property] = Math.max(loopRecast[property] - loopTime, -1);
+    });
+    Object.keys(loopStatus).forEach((property) => {
+      loopStatus[property] = Math.max(loopStatus[property] - loopTime, -1);
+    });
+
     nextTime += loopTime;
   }
   nextActionOverlay.NEWsyncIcons({ iconArray });

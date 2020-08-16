@@ -283,13 +283,6 @@ nextActionOverlay.samNextAction = ({
       loopTime += gcd;
     } else { loopTime = gcdTime; }
 
-    Object.keys(loopRecast).forEach((property) => {
-      loopRecast[property] = Math.max(loopRecast[property] - loopTime, -1);
-    });
-    Object.keys(loopStatus).forEach((property) => {
-      loopStatus[property] = Math.max(loopStatus[property] - loopTime, -1);
-    });
-
     // Update Combo status
     if (comboStep === '' || loopStatus.combo < 0) {
       comboStep = '';
@@ -347,6 +340,14 @@ nextActionOverlay.samNextAction = ({
     }
 
     gcdTime = 0;
+
+    Object.keys(loopRecast).forEach((property) => {
+      loopRecast[property] = Math.max(loopRecast[property] - loopTime, -1);
+    });
+    Object.keys(loopStatus).forEach((property) => {
+      loopStatus[property] = Math.max(loopStatus[property] - loopTime, -1);
+    });
+
     nextTime += loopTime;
   }
 
