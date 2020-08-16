@@ -177,7 +177,7 @@ nextActionOverlay.pldNextAction = ({
 
   while (nextTime < nextMaxTime) {
     let loopTime = 0;
-    if (gcdTime < 1000) {
+    if (gcdTime === 0) {
       let nextGCD = '';
       if (nextTime === 0 && casting) {
         nextGCD = casting;
@@ -244,7 +244,7 @@ nextActionOverlay.pldNextAction = ({
         gcdTime = gcd;
         loopTime = gcdTime;
       }
-    }
+    } else { loopTime = gcdTime; }
 
     Object.keys(loopRecast).forEach((property) => {
       loopRecast[property] = Math.max(loopRecast[property] - loopTime, -1);

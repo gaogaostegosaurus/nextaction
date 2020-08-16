@@ -171,7 +171,7 @@ nextActionOverlay.ninNextAction = ({
     if (loopStatus.huton > 0) { hutonModifier = 0.85; } else { hutonModifier = 1; }
     gcd = nextActionOverlay.gcd * hutonModifier;
 
-    if (gcdTime < 1500) {
+    if (gcdTime === 0) {
       const nextGCD = nextActionOverlay.ninNextGCD({
         comboStep,
         loopRecast,
@@ -250,7 +250,7 @@ nextActionOverlay.ninNextAction = ({
       }
 
       loopTime += gcdTime;
-    }
+    } else { loopTime = gcdTime; }
 
     Object.keys(loopRecast).forEach((property) => {
       loopRecast[property] = Math.max(loopRecast[property] - loopTime, -1);

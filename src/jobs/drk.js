@@ -203,7 +203,7 @@ nextActionOverlay.drkNextOGCD = ({
   } return ''; /* Returns nothing if no OGCD matches */
 };
 
-nextActionOverlay.pldNextAction = ({
+nextActionOverlay.drkNextAction = ({
   delay = 0, // Time to next GCD
 } = {}) => {
   // Shorten objects and functions

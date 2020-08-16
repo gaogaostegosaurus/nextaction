@@ -149,7 +149,7 @@ nextActionOverlay.gnbNextAction = ({
   while (nextTime < nextMaxTime) { // Outside loop for GCDs, looks ahead this number ms
     let loopTime = 0; // Time elapsed for one loop
 
-    if (gcdTime <= 1000) {
+    if (gcdTime === 0) {
       loopStatus.readytorip = -1; // It appears that any GCD removes Continuation buff
       loopStatus.readytotear = -1;
       loopStatus.readytogouge = -1;
@@ -224,7 +224,7 @@ nextActionOverlay.gnbNextAction = ({
       // GCD
       gcdTime = gcd; // All GNB GCDs are just the standard GCD, so no need to do more
       loopTime = gcdTime;
-    }
+    } else { loopTime = gcdTime; }
 
     while (gcdTime > 1250) {
       const nextOGCD = nextActionOverlay.gnbNextOGCD({

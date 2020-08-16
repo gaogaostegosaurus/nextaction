@@ -29,6 +29,7 @@ nextActionOverlay.warJobChange = () => {
   ];
 
   nextActionOverlay.statusList.self = [
+    'Storm\'s Eye',
     'Berserk', 'Inner Release',
     'Nascent Chaos',
   ];
@@ -65,7 +66,7 @@ nextActionOverlay.warJobChange = () => {
   duration.holmgang = 8000;
   duration.nascentchaos = 30000;
   duration.shakeitoff = 15000;
-  duration.stormseye = 30000;
+  // duration.stormseye = 30000;
   duration.thrillofbattle = 20000;
 
   duration.innerrelease = duration.berserk;
@@ -164,8 +165,8 @@ nextActionOverlay.warNextAction = ({
   // Start loop
   while (nextTime < nextMaxTime) {
     let loopTime = 0; // Tracks of how "long" the current loop lasts
-    if (gcdTime < 1500) { // Let's assume we're not weaving below that
-      const nextGCD = nextActionOverlay.rdmNextGCD({
+    if (gcdTime === 0) { // Let's assume we're not weaving below that
+      const nextGCD = nextActionOverlay.warNextGCD({
         comboStep, beast, loopRecast, loopStatus,
       });
 
@@ -216,7 +217,7 @@ nextActionOverlay.warNextAction = ({
 
       // GCD
       loopTime += gcd; // WAR is all standard GCD lengths
-    }
+    } else { loopTime = gcdTime; }
 
     Object.keys(loopRecast).forEach((property) => {
       loopRecast[property] = Math.max(loopRecast[property] - loopTime, -1);
@@ -280,11 +281,11 @@ nextActionOverlay.warNextAction = ({
   // Refresh after a few GCDs if nothing's happening
   clearTimeout(nextActionOverlay.timeout.nextAction); // Keep this the same across jobs
   nextActionOverlay.timeout.nextAction = setTimeout(
-    nextActionOverlay.rdmNextAction, gcd * 2, // 2 GCDs seems like a good number... maybe 3?
+    nextActionOverlay.warNextAction, gcd * 2, // 2 GCDs seems like a good number... maybe 3?
   );
 };
 
-nextActionOverlay.warNextGCD = ({ // Originally copied from PLD
+nextActionOverlay.warNextGCD = ({
   comboStep, beast, loopRecast, loopStatus,
 } = {}) => {
   const { targetCount } = nextActionOverlay;
@@ -400,7 +401,7 @@ nextActionOverlay.warNextMitigation = () => {
 };
 
 nextActionOverlay.warActionMatch = (actionMatch) => {
-  const { removeIcon } = nextActionOverlay;
+  const { NEWremoveIcon } = nextActionOverlay;
   const { addRecast } = nextActionOverlay;
   const { checkRecast } = nextActionOverlay;
   const { addStatus } = nextActionOverlay;
@@ -440,7 +441,7 @@ nextActionOverlay.warActionMatch = (actionMatch) => {
   }
 
   // Remove action from overlay display
-  removeIcon({ name: actionName });
+  NEWremoveIcon({ name: actionName });
 
   if (weaponskills.includes(actionName)) {
     // Combo
@@ -456,15 +457,16 @@ nextActionOverlay.warActionMatch = (actionMatch) => {
 
     // Weaponskill-specific effects here
     if (actionName === 'Storm\'s Eye') {
-      addStatus({ statusName: 'Storm\'s Eye', duration: Math.min(30000, checkStatus({ statusName: 'Storm\'s Eye' }) + 30000) });
+      addStatus({ statusName: 'Storm\'s Eye', duration: Math.min(60000, checkStatus({ statusName: 'Storm\'s Eye' }) + 30000) });
     } else if (actionName === 'Mythril Tempest' && checkStatus({ statusName: 'Storm\'s Eye' }) > 0) {
-      addStatus({ statusName: 'Storm\'s Eye', duration: Math.min(30000, checkStatus({ statusName: 'Storm\'s Eye' }) + 30000) });
+      addStatus({ statusName: 'Storm\'s Eye', duration: Math.min(60000, checkStatus({ statusName: 'Storm\'s Eye' }) + 30000) });
     }
 
     // Find next actions
     nextActionOverlay.warNextAction({ delay: gcd });
   } else if (spenders.includes(actionName)) {
     if (['Chaotic Cyclone', 'Inner Chaos'].includes(actionName)) { removeStatus({ statusName: 'Nascent Chaos' }); }
+    nextActionOverlay.warNextAction({ delay: gcd });
   } else if (abilities.includes(actionName)) {
     // Generic recast/duration handling
     const propertyName = actionName.replace(/[\s':-]/g, '').toLowerCase();
@@ -479,15 +481,14 @@ nextActionOverlay.warActionMatch = (actionMatch) => {
 
 nextActionOverlay.warStatusMatch = (statusMatch) => {
   const { statusName } = statusMatch.groups;
-  const { addStatus } = nextActionOverlay;
-  const { removeStatus } = nextActionOverlay;
+  const { statusDuration } = statusMatch.groups;
 
   if (statusMatch.groups.logType === '1A') {
-    addStatus({ statusName });
+    nextActionOverlay.addStatus({ statusName, duration: parseFloat(statusDuration) * 1000 });
     // Check to see if this is needed
     // if (statusName === 'Nascent Chaos') { nextActionOverlay.warNextAction(); }
   } else { // 1E - loses status
-    removeStatus({ statusName });
+    nextActionOverlay.removeStatus({ statusName });
   }
 
   if (nextActionOverlay.statusList.mitigation.includes(statusName)) {

@@ -192,7 +192,7 @@ nextActionOverlay.dncNextAction = ({
       loopStatus.technicalfinish = duration.technicalfinish;
       gcdTime = 1500;
       loopTime = 4 * 1000 + 1500;
-    } else if (gcdTime < 1500) {
+    } else if (gcdTime === 0) {
       const nextGCD = nextActionOverlay.dncNextGCD({
         comboStep,
         esprit,
@@ -240,7 +240,7 @@ nextActionOverlay.dncNextAction = ({
         gcdTime = 1500;
         loopTime = gcdTime;
       }
-    }
+    } else { loopTime = gcdTime; }
 
     Object.keys(loopRecast).forEach((property) => { loopRecast[property] -= loopTime; });
     Object.keys(loopStatus).forEach((property) => { loopStatus[property] -= loopTime; });

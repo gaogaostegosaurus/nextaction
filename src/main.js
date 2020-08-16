@@ -45,7 +45,7 @@ nextActionOverlay.propertyList.forEach((property) => {
 
 // Supported job list
 nextActionOverlay.supportedJobs = [
-  'PLD', 'GNB',
+  'PLD', 'WAR', 'GNB',
   'MNK', 'NIN', 'SAM',
   'DNC',
   'RDM',
@@ -158,7 +158,6 @@ nextActionOverlay.onPlayerChangedEvent = (e) => {
     nextActionOverlay.targetCount = 1;
     nextActionOverlay.comboStep = '';
     nextActionOverlay.gcd = 2500;
-    document.getElementById('debug').innerText = `GCD: ${nextActionOverlay.gcd}`;
     nextActionOverlay.mpRegen = 200;
     duration.combo = 16000; // I don't know how long this is actually supposed to be
 
@@ -181,6 +180,7 @@ nextActionOverlay.onPlayerChangedEvent = (e) => {
     document.getElementById('icon-a').innerHTML = '';
     document.getElementById('icon-b').innerHTML = '';
     document.getElementById('icon-c').innerHTML = '';
+    document.getElementById('debug').innerText = `GCD: ${nextActionOverlay.gcd}`;
 
     // Reset lists
     // Probably a more elegant way to do this, but whatever for now...

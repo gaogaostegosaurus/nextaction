@@ -180,7 +180,7 @@ nextActionOverlay.rdmNextAction = ({
   // Start loop
   while (nextTime < nextMaxTime) {
     let loopTime = 0; // Tracks of how "long" the current loop takes
-    if (gcdTime < 1500) { // I assume we're not weaving below that
+    if (gcdTime === 0) {
       // Special case for entering loop when casting
       let nextGCD = '';
       if (nextTime === 0 && casting) {
@@ -278,7 +278,7 @@ nextActionOverlay.rdmNextAction = ({
       if (loopStatus.swiftcast > 0 && nextGCD.startsWith('Dualcast ')) { loopStatus.swiftcast = -1; } else
       // Add Dualcast if nothing above was used
       if (nextGCD.startsWith('Hardcast ')) { loopStatus.dualcast = duration.dualcast; }
-    }
+    } else { loopTime = gcdTime; }
 
     Object.keys(loopRecast).forEach((property) => {
       loopRecast[property] = Math.max(loopRecast[property] - loopTime, -1);

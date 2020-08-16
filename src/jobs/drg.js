@@ -177,7 +177,7 @@ nextActionOverlay.drgNextAction = ({
   // Start loop
   while (nextTime < nextMaxTime) {
     let loopTime = 0; // Tracks of how "long" the current loop takes
-    if (gcdTime < 1500) { // I assume we're not weaving below that
+    if (gcdTime === 0) { // I assume we're not weaving below that
       const nextGCD = nextActionOverlay.rdmNextGCD({
         comboStep,
         blackmana,
@@ -298,7 +298,7 @@ nextActionOverlay.drgNextAction = ({
         // Add Dualcast if nothing above was used
         loopStatus.dualcast = duration.dualcast;
       }
-    }
+    } else { loopTime = gcdTime; }
 
     Object.keys(loopRecast).forEach((property) => {
       loopRecast[property] = Math.max(loopRecast[property] - loopTime, -1);
