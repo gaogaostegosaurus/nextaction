@@ -300,12 +300,6 @@ nextActionOverlay.drgNextAction = ({
       }
     } else { loopTime = gcdTime; }
 
-    Object.keys(loopRecast).forEach((property) => {
-      loopRecast[property] = Math.max(loopRecast[property] - loopTime, -1);
-    });
-    Object.keys(loopStatus).forEach((property) => {
-      loopStatus[property] = Math.max(loopStatus[property] - loopTime, -1);
-    });
 
     // Update Combo status
     if (comboStep === '' || loopStatus.combo < 0) {
@@ -367,6 +361,15 @@ nextActionOverlay.drgNextAction = ({
     }
 
     gcdTime = 0; // Zero out for next GCD
+
+    
+    Object.keys(loopRecast).forEach((property) => {
+      loopRecast[property] = Math.max(loopRecast[property] - loopTime, -1);
+    });
+    Object.keys(loopStatus).forEach((property) => {
+      loopStatus[property] = Math.max(loopStatus[property] - loopTime, -1);
+    });
+    
     nextTime += loopTime;
   }
 

@@ -265,8 +265,12 @@ nextActionOverlay.gnbNextAction = ({
 
     gcdTime = 0; // Zero out for next loop
 
-    Object.keys(loopRecast).forEach((property) => { loopRecast[property] -= loopTime; });
-    Object.keys(loopStatus).forEach((property) => { loopStatus[property] -= loopTime; });
+    Object.keys(loopRecast).forEach((property) => {
+      loopRecast[property] = Math.max(loopRecast[property] - loopTime, -1);
+    });
+    Object.keys(loopStatus).forEach((property) => {
+      loopStatus[property] = Math.max(loopStatus[property] - loopTime, -1);
+    });
 
     nextTime += loopTime;
   }
