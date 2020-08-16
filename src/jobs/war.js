@@ -138,7 +138,7 @@ nextActionOverlay.warNextAction = ({
   // Set up object for tracking recast times in loops
   const loopRecast = {};
   // loopRecastList array contains all abilities that have recast, concat extra stuff here as needed
-  const loopRecastList = nextActionOverlay.actionList.abilities;
+  const loopRecastList = nextActionOverlay.actionList.abilities.concat(['Infuriate 1', 'Infuriate 2']);
   loopRecastList.forEach((actionName) => {
     const propertyName = actionName.replace(/[\s':-]/g, '').toLowerCase();
     loopRecast[propertyName] = checkRecast({ actionName });
@@ -219,13 +219,6 @@ nextActionOverlay.warNextAction = ({
       loopTime += gcd; // WAR is all standard GCD lengths
     } else { loopTime = gcdTime; }
 
-    Object.keys(loopRecast).forEach((property) => {
-      loopRecast[property] = Math.max(loopRecast[property] - loopTime, -1);
-    });
-    Object.keys(loopStatus).forEach((property) => {
-      loopStatus[property] = Math.max(loopStatus[property] - loopTime, -1);
-    });
-
     // Update Combo status
     if (comboStep === '' || loopStatus.combo < 0) {
       comboStep = '';
@@ -273,6 +266,14 @@ nextActionOverlay.warNextAction = ({
     }
 
     gcdTime = 0; // Zero out for next GCD
+
+    Object.keys(loopRecast).forEach((property) => {
+      loopRecast[property] = Math.max(loopRecast[property] - loopTime, -1);
+    });
+    Object.keys(loopStatus).forEach((property) => {
+      loopStatus[property] = Math.max(loopStatus[property] - loopTime, -1);
+    });
+
     nextTime += loopTime;
   }
 

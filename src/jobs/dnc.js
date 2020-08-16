@@ -242,9 +242,6 @@ nextActionOverlay.dncNextAction = ({
       }
     } else { loopTime = gcdTime; }
 
-    Object.keys(loopRecast).forEach((property) => { loopRecast[property] -= loopTime; });
-    Object.keys(loopStatus).forEach((property) => { loopStatus[property] -= loopTime; });
-
     let weaveMax = 0;
     if (gcdTime > 2200) {
       weaveMax = 2;
@@ -283,6 +280,10 @@ nextActionOverlay.dncNextAction = ({
       weave += 1; // Increment anyway because some skills only "activate" on weave 2
     }
     gcdTime = 0;
+
+    Object.keys(loopRecast).forEach((property) => { loopRecast[property] -= loopTime; });
+    Object.keys(loopStatus).forEach((property) => { loopStatus[property] -= loopTime; });
+
     nextTime += loopTime;
   }
 

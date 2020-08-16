@@ -130,8 +130,7 @@ nextActionOverlay.pldTargetChange = () => {
 };
 
 nextActionOverlay.pldNextAction = ({
-  delay = 0,
-  casting,
+  delay = 0, casting,
 } = {}) => {
   // Static values
   const { checkStatus } = nextActionOverlay;
@@ -183,11 +182,7 @@ nextActionOverlay.pldNextAction = ({
         nextGCD = casting;
       } else {
         nextGCD = nextActionOverlay.pldNextGCD({
-          comboStep,
-          mp,
-          swordoathCount,
-          loopRecast,
-          loopStatus,
+          comboStep, mp, swordoathCount, loopRecast, loopStatus,
         });
       }
 
@@ -206,25 +201,16 @@ nextActionOverlay.pldNextAction = ({
       } else if (spells.includes(nextGCD)) {
         loopStatus.combo = -1;
         comboStep = '';
-        mp -= 2000;
+        mp = Math.max(0, mp - 2000);
       }
 
       // Special effects
-      if (nextGCD === 'Riot Blade') {
-        mp += 1000;
-      } else if (nextGCD === 'Prominence') {
-        mp += 500;
-      } else if (nextGCD === 'Goring Blade') {
-        loopStatus.goringblade = duration.goringblade;
-      } else if (level >= 76 && nextGCD === 'Royal Authority') {
-        loopStatus.swordoath = duration.swordoath;
-        swordoathCount = 3;
-      } else if (nextGCD === 'Atonement') {
-        swordoathCount -= 1;
-        mp += 400;
-      } else if (nextGCD === 'Confiteor') {
-        loopStatus.requiescat = -1;
-      }
+      if (nextGCD === 'Riot Blade') { mp = Math.min(10000, mp + 1000); } else
+      if (nextGCD === 'Prominence') { mp = Math.min(10000, mp + 500); } else
+      if (nextGCD === 'Goring Blade') { loopStatus.goringblade = duration.goringblade; } else
+      if (level >= 76 && nextGCD === 'Royal Authority') { loopStatus.swordoath = duration.swordoath; swordoathCount = 3; } else
+      if (nextGCD === 'Atonement') { swordoathCount -= 1; mp = Math.min(10000, mp + 400); } else
+      if (nextGCD === 'Confiteor') { loopStatus.requiescat = -1; }
 
       // Remove Sword Oath if last charge was used
       if (swordoathCount <= 0) {
@@ -236,22 +222,9 @@ nextActionOverlay.pldNextAction = ({
         if (nextGCD === 'Confiteor' || (level >= 78 && loopStatus.requiescat > 0)) {
           gcdTime = 2500;
           loopTime = 2500;
-        } else {
-          gcdTime = 0; // Due to cast time
-          loopTime = 2500;
-        }
-      } else {
-        gcdTime = gcd;
-        loopTime = gcdTime;
-      }
+        } else { gcdTime = 0; loopTime = 2500; } // Due to cast time
+      } else { gcdTime = gcd; loopTime = gcdTime; }
     } else { loopTime = gcdTime; }
-
-    Object.keys(loopRecast).forEach((property) => {
-      loopRecast[property] = Math.max(loopRecast[property] - loopTime, -1);
-    });
-    Object.keys(loopStatus).forEach((property) => {
-      loopStatus[property] = Math.max(loopStatus[property] - loopTime, -1);
-    });
 
     if (comboStep === '' || loopStatus.combo < 0) {
       comboStep = '';
@@ -263,22 +236,13 @@ nextActionOverlay.pldNextAction = ({
       loopStatus.swordoath = -1;
     }
 
-    let weave = 1;
-    let weaveMax = 0;
-    if (gcdTime >= 2200) {
-      weaveMax = 2;
-    } else if (gcdTime > 1000) {
-      weaveMax = 1;
-    }
+    let weave = 1; let weaveMax = 0;
+    if (gcdTime >= 2200) { weaveMax = 2; } else
+    if (gcdTime >= 1500) { weaveMax = 1; }
 
     while (weave <= weaveMax) {
       const nextOGCD = nextActionOverlay.pldNextOGCD({
-        comboStep,
-        gcdTime,
-        mp,
-        swordoathCount,
-        loopRecast,
-        loopStatus,
+        weave, weaveMax, comboStep, swordoathCount, mp, loopRecast, loopStatus,
       });
       if (nextOGCD) {
         iconArray.push({ name: nextOGCD, size: 'small' });
@@ -287,26 +251,32 @@ nextActionOverlay.pldNextAction = ({
         if (recast[propertyName]) { loopRecast[propertyName] = recast[propertyName]; }
         if (duration[propertyName]) { loopStatus[propertyName] = duration[propertyName]; }
 
-        if (nextOGCD === 'Requiescat') {
-          // Aesthetic window adjustment
-          loopStatus.requiescat += gcd;
-        } else if (nextOGCD === 'Spirits Within') { mp += 500; }
+        if (nextOGCD === 'Spirits Within') { mp += 500; } else
+        // Aesthetic window adjustment
+        if (nextOGCD === 'Requiescat') { loopStatus.requiescat += gcd; }
       }
 
       weave += 1;
     }
 
     gcdTime = 0;
+
+    Object.keys(loopRecast).forEach((property) => {
+      loopRecast[property] = Math.max(loopRecast[property] - loopTime, -1);
+    });
+    Object.keys(loopStatus).forEach((property) => {
+      loopStatus[property] = Math.max(loopStatus[property] - loopTime, -1);
+    });
+
     nextTime += loopTime;
 
     // MP tick
     if (Math.floor(nextTime / 3000) > mpTick) {
-      mp += 200;
+      mp = Math.min(10000, mp + 200);
       mpTick += 1;
     }
-    // Fix MP just in case
-    if (mp > 10000) { mp = 10000; } else if (mp < 0) { mp = 0; }
   }
+
   nextActionOverlay.NEWsyncIcons({ iconArray });
   nextActionOverlay.pldNextMitigation();
 
@@ -417,28 +387,24 @@ nextActionOverlay.pldNextGCD = ({
 };
 
 nextActionOverlay.pldNextOGCD = ({
-  comboStep,
-  gcdTime,
-  // mp,
-  // swordoathCount,
-  loopRecast,
-  loopStatus,
+  weave, weaveMax, comboStep, loopRecast, loopStatus,
 } = {}) => {
   const { level } = nextActionOverlay.playerData;
   const { recast } = nextActionOverlay;
   // const { gcd } = nextActionOverlay;
   const { targetCount } = nextActionOverlay;
 
-  if (level >= 2 && loopStatus.requiescat < 0
-  && (['Fast Blade', 'Riot Blade'].includes(comboStep) || targetCount > 1)
-  && gcdTime <= 1500 && loopRecast.fightorflight < 0) {
-    return 'Fight Or Flight';
-  }
+  // Use late in GCD
+  if (weave === weaveMax) {
+    if (level >= 2 && loopStatus.requiescat < 0
+    && (['Fast Blade', 'Riot Blade'].includes(comboStep) || targetCount > 1) && loopRecast.fightorflight < 0) {
+      return 'Fight Or Flight';
+    }
 
-  if (level >= 68 && loopStatus.fightorflight < 0 && loopStatus.swordoath < 0
-  && comboStep === '' && loopRecast.fightorflight > 0 // Requiescat goes second
-  && gcdTime <= 1500 && loopRecast.requiescat < 0) {
-    return 'Requiescat';
+    if (level >= 68 && loopStatus.fightorflight < 0 && loopStatus.swordoath < 0
+    && comboStep === '' && loopRecast.fightorflight > 0 && loopRecast.requiescat < 0) {
+      return 'Requiescat';
+    }
   }
 
   if (level >= 50 && targetCount > 1 && loopRecast.fightorflight > recast.circleofscorn * 0.5
