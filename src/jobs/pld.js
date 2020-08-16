@@ -267,18 +267,13 @@ nextActionOverlay.pldNextAction = ({
     let weaveMax = 0;
     if (gcdTime >= 2200) {
       weaveMax = 2;
-    } else if (gcdTime > 1000) {
+    } else if (gcdTime >= 1500) {
       weaveMax = 1;
     }
 
     while (weave <= weaveMax) {
       const nextOGCD = nextActionOverlay.pldNextOGCD({
-        comboStep,
-        gcdTime,
-        mp,
-        swordoathCount,
-        loopRecast,
-        loopStatus,
+        weave, weaveMax, comboStep, swordoathCount, mp, loopRecast, loopStatus,
       });
       if (nextOGCD) {
         iconArray.push({ name: nextOGCD, size: 'small' });
@@ -417,28 +412,23 @@ nextActionOverlay.pldNextGCD = ({
 };
 
 nextActionOverlay.pldNextOGCD = ({
-  comboStep,
-  gcdTime,
-  // mp,
-  // swordoathCount,
-  loopRecast,
-  loopStatus,
+  weave, weaveMax, comboStep, loopRecast, loopStatus,
 } = {}) => {
   const { level } = nextActionOverlay.playerData;
   const { recast } = nextActionOverlay;
   // const { gcd } = nextActionOverlay;
   const { targetCount } = nextActionOverlay;
 
-  if (level >= 2 && loopStatus.requiescat < 0
-  && (['Fast Blade', 'Riot Blade'].includes(comboStep) || targetCount > 1)
-  && gcdTime <= 1500 && loopRecast.fightorflight < 0) {
-    return 'Fight Or Flight';
-  }
+  if (weave === weaveMax) {
+    if (level >= 2 && loopStatus.requiescat < 0
+    && (['Fast Blade', 'Riot Blade'].includes(comboStep) || targetCount > 1) && loopRecast.fightorflight < 0) {
+      return 'Fight Or Flight';
+    }
 
-  if (level >= 68 && loopStatus.fightorflight < 0 && loopStatus.swordoath < 0
-  && comboStep === '' && loopRecast.fightorflight > 0 // Requiescat goes second
-  && gcdTime <= 1500 && loopRecast.requiescat < 0) {
-    return 'Requiescat';
+    if (level >= 68 && loopStatus.fightorflight < 0 && loopStatus.swordoath < 0
+    && comboStep === '' && loopRecast.fightorflight > 0 && loopRecast.requiescat < 0) {
+      return 'Requiescat';
+    }
   }
 
   if (level >= 50 && targetCount > 1 && loopRecast.fightorflight > recast.circleofscorn * 0.5
