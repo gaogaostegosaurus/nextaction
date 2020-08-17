@@ -336,33 +336,31 @@ nextActionOverlay.warNextGCD = ({
 nextActionOverlay.warNextOGCD = ({
   weave, weaveMax, hpp, beast, loopRecast, loopStatus,
 } = {}) => {
-  const { gcd } = nextActionOverlay;
   const { level } = nextActionOverlay.playerData;
 
+  // Keep Infuriate on cooldown
+  if (level >= 50 && beast <= 50 && loopRecast.infuriate2 < 0) { return 'Infuriate'; }
+
   // Inner Release/Berserk as close to cooldown as possible
-  // Inner Release only activates if first Infuriate stack is already used
-  if (level >= 70 && weave === weaveMax && loopStatus.nascentchaos < 0 && loopRecast.infuriate2 > 0 && loopRecast.innerrelease < 0) { return 'Inner Release'; }
+  if (level >= 70 && weave === weaveMax && loopStatus.nascentchaos < 0 && loopRecast.innerrelease < 0) { return 'Inner Release'; }
   if (level >= 6 && level < 70 && weave === weaveMax && loopRecast.berserk < 0) { return 'Berserk'; }
 
   // Upheaval
-  if (level >= 70 && (beast >= 20 || loopStatus.innerrelease > 0) && loopRecast.innerrelease > 20000 + gcd && loopRecast.upheaval < 0) { return 'Upheaval'; }
-  if (level >= 64 && level < 70 && beast >= 20 && loopRecast.berserk > 20000 + gcd && loopRecast.upheaval < 0) { return 'Upheaval'; }
-
-  // Use final Infuriate stack
-  if (level >= 50 && loopRecast.infuriate1 < 0) {
-    // After Nascent Chaos
-    if (level >= 72 && beast <= 50 && loopStatus.nascentchaos < 0 && loopStatus.innerrelease < 0) { return 'Infuriate'; }
-    // Before Nascent Chaos
-    // Should be OK during Inner Release?
-    if (level < 72 && beast <= 50) { return 'Infuriate'; }
-  }
+  if (level >= 70 && (beast >= 20 || loopStatus.innerrelease > 0) && loopRecast.innerrelease > 22000 && loopRecast.upheaval < 0) { return 'Upheaval'; }
+  if (level >= 64 && level < 70 && beast >= 20 && loopRecast.berserk > 22000 && loopRecast.upheaval < 0) { return 'Upheaval'; }
 
   // Use Onslaught if under Inner Release
   if (level >= 70 && loopStatus.innerrelease > 0 && loopRecast.onslaught < 0) { return 'Onslaught'; }
 
   // Let's see if this is worth including...
-  if (level >= 30 && level < 78 && hpp < 75 && loopRecast.thrillofbattle < 0) { return 'Thrill Of Battle'; }
-  if (level >= 58 && hpp < 75 && loopRecast.equilibrium < 0) { return 'Equilibrium'; }
+  if (level >= 30 && level < 78 && hpp < 60 && loopRecast.thrillofbattle < 0) { return 'Thrill Of Battle'; }
+  if (level >= 58 && hpp < 60 && loopRecast.equilibrium < 0) { return 'Equilibrium'; }
+
+  // Use all Infuriate
+  if (level >= 50 && beast <= 50 && loopRecast.infuriate1 < 0) {
+    if (level >= 70 && loopStatus.nascentchaos < 0 && loopRecast.innerrelease > 0 && loopStatus.innerrelease < 0) { return 'Infuriate'; }
+    if (level < 70) { return 'Infuriate'; }
+  }
 
   return '';
 };
