@@ -393,34 +393,17 @@ nextActionOverlay.pldNextOGCD = ({
   const { recast } = nextActionOverlay;
   // const { gcd } = nextActionOverlay;
   const { targetCount } = nextActionOverlay;
+  const zeroTime = 100 + 1250 * (weave - 1);
 
   // Use late in GCD
   if (weave === weaveMax) {
-    if (level >= 2 && loopStatus.requiescat < 0
-    && (['Fast Blade', 'Riot Blade'].includes(comboStep) || targetCount > 1) && loopRecast.fightorflight < 0) {
-      return 'Fight Or Flight';
-    }
-
-    if (level >= 68 && loopStatus.fightorflight < 0 && loopStatus.swordoath < 0
-    && comboStep === '' && loopRecast.fightorflight > 0 && loopRecast.requiescat < 0) {
-      return 'Requiescat';
-    }
+    if (level >= 2 && loopStatus.requiescat < zeroTime && (['Fast Blade', 'Riot Blade'].includes(comboStep) || targetCount > 1) && loopRecast.fightorflight < zeroTime) { return 'Fight Or Flight'; }
+    if (level >= 68 && loopStatus.fightorflight < zeroTime && loopStatus.swordoath < zeroTime && comboStep === '' && loopRecast.fightorflight > zeroTime && loopRecast.requiescat < zeroTime) { return 'Requiescat'; }
   }
 
-  if (level >= 50 && targetCount > 1 && loopRecast.fightorflight > recast.circleofscorn * 0.5
-  && loopRecast.circleofscorn < 0) {
-    return 'Circle Of Scorn';
-  }
-
-  if (level >= 30 && loopRecast.fightorflight > recast.spiritswithin * 0.5
-  && loopRecast.spiritswithin < 0) {
-    return 'Spirits Within';
-  }
-
-  if (level >= 50 && loopRecast.fightorflight > recast.circleofscorn * 0.5
-  && loopRecast.circleofscorn < 0) {
-    return 'Circle Of Scorn';
-  }
+  if (level >= 50 && targetCount > 1 && loopRecast.fightorflight > recast.circleofscorn * 0.5 && loopRecast.circleofscorn < zeroTime) { return 'Circle Of Scorn'; }
+  if (level >= 30 && loopRecast.fightorflight > recast.spiritswithin * 0.5 && loopRecast.spiritswithin < zeroTime) { return 'Spirits Within'; }
+  if (level >= 50 && loopRecast.fightorflight > recast.circleofscorn * 0.5 && loopRecast.circleofscorn < zeroTime) { return 'Circle Of Scorn'; }
 
   return '';
 };

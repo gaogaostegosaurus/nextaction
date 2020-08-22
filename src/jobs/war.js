@@ -35,10 +35,8 @@ nextActionOverlay.warJobChange = () => {
   ];
 
   nextActionOverlay.statusList.mitigation = [
-    'Vengeance',
-    'Holmgang',
-    'Raw Intuition',
-    'Nascent Flash',
+    'Vengeance', 'Holmgang', 'Raw Intuition', 'Nascent Flash',
+    'Rampart', 'Reprisal', 'Arm\'s Length',
   ];
 
   const { recast } = nextActionOverlay;
@@ -211,6 +209,11 @@ nextActionOverlay.warNextAction = ({
       if (spenders.includes(nextGCD) && loopStatus.innerrelease < 0) {
         // Adjust Beast Gauge
         beast = Math.max(0, beast - 50);
+        // Enhanced Infuriate
+        if (level >= 66) {
+          loopStatus.infuriate1 = Math.max(-1, loopStatus.infuriate1 - 5000);
+          loopStatus.infuriate2 = Math.max(-1, loopStatus.infuriate2 - 5000);
+        }
         // Remove Nascent Chaos
         if (['Chaotic Cyclone', 'Inner Chaos'].includes(nextGCD)) { loopStatus.nascentchaos = -1; }
       }
@@ -225,7 +228,8 @@ nextActionOverlay.warNextAction = ({
       loopStatus.combo = -1;
     }
 
-    let weave = 1; const weaveMax = 2;
+    let weave = 1; let weaveMax = 2;
+    if (loopStatus.innerrelease > 0) { weaveMax = 1; }
 
     // OGCD loop
     while (weave <= weaveMax) {
@@ -261,11 +265,8 @@ nextActionOverlay.warNextAction = ({
           if (nextOGCD === 'Upheaval') { beast = Math.max(0, beast - 20); }
         }
       }
-
       weave += 1; // Increment regardless if OGCD was added; some skills only go on weave 2
     }
-
-    gcdTime = 0; // Zero out for next GCD
 
     Object.keys(loopRecast).forEach((property) => {
       loopRecast[property] = Math.max(loopRecast[property] - loopTime, -1);
@@ -274,10 +275,12 @@ nextActionOverlay.warNextAction = ({
       loopStatus[property] = Math.max(loopStatus[property] - loopTime, -1);
     });
 
+    gcdTime = 0; // Zero out for next GCD
     nextTime += loopTime;
   }
 
   nextActionOverlay.NEWsyncIcons({ iconArray });
+  nextActionOverlay.warNextMitigation();
 
   // Refresh after a few GCDs if nothing's happening
   clearTimeout(nextActionOverlay.timeout.nextAction); // Keep this the same across jobs
@@ -293,19 +296,28 @@ nextActionOverlay.warNextGCD = ({
   const { level } = nextActionOverlay.playerData;
   const { gcd } = nextActionOverlay;
 
-  // Gauge use toggle
+  // Spender use toggle
   let spender = false;
 
   // Inner Release
   if (loopStatus.innerrelease > 0) { spender = true; } else
-  // Avoid losing Nascent Chaos
+  // Avoid dropping Nascent Chaos
   if (loopStatus.nascentchaos > 0 && loopStatus.nascentchaos < gcd * 2) { spender = true; } else
-  // Avoid losing Upheaval uses
-  if (level >= 64 && (loopRecast.upheaval > loopRecast.infuriate1 || beast >= 70)) {
-    spender = true;
-  } else
-  // Use immediately before Upheaval is available
-  if (level < 64 && beast >= 50) { spender = true; }
+
+  // General spender circumstances
+  if (beast >= 50) {
+    // Use under Storm's Eye up if possible
+    if (level >= 50 && loopStatus.stormseye > 0) {
+    // Avoid losing Upheaval uses
+      if (level >= 64 && (loopRecast.upheaval > loopRecast.infuriate1 || beast >= 70)) {
+        spender = true;
+      } else
+      // Use immediately before Upheaval is available
+      if (level < 64) { spender = true; }
+    } else
+    // Before Storm's Eye
+    if (level < 50) { spender = true; }
+  }
 
   if (spender === true) {
     if (loopStatus.nascentchaos > 0) {
@@ -320,12 +332,31 @@ nextActionOverlay.warNextGCD = ({
   }
 
   // Continue combos
-  if (level >= 40 && comboStep === 'Overpower') { return 'Mythril Tempest'; }
+  if (level >= 40 && comboStep === 'Overpower') {
+    if (level >= 74 && beast > 80) { return 'Decimate'; }
+    return 'Mythril Tempest';
+  }
   if (level >= 26 && comboStep === 'Maim') {
-    if (level >= 50 && loopStatus.stormseye < 30000) { return 'Storm\'s Eye'; }
+    if (level >= 50 && loopStatus.stormseye < 30000) {
+      if (beast > 90) {
+        if (level > 54) { return 'Fell Cleave'; }
+        return 'Inner Beast';
+      }
+      return 'Storm\'s Eye';
+    }
+    if (beast > 80) {
+      if (level > 54) { return 'Fell Cleave'; }
+      return 'Inner Beast';
+    }
     return 'Storm\'s Path';
   }
-  if (level >= 4 && comboStep === 'Heavy Swing') { return 'Maim'; }
+  if (level >= 4 && comboStep === 'Heavy Swing') {
+    if (beast > 90) {
+      if (level > 54) { return 'Fell Cleave'; }
+      return 'Inner Beast';
+    }
+    return 'Maim';
+  }
 
   // Start combos
   if (level >= 50 && loopStatus.stormseye < gcd * 2) { return 'Heavy Swing'; }
@@ -337,28 +368,31 @@ nextActionOverlay.warNextOGCD = ({
   weave, weaveMax, hpp, beast, loopRecast, loopStatus,
 } = {}) => {
   const { level } = nextActionOverlay.playerData;
+  const zeroTime = 100 + 1250 * (weave - 1);
 
   // Keep Infuriate on cooldown
-  if (level >= 50 && beast <= 50 && loopRecast.infuriate2 < 0) { return 'Infuriate'; }
+  if (level >= 50 && beast <= 50 && loopRecast.infuriate2 < zeroTime) { return 'Infuriate'; }
 
-  // Inner Release/Berserk as close to cooldown as possible
-  if (level >= 70 && weave === weaveMax && loopStatus.nascentchaos < 0 && loopRecast.innerrelease < 0) { return 'Inner Release'; }
-  if (level >= 6 && level < 70 && weave === weaveMax && loopRecast.berserk < 0) { return 'Berserk'; }
+  // Inner Release/Berserk under Storm's Eye as close to cooldown as possible
+  if (loopStatus.stormseye > zeroTime && weave === weaveMax && loopRecast.berserk < zeroTime) {
+    if (level >= 70 && loopStatus.nascentchaos < zeroTime) { return 'Inner Release'; }
+    if (level >= 6 && level < 70) { return 'Berserk'; }
+  }
 
   // Upheaval
-  if (level >= 70 && (beast >= 20 || loopStatus.innerrelease > 0) && loopRecast.innerrelease > 22000 && loopRecast.upheaval < 0) { return 'Upheaval'; }
-  if (level >= 64 && level < 70 && beast >= 20 && loopRecast.berserk > 22000 && loopRecast.upheaval < 0) { return 'Upheaval'; }
+  if (level >= 70 && (beast >= 20 || loopStatus.innerrelease > zeroTime) && loopRecast.innerrelease > 22000 && loopRecast.upheaval < zeroTime) { return 'Upheaval'; }
+  if (level >= 64 && level < 70 && beast >= 20 && loopRecast.berserk > 22000 && loopRecast.upheaval < zeroTime) { return 'Upheaval'; }
 
   // Use Onslaught if under Inner Release
-  if (level >= 70 && loopStatus.innerrelease > 0 && loopRecast.onslaught < 0) { return 'Onslaught'; }
+  if (level >= 70 && loopStatus.innerrelease > zeroTime && loopRecast.onslaught < zeroTime) { return 'Onslaught'; }
 
   // Let's see if this is worth including...
-  if (level >= 30 && level < 78 && hpp < 60 && loopRecast.thrillofbattle < 0) { return 'Thrill Of Battle'; }
-  if (level >= 58 && hpp < 60 && loopRecast.equilibrium < 0) { return 'Equilibrium'; }
+  if (level >= 30 && level < 78 && hpp < 60 && loopRecast.thrillofbattle < zeroTime) { return 'Thrill Of Battle'; }
+  if (level >= 58 && hpp < 60 && loopRecast.equilibrium < zeroTime) { return 'Equilibrium'; }
 
   // Use all Infuriate
-  if (level >= 50 && beast <= 50 && loopRecast.infuriate1 < 0) {
-    if (level >= 70 && loopStatus.nascentchaos < 0 && loopRecast.innerrelease > 0 && loopStatus.innerrelease < 0) { return 'Infuriate'; }
+  if (level >= 50 && beast <= 50 && loopRecast.infuriate1 < zeroTime) {
+    if (level >= 70 && loopStatus.nascentchaos < zeroTime && loopRecast.innerrelease > zeroTime && loopStatus.innerrelease < zeroTime) { return 'Infuriate'; }
     if (level < 70) { return 'Infuriate'; }
   }
 
@@ -384,7 +418,7 @@ nextActionOverlay.warNextMitigation = () => {
   if (mitigationStatus < 0) {
     mitigationList.forEach((ability) => {
       if (checkRecast({ actionName: ability }) < 0) {
-        if (level >= 76 && ability === 'Nascent Flash') { iconArray.push({ name: ability, size: 'small' }); }
+        if (level >= 76 && ability === 'Nascent Flash') { iconArray.push({ name: ability, size: 'small' }); } else
         if (level >= 78 && ability === 'Thrill Of Battle') { iconArray.push({ name: ability, size: 'small' }); }
         if (level >= 38 && ability === 'Vengeance') { iconArray.push({ name: ability, size: 'small' }); }
         if (level >= 56 && level < 76 && ability === 'Raw Intuition') { iconArray.push({ name: ability, size: 'small' }); }
@@ -464,6 +498,11 @@ nextActionOverlay.warActionMatch = (actionMatch) => {
     // Find next actions
     nextActionOverlay.warNextAction({ delay: gcd });
   } else if (spenders.includes(actionName)) {
+    // Enhanced Infuriate
+    if (level >= 66) {
+      addRecast({ actionName: 'Infuriate 1', recast: checkRecast({ actionName: 'Infuriate 1' }) - 5000 });
+      addRecast({ actionName: 'Infuriate 2', recast: checkRecast({ actionName: 'Infuriate 2' }) - 5000 });
+    }
     if (['Chaotic Cyclone', 'Inner Chaos'].includes(actionName)) { removeStatus({ statusName: 'Nascent Chaos' }); }
     nextActionOverlay.warNextAction({ delay: gcd });
   } else if (abilities.includes(actionName)) {

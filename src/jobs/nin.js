@@ -283,10 +283,7 @@ nextActionOverlay.ninNextAction = ({
 
     while (weave <= weaveMax) {
       const nextOGCD = nextActionOverlay.ninNextOGCD({
-        ninki,
-        ninkiTarget,
-        loopRecast,
-        loopStatus,
+        weave, ninki, ninkiTarget, loopRecast, loopStatus,
       });
 
       if (nextOGCD) {
@@ -333,9 +330,9 @@ nextActionOverlay.ninNextAction = ({
       }
 
       if (nextOGCD === 'Ten Chi Jin Suiton') {
-        // 3500 is total GCD time for TCJ
+        // 3500 is total GCD time for TCJ (1000 + 1000 + 1500)
         loopRecast.tenchijin = recast.tenchijin;
-        loopTime += 3500;
+        nextTime += 3500;
         Object.keys(loopRecast).forEach((property) => {
           loopRecast[property] = Math.max(loopRecast[property] - 3500, -1);
         });
@@ -348,8 +345,6 @@ nextActionOverlay.ninNextAction = ({
       }
     }
 
-    gcdTime = 0; // Zero out for next loop
-
     Object.keys(loopRecast).forEach((property) => {
       loopRecast[property] = Math.max(loopRecast[property] - loopTime, -1);
     });
@@ -357,6 +352,7 @@ nextActionOverlay.ninNextAction = ({
       loopStatus[property] = Math.max(loopStatus[property] - loopTime, -1);
     });
 
+    gcdTime = 0; // Zero out for next loop
     nextTime += loopTime;
   }
 
@@ -525,71 +521,68 @@ nextActionOverlay.ninNextNinjutsu = ({
 };
 
 nextActionOverlay.ninNextOGCD = ({
-  loopStatus,
-  loopRecast,
-  ninki,
-  ninkiTarget,
+  weave, ninki, ninkiTarget, loopRecast, loopStatus,
 } = {}) => {
   const { duration } = nextActionOverlay;
   const { recast } = nextActionOverlay;
-
   const { level } = nextActionOverlay.playerData;
+  const zeroTime = 100 + 1250 * (weave - 1);
 
   let { gcd } = nextActionOverlay;
-  if (loopStatus.huton > 0) {
+  if (loopStatus.huton > zeroTime) {
     gcd *= 0.85;
   }
 
   // Prioritize these actions if the related buff is about to wear off for some reason
-  if (loopStatus.suiton > 0 && loopStatus.suiton < gcd * 2) {
-    if (loopRecast.trickattack < 0) { return 'Trick Attack'; }
+  if (loopStatus.suiton > zeroTime && loopStatus.suiton < gcd * 2) {
+    if (loopRecast.trickattack < zeroTime) { return 'Trick Attack'; }
 
     if (level >= 72 && loopStatus.suiton < loopRecast.trickattack && ninki < ninkiTarget
-    && loopRecast.meisui < 0) { return 'Meisui'; }
+    && loopRecast.meisui < zeroTime) { return 'Meisui'; }
   }
-  if (loopStatus.assassinateready > 0 && loopStatus.assassinateready < gcd * 2) { return 'Assassinate'; }
+  if (loopStatus.assassinateready > zeroTime && loopStatus.assassinateready < gcd * 2) { return 'Assassinate'; }
 
   // OGCDs are ordered so that they match with opener (more or less)
 
   // Kassatsu
   if (level >= 50
   && (loopStatus.suiton > gcd || loopRecast.trickattack > recast.kassatsu * 0.1)
-  && loopRecast.kassatsu < 0) { return 'Kassatsu'; }
+  && loopRecast.kassatsu < zeroTime) { return 'Kassatsu'; }
 
   // Mug (for Ninki)
-  if (level >= 66 && ninki <= 60 && loopRecast.mug < 0) { return 'Mug'; }
+  if (level >= 66 && ninki <= 60 && loopRecast.mug < zeroTime) { return 'Mug'; }
 
   // Bunshin
-  if (level >= 80 && ninki >= 50 && loopRecast.bunshin < 0) { return 'Bunshin'; }
+  if (level >= 80 && ninki >= 50 && loopRecast.bunshin < zeroTime) { return 'Bunshin'; }
 
   // Trick Attack
-  if (loopStatus.suiton > 0 && loopRecast.trickattack < 0) { return 'Trick Attack'; }
+  if (loopStatus.suiton > zeroTime && loopRecast.trickattack < zeroTime) { return 'Trick Attack'; }
 
   // Dream (during TA)
   if (level >= 56 && loopRecast.trickattack > recast.dreamwithinadream * 0.1
-  && loopRecast.dreamwithinadream < 0) { return 'Dream Within A Dream'; }
+  && loopRecast.dreamwithinadream < zeroTime) { return 'Dream Within A Dream'; }
 
   // Assassinate
-  if (loopStatus.assassinateready > 0) { return 'Assassinate'; }
+  if (loopStatus.assassinateready > zeroTime) { return 'Assassinate'; }
 
   // TCJ section is a little janky but I can't think of a better way at the moment...
 
   // Use TCJ to set up Meisui
-  if (level >= 72 && loopStatus.kassatsu < 0
+  if (level >= 72 && loopStatus.kassatsu < zeroTime
   && loopRecast.meisui < duration.suiton - gcd
   && loopRecast.trickattack > recast.tenchijin * 0.1
-  && (loopStatus.combo < 0 || loopStatus.combo > gcd * 2)
-  && loopRecast.tenchijin < 0) { return 'Ten Chi Jin Suiton'; }
+  && (loopStatus.combo < zeroTime || loopStatus.combo > gcd * 2)
+  && loopRecast.tenchijin < zeroTime) { return 'Ten Chi Jin Suiton'; }
 
   // Use TCJ to set up TA before 72
-  if (level >= 70 && level < 72 && loopStatus.kassatsu < 0
+  if (level >= 70 && level < 72 && loopStatus.kassatsu < zeroTime
   && loopRecast.trickattack < duration.suiton - gcd
-  && (loopStatus.combo < 0 || loopStatus.combo > gcd * 2)
-  && loopRecast.tenchijin < 0) { return 'Ten Chi Jin Suiton'; }
+  && (loopStatus.combo < zeroTime || loopStatus.combo > gcd * 2)
+  && loopRecast.tenchijin < zeroTime) { return 'Ten Chi Jin Suiton'; }
 
   // Meisui
-  if (level >= 72 && ninki <= 50 && loopStatus.suiton > 0
-  && loopStatus.suiton < loopRecast.trickattack && loopRecast.meisui < 0) { return 'Meisui'; }
+  if (level >= 72 && ninki <= 50 && loopStatus.suiton > zeroTime
+  && loopStatus.suiton < loopRecast.trickattack && loopRecast.meisui < zeroTime) { return 'Meisui'; }
 
   // Ninki spenders
   if (level >= 62 && ninki >= ninkiTarget) {
@@ -599,9 +592,9 @@ nextActionOverlay.ninNextOGCD = ({
 
   // Mug (before Ninki)
   if (level >= 45 && level < 66 && loopRecast.trickattack > recast.mug * 0.1
-  && loopRecast.mug < 0) { return 'Mug'; }
+  && loopRecast.mug < zeroTime) { return 'Mug'; }
 
-  if (level >= 15 && level < 45 && loopRecast.mug < 0) { return 'Mug'; }
+  if (level >= 15 && level < 45 && loopRecast.mug < zeroTime) { return 'Mug'; }
 
   // No OGCD
   return '';

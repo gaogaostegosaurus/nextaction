@@ -339,8 +339,6 @@ nextActionOverlay.samNextAction = ({
       weave += 1;
     }
 
-    gcdTime = 0;
-
     Object.keys(loopRecast).forEach((property) => {
       loopRecast[property] = Math.max(loopRecast[property] - loopTime, -1);
     });
@@ -348,6 +346,7 @@ nextActionOverlay.samNextAction = ({
       loopStatus[property] = Math.max(loopStatus[property] - loopTime, -1);
     });
 
+    gcdTime = 0;
     nextTime += loopTime;
   }
 
@@ -510,14 +509,17 @@ nextActionOverlay.samNextGCD = ({
 };
 
 nextActionOverlay.samNextOGCD = ({
-  comboStep, getsu, ka, setsu, kenki, meditation, loopRecast, loopStatus,
+  weave, comboStep, getsu, ka, setsu, kenki, meditation, loopRecast, loopStatus,
+  // weave, weaveMax, comboStep, getsu, ka, setsu, kenki, meditation, loopRecast, loopStatus,
 } = {}) => {
   const { targetCount } = nextActionOverlay;
   const { level } = nextActionOverlay.playerData;
+  const zeroTime = 100 + 1250 * (weave - 1);
+
   const sen = getsu + ka + setsu;
 
   let { gcd } = nextActionOverlay;
-  if (loopStatus.shifu > 0) {
+  if (loopStatus.shifu > zeroTime) {
     if (level >= 78) {
       gcd *= 0.87;
     } else {
@@ -526,7 +528,7 @@ nextActionOverlay.samNextOGCD = ({
   }
 
   // Meikyo Shisui
-  if (level >= 50 && comboStep === '' && Math.min(loopStatus.jinpu, loopStatus.shifu) > 0 && loopRecast.meikyoshisui < 0) {
+  if (level >= 50 && comboStep === '' && Math.min(loopStatus.jinpu, loopStatus.shifu) > zeroTime && loopRecast.meikyoshisui < zeroTime) {
     // Use Meikyo to get final Sen
     if (level >= 76 && sen === 0 && loopRecast.tsubamegaeshi <= gcd * 5) { return 'Meikyo Shisui'; }
     if (level >= 76 && sen <= 1 && loopRecast.tsubamegaeshi <= gcd * 4) { return 'Meikyo Shisui'; }
@@ -544,12 +546,13 @@ nextActionOverlay.samNextOGCD = ({
   }
 
   // Ikishoten
-  if (level >= 68 && kenki <= 50 && loopRecast.ikishoten < 0) {
+  if (level >= 68 && kenki <= 50 && loopRecast.ikishoten < zeroTime) {
     return 'Ikishoten';
   }
 
   // Guren/Senei
-  if (level >= 70 && kenki >= 50 && loopStatus.jinpu > 0 && loopRecast.hissatsuguren < 0) {
+  if (level >= 70 && kenki >= 50 && loopStatus.jinpu > zeroTime
+  && loopRecast.hissatsuguren < zeroTime) {
     if (level >= 72 && targetCount === 1) { return 'Hissatsu: Senei'; }
     return 'Hissatsu: Guren';
   }
@@ -557,9 +560,9 @@ nextActionOverlay.samNextOGCD = ({
   if (level >= 80 && meditation >= 3) { return 'Shoha'; }
 
   // Clear space for Ikishoten
-  if (level >= 68 && loopRecast.ikishoten < gcd && kenki >= 50) {
+  if (level >= 68 && weave === 1 && kenki >= 50 && loopRecast.ikishoten < zeroTime + 1250) {
     if (targetCount > 1) { return 'Hissatsu: Kyuten'; }
-    if (loopStatus.eyesopen > 0) { return 'Hissatsu: Seigan'; }
+    if (loopStatus.eyesopen > zeroTime) { return 'Hissatsu: Seigan'; }
     return 'Hissatsu: Shinten';
   }
 
@@ -567,7 +570,7 @@ nextActionOverlay.samNextOGCD = ({
   let kenkiTarget = 40;
   if (level >= 70 && loopRecast.hissatsuguren < loopRecast.ikishoten) { kenkiTarget = 70; }
   if (level >= 64 && targetCount > 1 && kenki >= kenkiTarget + 25) { return 'Hissatsu: Kyuten'; }
-  if (level >= 66 && kenki >= kenkiTarget + 15 && loopStatus.eyesopen > 0) { return 'Hissatsu: Seigan'; }
+  if (level >= 66 && kenki >= kenkiTarget + 15 && loopStatus.eyesopen > zeroTime) { return 'Hissatsu: Seigan'; }
   if (level >= 62 && kenki >= kenkiTarget + 25) { return 'Hissatsu: Shinten'; }
 
   // No OGCD action

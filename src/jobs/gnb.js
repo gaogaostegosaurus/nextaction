@@ -226,12 +226,11 @@ nextActionOverlay.gnbNextAction = ({
       loopTime = gcdTime;
     } else { loopTime = gcdTime; }
 
-    while (gcdTime > 1250) {
+    let weave = 1; const weaveMax = 2;
+
+    while (weave <= weaveMax) {
       const nextOGCD = nextActionOverlay.gnbNextOGCD({
-        gcdTime, // For second weave
-        cartridges,
-        loopRecast,
-        loopStatus,
+        weave, weaveMax, cartridges, loopRecast, loopStatus,
       });
 
       if (nextOGCD) {
@@ -260,10 +259,8 @@ nextActionOverlay.gnbNextAction = ({
           cartridges = 2;
         }
       }
-      gcdTime -= 1000;
+      weave += 1; // Increment regardless if OGCD was added; some skills only go on weave 2
     }
-
-    gcdTime = 0; // Zero out for next loop
 
     Object.keys(loopRecast).forEach((property) => {
       loopRecast[property] = Math.max(loopRecast[property] - loopTime, -1);
@@ -272,6 +269,7 @@ nextActionOverlay.gnbNextAction = ({
       loopStatus[property] = Math.max(loopStatus[property] - loopTime, -1);
     });
 
+    gcdTime = 0; // Zero out for next loop
     nextTime += loopTime;
   }
   nextActionOverlay.iconArrayB = gnbArray;
@@ -285,11 +283,7 @@ nextActionOverlay.gnbNextAction = ({
 };
 
 nextActionOverlay.gnbNextGCD = ({ // All GNB GCDs are weaponskills so...
-  comboStep,
-  cartridgecomboStep,
-  cartridges,
-  loopRecast,
-  loopStatus,
+  comboStep, cartridgecomboStep, cartridges, loopRecast, loopStatus,
 } = {}) => {
   const { targetCount } = nextActionOverlay;
   const { recast } = nextActionOverlay;
@@ -406,67 +400,29 @@ nextActionOverlay.gnbNextGCD = ({ // All GNB GCDs are weaponskills so...
 };
 
 nextActionOverlay.gnbNextOGCD = ({
-  gcdTime,
-  cartridges,
-  loopRecast,
-  loopStatus,
+  weave, weaveMax, cartridges, loopRecast, loopStatus,
 } = {}) => {
   const { playerData } = nextActionOverlay;
   const { level } = playerData;
   const { targetCount } = nextActionOverlay;
   const { recast } = nextActionOverlay;
+  const zeroTime = 100 + 1250 * (weave - 1);
 
   const bowshockPotency = (200 + 90 * 5) * targetCount;
-
   let dangerzonePotency = 350;
-  if (level >= 80) {
-    dangerzonePotency = 800;
-  }
+  if (level >= 80) { dangerzonePotency = 800; }
 
-  if (level >= 70 && loopStatus.readytorip > 0) {
-    return 'Jugular Rip';
-  }
-
-  if (level >= 70 && loopStatus.readytotear > 0) {
-    return 'Abdomen Tear';
-  }
-
-  if (level >= 70 && loopStatus.readytogouge > 0) {
-    return 'Eye Gouge';
-  }
-
-  if (level >= 76 && cartridges <= 0 && loopRecast.bloodfest < 0) {
-    return 'Bloodfest';
-  }
-
-  if (level >= 2 && gcdTime <= 1500 && loopRecast.nomercy < 0) {
-    return 'No Mercy'; // gcdTime <= 1500 places it in second part of GCD
-  }
-
-  if (level >= 62 && loopStatus.nomercy > 0 && bowshockPotency > dangerzonePotency
-  && loopRecast.nomercy >= recast.bowshock * 0.20 && loopRecast.bowshock < 0) {
-    return 'Bow Shock';
-  }
-
-  if (level >= 35
-  && loopRecast.nomercy >= recast.dangerzone * 0.20 && loopRecast.dangerzone < 0) {
-    return 'Danger Zone';
-  }
-
-  if (level >= 62
-  && loopRecast.nomercy >= recast.bowshock * 0.20 && loopRecast.bowshock < 0) {
-    return 'Bow Shock'; // Weaker than Blasting Zone but stronger than Danger Zone on one target
-  }
-
-  if (level >= 56 && gcdTime <= 1500
-  && loopRecast.nomercy >= recast.roughdivide1 * 0.20 && loopRecast.roughdivide1 < 0) {
-    return 'Rough Divide';
-  }
-
-  if (level >= 56 && gcdTime <= 1500
-  && loopRecast.nomercy >= recast.roughdivide2 * 0.20 && loopRecast.roughdivide2 < 0) {
-    return 'Rough Divide';
-  } return ''; // Returns nothing if no OGCD matches
+  if (level >= 70 && loopStatus.readytorip > zeroTime) { return 'Jugular Rip'; }
+  if (level >= 70 && loopStatus.readytotear > zeroTime) { return 'Abdomen Tear'; }
+  if (level >= 70 && loopStatus.readytogouge > zeroTime) { return 'Eye Gouge'; }
+  if (level >= 76 && cartridges <= 0 && loopRecast.bloodfest < zeroTime) { return 'Bloodfest'; }
+  if (level >= 2 && weave === weaveMax && loopRecast.nomercy < zeroTime) { return 'No Mercy'; }
+  if (level >= 62 && bowshockPotency > dangerzonePotency && loopRecast.nomercy > recast.bowshock * 0.40 && loopRecast.bowshock < zeroTime) { return 'Bow Shock'; }
+  if (level >= 35 && loopRecast.nomercy > recast.dangerzone * 0.40 && loopRecast.dangerzone < zeroTime) { return 'Danger Zone'; }
+  // Weaker than Blasting Zone but stronger than Danger Zone on one target
+  if (level >= 62 && loopRecast.nomercy > recast.bowshock * 0.40 && loopRecast.bowshock < zeroTime) { return 'Bow Shock'; }
+  if (level >= 56 && weave === weaveMax && loopRecast.nomercy > recast.roughdivide2 * 0.40 && loopRecast.roughdivide2 < zeroTime) { return 'Rough Divide'; }
+  return ''; // Return nothing if no OGCD matches
 };
 
 nextActionOverlay.gnbNextMitigation = () => {

@@ -292,15 +292,16 @@ nextActionOverlay.rdmNextAction = ({
       loopStatus.acceleration = -1;
     }
 
-    let weave = 1; let weaveMax = 0;
-    if (gcdTime > 2200) { weaveMax = 2; } else
+    let weave = 1;
+    let weaveMax = 0;
+    if (gcdTime >= 2200) { weaveMax = 2; } else
     if (gcdTime >= 1500) { weaveMax = 1; }
 
     // Second loop for OGCDs
     while (weave <= weaveMax) {
       const nextOGCD = nextActionOverlay.rdmNextOGCD({
         weave, weaveMax, comboStep, blackmana, whitemana, loopRecast, loopStatus,
-        // Put MP in later
+        // Put MP in later?
         // weave, weaveMax, mp, comboStep, blackmana, whitemana, loopRecast, loopStatus,
       });
 
@@ -324,7 +325,7 @@ nextActionOverlay.rdmNextAction = ({
           loopRecast.displacement = -1;
         } else
         if (nextOGCD === 'Engagement') {
-          loopRecast.displacement = recast.displacement;
+          loopRecast.displacement = loopRecast.engagement;
         }
       }
 
@@ -464,8 +465,8 @@ nextActionOverlay.rdmNextGCD = ({
 
   // Spend excess mana with Reprise or Moulinet
   // There's probably some improvements that can be made here but I don't know what they are
-  if (level >= 76 && repriseTime > Math.max(loopRecast.manafication, 0)) { return 'Enchanted Reprise'; }
-  if (level >= 60 && moulinetTime > Math.max(loopRecast.manafication, 0)) { return 'Enchanted Moulinet'; }
+  if (level >= 76 && repriseTime > 0 && loopRecast.manafication - repriseTime < 1350) { return 'Enchanted Reprise'; }
+  if (level >= 60 && moulinetTime > 0 && loopRecast.manafication - moulinetTime < 100) { return 'Enchanted Moulinet'; }
 
   const lowerProc = Math.min(loopStatus.verfireready, loopStatus.verstoneready);
   const higherProc = Math.max(loopStatus.verfireready, loopStatus.verstoneready);
@@ -518,36 +519,26 @@ nextActionOverlay.rdmNextOGCD = ({
 } = {}) => {
   const { targetCount } = nextActionOverlay;
   const { playerData } = nextActionOverlay;
+  const zeroTime = 100 + 1250 * (weave - 1);
 
   const { level } = playerData;
   const lowerMana = Math.min(blackmana, whitemana);
 
-  if (level >= 60 && targetCount === 1 && comboStep === '' && lowerMana >= 40 && weave === weaveMax && loopRecast.manafication < 0) {
-    return 'Manafication';
+  if (level >= 60 && weave === weaveMax && comboStep === '' && loopRecast.manafication < zeroTime) {
+    if (targetCount === 1 && lowerMana >= 40) { return 'Manafication'; }
+    if (lowerMana >= 50) { return 'Manafication'; }
   }
-  if (level >= 60 && comboStep === '' && lowerMana >= 50 && weave === weaveMax && loopRecast.manafication < 0) {
-    return 'Manafication';
-  } if (level >= 56 && targetCount > 1 && loopRecast.contresixte < 0) {
-    return 'Contre Sixte';
-  } if (level >= 45 && loopRecast.fleche < 0) {
-    return 'Fleche';
-  } if (level >= 56 && loopRecast.contresixte < 0) {
-    return 'Contre Sixte';
-  } if (level >= 58 && weave === weaveMax && loopRecast.embolden < 0) {
-    return 'Embolden';
-  } if (level >= 6 && loopRecast.corpsacorps < 0) {
-    return 'Corps-A-Corps';
-  } if (level >= 72 && loopRecast.displacement < 0) {
-    return 'Engagement';
-  } if (level >= 40 && comboStep !== 'Enchanted Riposte' && comboStep !== 'Enchanted Zwerchhau'
-  && (nextActionOverlay.targetCount === 1 || lowerMana < 20) && weave === 1
-  && loopRecast.displacement < 0) {
-    return 'Displacement';
+  if (level >= 56 && targetCount > 1 && loopRecast.contresixte < zeroTime) { return 'Contre Sixte'; }
+  if (level >= 45 && loopRecast.fleche < zeroTime) { return 'Fleche'; }
+  if (level >= 56 && loopRecast.contresixte < zeroTime) { return 'Contre Sixte'; }
+  if (level >= 58 && weave === weaveMax && loopRecast.embolden < zeroTime) { return 'Embolden'; }
+  if (level >= 6 && loopRecast.corpsacorps < zeroTime) { return 'Corps-A-Corps'; }
+  if (level >= 40 && loopRecast.displacement < zeroTime) {
+    if (level >= 72) { return 'Engagement'; }
+    if (comboStep !== 'Enchanted Riposte' && comboStep !== 'Enchanted Zwerchhau' && (nextActionOverlay.targetCount === 1 || lowerMana < 20) && weave === 1) { return 'Displacement'; }
   }
   // "If < 80|80 Mana & with no procs, fish for proc."
-  if (level >= 18 && Math.max(blackmana, whitemana) < 80
-  && Math.max(loopStatus.verfireready, loopStatus.verstoneready) < 0 && comboStep === ''
-  && loopRecast.swiftcast < 0) { return 'Swiftcast'; }
+  if (level >= 18 && Math.max(blackmana, whitemana) < 80 && Math.max(loopStatus.verfireready, loopStatus.verstoneready) < 0 && comboStep === '' && loopRecast.swiftcast < zeroTime) { return 'Swiftcast'; }
   // "If < 60|60 Mana with one proc, fish other proc."
   // This is hard to queue practically without accidentally flubbing Swiftcast 50% of the time
   // if (level >= 18 && Math.max(blackmana, whitemana) < 60
@@ -555,11 +546,11 @@ nextActionOverlay.rdmNextOGCD = ({
   // && loopRecast.swiftcast < 0) { return 'Swiftcast'; }
   // "If between 60|60 and 80|80 Mana with both procs, do NOT use Acceleration."
   // (So use acceleration before 80 with both procs and before 60 with one proc)
-  if (loopRecast.acceleration < 0 && Math.max(blackmana, whitemana) < 80 && comboStep === ''
-  && Math.min(loopStatus.verfireready, loopStatus.verstoneready) < 0) { return 'Acceleration'; }
-  if (loopRecast.acceleration < 0 && Math.max(blackmana, whitemana) < 60
-  && comboStep === '') { return 'Acceleration'; }
-  if (level >= 24 && mp < 8000 && loopRecast.luciddreaming < 0) { return 'Lucid Dreaming'; }
+  if (level >= 50 && loopRecast.acceleration < zeroTime) {
+    if (Math.max(blackmana, whitemana) < 80 && comboStep === '' && Math.min(loopStatus.verfireready, loopStatus.verstoneready) < zeroTime) { return 'Acceleration'; }
+    if (Math.max(blackmana, whitemana) < 60 && comboStep === '') { return 'Acceleration'; }
+  }
+  if (level >= 24 && mp < 8000 && loopRecast.luciddreaming < zeroTime) { return 'Lucid Dreaming'; }
   return '';
 };
 

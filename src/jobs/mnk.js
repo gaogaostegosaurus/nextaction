@@ -427,7 +427,7 @@ nextActionOverlay.mnkNextGCD = ({
 
   // Raptor Form
   // Twin Snakes before Perfect Balance
-  if (level >= 50 && loopRecast.perfectbalance < gcd * 3 && greasedlightningStacks >= 3 && loopStatus.raptorform > 0) { return 'Twin Snakes'; }
+  if (level >= 50 && loopRecast.perfectbalance < gcd * 3 + 1350 && greasedlightningStacks >= 3 && loopStatus.raptorform > 0) { return 'Twin Snakes'; }
   if (level >= 40 && targetCount > 1 && loopStatus.twinsnakes > 0 && loopStatus.raptorform > 0) { return 'Four Point Fury'; }
   if (level >= 18 && loopStatus.twinsnakes <= gcd * 2 && loopStatus.raptorform > 0) { return 'Twin Snakes'; }
   if (level >= 4 && loopStatus.raptorform > 0) { return 'True Strike'; }
@@ -453,64 +453,25 @@ nextActionOverlay.mnkNextOGCD = ({
   const { playerData } = nextActionOverlay;
   const { targetCount } = nextActionOverlay;
   const { level } = playerData;
+  const zeroTime = 100 + 1250 * (weave - 1);
 
-  if (level >= 76 && loopStatus.fistsofwind < 0 && greasedlightningStacks >= 3
-  && loopStatus.coeurlform > 0) {
-    return 'Fists Of Wind';
-  }
-
-  if (level >= 40 && greasedlightningStacks <= 3 && (loopStatus.coeurlform < 0 || level < 76)
-  && loopStatus.fistsoffire < 0) {
-    return 'Fists Of Fire';
-  }
-
+  if (level >= 76 && loopStatus.fistsofwind < zeroTime && greasedlightningStacks >= 3 && loopStatus.coeurlform > zeroTime) { return 'Fists Of Wind'; }
+  if (level >= 40 && greasedlightningStacks <= 3 && (loopStatus.coeurlform < zeroTime || level < 76) && loopStatus.fistsoffire < zeroTime) { return 'Fists Of Fire'; }
   // Everything else starts combat so
   if (!combat) { return ''; }
 
-  if (level >= 68 && loopStatus.coeurlform > 0 && greasedlightningStacks >= 2 && weave === weaveMax
-  && loopRecast.riddleoffire < 0) { return 'Riddle Of Fire'; }
-
-  if (level >= 70 && loopRecast.riddleoffire > recast.brotherhood * 0.5
-  && loopRecast.brotherhood < 0) {
-    return 'Brotherhood';
+  if (level >= 68 && loopStatus.coeurlform > zeroTime && greasedlightningStacks >= 2 && weave === weaveMax && loopRecast.riddleoffire < zeroTime) { return 'Riddle Of Fire'; }
+  if (level >= 70 && loopRecast.riddleoffire > recast.brotherhood * 0.5 && loopRecast.brotherhood < zeroTime) { return 'Brotherhood'; }
+  if (level >= 50 && weave === weaveMax && loopRecast.perfectbalance < zeroTime) {
+    if (targetCount === 1 && (greasedlightningStacks >= 4 || (level < 76 && greasedlightningStacks === 3)) && loopStatus.raptorform > zeroTime) { return 'Perfect Balance'; }
+    // Use PB to boost to 3 stacks before 78
+    if (level < 78 && targetCount === 1 && greasedlightningStacks < greasedlightningMax && loopStatus.opoopoform > zeroTime) { return 'Perfect Balance'; }
   }
-
-  if (level >= 50 && targetCount === 1
-  && (greasedlightningStacks >= 4 /* Implies 76 */ || (level < 76 && greasedlightningStacks === 3))
-  && loopStatus.raptorform > 0 && loopRecast.perfectbalance < 0) {
-    return 'Perfect Balance';
-  }
-
-  // Use PB to boost to 3 stacks before 78
-  if (level >= 50 && level < 78 && targetCount === 1
-  && greasedlightningStacks < greasedlightningMax && loopStatus.opoopoform > 0
-  && loopRecast.perfectbalance < 0) {
-    return 'Perfect Balance';
-  }
-
-  if (level >= 74 && nextActionOverlay.targetCount > 1 && chakra === 5) {
-    return 'Enlightenment';
-  }
-
-  if (level >= 56 && targetCount > 1
-  && loopRecast.riddleoffire > recast.elixirfield * 0.5
-  && loopRecast.elixirfield < 0) {
-    return 'Elixir Field';
-  }
-
-  if (level >= 54 && chakra === 5) {
-    return 'The Forbidden Chakra';
-  }
-
-  if (level >= 56 && loopRecast.riddleoffire > recast.elixirfield * 0.5
-  && loopRecast.elixirfield < 0) {
-    return 'Elixir Field';
-  }
-
-  if (level >= 66 && loopRecast.shouldertackle2 < 0) {
-    return 'Shoulder Tackle';
-  }
-
+  if (level >= 74 && nextActionOverlay.targetCount > 1 && chakra === 5) { return 'Enlightenment'; }
+  if (level >= 56 && targetCount > 1 && loopRecast.riddleoffire > recast.elixirfield * 0.5 && loopRecast.elixirfield < zeroTime) { return 'Elixir Field'; }
+  if (level >= 54 && chakra === 5) { return 'The Forbidden Chakra'; }
+  if (level >= 56 && loopRecast.riddleoffire > recast.elixirfield * 0.5 && loopRecast.elixirfield < zeroTime) { return 'Elixir Field'; }
+  if (level >= 66 && loopRecast.shouldertackle2 < zeroTime) { return 'Shoulder Tackle'; }
   return '';
 };
 
