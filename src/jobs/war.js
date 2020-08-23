@@ -514,6 +514,7 @@ nextActionOverlay.warActionMatch = (actionMatch) => {
       addRecast({ actionName: 'Infuriate 1', recast: checkRecast({ actionName: 'Infuriate 2' }) });
       addRecast({ actionName: 'Infuriate 2', recast: checkRecast({ actionName: 'Infuriate 2' }) + recast.infuriate });
     }
+    if (actionName === 'Inner Release') { addRecast({ actionName: 'Berserk' }); }
   }
 };
 
