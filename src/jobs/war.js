@@ -223,10 +223,7 @@ nextActionOverlay.warNextAction = ({
     } else { loopTime = gcdTime; }
 
     // Update Combo status
-    if (comboStep === '' || loopStatus.combo < 0) {
-      comboStep = '';
-      loopStatus.combo = -1;
-    }
+    if (comboStep === '' || loopStatus.combo < 0) { comboStep = ''; loopStatus.combo = -1; }
 
     let weave = 1; let weaveMax = 2;
     if (loopStatus.innerrelease > 0) { weaveMax = 1; }

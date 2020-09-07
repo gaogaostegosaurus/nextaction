@@ -106,101 +106,8 @@ nextActionOverlay.drkPlayerChange = (e) => {
   nextActionOverlay.drkNextMitigation();
 };
 
-nextActionOverlay.drkNextGCD = ({
-  comboStep,
-  blood,
-  darkarts,
-  loopStatus,
-} = {}) => {
-  const { level } = nextActionOverlay.playerData;
-  const { gcd } = nextActionOverlay;
-  const { targetCount } = nextActionOverlay;
-
-  let bloodCap = 50;
-  if (level >= 80) { bloodCap = 100; }
-
-  if (loopStatus.bloodweapon > 0) { bloodCap -= 10; }
-
-  if ((level >= 2 && comboStep === 'Syphon Strike')
-  || (level >= 72 && comboStep === 'Unleash')) {
-    bloodCap -= 20;
-  }
-
-  // Check for Delirium
-  if (loopStatus.delirium > 0) {
-    if (targetCount >= 3) {
-      return 'Quietus';
-    } return 'Bloodspiller';
-  }
-
-  // Don't drop combo
-  if (loopStatus.combo < gcd * 2) {
-    if (level >= 72 && targetCount >= 2 && comboStep === 'Unleash') { return 'Stalwart Soul'; }
-    if (level >= 26 && comboStep === 'Syphon Strike') { return 'Souleater'; }
-    if (level >= 2 && comboStep === 'Hard Slash') { return 'Syphon Strike'; }
-  }
-
-  // Check for Dark Arts
-  if (darkarts > 0) {
-    if (targetCount >= 3) {
-      return 'Quietus';
-    } return 'Bloodspiller';
-  }
-
-  // Check for possible blood overcap
-  if (blood >= 50 && blood > bloodCap) {
-    if (level >= 64 && targetCount >= 3) { return 'Quietus'; } return 'Bloodspiller';
-  }
-
-  // Combos
-  if (level >= 72 && targetCount >= 2 && comboStep === 'Unleash') {
-    return 'Stalwart Soul';
-  } if (level >= 26 && comboStep === 'Syphon Strike') {
-    return 'Souleater';
-  } if (level >= 2 && comboStep === 'Hard Slash') {
-    return 'Syphon Strike';
-  } if (targetCount >= 72 && targetCount >= 2) {
-    return 'Unleash';
-  } if (targetCount < 72 && targetCount >= 3) {
-    return 'Unleash';
-  } return 'Hard Slash';
-};
-
-nextActionOverlay.drkNextOGCD = ({
-  gcdTime,
-  mp,
-  blood,
-  loopRecast,
-  loopStatus,
-} = {}) => {
-  const { level } = nextActionOverlay.playerData;
-  const { gcd } = nextActionOverlay;
-  const { targetCount } = nextActionOverlay;
-
-  if (level >= 30 && targetCount >= 2 && mp >= 9000 && loopRecast.floodofdarkness < 0) {
-    if (level >= 74) { return 'Flood Of Shadow'; } return 'Flood Of Darkness';
-  } if (level >= 40 && mp >= 9000 && loopRecast.floodofdarkness < 0) {
-    if (level >= 74) { return 'Edge Of Shadow'; } return 'Edge Of Darkness';
-  } if (level >= 35 && gcdTime <= 1500 && loopRecast.bloodweapon < 0) {
-    return 'Blood Weapon';
-  } if (level >= 80 && blood >= 50 && loopRecast.livingshadow < 0) {
-    return 'Living Shadow';
-  } if (level >= 68 && gcdTime <= 1500 && (loopStatus.combo > gcd * 5 || loopStatus.combo < -1)
-  && loopRecast.delirium < 0) {
-    return 'Delirium';
-  } if (level >= 52 && targetCount >= 2 && gcdTime >= 1500 && loopRecast.saltedearth < 0) {
-    return 'Salted Earth';
-  } if (level >= 60 && loopRecast.carveandspit < 0) {
-    return 'Carve And Spit';
-  } if (level >= 56 && targetCount >= 2 && loopRecast.abyssaldrain < 0) {
-    return 'Abyssal Drain';
-  } if (level >= 52 && gcdTime >= 1500 && loopRecast.saltedearth < 0) {
-    return 'Salted Earth';
-  } if (level >= 56 && loopRecast.abyssaldrain < 0) {
-    return 'Abyssal Drain';
-  } if (level >= 78 && gcdTime <= 1500 && loopRecast.plunge2 < 0) {
-    return 'Plunge';
-  } return ''; /* Returns nothing if no OGCD matches */
+nextActionOverlay.drkTargetChange = () => {
+  nextActionOverlay.drkNextAction();
 };
 
 nextActionOverlay.drkNextAction = ({
@@ -382,6 +289,85 @@ nextActionOverlay.drkNextAction = ({
   nextActionOverlay.NEWsyncIcons({ iconArray, row: 'icon-b' });
 };
 
+nextActionOverlay.drkNextGCD = ({
+  comboStep, blood, darkarts, loopStatus,
+} = {}) => {
+  const { level } = nextActionOverlay.playerData;
+  const { gcd } = nextActionOverlay;
+  const { targetCount } = nextActionOverlay;
+
+  let bloodCap = 50;
+  if (level >= 80) { bloodCap = 100; }
+
+  if (loopStatus.bloodweapon > 0) { bloodCap -= 10; }
+
+  if ((level >= 2 && comboStep === 'Syphon Strike')
+  || (level >= 72 && comboStep === 'Unleash')) {
+    bloodCap -= 20;
+  }
+
+  // Check for Delirium
+  if (loopStatus.delirium > 0) {
+    if (targetCount >= 3) {
+      return 'Quietus';
+    } return 'Bloodspiller';
+  }
+
+  // Don't drop combo
+  if (loopStatus.combo > 0 && loopStatus.combo < gcd * 2) {
+    if (level >= 72 && targetCount >= 2 && comboStep === 'Unleash') { return 'Stalwart Soul'; }
+    if (level >= 26 && comboStep === 'Syphon Strike') { return 'Souleater'; }
+    if (level >= 2 && comboStep === 'Hard Slash') { return 'Syphon Strike'; }
+  }
+
+  // Check for Dark Arts
+  if (darkarts > 0) {
+    if (targetCount >= 3) {
+      return 'Quietus';
+    } return 'Bloodspiller';
+  }
+
+  // Check for possible blood overcap
+  if (blood >= 50 && blood > bloodCap) {
+    if (level >= 64 && targetCount >= 3) { return 'Quietus'; } return 'Bloodspiller';
+  }
+
+  // Combos
+  if (level >= 72 && targetCount >= 2 && comboStep === 'Unleash') {
+    return 'Stalwart Soul';
+  } if (level >= 26 && comboStep === 'Syphon Strike') {
+    return 'Souleater';
+  } if (level >= 2 && comboStep === 'Hard Slash') {
+    return 'Syphon Strike';
+  } if (targetCount >= 72 && targetCount >= 2) {
+    return 'Unleash';
+  } if (targetCount < 72 && targetCount >= 3) {
+    return 'Unleash';
+  } return 'Hard Slash';
+};
+
+nextActionOverlay.drkNextOGCD = ({
+  weave, weaveMax, mp, blood, loopRecast, loopStatus,
+} = {}) => {
+  const { level } = nextActionOverlay.playerData;
+  const { gcd } = nextActionOverlay;
+  const { targetCount } = nextActionOverlay;
+  const zeroTime = 100 + 1250 * (weave - 1);
+
+  if (level >= 30 && (targetCount > 1 || level < 40) && mp >= 9000 && loopRecast.floodofdarkness < zeroTime) { if (level >= 74) { return 'Flood Of Shadow'; } return 'Flood Of Darkness'; }
+  if (level >= 40 && mp >= 9000 && loopRecast.floodofdarkness < zeroTime) { if (level >= 74) { return 'Edge Of Shadow'; } return 'Edge Of Darkness'; }
+  if (level >= 35 && weave === weaveMax && loopRecast.bloodweapon < zeroTime) { return 'Blood Weapon'; }
+  if (level >= 80 && blood >= 50 && loopRecast.livingshadow < zeroTime) { return 'Living Shadow'; }
+  if (level >= 68 && weave === weaveMax && (loopStatus.combo > gcd * 5 || loopStatus.combo < zeroTime) && loopRecast.delirium < zeroTime) { return 'Delirium'; }
+  if (level >= 52 && targetCount >= 2 && weave === 1 && loopRecast.saltedearth < zeroTime) { return 'Salted Earth'; }
+  if (level >= 60 && loopRecast.carveandspit < zeroTime) { return 'Carve And Spit'; }
+  if (level >= 56 && targetCount >= 2 && loopRecast.abyssaldrain < zeroTime) { return 'Abyssal Drain'; }
+  if (level >= 52 && weave === 1 && loopRecast.saltedearth < zeroTime) { return 'Salted Earth'; }
+  if (level >= 56 && loopRecast.abyssaldrain < zeroTime) { return 'Abyssal Drain'; }
+  if (level >= 78 && weave === weaveMax && loopRecast.plunge2 < zeroTime) { return 'Plunge'; }
+  return '';
+};
+
 nextActionOverlay.drkOnAction = (actionMatch) => {
   removeIcon({ name: actionMatch.groups.actionName });
 
@@ -427,12 +413,4 @@ nextActionOverlay.drkOnAction = (actionMatch) => {
   || drkBloodWeaponskills.includes(actionMatch.groups.actionName)) {
     drkNext({ gcdTime: gcd });
   }
-};
-
-onJobChanged.DRK = () => {
-  drkNext();
-};
-
-onTargetChanged.DRK = () => {
-  // drkNext();
 };

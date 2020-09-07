@@ -23,3 +23,4 @@
 
 - MNK: Perfect Balance window is a little janky - doesn't appear to be consistently sure what the final WS will be
 - NIN: Mudra activation isn't detected under certain conditions - haven't been able to consistently replicate
+- SAM: AOE, Meikyo weirdness

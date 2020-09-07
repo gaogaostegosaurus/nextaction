@@ -1,6 +1,6 @@
 // Keep collapsed, probably
 nextActionOverlay.samJobChange = () => {
-  nextActionOverlay.comboStep = '';
+  nextActionOverlay.tsubamegaeshicomboStep = '';
 
   nextActionOverlay.actionList.weaponskills = [
     'Hakaze', 'Jinpu', 'Shifu', 'Gekko', 'Kasha', 'Yukikaze',
@@ -169,7 +169,7 @@ nextActionOverlay.samNextAction = ({
   });
 
   const loopStatus = {};
-  const loopStatusList = nextActionOverlay.statusList.self;
+  const loopStatusList = nextActionOverlay.statusList.self.concat(['Combo', 'Tsubame-gaeshi Combo']);
   loopStatusList.forEach((statusName) => {
     const propertyName = statusName.replace(/[\s':-]/g, '').toLowerCase();
     loopStatus[propertyName] = checkStatus({ statusName });
@@ -383,9 +383,9 @@ nextActionOverlay.samNextGCD = ({
 
   // GCD alignments for Tsubame-gaeshi: https://docs.google.com/spreadsheets/d/1RiMt4oF5pR45Q-UjrlAUuE57zoze7YcVsTcIfZbJym4/edit#gid=1508947597
 
-  // Iaijutsu
+  // Iaijutsu (post-Tsubame)
   if (level >= 76 && loopStatus.jinpu > 0) {
-    if (sen === 1 && loopRecast.tsubamegaeshi > gcd * 5 && loopStatus.higanbana < gcd * 8) {
+    if (sen === 1 && loopRecast.tsubamegaeshi > gcd * 5 && loopStatus.higanbana < gcd * 7) {
       // Higanbana
       return 'Higanbana';
     } if (sen === 2 && targetCount > 1) {
@@ -411,8 +411,8 @@ nextActionOverlay.samNextGCD = ({
 
   // Iaijutsu (before level 76 and Tsubame-gaeshi)
   if (level < 76) {
-    if (sen === 1 && (loopStatus.higanbana < gcd * 8)) {
-      if (loopStatus.jinpu > 0) { return 'Higanbana'; }
+    if (sen === 1 && loopStatus.higanbana < gcd * 7) {
+      if (loopStatus.jinpu > 0 && loopStatus.higanbana < 0) { return 'Higanbana'; }
       if (['Jinpu', 'Shifu', 'Fuga'].includes(comboStep) || loopStatus.meikyoshisui > 0) { return 'Higanbana'; }
     } if (sen === 2 && (targetCount > 1 || level < 50)) {
       if (Math.min(loopStatus.jinpu, loopStatus.shifu) > 0) { return 'Tenka Goken'; }
@@ -533,7 +533,10 @@ nextActionOverlay.samNextOGCD = ({
     if (level >= 76 && sen === 0 && loopRecast.tsubamegaeshi <= gcd * 5) { return 'Meikyo Shisui'; }
     if (level >= 76 && sen <= 1 && loopRecast.tsubamegaeshi <= gcd * 4) { return 'Meikyo Shisui'; }
     if (level >= 76 && sen <= 2 && loopRecast.tsubamegaeshi <= gcd * 3) { return 'Meikyo Shisui'; }
-    if (level < 76) { return 'Meikyo Shisui'; }
+    if (level < 76) {
+      if (targetCount > 1 && sen < 2) { return 'Meikyo Shisui'; }
+      if (sen !== 3) { return 'Meikyo Shisui'; }
+    }
   }
 
   // Hagakure alignment before Tsubame-gaeshi
@@ -633,6 +636,9 @@ nextActionOverlay.samActionMatch = (actionMatch) => {
   if (duration[propertyName]) { addStatus({ statusName: actionName }); }
 
   if (weaponskills.includes(actionName)) {
+    removeStatus({ statusName: 'Tsubame-gaeshi Combo' });
+    nextActionOverlay.tsubamegaeshicomboStep = '';
+
     if (checkStatus({ statusName: 'Meikyo Shisui' }) > 0 && nextActionOverlay.meikyoshisuiCount > 0) {
       nextActionOverlay.meikyoshisuiCount -= 1;
       if (nextActionOverlay.meikyoshisuiCount <= 0) { removeStatus({ statusName: 'Meikyo Shisui' }); }

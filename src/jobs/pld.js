@@ -290,6 +290,9 @@ nextActionOverlay.pldNextAction = ({
 nextActionOverlay.pldNextGCD = ({
   comboStep, mp, swordoathCount, loopRecast, loopStatus,
 } = {}) => {
+  // Note to self:
+  // This needs a rotation fixer like SAM to account for possible disconnects around FOF
+
   const { recast } = nextActionOverlay;
   const { duration } = nextActionOverlay;
   const fightorflightCutoff = recast.fightorflight - duration.fightorflight;
@@ -313,7 +316,7 @@ nextActionOverlay.pldNextGCD = ({
   let goringbladeComboPotency = 200;
   if (level >= 54) {
     goringbladePotency = 390 + (85 * 7) - dotPotency * 2;
-    // Counts twice because overwrite + compare to not overwriting... I think
+    // Counts twice because overwrite + compare to not overwriting... I think????
     goringbladeComboPotency = (200 + 300 + goringbladePotency) / 3;
   }
 

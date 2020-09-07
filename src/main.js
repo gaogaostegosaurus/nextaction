@@ -51,10 +51,32 @@ nextActionOverlay.supportedJobs = [
   'RDM',
 ];
 
-// Toggles overlay appropriately (hopefully)
-nextActionOverlay.overlayToggle = (
-  // { targetData, combat, display, }
-) => {
+// Function to reset overlay display and data
+nextActionOverlay.overlayReset = () => {
+  // Set some initial values
+  nextActionOverlay.targetCount = 1;
+  nextActionOverlay.comboStep = '';
+
+  // Reset all timeouts
+  Object.keys(nextActionOverlay.timeout).forEach((timeoutProperty) => {
+    clearTimeout(nextActionOverlay.timeout[timeoutProperty]);
+  });
+
+  // Reset lists
+  // Probably a more elegant way to do this, but whatever for now...
+  nextActionOverlay.statusTracker = {};
+  nextActionOverlay.recastTracker = {};
+
+  if (!document.getElementById('icon-a')) { return; }
+
+  document.getElementById('icon-a').innerHTML = '';
+  document.getElementById('icon-b').innerHTML = '';
+  document.getElementById('icon-c').innerHTML = '';
+  document.getElementById('debug').innerText = '';
+};
+
+// Toggles overlay visibility appropriately (hopefully)
+nextActionOverlay.overlayToggle = () => {
   if (!document.getElementById('nextdiv')) { return; }
   const { targetData } = nextActionOverlay;
   if (targetData.id && targetData.id.startsWith('4') && targetData.distance <= 30) {
@@ -140,70 +162,56 @@ nextActionOverlay.onPlayerChangedEvent = (e) => {
   if (e.detail.name !== nextActionOverlay.playerData.name
   || e.detail.job !== nextActionOverlay.playerData.job
   || e.detail.level !== nextActionOverlay.playerData.level) {
-    // "If name/job/level has changed, do this stuff"
+    // Stop if overlay not ready
+    if (!document.getElementById('icon-a')) {
+      nextActionOverlay.ready = false;
+      return;
+    }
 
-    // Set new playerData
-    // This is the first point at which playerData properties are defined after reloading
+    // Set new player data
     nextActionOverlay.playerData = {};
-
     nextActionOverlay.playerData.name = e.detail.name;
     nextActionOverlay.playerData.level = e.detail.level;
     nextActionOverlay.playerData.job = e.detail.job;
     nextActionOverlay.playerData.decimalid = e.detail.id; // ID defaults to decimal value
     nextActionOverlay.playerData.id = e.detail.id.toString(16).toUpperCase();
 
-    const { duration } = nextActionOverlay;
-
-    // Set some initial values
-    nextActionOverlay.targetCount = 1;
-    nextActionOverlay.comboStep = '';
-    nextActionOverlay.gcd = 2500;
-    nextActionOverlay.mpRegen = 200;
-    duration.combo = 16000; // I don't know how long this is actually supposed to be
-
     const { job } = nextActionOverlay.playerData;
-    const jobLowercase = job.toLowerCase();
-    const { supportedJobs } = nextActionOverlay;
 
-    // Reset all timeouts
-    Object.keys(nextActionOverlay.timeout).forEach((timeoutProperty) => {
-      clearTimeout(nextActionOverlay.timeout[timeoutProperty]);
-    });
-
-    // Clear overlay
-    // Check if divs are ready
-    // (I don't really get it but sometimes they are null)
-    if (!document.getElementById('icon-a')) {
+    // Stop if job unsupported
+    if (!nextActionOverlay.supportedJobs.includes(job)) {
       nextActionOverlay.ready = false;
       return;
     }
-    document.getElementById('icon-a').innerHTML = '';
-    document.getElementById('icon-b').innerHTML = '';
-    document.getElementById('icon-c').innerHTML = '';
-    document.getElementById('debug').innerText = `GCD: ${nextActionOverlay.gcd}`;
 
-    // Reset lists
-    // Probably a more elegant way to do this, but whatever for now...
+    // Reset overlay
+    nextActionOverlay.overlayReset();
+
+    // Clear lists
     nextActionOverlay.actionList = {};
     nextActionOverlay.statusList = {};
     nextActionOverlay.castingList = {};
-    const { actionList } = nextActionOverlay;
-    const { statusList } = nextActionOverlay;
-    const { castingList } = nextActionOverlay;
 
-    // Set ready as false and return if job unsupported
-    if (!supportedJobs.includes(job)) {
-      nextActionOverlay.ready = false;
-      return;
-    }
+    const jobLowercase = job.toLowerCase();
+
+    // Set some default values
+    nextActionOverlay.gcd = 2500;
+    nextActionOverlay.mpRegen = 200;
+    document.getElementById('debug').innerText = `GCD: ${nextActionOverlay.gcd}`;
+    nextActionOverlay.duration.combo = 15000;
 
     // Tell overlay that job changed, which sets up some job-specific stuff
     nextActionOverlay[`${jobLowercase}JobChange`]();
+
+    const { actionList } = nextActionOverlay;
+    const { statusList } = nextActionOverlay;
+    const { castingList } = nextActionOverlay;
 
     // Creates new regexes for matching
     const actionNames = Object.values(actionList).flat(Infinity).join('|');
     const statusNames = Object.values(statusList).flat(Infinity).join('|');
     const castingNames = Object.values(castingList).flat(Infinity).join('|'); // This relies on chat log output
+
     // Shorten some static (or semi-static) variables
     const { name } = nextActionOverlay.playerData;
     const { level } = nextActionOverlay.playerData;
@@ -215,10 +223,8 @@ nextActionOverlay.onPlayerChangedEvent = (e) => {
     nextActionOverlay.cancelRegex = new RegExp(`^.{15}(?<logType>00:0[\\da-f]{3}):You cancel (?<actionName>${castingNames})\\.`, 'i');
     nextActionOverlay.playerstatsRegex = new RegExp('^.{15}0C:Player Stats: (?<jobID>[\\d]+):(?<strength>[\\d]+):(?<dexterity>[\\d]+):(?<vitality>[\\d]+):(?<intelligence>[\\d]+):(?<mind>[\\d]+):(?<piety>[\\d]+):(?<attackPower>[\\d]+):(?<directHitRate>[\\d]+):(?<criticalHit>[\\d]+):(?<attackMagicPotency>[\\d]+):(?<healingMagicPotency>[\\d]+):(?<determination>[\\d]+):(?<skillSpeed>[\\d]+):(?<spellSpeed>[\\d]+):0:(?<tenacity>[\\d]+)'); // This regex is always static for now, maybe not in future?
 
-    // Initialize resources and such
-    if (nextActionOverlay[`${jobLowercase}PlayerChange`]) {
-      nextActionOverlay[`${jobLowercase}PlayerChange`](e);
-    }
+    // Check if divs are ready
+    // (I don't really get it but sometimes they are null)
 
     // Initialize overlay (finally)
     nextActionOverlay[`${jobLowercase}NextAction`]();
@@ -451,6 +457,18 @@ nextActionOverlay.onLogEvent = (e) => {
       }
     }
   }
+};
+
+// nextActionOverlay.onPartyWipe = (e) => {
+nextActionOverlay.onPartyWipe = () => {
+  const { job } = nextActionOverlay.playerData;
+  if (!nextActionOverlay.supportedJobs.includes(job)) {
+    nextActionOverlay.ready = false;
+    return;
+  }
+  nextActionOverlay.overlayReset();
+  const jobLowercase = job.toLowerCase();
+  nextActionOverlay[`${jobLowercase}NextAction`]();
 };
 
 nextActionOverlay.nextAction = () => {

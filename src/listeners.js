@@ -29,13 +29,14 @@ addOverlayListener('onLogEvent', (e) => {
   nextActionOverlay.onLogEvent(e);
 });
 
-// Haven't figured out how to use the rest of these...
-
 addOverlayListener('onPartyWipe', (e) => {
   // Leaving this here to see when/what it outputs
   // eslint-disable-next-line no-console
   console.log(`onPartyWipe: ${JSON.stringify(e)}`);
+  nextActionOverlay.onPartyWipe(e);
 });
+
+// Haven't figured out how to use the rest of these...
 
 // eslint-disable-next-line no-unused-vars
 addOverlayListener('onGameExistsEvent', (e) => {
