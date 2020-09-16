@@ -227,6 +227,7 @@ nextActionOverlay.onPlayerChangedEvent = (e) => {
     // (I don't really get it but sometimes they are null)
 
     // Initialize overlay (finally)
+    nextActionOverlay[`${jobLowercase}PlayerChange`](e);
     nextActionOverlay[`${jobLowercase}NextAction`]();
 
     // eslint-disable-next-line no-console
