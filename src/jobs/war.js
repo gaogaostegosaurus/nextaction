@@ -1,9 +1,4 @@
 nextActionOverlay.warJobChange = () => {
-  const { level } = nextActionOverlay.playerData;
-
-  // Set initial values
-  nextActionOverlay.comboStep = '';
-
   nextActionOverlay.actionList.weaponskills = [
     'Heavy Swing', 'Maim', 'Storm\'s Path', 'Storm\'s Eye',
     'Overpower', 'Mythril Tempest',
@@ -98,6 +93,8 @@ nextActionOverlay.warJobChange = () => {
   icon.chaoticcyclone = '002566';
   icon.nascentflash = '002567';
   icon.innerchaos = '002568';
+
+  const { level } = nextActionOverlay.playerData;
 
   if (level >= 54) { icon.innerbeast = icon.fellcleave; }
   if (level >= 60) { icon.steelcyclone = icon.decimate; }
@@ -292,66 +289,42 @@ nextActionOverlay.warNextGCD = ({
   const { targetCount } = nextActionOverlay;
   const { level } = nextActionOverlay.playerData;
   const { gcd } = nextActionOverlay;
-
-  // Spender use toggle
-  let spender = false;
+  const { warNextSpender } = nextActionOverlay;
 
   // Inner Release
-  if (loopStatus.innerrelease > 0) { spender = true; } else
-  // Avoid dropping Nascent Chaos
-  if (loopStatus.nascentchaos > 0 && loopStatus.nascentchaos < gcd * 2) { spender = true; } else
+  if (loopStatus.innerrelease > 0) { return warNextSpender({ loopStatus }); }
 
-  // General spender circumstances
   if (beast >= 50) {
-    // Use under Storm's Eye up if possible
-    if (level >= 50 && loopStatus.stormseye > 0) {
-    // Avoid losing Upheaval uses
-      if (level >= 64 && (loopRecast.upheaval > loopRecast.infuriate1 || beast >= 70)) {
-        spender = true;
-      } else
-      // Use immediately before Upheaval is available
-      if (level < 64) { spender = true; }
-    } else
-    // Before Storm's Eye
-    if (level < 50) { spender = true; }
-  }
+    // Avoid dropping Nascent Chaos
+    if (loopStatus.nascentchaos > 0 && loopStatus.nascentchaos < gcd * 2) {
+      return warNextSpender({ loopStatus });
+    }
 
-  if (spender === true) {
-    if (loopStatus.nascentchaos > 0) {
-      if (targetCount > 1) { return 'Chaotic Cyclone'; }
-      if (level >= 80) { return 'Inner Chaos'; }
-      return 'Chaotic Cyclone';
-    }
-    if (targetCount > 1) {
-      if (level >= 60) { return 'Decimate'; } return 'Steel Cyclone';
-    }
-    if (level >= 54) { return 'Fell Cleave'; } return 'Inner Beast';
+    if (level >= 50 && loopStatus.stormseye > 0) {
+      if (level >= 64 && (loopRecast.upheaval > loopRecast.infuriate1 || beast >= 70)) {
+        return warNextSpender({ loopStatus });
+      }
+      // Use immediately before Upheaval is available
+      if (level < 64) { return warNextSpender({ loopStatus }); }
+    } else
+    if (level < 50) { return warNextSpender({ loopStatus }); }
   }
 
   // Continue combos
   if (level >= 40 && comboStep === 'Overpower') {
-    if (level >= 74 && beast > 80) { return 'Decimate'; }
+    if (level >= 74 && beast > 80) { return warNextSpender({ loopStatus }); }
     return 'Mythril Tempest';
   }
   if (level >= 26 && comboStep === 'Maim') {
     if (level >= 50 && loopStatus.stormseye < 30000) {
-      if (beast > 90) {
-        if (level > 54) { return 'Fell Cleave'; }
-        return 'Inner Beast';
-      }
+      if (beast > 90) { return warNextSpender({ loopStatus }); }
       return 'Storm\'s Eye';
     }
-    if (beast > 80) {
-      if (level > 54) { return 'Fell Cleave'; }
-      return 'Inner Beast';
-    }
+    if (beast > 80) { return warNextSpender({ loopStatus }); }
     return 'Storm\'s Path';
   }
   if (level >= 4 && comboStep === 'Heavy Swing') {
-    if (beast > 90) {
-      if (level > 54) { return 'Fell Cleave'; }
-      return 'Inner Beast';
-    }
+    if (beast > 90) { return warNextSpender({ loopStatus }); }
     return 'Maim';
   }
 
@@ -359,6 +332,20 @@ nextActionOverlay.warNextGCD = ({
   if (level >= 50 && loopStatus.stormseye < gcd * 2) { return 'Heavy Swing'; }
   if (level >= 10 && targetCount > 1) { return 'Overpower'; }
   return 'Heavy Swing';
+};
+
+nextActionOverlay.warNextSpender = ({ loopStatus } = {}) => {
+  const { targetCount } = nextActionOverlay;
+  const { level } = nextActionOverlay.playerData;
+
+  if (loopStatus.nascentchaos > 0) {
+    if (level >= 80 && targetCount === 1) { return 'Inner Chaos'; }
+    return 'Chaotic Cyclone';
+  }
+  if (targetCount > 1) {
+    if (level >= 60) { return 'Decimate'; } return 'Steel Cyclone';
+  }
+  if (level >= 54) { return 'Fell Cleave'; } return 'Inner Beast';
 };
 
 nextActionOverlay.warNextOGCD = ({
@@ -384,8 +371,9 @@ nextActionOverlay.warNextOGCD = ({
   if (level >= 70 && loopStatus.innerrelease > zeroTime && loopRecast.onslaught < zeroTime) { return 'Onslaught'; }
 
   // Let's see if this is worth including...
-  if (level >= 30 && level < 78 && hpp < 60 && loopRecast.thrillofbattle < zeroTime) { return 'Thrill Of Battle'; }
-  if (level >= 58 && hpp < 60 && loopRecast.equilibrium < zeroTime) { return 'Equilibrium'; }
+  if (level >= 78 && hpp < 60 && loopRecast.thrillofbattle < zeroTime) { return 'Thrill Of Battle'; }
+  if (level >= 30 && level < 78 && hpp < 70 && loopRecast.thrillofbattle < zeroTime) { return 'Thrill Of Battle'; }
+  if (level >= 58 && hpp < 70 && loopRecast.equilibrium < zeroTime) { return 'Equilibrium'; }
 
   // Use all Infuriate
   if (level >= 50 && beast <= 50 && loopRecast.infuriate1 < zeroTime) {
