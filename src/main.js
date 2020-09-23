@@ -124,21 +124,21 @@ nextActionOverlay.EnmityTargetData = (e) => {
   const { targetData } = nextActionOverlay;
   const jobLowercase = job.toLowerCase();
 
-  if (!e.Target && targetData.decimalid !== 0) {
+  if (!e.Target && targetData.id !== '') {
     // Switched to no target
 
-    targetData.name = '';
-    targetData.decimalid = 0;
-    targetData.id = 0;
+    nextActionOverlay.targetData.name = '';
+    nextActionOverlay.targetData.decimalid = '';
+    nextActionOverlay.targetData.id = '';
     if (nextActionOverlay[`${jobLowercase}TargetChange`]) {
       nextActionOverlay[`${jobLowercase}TargetChange`]();
     }
   } else if (e.Target && targetData.decimalid !== e.Target.ID) {
     // Switched to some target
 
-    targetData.name = e.Target.Name; // Set new targetData
-    targetData.decimalid = e.Target.ID;
-    targetData.id = targetData.decimalid.toString(16).toUpperCase();
+    nextActionOverlay.targetData.name = e.Target.Name; // Set new targetData
+    nextActionOverlay.targetData.decimalid = e.Target.ID;
+    nextActionOverlay.targetData.id = targetData.decimalid.toString(16).toUpperCase();
     if (nextActionOverlay[`${jobLowercase}TargetChange`]) {
       nextActionOverlay[`${jobLowercase}TargetChange`]();
     }
@@ -163,6 +163,7 @@ nextActionOverlay.onPlayerChangedEvent = (e) => {
   || e.detail.job !== nextActionOverlay.playerData.job
   || e.detail.level !== nextActionOverlay.playerData.level) {
     // Stop if overlay not ready
+    // This seems to periodically happen, not sure why...
     if (!document.getElementById('icon-a')) {
       nextActionOverlay.ready = false;
       return;
@@ -178,14 +179,14 @@ nextActionOverlay.onPlayerChangedEvent = (e) => {
 
     const { job } = nextActionOverlay.playerData;
 
+    // Reset overlay
+    nextActionOverlay.overlayReset();
+
     // Stop if job unsupported
     if (!nextActionOverlay.supportedJobs.includes(job)) {
       nextActionOverlay.ready = false;
       return;
     }
-
-    // Reset overlay
-    nextActionOverlay.overlayReset();
 
     // Clear lists
     nextActionOverlay.actionList = {};
