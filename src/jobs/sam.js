@@ -175,7 +175,9 @@ nextActionOverlay.samNextAction = ({
     loopStatus[propertyName] = checkStatus({ statusName });
   });
 
-  loopStatus.higanbana = checkStatus({ statusName: 'Higanbana', id: nextActionOverlay.targetData.id });
+  if (nextActionOverlay.targetData.id !== '') {
+    loopStatus.higanbana = checkStatus({ statusName: 'Higanbana', id: nextActionOverlay.targetData.id });
+  } else { loopStatus.higanbana = 999999; }
 
   let shifuModifier = 1;
   if (loopStatus.shifu > 0) {
