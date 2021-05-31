@@ -124,9 +124,11 @@ nextActionOverlay.EnmityTargetData = (e) => {
   const { targetData } = nextActionOverlay;
   const jobLowercase = job.toLowerCase();
 
+  // Check if target of the enmity function is the same; if it's not then target changed recently
   if (!e.Target && targetData.id !== '') {
     // Switched to no target
 
+    // Clear target data if no target
     nextActionOverlay.targetData.name = '';
     nextActionOverlay.targetData.decimalid = '';
     nextActionOverlay.targetData.id = '';
