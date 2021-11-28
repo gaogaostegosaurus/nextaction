@@ -1,5 +1,4 @@
-/* eslint prefer-const: "off" */
-/* exported syncIcons */
+/* global nextActionOverlay */
 
 nextActionOverlay.getArrayRow = ({
   iconArray = nextActionOverlay.iconArrayB,

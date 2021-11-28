@@ -1,3 +1,48 @@
+/* global nextAction, nextActionOverlay */
+
+// Might eventually need something here to all-lowercase names
+
+nextAction.setRecast = ({
+  actionName,
+  actionRecast,
+} = {}) => {
+  const { recasts } = nextAction;
+
+  // Look for existing entry in recasts
+  const i = recasts.findIndex((element) => element.name === actionName);
+
+  if (i > -1) {
+    // If entry exists, set recast time
+    recasts[i].recast = actionRecast;
+  } else if (actionRecast) {
+    // Add new entry otherwise
+    recasts.push({ name: actionName, recast: actionRecast });
+  } else {
+    // Add new entry using default recast
+    const j = nextAction.actionData.findIndex((element) => element.name === actionName);
+    const defaultRecast = nextAction.actionData[j].recast;
+    recasts.push({ name: actionName, recast: defaultRecast });
+  }
+};
+
+nextAction.checkRecast = ({
+  actionName,
+} = {}) => {
+  const { recasts } = nextAction;
+
+  // Look for existing entry
+  const i = recasts.findIndex((element) => element.name === actionName);
+
+  if (i > -1) {
+    // Return recast time if found
+    return recasts[i].recast;
+  }
+  // Return -1 if not found
+  return -1;
+};
+
+// Replace this crap
+
 nextActionOverlay.addRecast = ({
   actionName,
   propertyName = actionName.replace(/[\s':-]/g, '').toLowerCase(),
