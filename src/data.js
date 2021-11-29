@@ -39,9 +39,9 @@ nextAction.resetData = () => {
       level: 2,
       cast: 2,
       mpCost: 200,
-      potency: 180,
-      blackMana: 3,
-      whiteMana: 3,
+      potency: 170,
+      blackMana: 2,
+      whiteMana: 2,
       icon: '003202',
     },
 
@@ -51,8 +51,8 @@ nextAction.resetData = () => {
       level: 4,
       cast: 5,
       mpCost: 300,
-      potency: 310, // 370 at 62
-      blackMana: 11,
+      potency: 310,
+      blackMana: 6,
       icon: '003203',
     },
 
@@ -60,8 +60,9 @@ nextAction.resetData = () => {
       name: 'Corps-a-corps',
       affinity: 'RDM',
       level: 6,
-      recast: 40,
-      potency: 130,
+      recast: 35,
+      charges: 2,
+      potency: 120,
       icon: '003204',
     },
 
@@ -71,8 +72,8 @@ nextAction.resetData = () => {
       level: 10,
       cast: 5,
       mpCost: 300,
-      potency: 310, // 370 at 62
-      whiteMana: 11,
+      potency: 310,
+      whiteMana: 6,
       icon: '003205',
     },
 
@@ -94,7 +95,8 @@ nextAction.resetData = () => {
       level: 18,
       cast: 2,
       mpCost: 400,
-      potency: 100, // 120 at 78 *** check this later?
+      potency: 100, // *** check this later?
+      aoe: true,
       blackMana: 7,
       icon: '003229',
     },
@@ -105,7 +107,8 @@ nextAction.resetData = () => {
       level: 22,
       cast: 2,
       mpCost: 400,
-      potency: 100, // 120 at 78
+      potency: 100,
+      aoe: true,
       whiteMana: 7,
       icon: '003230',
     },
@@ -116,8 +119,8 @@ nextAction.resetData = () => {
       level: 26,
       cast: 2,
       mpCost: 200,
-      potency: 300, // 310 at 62
-      blackMana: 9,
+      potency: 300,
+      blackMana: 5,
       icon: '003208',
     },
 
@@ -127,8 +130,8 @@ nextAction.resetData = () => {
       level: 30,
       cast: 2,
       mpCost: 200,
-      potency: 300, // 310 at 62
-      whiteMana: 9,
+      potency: 300,
+      whiteMana: 5,
       icon: '003209',
     },
 
@@ -145,8 +148,19 @@ nextAction.resetData = () => {
       affinity: 'RDM',
       level: 40,
       recast: 35,
-      potency: 130, // 200 at 72
+      charges: 2,
+      potency: 150,
       icon: '003211',
+    },
+
+    {
+      name: 'Engagement',
+      affinity: 'RDM',
+      level: 40,
+      recast: 35,
+      charges: 2,
+      potency: 150,
+      icon: '003231',
     },
 
     {
@@ -154,7 +168,7 @@ nextAction.resetData = () => {
       affinity: 'RDM',
       level: 45,
       recast: 25,
-      potency: 440,
+      potency: 420,
       icon: '003212',
     },
 
@@ -196,7 +210,8 @@ nextAction.resetData = () => {
       affinity: 'RDM',
       level: 56,
       recast: 35,
-      potency: 400,
+      potency: 380,
+      aoe: true,
       icon: '003217',
     },
 
@@ -244,6 +259,7 @@ nextAction.resetData = () => {
       cast: 5,
       mpCost: 400,
       potency: 220,
+      aoe: true,
       blackMana: 3,
       whiteMana: 3,
       icon: '003222',
@@ -253,7 +269,7 @@ nextAction.resetData = () => {
       name: 'Verflare',
       affinity: 'RDM',
       level: 68,
-      mpCost: 400,
+      mpCost: 380,
       potency: 600,
       blackMana: 21,
       icon: '003223',
@@ -263,19 +279,10 @@ nextAction.resetData = () => {
       name: 'Verholy',
       affinity: 'RDM',
       level: 70,
-      mpCost: 400,
+      mpCost: 380,
       potency: 600,
       whiteMana: 21,
       icon: '003224',
-    },
-
-    {
-      name: 'Engagement',
-      affinity: 'RDM',
-      level: 72,
-      recast: 35,
-      potency: 150,
-      icon: '003231',
     },
 
     // {
@@ -291,10 +298,51 @@ nextAction.resetData = () => {
       affinity: 'RDM',
       level: 80,
       mpCost: 400,
-      potency: 700,
+      potency: 680,
       blackMana: 7,
       whiteMana: 7,
       icon: '003234',
+    },
+
+    {
+      name: 'Verthunder III',
+      affinity: 'RDM',
+      level: 82,
+      cast: 5,
+      mpCost: 300,
+      potency: 310,
+      blackMana: 6,
+      icon: '003205',
+    },
+
+    {
+      name: 'Veraero III',
+      affinity: 'RDM',
+      level: 82,
+      cast: 5,
+      mpCost: 300,
+      potency: 310,
+      whiteMana: 6,
+      icon: '003205',
+    },
+
+    {
+      name: 'Magick Barrier',
+      affinity: 'RDM',
+      level: 86,
+      recast: 120,
+      icon: '000000',
+    },
+
+    {
+      name: 'Resolution',
+      affinity: 'RDM',
+      level: 90,
+      mpCost: 400,
+      potency: 750,
+      blackMana: 4,
+      whiteMana: 4,
+      icon: '000000',
     },
 
     {
@@ -303,7 +351,7 @@ nextAction.resetData = () => {
       level: 1,
       gcd: 1.5,
       potency: 220,
-      manaCost: 30,
+      manaCost: 20,
       icon: '003225',
     },
 
@@ -313,7 +361,7 @@ nextAction.resetData = () => {
       level: 35,
       gcd: 1.5,
       potency: 290,
-      manaCost: 25,
+      manaCost: 15,
       icon: '003226',
     },
 
@@ -323,7 +371,7 @@ nextAction.resetData = () => {
       level: 50,
       gcd: 2.2,
       potency: 470,
-      manaCost: 25,
+      manaCost: 15,
       icon: '003227',
     },
 
@@ -333,6 +381,7 @@ nextAction.resetData = () => {
       level: 52,
       gcd: 1.5,
       potency: 200,
+      aoe: true,
       manaCost: 20,
       icon: '003228',
     },
