@@ -6,15 +6,21 @@ nextAction.setStatus = ({
   sourceID = nextAction.player.id,
   duration,
   stacks = 1,
+  array,
 } = {}) => {
   if (!name) { return false; }
 
-  const { statuses } = nextAction;
+  let statusArray;
+  if (array) {
+    statusArray = array;
+  } else {
+    statusArray = nextAction.statusArray;
+  }
 
   let newDuration;
 
   if (!duration) {
-    // Get default recast if recast not provided
+    // Get default duration if recast not provided
     const i = nextAction.statusData.findIndex((e) => e.name === name);
     newDuration = nextAction.statusData[i].duration * 1000 + Date.now();
   } else {
@@ -22,15 +28,15 @@ nextAction.setStatus = ({
     newDuration = duration * 1000 + Date.now();
   }
 
-  const i = statuses.findIndex(
+  const i = statusArray.findIndex(
     (e) => e.name === name && e.targetID === targetID && e.sourceID === sourceID,
   );
 
   if (i > -1) {
-    statuses[i].duration = newDuration;
+    statusArray[i].duration = newDuration;
   } else {
     // Add new ID and status to durations array
-    statuses.push({
+    statusArray.push({
       name, targetID, sourceID, duration: newDuration, stacks,
     });
   }
@@ -42,17 +48,23 @@ nextAction.getStatusDuration = ({
   name,
   targetID,
   sourceID,
+  array,
 } = {}) => {
   if (!name) { return false; }
 
-  const { statuses } = nextAction;
+  let statusArray;
+  if (array) {
+    statusArray = array;
+  } else {
+    statusArray = nextAction.statusArray;
+  }
 
-  const i = statuses.findIndex(
+  const i = statusArray.findIndex(
     (e) => e.name === name && e.targetID === targetID && e.sourceID === sourceID,
   );
 
   if (i > -1) {
-    return statuses[i].duration;
+    return (statusArray[i].duration - Date.now()) / 1000;
   }
 
   return -1;
@@ -62,17 +74,22 @@ nextAction.getStatusStacks = ({
   name,
   targetID,
   sourceID,
+  array,
 } = {}) => {
   if (!name) { return false; }
 
-  const { statuses } = nextAction;
-
-  const i = statuses.findIndex(
+  let statusArray;
+  if (array) {
+    statusArray = array;
+  } else {
+    statusArray = nextAction.statusArray;
+  }
+  const i = statusArray.findIndex(
     (e) => e.name === name && e.targetID === targetID && e.sourceID === sourceID,
   );
 
   if (i > -1) {
-    return statuses[i].stacks;
+    return statusArray[i].stacks;
   }
 
   return -1;

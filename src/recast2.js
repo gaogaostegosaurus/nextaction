@@ -3,10 +3,16 @@
 nextAction.setRecast = ({
   name,
   recast, // In seconds
+  array,
 } = {}) => {
-  // Exit if accidentally called, I guess?
+  if (!name) { return false; }
 
-  const { recasts } = nextAction;
+  let recastArray;
+  if (array) {
+    recastArray = array;
+  } else {
+    recastArray = nextAction.recastArray;
+  }
 
   let newRecast;
 
@@ -20,14 +26,14 @@ nextAction.setRecast = ({
   }
 
   // Look for existing entry in recasts
-  const i = recasts.findIndex((e) => e.name === name);
+  const i = recastArray.findIndex((e) => e.name === name);
 
   if (i > -1) {
     // If entry exists, set recast time
-    recasts[i].recast = newRecast;
+    recastArray[i].recast = newRecast;
   } else {
     // Add new entry if entry does not exist
-    recasts.push({ name, recast: newRecast });
+    recastArray.push({ name, recast: newRecast });
   }
 
   return true;
@@ -35,17 +41,23 @@ nextAction.setRecast = ({
 
 nextAction.getRecast = ({
   name,
+  array,
 } = {}) => {
   if (!name) { return false; }
 
-  const { recasts } = nextAction;
+  let recastArray;
+  if (array) {
+    recastArray = array;
+  } else {
+    recastArray = nextAction.recastArray;
+  }
 
   // Look for existing entry
-  const i = recasts.findIndex((element) => element.name === name);
+  const i = recastArray.findIndex((element) => element.name === name);
 
   if (i > -1) {
     // Return recast time if found
-    return (recasts[i].recast - Date.now()) / 1000;
+    return (recastArray[i].recast - Date.now()) / 1000;
   }
 
   // Return -1 if not found, effectively says "it's off recast"
