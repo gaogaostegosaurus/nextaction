@@ -272,6 +272,7 @@ nextAction.resetData = () => {
       mpCost: 380,
       potency: 600,
       blackMana: 21,
+      manaStackCost: 3,
       icon: '003223',
     },
 
@@ -282,6 +283,7 @@ nextAction.resetData = () => {
       mpCost: 380,
       potency: 600,
       whiteMana: 21,
+      manaStackCost: 3,
       icon: '003224',
     },
 
@@ -352,6 +354,7 @@ nextAction.resetData = () => {
       gcd: 1.5,
       potency: 220,
       manaCost: 20,
+      manaStack: 1,
       icon: '003225',
     },
 
@@ -362,6 +365,7 @@ nextAction.resetData = () => {
       gcd: 1.5,
       potency: 290,
       manaCost: 15,
+      manaStack: 1,
       icon: '003226',
     },
 
@@ -383,6 +387,7 @@ nextAction.resetData = () => {
       potency: 200,
       aoe: true,
       manaCost: 20,
+      manaStack: 1,
       icon: '003228',
     },
 
@@ -390,8 +395,8 @@ nextAction.resetData = () => {
       name: 'Enchanted Reprise',
       affinity: 'RDM',
       level: 76,
-      gcd: 2.2,
-      potency: 300,
+      gcd: 2.5,
+      potency: 330,
       manaCost: 5,
       icon: '003232',
     },
