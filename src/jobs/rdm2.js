@@ -251,18 +251,19 @@ nextAction.actionLoop = ({
 nextAction.rdmGCD = ({
   loopPlayerData, loopRecastArray, loopStatusArray,
 } = {}) => {
+  const { getRecast } = nextAction;
   const { setStatus } = nextAction;
   const { getStatusDuration } = nextAction;
   const { getStatusStacks } = nextAction;
   const { blackMana } = loopPlayerData;
   const { whiteMana } = loopPlayerData;
   const lowerMana = Math.min(blackMana, whiteMana);
-  const higherMana = Math.max(blackMana, whiteMana);
+  // const higherMana = Math.max(blackMana, whiteMana);
   const targets = 1;
-  const { level } = loopPlayerData;
   const { gcd } = loopPlayerData;
   const { comboAction } = loopPlayerData;
   const { actionList } = nextAction;
+  const { targetCount } = nextAction;
 
   // Always Scorch and Resolution
   if (actionList.some((e) => e.name === 'Resolution') && comboAction === 'Scorch') { return 'Scorch'; }
@@ -271,8 +272,11 @@ nextAction.rdmGCD = ({
   // Use Dualcast/Swiftcast if up
   const dualcastDuration = getStatusDuration({ name: 'Dualcast', array: loopStatusArray });
   const swiftcastDuration = getStatusDuration({ name: 'Swiftcast', array: loopStatusArray });
+  const verfireDuration = getStatusDuration({ name: 'Verfire Ready', array: loopStatusArray });
+  const verstoneDuration = getStatusDuration({ name: 'Verstone Ready', array: loopStatusArray });
 
   if (dualcastDuration > 0 || swiftcastDuration > 0) {
+    // Remove Dualcast or Swiftcast buff
     if (dualcastDuration > 0) {
       setStatus({ name: 'Dualcast', duration: -1, array: loopStatusArray });
     } else {
@@ -283,167 +287,164 @@ nextAction.rdmGCD = ({
     if (actionList.some((e) => e.name === 'Impact') && targets >= 2) { return 'Impact'; }
     if (actionList.some((e) => e.name === 'Scatter') && targets >= 3) { return 'Scatter'; }
 
+    const verthunderAcquired = actionList.some((e) => e.name === 'Verthunder');
+    const veraeroAcquired = actionList.some((e) => e.name === 'Veraero');
     const verthunderMana = actionList[actionList.findIndex((e) => e.name === 'Verthunder')].blackMana;
     const veraeroMana = actionList[actionList.findIndex((e) => e.name === 'Veraero')].whiteMana;
 
-    // Prevent unbalanced mana
-    if (actionList.some((e) => e.name === 'Veraero') && Math.min(blackMana + verthunderMana, 100) > whiteMana + 30) { return 'Veraero'; }
-    if (actionList.some((e) => e.name === 'Verthunder') && Math.min(whiteMana + veraeroMana, 100) > blackMana + 30) { return 'Verthunder'; }
+    // "If one will cause you to unbalance, do the other one"
+    if (veraeroAcquired && Math.min(blackMana + verthunderMana, 100) > whiteMana + 30) { return 'Veraero'; }
+    if (verthunderAcquired && Math.min(whiteMana + veraeroMana, 100) > blackMana + 30) { return 'Verthunder'; }
 
-    // Setup for Verflare/Verholy
-    const verfireDuration = getStatusDuration({ name: 'Verfire Ready', array: loopStatusArray });
-    const verstoneDuration = getStatusDuration({ name: 'Verstone Ready', array: loopStatusArray });
+    // Avoid overwriting procs
+    // Procs imply Verthunder/Veraero is acquired
+    // 3 times GCD so that there is ample time to use the proc
+    if (verfireDuration > gcd * 3) { return 'Veraero'; }
+    if (verstoneDuration > gcd * 3) { return 'Verthunder'; }
 
-    if (actionList.some((e) => e.name === 'Verholy') && verstoneDuration < 10 && Math.min(blackMana + verthunderMana, 100) > whiteMana && whiteMana >= 80) { return 'Verthunder'; }
-    if (actionList.some((e) => e.name === 'Verflare') && verfireDuration < 10 && Math.min(whiteMana + veraeroMana, 100) > blackMana && blackMana >= 80) { return 'Veraero'; }
+    // All other cases (well, I hope)
+    // Use Veraero if equal or black mana is higher, Verthunder otherwise
+    if (veraeroAcquired && blackMana >= whiteMana) { return 'Veraero'; }
+    if (verthunderAcquired) { return 'Verthunder'; }
 
-    // Avoid overwriting
-    // Verfire/Verstone buff implies Verthunder/Veraero is castable
-    if (verfireDuration > gcd) { return 'Veraero'; }
-    if (verstoneDuration > gcd) { return 'Verthunder'; }
-
-    // All other cases (I hope)
-    if (actionList.some((e) => e.name === 'Veraero') && blackMana >= whiteMana) { return 'Veraero'; }
-    if (actionList.some((e) => e.name === 'Verthunder')) { return 'Verthunder'; }
-    if (actionList.some((e) => e.name === 'Jolt II')) { return 'Jolt II'; }
     if (actionList.some((e) => e.name === 'Jolt')) { return 'Jolt'; }
   }
 
+  // Multiple blocks use these variables; keep outside
+  const verholyAcquired = actionList.some((e) => e.name === 'Verholy');
+  const verflareAcquired = actionList.some((e) => e.name === 'Verflare');
+  const verholyMana = actionList[actionList.findIndex((e) => e.name === 'Verholy')].whiteMana;
+  const verflareMana = actionList[actionList.findIndex((e) => e.name === 'Verflare')].blackMana;
+
   const { manaStacks } = loopPlayerData;
 
+  // Check for and use mana stacks
+  // Mana stacks implies level >= 68 so no need to check for Verflare explicitly
+  // Probably catches combo screw-ups with 3 stacks
+  // Also assumes that mana stacks are usable ideally ASAP but whenever - check after 6.0 release
   if (manaStacks >= 3) {
-    // Mana Stacks implies level >= 68
-    const { verholyMana } = actionList[actionList.findIndex((e) => e.name === 'Verholy')].whiteMana;
-    const { verflareMana } = actionList[actionList.findIndex((e) => e.name === 'Verflare')].blackMana;
-
     // "If one will cause you to unbalance, do the other one"
-    if (actionList.some((e) => e.name === 'Verholy') && Math.min(blackMana + verflareMana, 100) > whiteMana + 30) { return 'Verholy'; }
-    if (actionList.some((e) => e.name === 'Verflare') && blackMana + 30 < Math.min(whiteMana + verholyMana, 100) ) { return 'Verflare'; }
-
-    const verfireDuration = getStatusDuration({ name: 'Verfire Ready', array: loopStatusArray });
-    const verstoneDuration = getStatusDuration({ name: 'Verstone Ready', array: loopStatusArray });
+    if (verholyAcquired && Math.min(blackMana + verflareMana, 100) > whiteMana + 30) { return 'Verholy'; }
+    if (Math.min(whiteMana + verholyMana, 100) > blackMana + 30) { return 'Verflare'; }
 
     // 100% proc using Acceleration
     if (getStatusStacks({ name: 'Acceleration', array: loopStatusArray }) > 0) {
-      // Use lower mana in case of both procs being down      
-      if (actionList.some((e) => e.name === 'Verholy') && verfireDuration < gcd && verstoneDuration < gcd) {
+      // Use lower mana in case of both procs being down
+      if (verholyAcquired && verfireDuration < gcd * 3 && verstoneDuration < gcd * 3) {
         if (blackMana <= whiteMana) { return 'Verholy'; }
         return 'Verflare';
       }
 
       // Pick proc that's down
-      if (actionList.some((e) => e.name === 'Verholy') && verstoneDuration < gcd) { return 'Verholy'; }
-      if (verfireDuration < gcd) { return 'Verflare'; }
+      if (verholyAcquired && verstoneDuration < gcd * 3) { return 'Verholy'; }
+      if (verfireDuration < gcd * 3) { return 'Verflare'; }
     }
 
     // 100% proc using lower mana
-    if (actionList.some((e) => e.name === 'Verholy') && verstoneDuration < gcd && blackMana > whiteMana) { return 'Verholy'; }
-    if (verfireDuration < gcd && blackMana < whiteMana) { return 'Verflare'; }
+    if (verholyAcquired && verstoneDuration < gcd * 3 && blackMana > whiteMana) { return 'Verholy'; }
+    if (verfireDuration < gcd * 3 && blackMana < whiteMana) { return 'Verflare'; }
 
-    // 20% proc
-    if (actionList.some((e) => e.name === 'Verholy') && verstoneDuration < gcd && comboAction === 'Enchanted Redoublement') { return 'Verholy'; }
-    if (verfireDuration < gcd && comboAction === 'Enchanted Redoublement') { return 'Verflare'; }
+    // 20% proc with higher mana
+    if (verholyAcquired && verstoneDuration < gcd * 3) { return 'Verholy'; }
+    if (verfireDuration < gcd * 3) { return 'Verflare'; }
 
     // Procs not possible(?) - increase lower mana
-    if (actionList.some((e) => e.name === 'Verholy') && blackMana >= whiteMana) { return 'Verholy'; }
+    if (verholyAcquired && blackMana >= whiteMana) { return 'Verholy'; }
     return 'Verflare';
   }
 
-  // Continue combos
-  if (level >= 50 && lowerMana >= 25 && comboAction === 'Enchanted Zwerchhau') { return 'Enchanted Redoublement'; }
-  if (level >= 50 && lowerMana >= 50 && comboAction === 'Enchanted Riposte') { return 'Enchanted Zwerchhau'; }
-  // Prevent accidental combo continuation?
-  if (level >= 35 && level < 50 && lowerMana >= 25 && comboAction === 'Enchanted Riposte') { return 'Enchanted Zwerchhau'; }
+  const riposteCost = actionList[actionList.findIndex((e) => e.name === 'Enchanted Riposte')].manaCost;
+  const zwerchhauCost = actionList[actionList.findIndex((e) => e.name === 'Enchanted Zwerchhau')].manaCost;
+  const redoublementCost = actionList[actionList.findIndex((e) => e.name === 'Enchanted Redoublement')].manaCost;
+
+  const zwerchhauAcquired = actionList.some((e) => e.name === 'Enchanted Zwerchhau');
+  const redoublementAcquired = actionList.some((e) => e.name === 'Enchanted Redoublement');
+
+  let comboTime = actionList[actionList.findIndex((e) => e.name === 'Enchanted Riposte')].gcd;
+  let comboCost = riposteCost;
+
+  if (zwerchhauAcquired) {
+    comboTime += actionList[actionList.findIndex((e) => e.name === 'Enchanted Zwerchhau')].gcd;
+    comboCost += zwerchhauCost;
+  }
+
+  if (redoublementAcquired) {
+    comboTime += actionList[actionList.findIndex((e) => e.name === 'Enchanted Redoublement')].gcd;
+    comboCost += redoublementCost;
+  }
+
+  // Finish combo
+  if (redoublementAcquired && lowerMana >= redoublementCost && comboAction === 'Enchanted Zwerchhau') { return 'Enchanted Redoublement'; }
+
+  const repriseAcquired = actionList.some((e) => e.name === 'Enchanted Reprise');
+  const manaficationRecast = getRecast({ name: 'Manafication', array: loopRecastArray });
 
   // Moulinet
-  if (level >= 60 && targetCount > 1 && lowerMana >= 70) { return 'Enchanted Moulinet'; }
-  // Spam AoE if under Manafication buff
-  if (level >= 74 && targetCount > 1 && loopStatus.manafication > 0 && lowerMana >= 20) { return 'Enchanted Moulinet'; }
-  // No Manafication? No problem
-  if (level >= 52 && level < 60 && targetCount > 1 && lowerMana >= 20) { return 'Enchanted Moulinet'; }
+  const moulinetCost = actionList[actionList.findIndex((e) => e.name === 'Enchanted Moulinet')].manaCost;
+  if (actionList.some((e) => e.name === 'Enchanted Moulinet') && lowerMana >= moulinetCost) {
+    if (targetCount > 3) { return 'Enchanted Moulinet'; }
+    if (!repriseAcquired && manaficationRecast < actionList[actionList.findIndex((e) => e.name === 'Enchanted Moulinet')].gcd) { return 'Enchanted Moulinet'; }
+  }
 
-  // Start combos
-  if (level >= 70 && loopStatus.verstoneready < comboTime
-  && lowerMana >= 80 && blackMana > whiteMana) {
-    return 'Enchanted Riposte';
-  } // Start combo for Verholy
-  if (level >= 68 && loopStatus.verfireready < comboTime
-  && lowerMana >= 80 && whiteMana > blackMana) {
-    return 'Enchanted Riposte';
-  } // Start combo for Verflare
-  if (level >= 70 && lowerMana >= 80 && loopStatus.verstoneready < comboTime) { return 'Enchanted Riposte'; } // Verholy (20%)
-  if (level >= 68 && lowerMana >= 80 && loopStatus.verfireready < comboTime) { return 'Enchanted Riposte'; } // Start combo for Verflare (20%)
-  if (level >= 68 && lowerMana >= 80 && higherMana + 11 >= 100) { return 'Enchanted Riposte'; } // Likely to overcapping mana unless combo starts
-  if (level >= 2 && level < 68 && lowerMana >= 80) { return 'Enchanted Riposte'; } // Before Verflare/Verholy
-  if (level >= 2 && level < 50 && lowerMana >= 55) { return 'Enchanted Riposte'; } // Before Redoublement
-  if (level >= 2 && level < 35 && lowerMana >= 30) { return 'Enchanted Riposte'; } // Before Zwerchhau
+  // Continue combo
+  if (zwerchhauAcquired && lowerMana >= zwerchhauCost && comboAction === 'Enchanted Riposte') { return 'Enchanted Zwerchhau'; }
 
-  let moulinetFloor = 50;
-  if (nextAction.targetCount === 1) { moulinetFloor = 40; }
+  const scorchAcquired = actionList.some((e) => e.name === 'Scorch');
+  const resolutionAcquired = actionList.some((e) => e.name === 'Resolution');
 
-  let repriseFloor = 50;
-  // Unbalance mana before Manafication
-  if (blackMana !== whiteMana) { repriseFloor = 45; }
+  let finisherTime = 0;
+  if (scorchAcquired) { finisherTime += gcd; }
+  if (resolutionAcquired) { finisherTime += gcd; }
 
-  // Calculate how many Reprise/Moulinet can be used and how much time it will take
-  const repriseCount = Math.floor(Math.max(lowerMana - repriseFloor, 0) / 5);
-  const moulinetCount = Math.floor(Math.max(lowerMana - moulinetFloor, 0) / 20);
-  const repriseTime = repriseCount * 2200; // Reprise and Moulinet have set recast times
-  const moulinetTime = moulinetCount * 1500;
+  if (lowerMana >= comboCost) {
+    // Start combo immediately under Manafication or when proc guaranteed
+    if ((verholyAcquired && verstoneDuration <= comboTime && blackMana > whiteMana)
+    || (verflareAcquired && verfireDuration <= comboTime && whiteMana > blackMana)
+    || (getStatusDuration({ name: 'Manafication', array: loopStatusArray }) > 0)) {
+      return 'Enchanted Riposte';
+    }
+  }
 
-  // Spend excess mana with Reprise or Moulinet
-  // There's probably some improvements that can be made here but I don't know what they are
-  if (level >= 76 && repriseTime > 0 && loopRecast.manafication - repriseTime < 1350) { return 'Enchanted Reprise'; }
-  if (level >= 60 && moulinetTime > 0 && loopRecast.manafication - moulinetTime < 100) { return 'Enchanted Moulinet'; }
+  // Burn GCDs with Reprise if Manafication comes up at a weird time
+  if (actionList.some((e) => e.name === 'Enchanted Reprise') && actionList[actionList.findIndex((e) => e.name === 'Enchanted Reprise')].manaCost >= lowerMana) {
+    if (manaficationRecast < gcd) { return 'Enchanted Reprise'; }
+    if (manaficationRecast < comboTime + finisherTime && lowerMana >= 50) { return 'Enchanted Reprise'; }
+  }
 
-  const lowerProc = Math.min(loopStatus.verfireready, loopStatus.verstoneready);
-  const higherProc = Math.max(loopStatus.verfireready, loopStatus.verstoneready);
+  const verthunderiiAcquired = actionList.some((e) => e.name === 'Verthunder II');
+  const veraeroiiAcquired = actionList.some((e) => e.name === 'Veraero II');
 
-  let joltPotency = 180;
-  let verfirePotency = 270;
-  let verthunderiiPotency = 100 * targetCount;
-
-  if (level >= 62) { joltPotency = 280; }
-  if (level >= 62) { verfirePotency = 300; }
-  if (level >= 78) { verthunderiiPotency = 120 * targetCount; }
+  const verfireMana = actionList[actionList.findIndex((e) => e.name === 'Verfire')].blackMana;
+  const verstoneMana = actionList[actionList.findIndex((e) => e.name === 'Verstone')].whiteMana;
 
   // AOE
-  if (level >= 18 && higherProc > gcd && verthunderiiPotency > verfirePotency) {
-    if (level >= 22 && blackMana >= whiteMana) { return 'Hardcast Veraero II'; } return 'Hardcast Verthunder II';
+  if (targetCount >= 3) {
+    if (veraeroiiAcquired && whiteMana <= blackMana) { return 'Veraero II'; }
+    if (verthunderiiAcquired) { return 'Verthunder II'; }
   }
 
-  if (level >= 18 && verthunderiiPotency > joltPotency) {
-    if (level >= 22 && blackMana >= whiteMana) { return 'Hardcast Veraero II'; } return 'Hardcast Verthunder II';
-  }
+  // "If one will cause you to unbalance, do the other one"
+  if (verstoneDuration >= gcd && Math.min(blackMana + verfireMana, 100) > whiteMana + 30) { return 'Verstone'; }
+  if (verfireDuration >= gcd && Math.min(whiteMana + verstoneMana, 100) > blackMana + 30) { return 'Verfire'; }
 
-  // Prevent unbalanced mana
-  if (Math.min(blackMana + 9, 100) > whiteMana + 30) {
-    if (loopStatus.verstoneready > gcd) { return 'Hardcast Verstone'; }
-    if (level >= 62) { return 'Hardcast Jolt II'; }
-    return 'Hardcast Jolt';
-  }
+  // Prioritize proc that will drop during combo
+  if (verstoneDuration < comboTime + finisherTime + gcd * 3) { return 'Verstone'; }
+  if (verfireDuration < comboTime + finisherTime + gcd * 3) { return 'Verfire'; }
 
-  if (Math.min(whiteMana + 9, 100) > blackMana + 30) {
-    if (loopStatus.verfireready > gcd) { return 'Hardcast Verfire'; }
-    if (level >= 62) { return 'Hardcast Jolt II'; }
-    return 'Hardcast Jolt';
-  }
+  // Use the lower mana one
+  if (verstoneDuration > gcd && whiteMana <= blackMana) { return 'Verstone'; }
+  if (verfireDuration > gcd && blackMana <= whiteMana) { return 'Verfire'; }
 
-  // Use proc with less time
-  if (lowerProc > gcd && loopStatus.verstoneready < loopStatus.verfireready) { return 'Hardcast Verstone'; }
-  if (lowerProc > gcd && loopStatus.verfireready < loopStatus.verstoneready) { return 'Hardcast Verfire'; }
+  // Use something
+  if (verstoneDuration > gcd) { return 'Verstone'; }
+  if (verfireDuration > gcd) { return 'Verfire'; }
 
-  // Use a proc
-  if (loopStatus.verstoneready > gcd) { return 'Hardcast Verstone'; }
-  if (loopStatus.verfireready > gcd) { return 'Hardcast Verfire'; }
-
-  // Jolt
-  if (level >= 62) { return 'Hardcast Jolt II'; }
-  return 'Hardcast Jolt';
+  if (actionList.some((e) => e.name === 'Jolt II')) { return 'Jolt II'; }
+  return 'Jolt';
 };
 
 nextAction.rdmNextOGCD = ({
-  weave, weaveMax, mp, comboAction, blackMana, whiteMana, loopRecast, loopStatus,
+  loopPlayerData, loopRecastArray, loopStatusArray,
 } = {}) => {
   const { targetCount } = nextActionOverlay;
   const { playerData } = nextActionOverlay;
