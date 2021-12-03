@@ -1,6 +1,16 @@
 /* global nextAction */
 
-nextAction.resetData = () => {
+nextAction.getActionData = ({
+  name, data,
+} = {}) => {
+  const { actionList } = nextAction;
+  const i = actionList.findIndex((e) => e.name === name);
+
+  if (actionList[i][data]) { return actionList[i][data]; }
+  return 0;
+};
+
+nextAction.resetActionData = () => {
   nextAction.actionData = [
     // Use base values and modify during job load
 
@@ -185,6 +195,7 @@ nextAction.resetData = () => {
       affinity: 'RDM',
       level: 50,
       recast: 55,
+      status: 'Acceleration',
       icon: '003214',
     },
 
@@ -220,6 +231,7 @@ nextAction.resetData = () => {
       affinity: 'RDM',
       level: 58,
       recast: 120,
+      status: 'Embolden',
       icon: '003218',
     },
 
@@ -303,6 +315,7 @@ nextAction.resetData = () => {
       potency: 680,
       blackMana: 7,
       whiteMana: 7,
+      comboAction: 'Verflare, Verholy',
       icon: '003234',
     },
 
@@ -344,6 +357,7 @@ nextAction.resetData = () => {
       potency: 750,
       blackMana: 4,
       whiteMana: 4,
+      comboAction: 'Scorch',
       icon: '000000',
     },
 
@@ -366,6 +380,7 @@ nextAction.resetData = () => {
       potency: 290,
       manaCost: 15,
       manaStack: 1,
+      comboAction: 'Enchanted Riposte',
       icon: '003226',
     },
 
@@ -376,6 +391,7 @@ nextAction.resetData = () => {
       gcd: 2.2,
       potency: 470,
       manaCost: 15,
+      comboAction: 'Enchanted Zwerchhau',
       icon: '003227',
     },
 
@@ -557,6 +573,11 @@ nextAction.resetData = () => {
   ];
 
   nextAction.statusData = [
+    {
+      name: 'Combo',
+      duration: 15,
+    },
+
     {
       name: 'Acceleration',
       duration: 20,
