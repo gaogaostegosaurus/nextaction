@@ -1,6 +1,6 @@
 /* global nextAction */
 
-nextAction.setStatus = ({
+nextAction.addStatus = ({
   name,
   targetID = nextAction.player.id,
   sourceID = nextAction.player.id,
@@ -8,7 +8,7 @@ nextAction.setStatus = ({
   stacks = 1,
   array,
 } = {}) => {
-  if (!name) { return false; }
+  if (!name) { return; }
 
   let statusArray;
   if (array) {
@@ -40,8 +40,17 @@ nextAction.setStatus = ({
       name, targetID, sourceID, duration: newDuration, stacks,
     });
   }
+};
 
-  return true;
+nextAction.removeStatus = ({
+  name,
+  targetID = nextAction.player.id,
+  sourceID = nextAction.player.id,
+  array,
+} = {}) => {
+  nextAction.addStatus({
+    name, targetID, sourceID, duration: 0, stacks: 0, array,
+  });
 };
 
 nextAction.getStatusDuration = ({
