@@ -94,6 +94,7 @@ nextAction.resetActionData = () => {
       cast: 5,
       mpCost: 400,
       potency: 120,
+      aoe: true,
       blackMana: 3,
       whiteMana: 3,
       icon: '003207',
@@ -283,6 +284,7 @@ nextAction.resetActionData = () => {
       level: 68,
       mpCost: 380,
       potency: 600,
+      aoe: true,
       blackMana: 21,
       manaStackCost: 3,
       icon: '003223',
@@ -294,6 +296,7 @@ nextAction.resetActionData = () => {
       level: 70,
       mpCost: 380,
       potency: 600,
+      aoe: true,
       whiteMana: 21,
       manaStackCost: 3,
       icon: '003224',
@@ -313,6 +316,7 @@ nextAction.resetActionData = () => {
       level: 80,
       mpCost: 400,
       potency: 680,
+      aoe: true,
       blackMana: 7,
       whiteMana: 7,
       comboAction: 'Verflare, Verholy',
@@ -327,7 +331,7 @@ nextAction.resetActionData = () => {
       mpCost: 300,
       potency: 310,
       blackMana: 6,
-      icon: '003205',
+      icon: '003235',
     },
 
     {
@@ -338,7 +342,7 @@ nextAction.resetActionData = () => {
       mpCost: 300,
       potency: 310,
       whiteMana: 6,
-      icon: '003205',
+      icon: '003236',
     },
 
     {
@@ -346,7 +350,7 @@ nextAction.resetActionData = () => {
       affinity: 'RDM',
       level: 86,
       recast: 120,
-      icon: '000000',
+      icon: '003237',
     },
 
     {
@@ -355,10 +359,11 @@ nextAction.resetActionData = () => {
       level: 90,
       mpCost: 400,
       potency: 750,
+      aoe: true,
       blackMana: 4,
       whiteMana: 4,
       comboAction: 'Scorch',
-      icon: '000000',
+      icon: '003238',
     },
 
     {
@@ -418,6 +423,13 @@ nextAction.resetActionData = () => {
     },
 
     // SMN
+    {
+      name: 'Fester',
+      affinity: 'SMN',
+      level: 10,
+      recast: 1,
+      icon: '',
+    },
 
     // Tank Role Actions
 
@@ -591,7 +603,10 @@ nextAction.resetActionData = () => {
 
     {
       name: 'Manafication', // Level 74 trait
-      duration: 10,
+      duration: 15,
+      stacks: 4, // ????
+      blackMana: 50,
+      whiteMana: 50,
     },
 
     {
