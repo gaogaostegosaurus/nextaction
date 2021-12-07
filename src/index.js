@@ -1,7 +1,7 @@
 /* global nextAction, addOverlayListener, startOverlayEvents */
 
 // Eventually
-const nextAction = {}; // eslint-disable-line
+const nextAction = {};
 // Plan for properties: player, data, recasts, durations all other functions
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -10,9 +10,24 @@ document.addEventListener('DOMContentLoaded', () => {
   startOverlayEvents();
 
   // Reset arrays for player, recasts, and duration
-  nextAction.player = [];
-  nextAction.recasts = [];
-  nextAction.duration = [];
+  nextAction.playerObject = {};
+  nextAction.recastArray = [];
+  nextAction.durationArray = [];
+
+  nextAction.ready = true;
+
+  nextAction.actionRegex = new RegExp(`^.{15}(?<logType>ActionEffect 15|AOEActionEffect 16:(?<sourceID>${id}):(?<sourceName>${name}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${actionNames}):(?<targetID>[\\dA-F]{8}):(?<comboCheck>([^:]*:)*?1?1B:)?`);
+  nextAction.statusRegex = new RegExp(`^.{15}(?<logType>):(?<targetID>[\\dA-F]{8}):(?<targetName>[ -~]+?) (?<gainsLoses>gains|loses) the effect of (?<statusName>${statusNames}) from (?<sourceName>${name})(?: for )?(?<statusDuration>\\d*\\.\\d*)?(?: Seconds)?\\.`);
+  nextAction.castingRegex = new RegExp(`^.{15}(?<logType>00:0[\\da-f]{3}):You (?:begin casting|ready) (?<actionName>${castingNames})\\.`, 'i');
+  nextAction.cancelRegex = new RegExp(`^.{15}(?<logType>00:0[\\da-f]{3}):You cancel (?<actionName>${castingNames})\\.`, 'i');
+  nextAction.playerstatsRegex = new RegExp('^.{15}0C:Player Stats: (?<jobID>[\\d]+):(?<strength>[\\d]+):(?<dexterity>[\\d]+):(?<vitality>[\\d]+):(?<intelligence>[\\d]+):(?<mind>[\\d]+):(?<piety>[\\d]+):(?<attackPower>[\\d]+):(?<directHitRate>[\\d]+):(?<criticalHit>[\\d]+):(?<attackMagicPotency>[\\d]+):(?<healingMagicPotency>[\\d]+):(?<determination>[\\d]+):(?<skillSpeed>[\\d]+):(?<spellSpeed>[\\d]+):0:(?<tenacity>[\\d]+)'); // This regex is always static for now, maybe not in future?
+});
+
+addOverlayListener('onPlayerChangedEvent', (e) => {
+  if (nextAction.ready = true) {
+    
+  };
+  nextActionOverlay.onPlayerChangedEvent(e);
 });
 
 // Load this first, probably
@@ -59,19 +74,6 @@ nextActionOverlay.propertyList = [
 nextActionOverlay.propertyList.forEach((property) => {
   nextActionOverlay[property] = {}; // Set all of the above as objects
 });
-
-// Supported job list
-nextActionOverlay.supportedJobs = [
-  'PLD', 'WAR', 'GNB',
-  'MNK', 'NIN', 'SAM',
-  'DNC',
-  'RDM',
-];
-
-// Reset recast timers
-nextAction.resetRecast = () => {
-  nextAction.recasts = [];
-};
 
 // Function to reset overlay display and data
 nextActionOverlay.overlayReset = () => {
@@ -191,10 +193,10 @@ nextActionOverlay.onInCombatChangedEvent = (e) => {
   }
 };
 
-nextActionOverlay.onPlayerChangedEvent = (e) => {
-  if (e.detail.name !== nextActionOverlay.playerData.name
-  || e.detail.job !== nextActionOverlay.playerData.job
-  || e.detail.level !== nextActionOverlay.playerData.level) {
+nextAction.onPlayerChangedEvent = (e) => {
+  if (e.detail.name !== nextActionOverlay.playerObject.name
+  || e.detail.job !== nextActionOverlay.playerObject.job
+  || e.detail.level !== nextActionOverlay.playerObject.level) {
     // Stop if overlay not ready
     // This seems to periodically happen, not sure why...
     if (!document.getElementById('icon-a')) {
@@ -549,10 +551,7 @@ addOverlayListener('onZoneChangedEvent', (e) => {
   // nextActionOverlay.zone = e.detail.zoneName;
 });
 
-addOverlayListener('onPlayerChangedEvent', (e) => {
-  // console.log(`onPlayerChangedEvent: ${JSON.stringify(e)}`);
-  nextActionOverlay.onPlayerChangedEvent(e);
-});
+
 
 addOverlayListener('onLogEvent', (e) => {
   nextActionOverlay.onLogEvent(e);

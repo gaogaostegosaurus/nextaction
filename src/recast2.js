@@ -42,23 +42,25 @@ nextAction.getRecast = ({
   name,
   array = nextAction.recastArray,
 } = {}) => {
-  if (!name) { return 0; }
+  if (!name) { return 9999; }
 
   const recastArray = array; // I'm not sure why I do this
 
+  // Get data from actionList
+  const { actionList } = nextAction;
+  const i = actionList.findIndex((e) => e.name === name);
+  if (i < 0) { return 9999; } // "It's not usable yet"
+
   // Get index of existing entry (if it does)
-  const i = recastArray.findIndex((e) => e.name === name);
+  const j = recastArray.findIndex((e) => e.name === name);
 
   // Return 0 if not found ("it's off recast")
-  if (i < 0) { return 0; }
+  if (j < 0) { return 0; }
 
-  // Get action data
-  const { actionData } = nextAction;
-  const j = actionData.findIndex((e) => e.name === name);
-  const defaultRecast = actionData[j].recast;
-  const defaultCharges = actionData[j].charges;
+  const defaultRecast = actionList[i].recast;
+  const defaultCharges = actionList[i].charges;
 
-  const recastTimestamp = recastArray[i].recast;
+  const recastTimestamp = recastArray[j].recast;
   let recastSeconds = (recastTimestamp - Date.now()) / 1000;
 
   // (Charges are a headache. Note to self.)
@@ -81,13 +83,17 @@ nextAction.getCharges = ({
   name,
   array,
 } = {}) => {
-  const { actionData } = nextAction;
-  const i = actionData.findIndex((e) => e.name === name);
-  const defaultRecast = actionData[i].recast;
-  const defaultCharges = actionData[i].charges;
-  const recastSeconds = nextAction.getRecast({ name, array });
+  if (!name) { return 0; }
 
+  const { actionList } = nextAction;
+  const i = actionList.findIndex((e) => e.name === name);
+  if (i < 0) { return 0; }
+
+  const defaultCharges = actionList[i].charges;
   if (!defaultCharges) { return 0; }
+
+  const recastSeconds = nextAction.getRecast({ name, array });
+  const defaultRecast = actionList[i].recast;
 
   const chargesRemaining = defaultCharges - Math.ceil(recastSeconds / defaultRecast);
   return chargesRemaining;

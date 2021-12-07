@@ -130,7 +130,7 @@ nextActionOverlay.EnmityTargetData = (e) => {
 
     // Clear target data if no target
     nextActionOverlay.targetData.name = '';
-    nextActionOverlay.targetData.decimalid = '';
+    // nextActionOverlay.targetData.decimalid = '';
     nextActionOverlay.targetData.id = '';
     if (nextActionOverlay[`${jobLowercase}TargetChange`]) {
       nextActionOverlay[`${jobLowercase}TargetChange`]();
@@ -220,12 +220,7 @@ nextActionOverlay.onPlayerChangedEvent = (e) => {
     const { level } = nextActionOverlay.playerData;
     const { id } = nextActionOverlay.playerData;
 
-    nextActionOverlay.actionRegex = new RegExp(`^.{15}(?<logType>1[56]):(?<sourceID>${id}):(?<sourceName>${name}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${actionNames}):(?<targetID>[\\dA-F]{8}):(?<comboCheck>([^:]*:)*?1?1B:)?`);
-    nextActionOverlay.statusRegex = new RegExp(`^.{15}(?<logType>1[AE]):(?<targetID>[\\dA-F]{8}):(?<targetName>[ -~]+?) (?<gainsLoses>gains|loses) the effect of (?<statusName>${statusNames}) from (?<sourceName>${name})(?: for )?(?<statusDuration>\\d*\\.\\d*)?(?: Seconds)?\\.`);
-    nextActionOverlay.castingRegex = new RegExp(`^.{15}(?<logType>00:0[\\da-f]{3}):You (?:begin casting|ready) (?<actionName>${castingNames})\\.`, 'i');
-    nextActionOverlay.cancelRegex = new RegExp(`^.{15}(?<logType>00:0[\\da-f]{3}):You cancel (?<actionName>${castingNames})\\.`, 'i');
-    nextActionOverlay.playerstatsRegex = new RegExp('^.{15}0C:Player Stats: (?<jobID>[\\d]+):(?<strength>[\\d]+):(?<dexterity>[\\d]+):(?<vitality>[\\d]+):(?<intelligence>[\\d]+):(?<mind>[\\d]+):(?<piety>[\\d]+):(?<attackPower>[\\d]+):(?<directHitRate>[\\d]+):(?<criticalHit>[\\d]+):(?<attackMagicPotency>[\\d]+):(?<healingMagicPotency>[\\d]+):(?<determination>[\\d]+):(?<skillSpeed>[\\d]+):(?<spellSpeed>[\\d]+):0:(?<tenacity>[\\d]+)'); // This regex is always static for now, maybe not in future?
-
+    
     // Check if divs are ready
     // (I don't really get it but sometimes they are null)
 
