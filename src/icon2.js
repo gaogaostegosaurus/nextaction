@@ -29,11 +29,13 @@ nextAction.syncOverlay = ({
 
   // Check to see how many icons currently match the array, removing any that don't
   let iconCount = 0;
+  const iconMax = 10;
   for (let i = 0; i < rowLength; i += 1) {
     const iconDiv = rowDiv.children[i];
     if (actionArray[iconCount] && actionArray[iconCount].name === iconDiv.dataset.name) {
       // Go on to next array item if the div already contains the icon
       iconCount += 1;
+      if (iconCount >= iconMax) { break; }
     } else {
       // Remove icon if it doesn't match
       iconDiv.dataset.name = 'none';
@@ -74,6 +76,8 @@ nextAction.syncOverlay = ({
       void iconDiv.offsetWidth; // Can't remember what this does, but probably do reflow smoothly
 
       iconDiv.classList.replace('icon-hide', 'icon-show');
+      iconCount += 1;
+      if (iconCount >= iconMax) { break; }
     }
   }
 };

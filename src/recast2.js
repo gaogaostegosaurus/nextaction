@@ -1,6 +1,6 @@
 /* global nextAction */
 
-nextAction.addRecast = ({
+nextAction.addActionRecast = ({
   name,
   recast, // In seconds
   array = nextAction.recastArray,
@@ -38,7 +38,7 @@ nextAction.addRecast = ({
   }
 };
 
-nextAction.getRecast = ({
+nextAction.getActionRecast = ({
   name,
   array = nextAction.recastArray,
 } = {}) => {
@@ -79,9 +79,9 @@ nextAction.getRecast = ({
   return recastSeconds;
 };
 
-nextAction.getCharges = ({
+nextAction.getActionCharges = ({
   name,
-  array,
+  array = nextAction.recastArray,
 } = {}) => {
   if (!name) { return 0; }
 

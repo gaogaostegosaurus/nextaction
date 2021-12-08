@@ -1,11 +1,8 @@
-/* global nextAction */
 
-nextAction.RDM = () => {
+nextAction.rdmTraits = () => {
   const { level } = nextAction.playerData;
 
   // Filter actions
-  nextAction.actionList = nextAction.actionData.filter((e) => (e.affinity === 'RDM' || e.affinity === 'Magical Ranged DPS') && e.level <= level);
-
   // Traits
   if (level >= 62) {
     let i;
@@ -70,14 +67,14 @@ nextAction.rdmTargetChanged = () => {
   nextAction.rdmNextAction();
 };
 
-nextAction.actionLoop = ({
+nextAction.rdmLoop = ({
   delay = 0, // Call with this to allow OGCDs to fill next slots
   casting, // Use for calling function during casting
 } = {}) => {
   // Static values
-  const { addRecast } = nextAction;
-  const { getRecast } = nextAction;
-  const { addStatus } = nextAction;
+  const { addActionRecast } = nextAction;
+  const { getActionRecast } = nextAction;
+  const { setStatus } = nextAction;
   const { removeStatus } = nextAction;
   const { getStatusStacks } = nextAction;
   const { getStatusDuration } = nextAction;
@@ -86,7 +83,7 @@ nextAction.actionLoop = ({
 
   const { actionList } = nextAction;
 
-  // Clone arrays/objects useful for loop
+  // Clone arrays/objects for loop
   const loopPlayerData = { ...nextAction.playerData };
   const loopRecastArray = [...nextAction.recastArray];
   const loopStatusArray = [...nextAction.statusArray];
@@ -96,11 +93,15 @@ nextAction.actionLoop = ({
   // Initial values for loop control
   let gcdDelay = delay; // Time till next GCD action (or GCD length, whatever)
   let nextTime = 0; // Amount of time looked ahead in loop
-  const maxActions = 100; // Maximum predict time
-
-  // Start loop
+  const maxActions = 100; // Maximum number of actions looked up
+  let { mp } = loopPlayerData;
+  let { blackMana } = loopPlayerData;
+  let { whiteMana } = loopPlayerData;
+  let { manaStacks } = loopPlayerData;
+  
+  // Start loop here
   for (let i = 1; i <= maxActions; i += 1) {
-    let nextGCD;
+    let nextGCD = '';
     let loopTime = 0; // Tracks of how "long" the current loop takes
     if (nextTime === 0 && casting) {
       nextGCD = casting;
@@ -112,51 +113,34 @@ nextAction.actionLoop = ({
 
     // Adjust resources
 
-    loopPlayerData.mp -= getActionData({ name: nextGCD, data: 'mpCost' });
+    mp -= getActionData({ name: nextGCD, data: 'mpCost' });
 
-    loopPlayerData.blackMana += getActionData({ name: nextGCD, data: 'blackMana' });
-    loopPlayerData.whiteMana += getActionData({ name: nextGCD, data: 'whiteMana' });
+    blackMana += getActionData({ name: nextGCD, data: 'blackMana' });
+    whiteMana += getActionData({ name: nextGCD, data: 'whiteMana' });
 
-    loopPlayerData.blackMana -= getActionData({ name: nextGCD, data: 'manaCost' });
-    loopPlayerData.whiteMana -= getActionData({ name: nextGCD, data: 'manaCost' });
+    blackMana -= getActionData({ name: nextGCD, data: 'manaCost' });
+    whiteMana -= getActionData({ name: nextGCD, data: 'manaCost' });
 
-    loopPlayerData.manaStacks += getActionData({ name: nextGCD, data: 'manaStacks' });
-    loopPlayerData.manaStacks -= getActionData({ name: nextGCD, data: 'manaStackCost' });
-
-    // Check for combo
-
-    if (actionList.some((e) => e.comboAction.includes(nextGCD))) {
-      addStatus({ name: 'Combo ', array: loopStatusArray });
-    } else {
-      removeStatus({ name: 'Combo ', array: loopStatusArray });
-    }
-
-    // Adjust mana from actions
-    if (nextGCD.endsWith(' Jolt') || nextGCD.endsWith(' Jolt II')) { blackMana += 3; whiteMana += 3; } else
-    if (nextGCD.endsWith(' Verthunder')) { blackMana += 11; } else
-    if (nextGCD.endsWith(' Veraero')) { whiteMana += 11; } else
-    if (nextGCD.endsWith(' Scatter') || nextGCD.endsWith(' Impact')) { blackMana += 3; whiteMana += 3; } else
-    if (nextGCD.endsWith(' Verthunder II')) { blackMana += 7; } else
-    if (nextGCD.endsWith(' Veraero II')) { whiteMana += 7; } else
-    if (nextGCD.endsWith(' Verfire')) { blackMana += 9; } else
-    if (nextGCD.endsWith(' Verstone')) { whiteMana += 9; } else
-
-    if (nextGCD === 'Enchanted Riposte') { blackMana -= 30; whiteMana -= 30; } else
-    if (nextGCD === 'Enchanted Zwerchhau') { blackMana -= 25; whiteMana -= 25; } else
-    if (nextGCD === 'Enchanted Redoublement') { blackMana -= 25; whiteMana -= 25; } else
-    if (nextGCD === 'Enchanted Moulinet') { blackMana -= 20; whiteMana -= 20; } else
-    if (nextGCD === 'Verflare') { blackMana += 21; } else
-    if (nextGCD === 'Verholy') { whiteMana += 21; } else
-    if (nextGCD === 'Enchanted Reprise') { blackMana -= 5; whiteMana -= 5; } else
-    if (nextGCD === 'Scorch') { blackMana += 7; whiteMana += 7; }
+    manaStacks += getActionData({ name: nextGCD, data: 'manaStacks' });
+    manaStacks -= getActionData({ name: nextGCD, data: 'manaStackCost' });
 
     // Fix mana
     if (blackMana > 100) { blackMana = 100; } else if (blackMana < 0) { blackMana = 0; }
     if (whiteMana > 100) { whiteMana = 100; } else if (whiteMana < 0) { whiteMana = 0; }
 
+    // Check for combo
+    if (actionList.some((e) => e.comboAction.includes(nextGCD))) {
+      setStatus({ name: 'Combo ', array: loopStatusArray });
+    } else {
+      removeStatus({ name: 'Combo ', array: loopStatusArray });
+    }
+
     // Remove procs
-    if (nextGCD.endsWith(' Verfire')) { loopStatus.verfireready = -1; } else
-    if (nextGCD.endsWith(' Verstone')) { loopStatus.verstoneready = -1; }
+    if (nextGCD === 'Verfire') {
+      removeStatus({ name: 'Verfire Ready', array: loopStatusArray });
+    } else if (nextGCD === 'Verstone') {
+      removeStatus({ name: 'Verstone Ready', array: loopStatusArray });
+    }
 
     // GCD
     if (['Enchanted Riposte', 'Enchanted Zwerchhau', 'Enchanted Moulinet'].includes(nextGCD)) {
@@ -178,30 +162,10 @@ nextAction.actionLoop = ({
       loopTime += gcdDelay;
     }
 
-    // Dualcast/Swiftcast status
-    // Apparently everything deletes Dualcast
-    if (loopStatus.dualcast > 0) { loopStatus.dualcast = -1; } else
-    // Swiftcast only consumed on spells (and no dualcast)
-    if (loopStatus.swiftcast > 0 && nextGCD.startsWith('Dualcast ')) { loopStatus.swiftcast = -1; } else
-    // Add Dualcast if nothing above was used
-    if (nextGCD.startsWith('Hardcast ')) { loopStatus.dualcast = duration.dualcast; } else { loopTime = gcdTime; }
-
-    // Update Combo status
-    if (comboAction === '' || loopStatus.combo < 0) {
-      comboAction = '';
-      loopStatus.combo = -1;
-    }
-
-    // Remove Acceleration if out of charges or time
-    if (accelerationCount <= 0 || loopStatus.acceleration <= 0) {
-      accelerationCount = 0;
-      loopStatus.acceleration = -1;
-    }
-
     let weave = 1;
     let weaveMax = 0;
-    if (gcdTime >= 2200) { weaveMax = 2; } else
-    if (gcdTime >= 1500) { weaveMax = 1; }
+    if (gcdTime > 2200) { weaveMax = 2; } else
+    if (gcdTime > 1000) { weaveMax = 1; }
 
     // Second loop for OGCDs
     while (weave <= weaveMax) {
@@ -253,8 +217,8 @@ nextAction.actionLoop = ({
   nextAction.syncIcons({ iconArray });
 
   // Refresh after a few GCDs if nothing's happening
-  clearTimeout(nextAction.timeout.nextAction); // Keep this the same across jobs
-  nextAction.timeout.nextAction = setTimeout(nextAction.rdmNextAction, gcd * 2, // 2 GCDs seems like a good number... maybe 3?
+  clearTimeout(nextAction.loopTimeout); // Keep this the same across jobs
+  nextAction.loopTimeout = setTimeout(nextAction.rdmLoop, gcd * 2, // 2 GCDs seems like a good number... maybe 3?
   );
 };
 
@@ -541,7 +505,8 @@ nextAction.rdmNextOGCD = ({
   return '';
 };
 
-nextAction.rdmActionMatch = (actionMatch) => {
+nextAction.rdmActionMatch = ({ logType, actionName, targetID } = {}) => {
+  nextAction.actionMatchTimestamp = Date.now();
   // No let declarations here - everything needs to modify current snapshot
   const { removeStatus } = nextAction;
 
@@ -550,37 +515,6 @@ nextAction.rdmActionMatch = (actionMatch) => {
   const { abilities } = nextAction.actionData;
   const { gcd } = nextAction;
 
-  const { addRecast } = nextActionOverlay;
-  const { duration } = nextActionOverlay;
-  const { recast } = nextActionOverlay;
-
-  // const { checkRecast } = nextActionOverlay;
-  const { checkStatus } = nextActionOverlay;
-  const { addStatus } = nextActionOverlay;
-
-  const singletargetActions = [
-    'Jolt', 'Jolt II', 'Verfire', 'Verstone',
-    'Verthunder', 'Veraero',
-    'Enchanted Riposte', 'Riposte',
-    'Enchanted Zwerchhau', 'Zwerchhau',
-    'Enchanted Redoublement', 'Redoublement',
-    'Enchanted Reprise', 'Reprise',
-  ];
-
-  const multitargetActions = [
-    'Verthunder II', 'Veraero II', 'Scatter', 'Impact',
-    'Moulinet', 'Enchanted Moulinet',
-    'Contre Sixte',
-  ];
-
-  const { actionName } = actionMatch.groups;
-
-  if (singletargetActions.includes(actionName)) {
-    // Two ST actions in a row brings it to 1
-    if (nextAction.targetCount > 2) {
-      nextAction.targetCount = 2;
-    } else { nextAction.targetCount = 1; }
-  } else
   if (multitargetActions.includes(actionName) && actionMatch.groups.logType === '15') {
     // Multi target only hits single target
     nextAction.targetCount = 1;
