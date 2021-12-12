@@ -1,73 +1,70 @@
+/* globals nextAction, actionData:writable, */
 
-nextAction.rdmTraits = () => {
-  const { level } = nextAction.playerData;
+const rdmTraits = () => {
+  const { level } = playerData;
 
   // Filter actions
   // Traits
   if (level >= 62) {
-    let i;
-    i = nextAction.actionList.findIndex((e) => e.name === 'Jolt');
-    nextAction.actionList = nextAction.actionList.splice(i, 1);
-    i = nextAction.actionList.findIndex((e) => e.name === 'Verthunder');
-    nextAction.actionList[i].potency = 370;
-    i = nextAction.actionList.findIndex((e) => e.name === 'Veraero');
-    nextAction.actionList[i].potency = 370;
-    i = nextAction.actionList.findIndex((e) => e.name === 'Verfire');
-    nextAction.actionList[i].potency = 310;
-    i = nextAction.actionList.findIndex((e) => e.name === 'Verstone');
-    nextAction.actionList[i].potency = 310;
+    let index;
+    index = actionData.findIndex((element) => element.name === 'Jolt');
+    actionData = actionData.splice(index, 1);
+    index = actionData.findIndex((element) => element.name === 'Verthunder');
+    actionData[index].potency = 370;
+    index = actionData.findIndex((element) => element.name === 'Veraero');
+    actionData[index].potency = 370;
+    index = actionData.findIndex((element) => element.name === 'Verfire');
+    actionData[index].potency = 310;
+    index = actionData.findIndex((element) => element.name === 'Verstone');
+    actionData[index].potency = 310;
   }
 
   if (level >= 66) {
-    const i = nextAction.actionList.findIndex((e) => e.name === 'Scatter');
-    nextAction.actionList = nextAction.actionList.splice(i, 1);
+    const i = actionData.findIndex((element) => element.name === 'Scatter');
+    actionData = actionData.splice(i, 1);
   }
 
   if (level >= 72) {
-    const i = nextAction.actionList.findIndex((e) => e.name === 'Displacement');
-    nextAction.actionList[i].potency = 200;
+    const i = actionData.findIndex((element) => element.name === 'Displacement');
+    actionData[i].potency = 200;
   }
 
   if (level >= 74) {
-    const i = nextAction.actionList.findIndex((e) => e.name === 'Manafication');
-    nextAction.actionList[i].recast = 110;
-    nextAction.actionList[i].status = 'Manafication';
+    const i = actionData.findIndex((element) => element.name === 'Manafication');
+    actionData[i].recast = 110;
+    actionData[i].status = 'Manafication';
   }
 
   if (level >= 78) {
-    let i = nextAction.actionList.findIndex((e) => e.name === 'Contre Sixte');
-    nextAction.actionList[i].recast = 35000;
-    i = nextAction.actionList.findIndex((e) => e.name === 'Verthunder II');
-    nextAction.actionList[i].potency = 120;
-    i = nextAction.actionList.findIndex((e) => e.name === 'Veraero II');
-    nextAction.actionList[i].potency = 120;
+    let i = actionData.findIndex((element) => element.name === 'Contre Sixte');
+    actionData[i].recast = 35000;
+    i = actionData.findIndex((element) => element.name === 'Verthunder II');
+    actionData[i].potency = 120;
+    i = actionData.findIndex((element) => element.name === 'Veraero II');
+    actionData[i].potency = 120;
   }
 
   if (level >= 88) {
-    const i = nextAction.actionList.findIndex((e) => e.name === 'Acceleration');
-    nextAction.actionList[i].charges = 2;
+    const i = actionData.findIndex((element) => element.name === 'Acceleration');
+    actionData[i].charges = 2;
   }
 
   if (level >= 90) {
-    const i = nextAction.statusData.findIndex((e) => e.name === 'Manafication');
-    nextAction.statusData[i].stacks = 6;
+    const i = statusData.findIndex((element) => element.name === 'Manafication');
+    statusData[i].stacks = 6;
   }
 
-  nextAction.nextAction = nextAction.rdmNextAction;
-  nextAction.playerDataChanged = nextAction.rdmPlayerChanged;
+  nextAction = rdmNextAction;
+  playerDataChanged = rdmPlayerChanged;
 };
 
-nextAction.rdmPlayerChanged = (e) => {
-  nextAction.playerData.mp = e.detail.currentMP;
-  nextAction.playerData.blackMana = e.detail.jobDetail.blackMana;
-  nextAction.playerData.whiteMana = e.detail.jobDetail.whiteMana;
+const rdmPlayerChanged = (e) => {
+  playerData.mp = e.detail.currentMP;
+  playerData.blackMana = e.detail.jobDetail.blackMana;
+  playerData.whiteMana = e.detail.jobDetail.whiteMana;
 };
 
-nextAction.rdmTargetChanged = () => {
-  nextAction.rdmNextAction();
-};
-
-nextAction.rdmLoop = ({
+const rdmLoop = ({
   delay = 0, // Call with this to allow OGCDs to fill next slots
   casting, // Use for calling function during casting
 } = {}) => {
@@ -81,12 +78,12 @@ nextAction.rdmLoop = ({
 
   const { getActionData } = nextAction;
 
-  const { actionList } = nextAction;
+  const { actionData } = nextAction;
 
   // Clone arrays/objects for loop
-  const loopPlayerData = { ...nextAction.playerData };
-  const loopRecastArray = [...nextAction.recastArray];
-  const loopStatusArray = [...nextAction.statusArray];
+  const loopPlayerData = { ...playerData };
+  const loopRecastArray = [...recastArray];
+  const loopStatusArray = [...statusArray];
 
   const actionArray = [];
 
@@ -98,7 +95,7 @@ nextAction.rdmLoop = ({
   let { blackMana } = loopPlayerData;
   let { whiteMana } = loopPlayerData;
   let { manaStacks } = loopPlayerData;
-  
+
   // Start loop here
   for (let i = 1; i <= maxActions; i += 1) {
     let nextGCD = '';
@@ -108,7 +105,7 @@ nextAction.rdmLoop = ({
       // If casting, current spell is first GCD
       actionArray.push({ name: nextGCD, casting: true });
     } else if (gcdDelay === 0) {
-      nextGCD = nextAction.rdmNextGCD({ loopPlayerData, loopRecastList, loopStatusList });
+      nextGCD = rdmNextGCD({ loopPlayerData, loopRecastList, loopStatusList });
     }
 
     // Adjust resources
@@ -129,7 +126,7 @@ nextAction.rdmLoop = ({
     if (whiteMana > 100) { whiteMana = 100; } else if (whiteMana < 0) { whiteMana = 0; }
 
     // Check for combo
-    if (actionList.some((e) => e.comboAction.includes(nextGCD))) {
+    if (actionData.some((e) => e.comboAction.includes(nextGCD))) {
       setStatus({ name: 'Combo ', array: loopStatusArray });
     } else {
       removeStatus({ name: 'Combo ', array: loopStatusArray });
@@ -169,7 +166,7 @@ nextAction.rdmLoop = ({
 
     // Second loop for OGCDs
     while (weave <= weaveMax) {
-      const nextOGCD = nextAction.rdmNextOGCD({
+      const nextOGCD = rdmNextOGCD({
         weave, weaveMax, comboAction, blackMana, whiteMana, loopRecast, loopStatus,
         // Put MP in later?
         // weave, weaveMax, mp, comboAction, blackMana, whiteMana, loopRecast, loopStatus,
@@ -214,15 +211,15 @@ nextAction.rdmLoop = ({
     nextTime += loopTime;
   }
 
-  nextAction.syncIcons({ iconArray });
+  syncIcons({ iconArray });
 
   // Refresh after a few GCDs if nothing's happening
-  clearTimeout(nextAction.loopTimeout); // Keep this the same across jobs
-  nextAction.loopTimeout = setTimeout(nextAction.rdmLoop, gcd * 2, // 2 GCDs seems like a good number... maybe 3?
+  clearTimeout(loopTimeout); // Keep this the same across jobs
+  loopTimeout = setTimeout(rdmLoop, gcd * 2, // 2 GCDs seems like a good number... maybe 3?
   );
 };
 
-nextAction.rdmNextGCD = ({
+const rdmNextGCD = ({
   loopPlayerData, loopRecastArray, loopStatusArray,
 } = {}) => {
   const { getRecast } = nextAction;
@@ -238,18 +235,18 @@ nextAction.rdmNextGCD = ({
   const targets = 1;
   const { gcd } = loopPlayerData;
   const { comboAction } = loopPlayerData;
-  const { actionList } = nextAction;
+  const { actionData } = nextAction;
   const { targetCount } = nextAction;
 
   useStatusStacks({ name: 'Manafication', array: loopStatusArray });
 
-  const zwerchhauAcquired = actionList.some((e) => e.name === 'Enchanted Zwerchhau');
-  const redoublementAcquired = actionList.some((e) => e.name === 'Enchanted Redoublement');
-  const scorchAcquired = actionList.some((e) => e.name === 'Scorch');
-  const resolutionAcquired = actionList.some((e) => e.name === 'Resolution');
+  const zwerchhauAcquired = actionData.some((element) => element.name === 'Enchanted Zwerchhau');
+  const redoublementAcquired = actionData.some((element) => element.name === 'Enchanted Redoublement');
+  const scorchAcquired = actionData.some((element) => element.name === 'Scorch');
+  const resolutionAcquired = actionData.some((element) => element.name === 'Resolution');
 
-  const zwerchhauCost = actionList[actionList.findIndex((e) => e.name === 'Enchanted Zwerchhau')].manaCost;
-  const redoublementCost = actionList[actionList.findIndex((e) => e.name === 'Enchanted Redoublement')].manaCost;
+  const zwerchhauCost = actionData[actionData.findIndex((element) => element.name === 'Enchanted Zwerchhau')].manaCost;
+  const redoublementCost = actionData[actionData.findIndex((element) => element.name === 'Enchanted Redoublement')].manaCost;
 
   // "Continue combos"
   if (comboAction) {
@@ -259,11 +256,11 @@ nextAction.rdmNextGCD = ({
     if (resolutionAcquired && comboAction === 'Scorch') { return 'Scorch'; }
   }
 
-  const verflareAcquired = actionList.some((e) => e.name === 'Verflare');
-  const verholyAcquired = actionList.some((e) => e.name === 'Verholy');
+  const verflareAcquired = actionData.some((element) => element.name === 'Verflare');
+  const verholyAcquired = actionData.some((element) => element.name === 'Verholy');
 
-  const verflareMana = actionList[actionList.findIndex((e) => e.name === 'Verflare')].blackMana;
-  const verholyMana = actionList[actionList.findIndex((e) => e.name === 'Verholy')].whiteMana;
+  const verflareMana = actionData[actionData.findIndex((element) => element.name === 'Verflare')].blackMana;
+  const verholyMana = actionData[actionData.findIndex((element) => element.name === 'Verholy')].whiteMana;
 
   const verfireDuration = getStatusDuration({ name: 'Verfire Ready', array: loopStatusArray });
   const verstoneDuration = getStatusDuration({ name: 'Verstone Ready', array: loopStatusArray });
@@ -318,15 +315,15 @@ nextAction.rdmNextGCD = ({
     }
 
     // AoE
-    if (actionList.some((e) => e.name === 'Impact') && targets >= 2) { return 'Impact'; }
-    if (actionList.some((e) => e.name === 'Scatter') && targets >= 3) { return 'Scatter'; }
+    if (actionData.some((element) => element.name === 'Impact') && targets >= 2) { return 'Impact'; }
+    if (actionData.some((element) => element.name === 'Scatter') && targets >= 3) { return 'Scatter'; }
 
-    const verthunderAcquired = actionList.some((e) => e.name === 'Verthunder');
-    const veraeroAcquired = actionList.some((e) => e.name === 'Veraero');
-    const verthunder3Acquired = actionList.some((e) => e.name === 'Verthunder III');
-    const veraero3Acquired = actionList.some((e) => e.name === 'Veraero III');
-    const verthunderMana = actionList[actionList.findIndex((e) => e.name === 'Verthunder')].blackMana;
-    const veraeroMana = actionList[actionList.findIndex((e) => e.name === 'Veraero')].whiteMana;
+    const verthunderAcquired = actionData.some((element) => element.name === 'Verthunder');
+    const veraeroAcquired = actionData.some((element) => element.name === 'Veraero');
+    const verthunder3Acquired = actionData.some((element) => element.name === 'Verthunder III');
+    const veraero3Acquired = actionData.some((element) => element.name === 'Veraero III');
+    const verthunderMana = actionData[actionData.findIndex((element) => element.name === 'Verthunder')].blackMana;
+    const veraeroMana = actionData[actionData.findIndex((element) => element.name === 'Veraero')].whiteMana;
 
     // "If one will cause you to unbalance, do the other one"
     if (veraeroAcquired && Math.min(blackMana + verthunderMana, 100) > whiteMana + 30) {
@@ -353,13 +350,13 @@ nextAction.rdmNextGCD = ({
 
   const manaficationRecast = getRecast({ name: 'Manafication', array: loopRecastArray });
 
-  const repriseAcquired = actionList.some((e) => e.name === 'Enchanted Reprise');
-  const repriseCost = actionList[actionList.findIndex((e) => e.name === 'Enchanted Reprise')].manaCost;
-  const repriseGCD = actionList[actionList.findIndex((e) => e.name === 'Enchanted Reprise')].gcd;
+  const repriseAcquired = actionData.some((element) => element.name === 'Enchanted Reprise');
+  const repriseCost = actionData[actionData.findIndex((element) => element.name === 'Enchanted Reprise')].manaCost;
+  const repriseGCD = actionData[actionData.findIndex((element) => element.name === 'Enchanted Reprise')].gcd;
 
-  const moulinetAcquired = actionList.some((e) => e.name === 'Enchanted Moulinet');
-  const moulinetCost = actionList[actionList.findIndex((e) => e.name === 'Enchanted Moulinet')].manaCost;
-  const moulinetGCD = actionList[actionList.findIndex((e) => e.name === 'Enchanted Moulinet')].gcd;
+  const moulinetAcquired = actionData.some((element) => element.name === 'Enchanted Moulinet');
+  const moulinetCost = actionData[actionData.findIndex((element) => element.name === 'Enchanted Moulinet')].manaCost;
+  const moulinetGCD = actionData[actionData.findIndex((element) => element.name === 'Enchanted Moulinet')].gcd;
 
   if (moulinetAcquired && lowerMana >= moulinetCost) {
     if (targets >= 3) {
@@ -370,18 +367,18 @@ nextAction.rdmNextGCD = ({
     if (!repriseAcquired && manaficationRecast < moulinetGCD) { return 'Enchanted Moulinet'; }
   }
 
-  const riposteCost = actionList[actionList.findIndex((e) => e.name === 'Enchanted Riposte')].manaCost;
+  const riposteCost = actionData[actionData.findIndex((element) => element.name === 'Enchanted Riposte')].manaCost;
 
-  let comboTime = actionList[actionList.findIndex((e) => e.name === 'Enchanted Riposte')].gcd;
+  let comboTime = actionData[actionData.findIndex((element) => element.name === 'Enchanted Riposte')].gcd;
   let comboCost = riposteCost;
 
   if (zwerchhauAcquired) {
-    comboTime += actionList[actionList.findIndex((e) => e.name === 'Enchanted Zwerchhau')].gcd;
+    comboTime += actionData[actionData.findIndex((element) => element.name === 'Enchanted Zwerchhau')].gcd;
     comboCost += zwerchhauCost;
   }
 
   if (redoublementAcquired) {
-    comboTime += actionList[actionList.findIndex((e) => e.name === 'Enchanted Redoublement')].gcd;
+    comboTime += actionData[actionData.findIndex((element) => element.name === 'Enchanted Redoublement')].gcd;
     comboCost += redoublementCost;
   }
 
@@ -403,11 +400,11 @@ nextAction.rdmNextGCD = ({
     if (!verflareAcquired && Math.min(verfireDuration, verstoneDuration) < comboTime + gcd) { return 'Enchanted Riposte'; }
   }
 
-  const verthunder2Acquired = actionList.some((e) => e.name === 'Verthunder II');
-  const veraero2Acquired = actionList.some((e) => e.name === 'Veraero II');
+  const verthunder2Acquired = actionData.some((element) => element.name === 'Verthunder II');
+  const veraero2Acquired = actionData.some((element) => element.name === 'Veraero II');
 
-  const verfireMana = actionList[actionList.findIndex((e) => e.name === 'Verfire')].blackMana;
-  const verstoneMana = actionList[actionList.findIndex((e) => e.name === 'Verstone')].whiteMana;
+  const verfireMana = actionData[actionData.findIndex((element) => element.name === 'Verfire')].blackMana;
+  const verstoneMana = actionData[actionData.findIndex((element) => element.name === 'Verstone')].whiteMana;
 
   // AOE
   if (targetCount >= 3) {
@@ -433,15 +430,15 @@ nextAction.rdmNextGCD = ({
   if (verstoneDuration >= gcd) { return 'Verstone'; }
   if (verfireDuration >= gcd) { return 'Verfire'; }
 
-  if (actionList.some((e) => e.name === 'Jolt II')) { return 'Jolt II'; }
-  if (actionList.some((e) => e.name === 'Jolt')) { return 'Jolt'; }
+  if (actionData.some((element) => element.name === 'Jolt II')) { return 'Jolt II'; }
+  if (actionData.some((element) => element.name === 'Jolt')) { return 'Jolt'; }
   return 'Riposte';
 };
 
-nextAction.rdmNextOGCD = ({
+const rdmNextOGCD = ({
   loopPlayerData, loopRecastArray, loopStatusArray,
 } = {}) => {
-  const { actionList } = nextAction;
+  const { actionData } = nextAction;
   const { getRecast } = nextAction;
   const { getCharges } = nextAction;
   const { getStatusDuration } = nextAction;
@@ -496,67 +493,46 @@ nextAction.rdmNextOGCD = ({
   }
 
   // Other OGCDs, I guess
-  if (actionList.some((e) => e.name === 'Embolden') && getRecast({ name: 'Embolden', array: loopRecastArray }) < 1) { return 'Embolden'; }
-  if (actionList.some((e) => e.name === 'Corps-a-corps') && getCharges({ name: 'Corps-a-corps', array: loopRecastArray }) > 1) { return 'Corps-a-corps'; }
-  if (actionList.some((e) => e.name === 'Engagement') && getCharges({ name: 'Engagement', array: loopRecastArray }) > 1) { return 'Engagement'; }
+  if (actionData.some((element) => element.name === 'Embolden') && getRecast({ name: 'Embolden', array: loopRecastArray }) < 1) { return 'Embolden'; }
+  if (actionData.some((element) => element.name === 'Corps-a-corps') && getCharges({ name: 'Corps-a-corps', array: loopRecastArray }) > 1) { return 'Corps-a-corps'; }
+  if (actionData.some((element) => element.name === 'Engagement') && getCharges({ name: 'Engagement', array: loopRecastArray }) > 1) { return 'Engagement'; }
 
   // Lucid, but is this even needed anymore
-  if (actionList.some((e) => e.name === 'Lucid Dreaming') && mp < 8000 && getRecast({ name: 'Lucid Dreaming', array: loopRecastArray }) < 1) { return 'Lucid Dreaming'; }
+  if (actionData.some((element) => element.name === 'Lucid Dreaming') && mp < 8000 && getRecast({ name: 'Lucid Dreaming', array: loopRecastArray }) < 1) { return 'Lucid Dreaming'; }
   return '';
 };
 
-nextAction.rdmActionMatch = ({ logType, actionName, targetID } = {}) => {
-  nextAction.actionMatchTimestamp = Date.now();
-  // No let declarations here - everything needs to modify current snapshot
-  const { removeStatus } = nextAction;
+const rdmActionMatch = ({ logType, actionName, targetID } = {}) => {
+  // Identify probable target count
+  let { targetCount } = nextAction;
+  if (logType === 'AOEAction Effect 16') {
+    if (['Scatter', 'Verthunder II', 'Veraero II', 'Moulinet'].includes(actionName)) { targetCount = 3; } else if (actionName === 'Impact' && targetCount === 1) { targetCount = 2; }
+  } else if (['Jolt', 'Verfire', 'Verstone', 'Jolt II'].includes(actionName) && targetCount < 2) { targetCount = 2; } else { targetCount = 1; }
 
-  const { weaponskills } = nextAction.actionData;
-  const { spells } = nextAction.actionData;
-  const { abilities } = nextAction.actionData;
-  const { gcd } = nextAction;
 
-  if (multitargetActions.includes(actionName) && actionMatch.groups.logType === '15') {
-    // Multi target only hits single target
-    nextAction.targetCount = 1;
-  }
-
-  if (weaponskills.includes(actionName)) {
-    nextAction.NEWremoveIcon({ name: actionName });
-
-    // Set combo status/step
-    // Spells also break combo - handled by the casting match section
-    if ((level >= 35 && actionName === 'Enchanted Riposte')
-    || (level >= 50 && actionName === 'Enchanted Zwerchhau')
-    || (level >= 68 && actionName === 'Enchanted Redoublement')
-    || (level >= 80 && ['Verflare', 'Verholy'].includes(actionName))) {
-      addStatus({ statusName: 'Combo' });
-      nextAction.comboAction = actionName;
-    } else {
-      removeStatus({ statusName: 'Combo' });
-      nextAction.comboAction = '';
-    }
+  rdmLoop({ delay: gcd });
 
     // Call next function with appropriate GCD time
-    if (['Enchanted Riposte', 'Enchanted Zwerchhau', 'Enchanted Moulinet'].includes(actionName)) { nextAction.rdmNextAction({ delay: 1500 }); } else
+    if (['Enchanted Riposte', 'Enchanted Zwerchhau', 'Enchanted Moulinet'].includes(actionName)) { rdmNextAction({ delay: 1500 }); } else
     if (['Enchanted Redoublement', 'Enchanted Reprise'].includes(actionName)) {
-      nextAction.rdmNextAction({ delay: 2200 });
-    } else { nextAction.rdmNextAction({ delay: gcd }); }
+      rdmNextAction({ delay: 2200 });
+    } else { rdmNextAction({ delay: gcd }); }
   } else
   if (spells.includes(actionName)) {
     if (checkStatus({ statusName: 'Dualcast' }) < 0 && checkStatus({ statusName: 'Swiftcast' }) < 0) {
-      nextAction.NEWremoveIcon({ name: `Hardcast ${actionName}` });
-    } else { nextAction.NEWremoveIcon({ name: `Dualcast ${actionName}` }); }
+      NEWremoveIcon({ name: `Hardcast ${actionName}` });
+    } else { NEWremoveIcon({ name: `Dualcast ${actionName}` }); }
   } else
   if (abilities.includes(actionName)) {
-    nextAction.NEWremoveIcon({ name: actionName });
+    NEWremoveIcon({ name: actionName });
     const propertyName = actionName.replace(/[\s':-]/g, '').toLowerCase();
     if (recast[propertyName]) { addRecast({ actionName }); }
     if (duration[propertyName]) { addStatus({ statusName: actionName }); }
-    if (actionName === 'Acceleration') { nextAction.accelerationCount = 3; } else
+    if (actionName === 'Acceleration') { accelerationCount = 3; } else
     if (actionName === 'Manafication') {
       addRecast({ actionName: 'Corps-A-Corps', recast: -1 });
       addRecast({ actionName: 'Displacement', recast: -1 });
-      nextAction.rdmNextAction();
+      rdmNextAction();
     } else
     if (actionName === 'Engagement') {
       addRecast({ actionName: 'Displacement' }); // Set Displacement cooldown with Engagement
@@ -565,7 +541,7 @@ nextAction.rdmActionMatch = ({ logType, actionName, targetID } = {}) => {
   }
 };
 
-nextAction.rdmStatusMatch = (statusMatch) => {
+rdmStatusMatch = (statusMatch) => {
   // No let declarations here - everything needs to modify current snapshot
   const { statusName } = statusMatch.groups;
   const { statusDuration } = statusMatch.groups;
@@ -573,45 +549,45 @@ nextAction.rdmStatusMatch = (statusMatch) => {
 
   // Control Dualcast/Swiftcast flow from here because it's a lot easier
   if (statusMatch.groups.logType === '1A') {
-    nextAction.addStatus({ statusName, duration: parseFloat(statusDuration) * 1000 });
+    addStatus({ statusName, duration: parseFloat(statusDuration) * 1000 });
 
     // if (statusName === 'Dualcast') {
-    //   // nextAction.NEWremoveIcon({ name: 'Hardcast ', match: 'contains' });
-    //   // nextAction.rdmNextAction();
+    //   // NEWremoveIcon({ name: 'Hardcast ', match: 'contains' });
+    //   // rdmNextAction();
     // } else
     if (statusName === 'Verfire Ready') {
-      nextAction.rdmNextAction({ delay: gcd });
+      rdmNextAction({ delay: gcd });
     } else
     if (statusName === 'Verstone Ready') {
-      nextAction.rdmNextAction({ delay: gcd });
+      rdmNextAction({ delay: gcd });
     // } else
     // if (statusName === 'Swiftcast') {
-    //   // nextAction.rdmNextAction();
+    //   // rdmNextAction();
     }
     // Acceleration 'gains' a new line every time a stack is used
   } else {
-    nextAction.removeStatus({ statusName });
+    removeStatus({ statusName });
 
     if (['Dualcast', 'Swiftcast'].includes(statusMatch.groups.statusName)) {
-      nextAction.NEWremoveIcon({ name: 'Dualcast ', match: 'contains' });
-      nextAction.rdmNextAction({ delay: gcd });
+      NEWremoveIcon({ name: 'Dualcast ', match: 'contains' });
+      rdmNextAction({ delay: gcd });
     } else
-    if (statusName === 'Acceleration') { nextAction.accelerationCount = 0; }
+    if (statusName === 'Acceleration') { accelerationCount = 0; }
   }
 };
 
-nextAction.rdmCastingMatch = (castingMatch) => {
+rdmCastingMatch = (castingMatch) => {
   // No let declarations here - everything needs to modify current snapshot
   // Casting breaks combo
-  nextAction.comboAction = '';
-  nextAction.removeStatus({ statusName: 'Combo' });
+  comboAction = '';
+  removeStatus({ statusName: 'Combo' });
 
-  nextAction.rdmNextAction({ casting: castingMatch.groups.actionName });
-  nextAction.NEWfadeIcon({ name: `Hardcast ${castingMatch.groups.actionName}` });
+  rdmNextAction({ casting: castingMatch.groups.actionName });
+  NEWfadeIcon({ name: `Hardcast ${castingMatch.groups.actionName}` });
 };
 
-nextAction.rdmCancelMatch = (cancelMatch) => {
+rdmCancelMatch = (cancelMatch) => {
   // No let declarations here - everything needs to modify current snapshot
-  nextAction.NEWunfadeIcon({ name: `Hardcast ${cancelMatch.groups.actionName}` });
-  nextAction.rdmNextAction();
+  NEWunfadeIcon({ name: `Hardcast ${cancelMatch.groups.actionName}` });
+  rdmNextAction();
 };

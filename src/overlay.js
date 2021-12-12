@@ -107,7 +107,32 @@ nextAction.showIcon = ({
   }
 };
 
-nextAction.removeIcon = ({
+const fadeIcon = ({
+  name,
+  row = 'icon-b',
+  match = 'exact',
+} = {}) => {
+  // Sets an action to lower opacity, for casting or whatever
+
+  const rowDiv = document.getElementById(row);
+
+  // removeOldIcons({ rowID });
+
+  let matchDiv;
+  if (match === 'contains') {
+    matchDiv = rowDiv.querySelector(`div[data-name~="${name}"]:not([class~="icon-hide"])`);
+  } else {
+    matchDiv = rowDiv.querySelector(`div[data-name="${name}"]:not([class~="icon-hide"])`);
+  }
+
+  if (matchDiv) {
+    // eslint-disable-next-line no-void
+    void matchDiv.offsetWidth;
+    matchDiv.classList.add('icon-fade');
+  }
+};
+
+const removeIcon = ({
   name,
   row = 'icon-b',
   match = 'exact',
@@ -131,3 +156,16 @@ nextAction.removeIcon = ({
     // setTimeout(() => { matchDiv.remove(); }, 1000);
   }
 };
+
+// eslint-disable-next-line no-unused-vars
+const debugText = ({ text }) => {
+  document.getElementById('debug').innerText = text;
+};
+
+function showOverlay() {
+  document.getElementById('nextdiv').classList.replace('next-hide', 'next-show');
+}
+
+function hideOverlay() {
+  document.getElementById('nextdiv').classList.replace('next-show', 'next-hide');
+}
