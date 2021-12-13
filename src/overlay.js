@@ -1,52 +1,54 @@
-/* global nextAction */
-
-nextAction.getArrayRow = ({
-  iconArray = nextAction.iconArrayB,
-} = {}) => {
-  // Associate array with row
-  let rowID = 'icon-b';
-  if (iconArray === nextAction.iconArrayA) {
-    rowID = 'icon-a';
-  } else if (iconArray === nextAction.iconArrayB) {
-    rowID = 'icon-b';
-  } else if (iconArray === nextAction.iconArrayC) {
-    rowID = 'icon-c';
-  }
-  return rowID;
-};
+// Not used right now, keeping for possible use later
+// eslint-disable-next-line no-unused-vars
+// const getArrayRow = ({
+//   iconArray = nextAction.iconArrayB,
+// } = {}) => {
+//   // Associate array with row
+//   let rowID = 'icon-b';
+//   if (iconArray === nextAction.iconArrayA) {
+//     rowID = 'icon-a';
+//   } else if (iconArray === nextAction.iconArrayB) {
+//     rowID = 'icon-b';
+//   } else if (iconArray === nextAction.iconArrayC) {
+//     rowID = 'icon-c';
+//   }
+//   return rowID;
+// };
 
 // Uses an array of objects to create a new set of icons
 // If icons exist, it removes any icons that don't match first and then adds any necessary ones
-nextAction.syncOverlay = ({
+// eslint-disable-next-line no-unused-vars
+const syncOverlay = ({
   actionArray,
-  row = 'icon-b',
 } = {}) => {
   // Get the div element
-  const rowDiv = document.getElementById(row);
+  const rowDiv = document.getElementById('actions');
 
-  // Find div length
+  // Find current div length
   const rowLength = rowDiv.children.length;
 
   // Check to see how many icons currently match the array, removing any that don't
-  let iconCount = 0;
-  const iconMax = 10;
-  for (let i = 0; i < rowLength; i += 1) {
-    const iconDiv = rowDiv.children[i];
-    if (actionArray[iconCount] && actionArray[iconCount].name === iconDiv.dataset.name) {
+  let actionIndex = 0;
+  const actionMax = 10;
+  for (let rowIndex = 0; rowIndex < rowLength; rowIndex += 1) {
+    const iconDiv = rowDiv.children[rowIndex];
+    if (actionArray[actionIndex] && actionArray[actionIndex].name === iconDiv.dataset.name) {
       // Go on to next array item if the div already contains the icon
-      iconCount += 1;
-      if (iconCount >= iconMax) { break; }
+      if (actionIndex >= actionMax - 1) { break; }
+      actionIndex += 1;
     } else {
       // Remove icon if it doesn't match
-      iconDiv.dataset.name = 'none';
+      iconDiv.dataset.name = '';
       iconDiv.classList.replace('icon-show', 'icon-hide');
       setTimeout(() => { iconDiv.remove(); }, 1000);
     }
   }
 
-  // Add any missing icons
-  if (iconCount < actionArray.length) {
-    for (let i = iconCount; i < actionArray.length; i += 1) {
+  const stopIndex = actionIndex;
+
+  // Add icons up to actionMax
+  if (stopIndex < actionMax - 1) {
+    for (actionIndex = stopIndex; actionIndex < actionArray.length; actionIndex += 1) {
       // Define new divs
       const iconDiv = document.createElement('div');
       const iconImg = document.createElement('img');
@@ -63,12 +65,12 @@ nextAction.syncOverlay = ({
       iconOverlay.className = 'iconoverlay';
 
       // Add icon images
-      iconDiv.dataset.name = actionArray[i].name;
-      iconImg.src = `iconhr/${actionArray[i].img}.png`;
+      iconDiv.dataset.name = actionArray[actionIndex].name;
+      iconImg.src = `iconhr/${actionArray[actionIndex].img}.png`;
       iconOverlay.src = 'iconoverlay.png';
 
       // Add OGCD stuff
-      if (actionArray[i].size === 'small') {
+      if (actionArray[actionIndex].ogcd === true) {
         iconDiv.classList.add('icon-small');
       }
 
@@ -76,13 +78,13 @@ nextAction.syncOverlay = ({
       void iconDiv.offsetWidth; // Can't remember what this does, but probably do reflow smoothly
 
       iconDiv.classList.replace('icon-hide', 'icon-show');
-      iconCount += 1;
-      if (iconCount >= iconMax) { break; }
+      if (actionIndex >= actionMax - 1) { break; }
     }
   }
 };
 
-nextAction.showIcon = ({
+// eslint-disable-next-line no-unused-vars
+const showIcon = ({
   name,
   row = 'icon-b',
   match = 'exact',
@@ -164,10 +166,10 @@ const debugText = ({ text }) => {
   document.getElementById('debug').innerText = text;
 };
 
-function showOverlay() {
-  document.getElementById('nextdiv').classList.replace('next-hide', 'next-show');
-}
+// function showOverlay() {
+//   document.getElementById('nextdiv').classList.replace('next-hide', 'next-show');
+// }
 
-function hideOverlay() {
-  document.getElementById('nextdiv').classList.replace('next-show', 'next-hide');
-}
+// function hideOverlay() {
+//   document.getElementById('nextdiv').classList.replace('next-show', 'next-hide');
+// }

@@ -1,20 +1,20 @@
-/* global nextAction */
+/* globals recastArray actionData */
 
-nextAction.addActionRecast = ({
+// eslint-disable-next-line no-unused-vars
+const addActionRecast = ({
   name,
   recast, // In seconds
-  array = nextAction.recastArray,
+  array = recastArray,
 } = {}) => {
   if (!name) { return; }
 
-  const { actionData } = nextAction;
   const recastArray = array;
   let defaultRecast = recast;
 
   // Get default recast if recast not provided
   if (!recast) {
     const index = actionData.findIndex((e) => e.name === name);
-    defaultRecast = nextAction.actionData[index].recast;
+    defaultRecast = actionData[index].recast;
   }
 
   const defaultRecastMilliseconds = defaultRecast * 1000;
@@ -38,17 +38,16 @@ nextAction.addActionRecast = ({
   }
 };
 
-nextAction.getActionRecast = ({
+const getActionRecast = ({
   name,
-  array = nextAction.recastArray,
+  array = recastArray,
 } = {}) => {
   if (!name) { return 9999; }
 
   const recastArray = array; // I'm not sure why I do this
 
   // Get data from actionList
-  const { actionList } = nextAction;
-  const i = actionList.findIndex((e) => e.name === name);
+  const i = actionData.findIndex((e) => e.name === name);
   if (i < 0) { return 9999; } // "It's not usable yet"
 
   // Get index of existing entry (if it does)
@@ -57,8 +56,8 @@ nextAction.getActionRecast = ({
   // Return 0 if not found ("it's off recast")
   if (j < 0) { return 0; }
 
-  const defaultRecast = actionList[i].recast;
-  const defaultCharges = actionList[i].charges;
+  const defaultRecast = actionData[i].recast;
+  const defaultCharges = actionData[i].charges;
 
   const recastTimestamp = recastArray[j].recast;
   let recastSeconds = (recastTimestamp - Date.now()) / 1000;
@@ -79,21 +78,21 @@ nextAction.getActionRecast = ({
   return recastSeconds;
 };
 
-nextAction.getActionCharges = ({
+// eslint-disable-next-line no-unused-vars
+const getActionCharges = ({
   name,
-  array = nextAction.recastArray,
+  array = recastArray,
 } = {}) => {
   if (!name) { return 0; }
 
-  const { actionList } = nextAction;
-  const i = actionList.findIndex((e) => e.name === name);
+  const i = actionData.findIndex((e) => e.name === name);
   if (i < 0) { return 0; }
 
-  const defaultCharges = actionList[i].charges;
+  const defaultCharges = actionData[i].charges;
   if (!defaultCharges) { return 1; }
 
-  const recastSeconds = nextAction.getRecast({ name, array });
-  const defaultRecast = actionList[i].recast;
+  const recastSeconds = getActionRecast({ name, array });
+  const defaultRecast = actionData[i].recast;
 
   const chargesRemaining = defaultCharges - Math.ceil(recastSeconds / defaultRecast);
   return chargesRemaining;
