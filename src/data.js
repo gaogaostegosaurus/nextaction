@@ -87,7 +87,7 @@ const allActionData = [
     icon: '',
   },
 
-  // Probably need to do something special for Ninjutsu because all those inputs would be super annoying
+  // Probably need to do something special for Mudra, all those inputs would be super annoying
 
   {
     name: 'Death Blossom',

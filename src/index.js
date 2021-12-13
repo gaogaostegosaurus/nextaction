@@ -235,7 +235,15 @@ const cancelActionMatch = ({ actionName } = {}) => {
   if (playerData.job === 'RDM') { rdmLoop(); }
 };
 
+// eslint-disable-next-line no-unused-vars
+const startLoop = () => {
+  clearTimeout(loopTimeout);
+  const { job } = playerData;
+  if (job === 'RDM') { loopTimeout = setTimeout(rdmLoop, playerData.gcd * 2); }
+};
+
 // Toggles overlay visibility appropriately (hopefully)
+// eslint-disable-next-line no-unused-vars
 const overlayToggle = () => {
   if (!document.getElementById('nextdiv')) { return; }
   const { targetData } = nextActionOverlay;
@@ -254,11 +262,12 @@ const overlayToggle = () => {
     display = false;
   }
 };
+
+// eslint-disable-next-line no-unused-vars
 const getActionProperty = ({ name, property } = {}) => {
   const index = actionData.findIndex((e) => e.name === name);
 
   if (actionData[index][property]) { return actionData[index][property]; }
-  return '';
 };
 
 const targetData = {};
