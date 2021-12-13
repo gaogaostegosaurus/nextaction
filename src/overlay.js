@@ -107,6 +107,7 @@ nextAction.showIcon = ({
   }
 };
 
+// eslint-disable-next-line no-unused-vars
 const fadeIcon = ({
   name,
   row = 'icon-b',
@@ -132,6 +133,7 @@ const fadeIcon = ({
   }
 };
 
+// eslint-disable-next-line no-unused-vars
 const removeIcon = ({
   name,
   row = 'icon-b',

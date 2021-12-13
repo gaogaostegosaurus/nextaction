@@ -1409,7 +1409,7 @@ const statusData = [
 ];
 
 // eslint-disable-next-line no-unused-vars
-const speedData = [
+const playerStatsData = [
   { level: 1, baseStat: 56, levelMod: 56 },
   { level: 2, baseStat: 57, levelMod: 57 },
   { level: 3, baseStat: 60, levelMod: 60 },

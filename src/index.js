@@ -2,10 +2,10 @@
 
 /* global
 addOverlayListener, startOverlayEvents,
-allActionData,
+allActionData, playerStatsData,
 syncOverlay, setStatus, removeStatus,
 showIcon, fadeIcon,
-rdmLoop, rdmActionMatch, rdmStatusMatch
+rdmLoop, rdmActionMatch, rdmStatusMatch,  rdmChangedTarget
 */
 
 // All possible events:
@@ -242,35 +242,16 @@ const startLoop = () => {
   if (job === 'RDM') { loopTimeout = setTimeout(rdmLoop, playerData.gcd * 2); }
 };
 
-// Toggles overlay visibility appropriately (hopefully)
-// eslint-disable-next-line no-unused-vars
-const overlayToggle = () => {
-  if (!document.getElementById('nextdiv')) { return; }
-  const { targetData } = nextActionOverlay;
-  if (targetData.id && targetData.id.startsWith('4') && targetData.distance <= 30) {
-    if (display !== true) {
-      document.getElementById('nextdiv').classList.replace('next-hide', 'next-show');
-      display = true;
-    }
-  } else if (combat === true) {
-    if (display !== true) {
-      document.getElementById('nextdiv').classList.replace('next-hide', 'next-show');
-      display = true;
-    }
-  } else {
-    document.getElementById('nextdiv').classList.replace('next-show', 'next-hide');
-    display = false;
-  }
-};
-
 // eslint-disable-next-line no-unused-vars
 const getActionProperty = ({ name, property } = {}) => {
   const index = actionData.findIndex((e) => e.name === name);
 
   if (actionData[index][property]) { return actionData[index][property]; }
+  return '';
 };
 
 const targetData = {};
+let overlayVisible = false;
 
 const EnmityTargetData = (e) => {
   if (!overlayReady) { return; }
@@ -303,6 +284,22 @@ const EnmityTargetData = (e) => {
 
   if (e.Target) { // Put stuff that should be constantly updated here
     targetData.distance = e.Target.EffectiveDistance; // Distance to "outside of circle"
+  }
+
+  // Control overlay visiblity based on target
+  if (targetData.id && targetData.id.startsWith('4') && targetData.distance <= 30) {
+    if (overlayVisible !== true) {
+      document.getElementById('nextdiv').classList.replace('next-hide', 'next-show');
+      overlayVisible = true;
+    }
+  } else if (playerData.combat === true) {
+    if (overlayVisible !== true) {
+      document.getElementById('nextdiv').classList.replace('next-hide', 'next-show');
+      overlayVisible = true;
+    }
+  } else {
+    document.getElementById('nextdiv').classList.replace('next-show', 'next-hide');
+    overlayVisible = true;
   }
 };
 
@@ -344,34 +341,40 @@ const onPartyWipe = () => {
 //   // gameActive = e.detail.active; // Appears to only have this
 // });
 
-const calculateGCD = ({
+const calculateRecast = ({
   recast = 2.5,
-  // array = statusArray,
 } = {}) => {
-  // let gcd = Math.floor(Math.floor(((1000 - Math.floor(130 * (speed - speedData[level - 1].baseStat) / speedData[level - 1].levelMod)) * 2500) / 1000)/10)/100;
-  const gcd = Math.floor(Math.floor(((1000 - Math.floor(130 * (speed - speedData[level - 1].baseStat) / speedData[level - 1].levelMod)) * recast * 1000) / 1000) / 10) / 100;
+  const { speed } = playerData;
+  const { level } = playerData;
+
+  const newRecast = Math.floor(Math.floor(((1000 - Math.floor(
+    (130 * (speed - playerStatsData[level - 1].baseStat)) / playerStatsData[level - 1].levelMod,
+  )) * recast * 1000) / 1000) / 10) / 100;
 
   // Put GCD-related buffing stuff here later
-
-  return gcd;
+  return newRecast;
 };
 
-// Needs to be updated for Endwalker - probably useless as is
+// eslint-disable-next-line no-unused-vars
 const playerStatsMatch = ({ piety, skillSpeed, spellSpeed } = {}) => {
   const speed = Math.max(skillSpeed, spellSpeed);
+  const { level } = playerData;
   playerData.speed = speed;
-  playerData.gcd = calculateGCD();
-  playerData.mpRegen = 200 + Math.floor(150 * (piety - speedData[level - 1].baseStat) / speedData[level - 1].levelMod);
-  // PLD 19
-  // SMN 27
-  // SCH 28
-  // NIN 30
-  // RDM 35
-  let index;
-  index = actionData.findIndex((element) => element.name === 'Aethercharge');
-  if (index) { actionData[index].recast = calculateGCD({ recast: 60 }); }
-  index = actionData.findIndex((element) => element.name === 'Summon Bahamut');
-  if (index) { actionData[index].recast = calculateGCD({ recast: 60 }); }
+  playerData.gcd = calculateRecast();
+  playerData.mpRegen = 200 + Math.floor(
+    (150 * (piety - playerStatsData[level - 1].baseStat)) / playerStatsData[level - 1].levelMod,
+  );
+
+  for (let index = 0; index < actionData.length; index += 1) {
+    if (['Spell', 'Weaponskill'].includes(actionData[index].type)) {
+      if (actionData[index].cast) {
+        actionData[index].cast = calculateRecast({ recast: actionData[index].cast });
+      }
+      if (actionData[index].recast) {
+        actionData[index].recast = calculateRecast({ recast: actionData[index].recast });
+      }
+    }
+  }
 };
 
 addOverlayListener('EnmityTargetData', (e) => {

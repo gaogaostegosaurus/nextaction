@@ -1,130 +1,100 @@
-/* global nextAction, nextActionOverlay */
+/* global nextAction */
 
-// Might eventually need something here to all-lowercase names
-
-nextAction.setRecast = ({
-  actionName,
-  actionRecast,
+nextAction.addActionRecast = ({
+  name,
+  recast, // In seconds
+  array = nextAction.recastArray,
 } = {}) => {
-  const { recasts } = nextAction;
+  if (!name) { return; }
+
+  const { actionData } = nextAction;
+  const recastArray = array;
+  let defaultRecast = recast;
+
+  // Get default recast if recast not provided
+  if (!recast) {
+    const index = actionData.findIndex((e) => e.name === name);
+    defaultRecast = nextAction.actionData[index].recast;
+  }
+
+  const defaultRecastMilliseconds = defaultRecast * 1000;
 
   // Look for existing entry in recasts
-  const i = recasts.findIndex((element) => element.name === actionName);
+  const index = recastArray.findIndex((e) => e.name === name);
 
-  if (i > -1) {
+  if (index > -1) {
     // If entry exists, set recast time
-    recasts[i].recast = actionRecast;
-  } else if (actionRecast) {
-    // Add new entry otherwise
-    recasts.push({ name: actionName, recast: actionRecast });
-  } else {
-    // Add new entry using default recast
-    const j = nextAction.actionData.findIndex((element) => element.name === actionName);
-    const defaultRecast = nextAction.actionData[j].recast;
-    recasts.push({ name: actionName, recast: defaultRecast });
-  }
-};
-
-nextAction.checkRecast = ({
-  actionName,
-} = {}) => {
-  const { recasts } = nextAction;
-
-  // Look for existing entry
-  const i = recasts.findIndex((element) => element.name === actionName);
-
-  if (i > -1) {
-    // Return recast time if found
-    return recasts[i].recast;
-  }
-  // Return -1 if not found
-  return -1;
-};
-
-// Replace this crap
-
-nextActionOverlay.addRecast = ({
-  actionName,
-  propertyName = actionName.replace(/[\s':-]/g, '').toLowerCase(),
-  playerData = nextActionOverlay.playerData,
-  id = playerData.id,
-  recast = nextActionOverlay.recast[propertyName], /* Assign -1 to "reset" recast */
-} = {}) => {
-  if (!actionName) {
-    return; /* Exit if called by mistake? */
-  }
-
-  const { recastTracker } = nextActionOverlay;
-
-  if (!recastTracker[propertyName]) {
-    recastTracker[propertyName] = [{ id, recast: Date.now() + recast }];
-  } else {
-    const match = recastTracker[propertyName].findIndex((entry) => entry.id === id);
-    if (match > -1) {
-      /* Update recast if match found */
-      recastTracker[propertyName][match] = { id, recast: Date.now() + recast };
+    const dataIndex = actionData.findIndex((e) => e.name === name);
+    const defaultCharges = actionData[dataIndex].charges;
+    if (defaultCharges > 0 && recastArray[index].recast - Date.now() > 0) {
+      // Increment by default recast if entry exists and is more than current timestamp
+      recastArray[index].recast += defaultRecastMilliseconds;
     } else {
-      /* Push recast value if no match found */
-      recastTracker[propertyName].push({ id, recast: Date.now() + recast });
+      recastArray[index].recast = defaultRecastMilliseconds + Date.now();
     }
-  }
-};
-
-nextActionOverlay.checkRecast = ({
-  actionName,
-  propertyName = actionName.replace(/[\s':-]/g, '').toLowerCase(),
-  playerData = nextActionOverlay.playerData,
-  id = playerData.id,
-} = {}) => {
-  const { recastTracker } = nextActionOverlay;
-
-  if (!recastTracker[propertyName]) {
-    return -1; /* Return -1 if array doesn't exist */
-  }
-
-  const match = recastTracker[propertyName].findIndex((entry) => entry.id === id);
-
-  /* Find matching ID in array */
-  if (match > -1) {
-    return Math.max(recastTracker[propertyName][match].recast - Date.now(), -1);
-  } return -1; /* Return -1 if no match */
-};
-
-nextActionOverlay.NEWaddRecast = ({
-  actionName,
-  id = nextActionOverlay.playerData.id,
-  propertyName = actionName.replace(/[\s':-]/g, '').toLowerCase(),
-  recast = nextActionOverlay.recast[propertyName], /* Assign -1 to "reset" recast */
-} = {}) => {
-  if (!actionName) { return; }
-
-  const { recastArray } = nextActionOverlay;
-
-  const actionMatch = (entry) => entry.id === id
-    && entry.actionName.toLowerCase() === actionName.toLowerCase();
-  const index = recastArray.findIndex(actionMatch);
-
-  if (index > -1) {
-    recastArray[index] = [{ id, actionName, recast: Date.now() + recast }];
   } else {
-    recastArray.push({ id, actionName, recast: Date.now() + recast });
+    // Add new entry if entry does not exist
+    recastArray.push({ name, recast: defaultRecastMilliseconds + Date.now() });
   }
 };
 
-nextActionOverlay.NEWcheckRecast = ({
-  actionName,
-  id = nextActionOverlay.playerData.id,
+nextAction.getActionRecast = ({
+  name,
+  array = nextAction.recastArray,
 } = {}) => {
-  if (!actionName) { return -1; } // eslint wants me to return a value
+  if (!name) { return 9999; }
 
-  const { recastArray } = nextActionOverlay;
+  const recastArray = array; // I'm not sure why I do this
 
-  // Find matching ID in array
-  const actionMatch = (entry) => entry.id === id
-    && entry.actionName.toLowerCase() === actionName.toLowerCase();
-  const index = recastArray.findIndex(actionMatch);
+  // Get data from actionList
+  const { actionList } = nextAction;
+  const i = actionList.findIndex((e) => e.name === name);
+  if (i < 0) { return 9999; } // "It's not usable yet"
 
-  if (index > -1) {
-    return Math.max(recastArray[index].recast - Date.now(), -1);
-  } return -1; // Return -1 if no match
+  // Get index of existing entry (if it does)
+  const j = recastArray.findIndex((e) => e.name === name);
+
+  // Return 0 if not found ("it's off recast")
+  if (j < 0) { return 0; }
+
+  const defaultRecast = actionList[i].recast;
+  const defaultCharges = actionList[i].charges;
+
+  const recastTimestamp = recastArray[j].recast;
+  let recastSeconds = (recastTimestamp - Date.now()) / 1000;
+
+  // (Charges are a headache. Note to self.)
+  // A 30 second recast ability with 3 charges would have the following:
+  // 2 charges left if the "initial" recast is at 25 (x < 30 * 1)
+  // 1 charge at 50 (30 * 1 < x < 30 * 2)
+  // 0 charges at 70 seconds (30 * 2 > x)
+  // Recast needs to be incremented for charge abilities in the other functions because of this
+
+  if (defaultCharges) { recastSeconds -= (defaultCharges - 1) * defaultRecast; }
+
+  // Return a minimum of 0 to prevent shenanigans
+  if (recastSeconds < 0) { return 0; }
+
+  // Return recast time if found
+  return recastSeconds;
+};
+
+nextAction.getActionCharges = ({
+  name,
+  array = nextAction.recastArray,
+} = {}) => {
+  if (!name) { return 0; }
+
+  const { actionList } = nextAction;
+  const i = actionList.findIndex((e) => e.name === name);
+  if (i < 0) { return 0; }
+
+  const defaultCharges = actionList[i].charges;
+  if (!defaultCharges) { return 1; }
+
+  const recastSeconds = nextAction.getRecast({ name, array });
+  const defaultRecast = actionList[i].recast;
+
+  const chargesRemaining = defaultCharges - Math.ceil(recastSeconds / defaultRecast);
+  return chargesRemaining;
 };

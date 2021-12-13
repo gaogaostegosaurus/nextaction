@@ -1,68 +1,139 @@
-/* Puts status effects into an array with target ID as an identifier */
-nextActionOverlay.addStatus = ({
-  statusName,
-  propertyName = statusName.replace(/[\s':-]/g, '').toLowerCase(),
-  playerData = nextActionOverlay.playerData,
-  id = playerData.id,
-  duration = nextActionOverlay.duration[propertyName], /* Assign -1 to "reset" recast */
-} = {}) => {
-  const { statusTracker } = nextActionOverlay;
+/* global nextAction */
 
-  if (!statusTracker[propertyName]) {
-    // Array doesn't exist yet, so create
-    statusTracker[propertyName] = [{ id, duration: Date.now() + duration }];
+nextAction.setStatus = ({
+  name,
+  targetID = nextAction.playerData.id,
+  sourceID = nextAction.playerData.id,
+  duration,
+  stacks = 0,
+  array = nextAction.statusArray,
+} = {}) => {
+  if (!name) { return; }
+  const statusArray = array;
+  const i = statusArray.findIndex(
+    (e) => e.name === name && e.targetID === targetID && e.sourceID === sourceID,
+  );
+
+  const j = nextAction.statusData.findIndex((e) => e.name === name);
+
+  let newDuration;
+  if (!duration) {
+    // Get default duration if recast not provided
+    newDuration = nextAction.statusData[j].duration * 1000 + Date.now();
   } else {
-    // Array already exists, check for existing ID
-    const match = statusTracker[propertyName].findIndex((entry) => entry.id === id);
-    if (match > -1) {
-      // Match exists, update with new time
-      statusTracker[propertyName][match] = { id, duration: Date.now() + duration };
-    } else {
-      // Push new entry into array if no matching entry
-      statusTracker[propertyName].push({ id, duration: Date.now() + duration });
-    }
+    // Use provided recast
+    newDuration = duration * 1000 + Date.now();
   }
-  // console.log(`added status to statustracker.${name}: ${JSON.stringify(statusTracker[name])}`);
+
+  let newStacks;
+  if (!stacks) { newStacks = nextAction.statusData[j].stacks; } else { newStacks = stacks; }
+
+  if (i > -1) {
+    statusArray[i].duration = newDuration;
+    if (newStacks) { statusArray[j].stacks = newStacks; } else { delete statusArray[j].stacks; }
+  } else {
+    // Add new ID and status to durations array
+    const k = statusArray.push({
+      name, targetID, sourceID, duration: newDuration,
+    });
+    if (newStacks) { statusArray[k].stacks = newStacks; }
+  }
 };
 
-// Checks for existing status effects and returns milliseconds left
-nextActionOverlay.checkStatus = ({
-  statusName,
-  propertyName = statusName.replace(/[\s':-]/g, '').toLowerCase(),
-  playerData = nextActionOverlay.playerData,
-  id = playerData.id,
+// eslint-disable-next-line no-unused-vars
+const removeStatus = ({
+  name,
+  targetID = nextAction.playerData.id,
+  sourceID = nextAction.playerData.id,
+  array = nextAction.statusArray,
 } = {}) => {
-  if (!statusName) {
-    return -1; /* Exit if called by mistake? */
-  }
-
-  const statusTracker = nextActionOverlay.statusTracker || {};
-
-  if (!statusTracker[propertyName]) {
-    return -1;
-  }
-
-  const match = statusTracker[propertyName].findIndex((entry) => entry.id === id);
-
-  // match > -1 if index found
-  if (match > -1) {
-    return Math.max(statusTracker[propertyName][match].duration - Date.now(), -1);
-  } return -1;
+  // Just "sets" status with duration 0
+  nextAction.setStatus({
+    name, targetID, sourceID, duration: 0, array,
+  });
 };
 
-nextActionOverlay.removeStatus = ({
-  statusName,
-  propertyName = statusName.replace(/[\s':-]/g, '').toLowerCase(),
-  playerData = nextActionOverlay.playerData,
-  id = playerData.id,
+const getStatusDuration = ({
+  name,
+  targetID = nextAction.playerData.id,
+  sourceID = nextAction.playerData.id,
+  array = nextAction.statusArray,
 } = {}) => {
-  if (!statusName) {
-    return; /* Exit if called by mistake? */
+  if (!name) { return 0; }
+
+  const statusArray = array;
+
+  const i = statusArray.findIndex(
+    (e) => e.name === name && e.targetID === targetID && e.sourceID === sourceID,
+  );
+
+  if (i > -1) {
+    // Returns seconds
+    const statusDuration = (statusArray[i].duration - Date.now()) / 1000;
+    return statusDuration;
   }
 
-  const { statusTracker } = nextActionOverlay;
+  return 0;
+};
 
-  if (statusTracker[propertyName]) {
-    nextActionOverlay.addStatus({ statusName, id, duration: -1 });
+nextAction.setStatusStacks = ({
+  name,
+  targetID = nextAction.playerData.id,
+  sourceID = nextAction.playerData.id,
+  array = nextAction.statusArray,
+  stacks,
+} = {}) => {
+  if (!name) { return; }
+
+  const statusArray = array;
+
+  const i = statusArray.findIndex(
+    (e) => e.name === name && e.targetID === targetID && e.sourceID === sourceID,
+  );
+
+  if (i > -1) {
+    statusArray[i].stacks = stacks;
   }
+};
+
+nextAction.useStatusStacks = ({
+  name,
+  targetID = nextAction.playerData.id,
+  sourceID = nextAction.playerData.id,
+  array = nextAction.statusArray,
+} = {}) => {
+  if (!name) { return; }
+  const statusArray = array;
+  const i = statusArray.findIndex(
+    (e) => e.name === name && e.targetID === targetID && e.sourceID === sourceID,
+  );
+
+  if (i > -1) { statusArray[i].stacks -= 1; }
+
+  if (statusArray[i].stacks <= 0) {
+    const { removeStatus } = nextAction;
+    removeStatus({
+      name, targetID, sourceID, array,
+    });
+  }
+};
+
+nextAction.getStatusStacks = ({
+  name,
+  targetID = nextAction.playerData.id,
+  sourceID = nextAction.playerData.id,
+  array = nextAction.statusArray,
+} = {}) => {
+  if (!name) { return 0; }
+  const statusArray = array;
+  const i = statusArray.findIndex(
+    (e) => e.name === name && e.targetID === targetID && e.sourceID === sourceID,
+  );
+
+  if (i > -1) {
+    if (statusArray[i].duration <= 0) { statusArray[i].stacks = 0; }
+    return statusArray[i].stacks;
+  }
+
+  return 0;
 };
