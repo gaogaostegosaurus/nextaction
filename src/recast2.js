@@ -13,24 +13,24 @@ nextAction.addActionRecast = ({
 
   // Get default recast if recast not provided
   if (!recast) {
-    const i = actionData.findIndex((e) => e.name === name);
-    defaultRecast = nextAction.actionData[i].recast;
+    const index = actionData.findIndex((e) => e.name === name);
+    defaultRecast = nextAction.actionData[index].recast;
   }
 
   const defaultRecastMilliseconds = defaultRecast * 1000;
 
   // Look for existing entry in recasts
-  const i = recastArray.findIndex((e) => e.name === name);
+  const index = recastArray.findIndex((e) => e.name === name);
 
-  if (i > -1) {
+  if (index > -1) {
     // If entry exists, set recast time
-    const j = actionData.findIndex((e) => e.name === name);
-    const defaultCharges = actionData[j].charges;
-    if (defaultCharges > 0 && recastArray[i].recast - Date.now() > 0) {
+    const dataIndex = actionData.findIndex((e) => e.name === name);
+    const defaultCharges = actionData[dataIndex].charges;
+    if (defaultCharges > 0 && recastArray[index].recast - Date.now() > 0) {
       // Increment by default recast if entry exists and is more than current timestamp
-      recastArray[i].recast += defaultRecastMilliseconds;
+      recastArray[index].recast += defaultRecastMilliseconds;
     } else {
-      recastArray[i].recast = defaultRecastMilliseconds + Date.now();
+      recastArray[index].recast = defaultRecastMilliseconds + Date.now();
     }
   } else {
     // Add new entry if entry does not exist
@@ -90,7 +90,7 @@ nextAction.getActionCharges = ({
   if (i < 0) { return 0; }
 
   const defaultCharges = actionList[i].charges;
-  if (!defaultCharges) { return 0; }
+  if (!defaultCharges) { return 1; }
 
   const recastSeconds = nextAction.getRecast({ name, array });
   const defaultRecast = actionList[i].recast;

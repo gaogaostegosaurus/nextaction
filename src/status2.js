@@ -40,7 +40,8 @@ nextAction.setStatus = ({
   }
 };
 
-nextAction.removeStatus = ({
+// eslint-disable-next-line no-unused-vars
+const removeStatus = ({
   name,
   targetID = nextAction.playerData.id,
   sourceID = nextAction.playerData.id,
