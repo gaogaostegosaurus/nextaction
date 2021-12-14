@@ -46,7 +46,6 @@ const syncOverlay = () => {
 
   const stopIndex = actionIndex;
 
-
   // Add icons up to actionMax
   if (stopIndex < actionMax - 1) {
     for (actionIndex = stopIndex; actionIndex < actionArray.length; actionIndex += 1) {
