@@ -15,6 +15,8 @@
 //   return rowID;
 // };
 
+/* global actionArray */
+
 // Uses an array of objects to create a new set of icons
 // If icons exist, it removes any icons that don't match first and then adds any necessary ones
 // eslint-disable-next-line no-unused-vars
