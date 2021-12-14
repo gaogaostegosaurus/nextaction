@@ -2,7 +2,7 @@
 
 /* global
 addOverlayListener startOverlayEvents
-allActionData playerStatsData
+allActionData playerStatsData testActionData
 syncOverlay showIcon fadeIcon
 setStatus removeStatus
 rdmLoop rdmActionMatch rdmStatusMatch rdmChangedTarget
