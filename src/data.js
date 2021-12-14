@@ -1501,3 +1501,28 @@ const playerStatsData = [
   { level: 89, baseStat: 398, levelMod: 1840 },
   { level: 90, baseStat: 400, levelMod: 1900 },
 ];
+
+// eslint-disable-next-line no-unused-vars
+const testActionData = [
+  {
+    name: 'GCD1',
+    type: 'Weaponskill',
+    icon: '000001',
+  },
+
+  {
+    name: 'OGCD2',
+    icon: '000002',
+  },
+
+  {
+    name: 'GCD3',
+    type: 'Spell',
+    icon: '000003',
+  },
+
+  {
+    name: 'OGCD4',
+    icon: '000004',
+  },
+];

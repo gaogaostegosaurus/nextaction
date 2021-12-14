@@ -18,9 +18,7 @@
 // Uses an array of objects to create a new set of icons
 // If icons exist, it removes any icons that don't match first and then adds any necessary ones
 // eslint-disable-next-line no-unused-vars
-const syncOverlay = ({
-  actionArray,
-} = {}) => {
+const syncOverlay = () => {
   // Get the div element
   const rowDiv = document.getElementById('actions');
 
@@ -45,6 +43,7 @@ const syncOverlay = ({
   }
 
   const stopIndex = actionIndex;
+
 
   // Add icons up to actionMax
   if (stopIndex < actionMax - 1) {

@@ -1,12 +1,12 @@
-/* global nextAction */
+/* global playerData statusData statusArray  */
 
-nextAction.setStatus = ({
+const setStatus = ({
   name,
-  targetID = nextAction.playerData.id,
-  sourceID = nextAction.playerData.id,
+  targetID = playerData.id,
+  sourceID = playerData.id,
   duration,
   stacks = 0,
-  array = nextAction.statusArray,
+  array = statusArray,
 } = {}) => {
   if (!name) { return; }
   const statusArray = array;
@@ -14,19 +14,19 @@ nextAction.setStatus = ({
     (e) => e.name === name && e.targetID === targetID && e.sourceID === sourceID,
   );
 
-  const j = nextAction.statusData.findIndex((e) => e.name === name);
+  const j = statusData.findIndex((e) => e.name === name);
 
   let newDuration;
   if (!duration) {
     // Get default duration if recast not provided
-    newDuration = nextAction.statusData[j].duration * 1000 + Date.now();
+    newDuration = statusData[j].duration * 1000 + Date.now();
   } else {
     // Use provided recast
     newDuration = duration * 1000 + Date.now();
   }
 
   let newStacks;
-  if (!stacks) { newStacks = nextAction.statusData[j].stacks; } else { newStacks = stacks; }
+  if (!stacks) { newStacks = statusData[j].stacks; } else { newStacks = stacks; }
 
   if (i > -1) {
     statusArray[i].duration = newDuration;
@@ -43,21 +43,22 @@ nextAction.setStatus = ({
 // eslint-disable-next-line no-unused-vars
 const removeStatus = ({
   name,
-  targetID = nextAction.playerData.id,
-  sourceID = nextAction.playerData.id,
-  array = nextAction.statusArray,
+  targetID = playerData.id,
+  sourceID = playerData.id,
+  array = statusArray,
 } = {}) => {
   // Just "sets" status with duration 0
-  nextAction.setStatus({
+  setStatus({
     name, targetID, sourceID, duration: 0, array,
   });
 };
 
+// eslint-disable-next-line no-unused-vars
 const getStatusDuration = ({
   name,
-  targetID = nextAction.playerData.id,
-  sourceID = nextAction.playerData.id,
-  array = nextAction.statusArray,
+  targetID = playerData.id,
+  sourceID = playerData.id,
+  array = statusArray,
 } = {}) => {
   if (!name) { return 0; }
 
@@ -76,11 +77,12 @@ const getStatusDuration = ({
   return 0;
 };
 
-nextAction.setStatusStacks = ({
+// eslint-disable-next-line no-unused-vars
+const setStatusStacks = ({
   name,
-  targetID = nextAction.playerData.id,
-  sourceID = nextAction.playerData.id,
-  array = nextAction.statusArray,
+  targetID = playerData.id,
+  sourceID = playerData.id,
+  array = statusArray,
   stacks,
 } = {}) => {
   if (!name) { return; }
@@ -96,11 +98,12 @@ nextAction.setStatusStacks = ({
   }
 };
 
-nextAction.useStatusStacks = ({
+// eslint-disable-next-line no-unused-vars
+const useStatusStacks = ({
   name,
-  targetID = nextAction.playerData.id,
-  sourceID = nextAction.playerData.id,
-  array = nextAction.statusArray,
+  targetID = playerData.id,
+  sourceID = playerData.id,
+  array = statusArray,
 } = {}) => {
   if (!name) { return; }
   const statusArray = array;
@@ -111,18 +114,18 @@ nextAction.useStatusStacks = ({
   if (i > -1) { statusArray[i].stacks -= 1; }
 
   if (statusArray[i].stacks <= 0) {
-    const { removeStatus } = nextAction;
     removeStatus({
       name, targetID, sourceID, array,
     });
   }
 };
 
-nextAction.getStatusStacks = ({
+// eslint-disable-next-line no-unused-vars
+const getStatusStacks = ({
   name,
-  targetID = nextAction.playerData.id,
-  sourceID = nextAction.playerData.id,
-  array = nextAction.statusArray,
+  targetID = playerData.id,
+  sourceID = playerData.id,
+  array = statusArray,
 } = {}) => {
   if (!name) { return 0; }
   const statusArray = array;

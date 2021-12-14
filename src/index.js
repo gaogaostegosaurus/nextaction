@@ -1,38 +1,26 @@
 /* eslint-disable prefer-regex-literals */
 
 /* global
-addOverlayListener, startOverlayEvents,
-allActionData, playerStatsData,
-syncOverlay, setStatus, removeStatus,
-showIcon, fadeIcon,
-rdmLoop, rdmActionMatch, rdmStatusMatch,  rdmChangedTarget
+addOverlayListener startOverlayEvents
+allActionData playerStatsData
+syncOverlay showIcon fadeIcon
+setStatus removeStatus
+rdmLoop rdmActionMatch rdmStatusMatch rdmChangedTarget
 */
 
 // All possible events:
 // https://github.com/quisquous/cactbot/blob/master/plugin/CactbotEventSource/CactbotEventSource.cs
-
-// eslint-disable-next-line no-unused-vars
-const loopPlayerData = {};
-// eslint-disable-next-line no-unused-vars
-const loopTargetData = {};
 
 let actionArray = [];
 // eslint-disable-next-line no-unused-vars
 let recastArray = [];
 // eslint-disable-next-line no-unused-vars
 let statusArray = [];
-// eslint-disable-next-line no-unused-vars
-const loopActionArray = [];
-// eslint-disable-next-line no-unused-vars
-const loopRecastArray = [];
-// eslint-disable-next-line no-unused-vars
-const loopStatusArray = [];
 
 let actionData = [];
 let castingActionData = [];
-
-// eslint-disable-next-line no-unused-vars
-const statusData = [];
+const playerData = {};
+const targetData = {};
 
 let actionEffectRegex;
 let statusRegex;
@@ -46,20 +34,26 @@ let actionMatchTimestamp = 0;
 const playerStatsRegex = new RegExp('^.{15}(?<logType>PlayerStats 0C):(?<jobID>[\\d]+):(?<strength>[\\d]+):(?<dexterity>[\\d]+):(?<vitality>[\\d]+):(?<intelligence>[\\d]+):(?<mind>[\\d]+):(?<piety>[\\d]+):(?<attackPower>[\\d]+):(?<directHitRate>[\\d]+):(?<criticalHit>[\\d]+):(?<attackMagicPotency>[\\d]+):(?<healingMagicPotency>[\\d]+):(?<determination>[\\d]+):(?<skillSpeed>[\\d]+):(?<spellSpeed>[\\d]+):0:(?<tenacity>[\\d]+):'); // This regex is always static for now, maybe not in future?
 const fadeOutRegex = new RegExp('^.{15}Director 21:8[\\dA-F]{7}:40000005:');
 
+const supportedJobs = ['RDM'];
+let overlayVisible = false;
 let overlayReady = false;
+
+const overlayTest = () => {
+  actionData = testActionData;
+  actionArray = [{ name: 'GCD1' }, { name: 'OGCD2' }];
+  console.log(actionArray);
+
+  syncOverlay();
+};
 
 document.addEventListener('DOMContentLoaded', () => {
   // Not sure if this is necessary but it seems cool!
   // console.log('DOM fully loaded and parsed');
+  overlayTest();
   startOverlayEvents();
-
   // Reset arrays for player, recasts, and status duration/stacks
   overlayReady = true;
 });
-
-const supportedJobs = ['RDM'];
-
-const playerData = {};
 
 const onPlayerChangedEvent = (e) => {
   if (e.detail.name !== playerData.name
@@ -71,6 +65,8 @@ const onPlayerChangedEvent = (e) => {
       overlayReady = false;
       return;
     }
+
+    overlayReady = true;
 
     // Set new player data
     playerData.name = e.detail.name;
@@ -250,9 +246,6 @@ const getActionProperty = ({ name, property } = {}) => {
   return '';
 };
 
-const targetData = {};
-let overlayVisible = false;
-
 const EnmityTargetData = (e) => {
   if (!overlayReady) { return; }
   const { job } = playerData;
@@ -276,14 +269,14 @@ const EnmityTargetData = (e) => {
   // const { playerData } = nextActionOverlay;
   // const { job } = playerData;
 
-  if (e.Target.ID !== targetData.decimalid) {
-    targetData.name = e.Target.Name; // Set new targetData
-    targetData.id = e.Target.ID.toString(16).toUpperCase();
-    if (job === 'RDM') { rdmChangedTarget(); }
-  }
-
-  if (e.Target) { // Put stuff that should be constantly updated here
+  if (e.Target) {
     targetData.distance = e.Target.EffectiveDistance; // Distance to "outside of circle"
+
+    if (e.Target.ID !== targetData.decimalid) {
+      targetData.name = e.Target.Name; // Set new targetData
+      targetData.id = e.Target.ID.toString(16).toUpperCase();
+      if (job === 'RDM') { rdmChangedTarget(); }
+    }
   }
 
   // Control overlay visiblity based on target
