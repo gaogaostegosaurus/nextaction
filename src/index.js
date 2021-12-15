@@ -2,21 +2,31 @@
 
 /* global
 addOverlayListener startOverlayEvents
-allActionData playerStatsData testActionData
-syncOverlay showIcon fadeIcon
-setStatus removeStatus
-rdmLoop rdmActionMatch rdmStatusMatch rdmChangedTarget
+syncOverlay fadeIcon unfadeIcon
+baseActionData baseStatusData playerStatsData getActionProperty
+setActionRecast setStatus removeStatus
+rdmTraits rdmActionMatch rdmStatusMatch rdmTargetChanged rdmPlayerChanged
+rdmLoopGCDAction rdmLoopGCDActionResult rdmLoopOGCDAction rdmLoopOGCDActionResult
 */
 
 // All possible events:
 // https://github.com/quisquous/cactbot/blob/master/plugin/CactbotEventSource/CactbotEventSource.cs
 
-let actionArray = [];
+const maxActions = 10; // Maximum number of actions looked up
+
 // eslint-disable-next-line no-unused-vars
 let recastArray = [];
 // eslint-disable-next-line no-unused-vars
 let statusArray = [];
+let overlayArray = [];
 
+// eslint-disable-next-line no-unused-vars
+let loopPlayerData;
+let loopRecastArray;
+let loopStatusArray;
+
+// eslint-disable-next-line no-unused-vars
+let statusData = [];
 let actionData = [];
 let castingActionData = [];
 const playerData = {};
@@ -31,29 +41,121 @@ let loopTimeout;
 let actionMatchTimestamp = 0;
 
 // Constant across jobs
-const playerStatsRegex = new RegExp('^.{15}(?<logType>PlayerStats 0C):(?<jobID>[\\d]+):(?<strength>[\\d]+):(?<dexterity>[\\d]+):(?<vitality>[\\d]+):(?<intelligence>[\\d]+):(?<mind>[\\d]+):(?<piety>[\\d]+):(?<attackPower>[\\d]+):(?<directHitRate>[\\d]+):(?<criticalHit>[\\d]+):(?<attackMagicPotency>[\\d]+):(?<healingMagicPotency>[\\d]+):(?<determination>[\\d]+):(?<skillSpeed>[\\d]+):(?<spellSpeed>[\\d]+):0:(?<tenacity>[\\d]+):'); // This regex is always static for now, maybe not in future?
-const fadeOutRegex = new RegExp('^.{15}Director 21:8[\\dA-F]{7}:40000005:');
+const playerStatsRegex = new RegExp('^.{15}(?<logType>PlayerStats) 0C:(?<jobID>[\\d]+):(?<strength>[\\d]+):(?<dexterity>[\\d]+):(?<vitality>[\\d]+):(?<intelligence>[\\d]+):(?<mind>[\\d]+):(?<piety>[\\d]+):(?<attackPower>[\\d]+):(?<directHitRate>[\\d]+):(?<criticalHit>[\\d]+):(?<attackMagicPotency>[\\d]+):(?<healingMagicPotency>[\\d]+):(?<determination>[\\d]+):(?<skillSpeed>[\\d]+):(?<spellSpeed>[\\d]+):0:(?<tenacity>[\\d]+):'); // This regex is always static for now, maybe not in future?
+const fadeOutRegex = new RegExp('^.{15}(?<logType>Director) 21:8[\\dA-F]{7}:40000005:');
 
 const supportedJobs = ['RDM'];
 let overlayVisible = false;
 let overlayReady = false;
 
-const overlayTest = () => {
-  actionData = testActionData;
-  actionArray = [{ name: 'GCD1' }, { name: 'OGCD2' }];
-  console.log(actionArray);
+// const overlayTest = () => {
+//   actionData = testActionData;
+//   overlayArray = [{ name: 'GCD1' }, { name: 'OGCD2' }];
+//   console.log(overlayArray);
 
-  syncOverlay();
-};
+//   syncOverlay();
+// };
 
 document.addEventListener('DOMContentLoaded', () => {
   // Not sure if this is necessary but it seems cool!
   // console.log('DOM fully loaded and parsed');
-  overlayTest();
+  // overlayTest();
   startOverlayEvents();
   // Reset arrays for player, recasts, and status duration/stacks
   overlayReady = true;
 });
+
+const advanceLoopTime = ({ time } = {}) => {
+  // Reduces numbers since these arrays can't really use Date.now() compares
+  loopRecastArray.forEach((element) => element.recast === element.recast - time * 1000);
+  loopStatusArray.forEach((element) => element.duration === element.duration - time * 1000);
+};
+
+// eslint-disable-next-line no-unused-vars
+const startLoop = ({ delay = 0, casting } = {}) => {
+  if (playerData.job === undefined) { return; }
+
+  // console.log('Starting loop');
+  // Array for actions to sync to overlay
+  overlayArray = [];
+
+  // Clone arrays/objects for looping
+  loopPlayerData = { ...playerData };
+  loopRecastArray = [...recastArray];
+  loopStatusArray = [...statusArray];
+
+  let ogcdWindow = delay;
+
+  if (casting) {
+    // console.log(`Casting ${casting}`);
+    overlayArray.push({ name: casting });
+    let actionCast = getActionProperty({ name: casting, property: 'cast' });
+    if (actionCast === undefined) {
+      // This shouldn't happen, but just in case
+      // eslint-disable-next-line no-console
+      console.log('Casting action has undefined cast time');
+      actionCast = 0;
+    }
+    advanceLoopTime({ time: actionCast });
+    ogcdWindow = playerData.gcd - actionCast;
+  }
+
+  while (overlayArray.length <= maxActions) {
+    if (ogcdWindow <= 0) {
+      let actionName;
+
+      // Call GCD Action functions
+      if (playerData.job === 'RDM') { actionName = rdmLoopGCDAction(); }
+
+      overlayArray.push({ name: actionName });
+
+      // Job specific results
+      if (playerData.job === 'RDM') { ogcdWindow = rdmLoopGCDActionResult({ actionName }); }
+    }
+
+    // Advance just a little bit
+    advanceLoopTime({ time: 0.1 });
+    ogcdWindow -= 0.1;
+
+    let weaveCount = 1;
+
+    // Inner loop for OGCDs
+    while (ogcdWindow > 0.75) { // Arbritrary minimum?
+      // Find next OGCD
+      let actionName;
+      if (playerData.job === 'RDM') { actionName = rdmLoopOGCDAction({ weaveCount }); }
+
+      // Push into array
+      if (actionName !== undefined) {
+        overlayArray.push({ name: actionName, ogcd: true });
+
+        // Non-generic stuff
+        if (playerData.job === 'RDM') { rdmLoopOGCDActionResult({ actionName }); }
+
+        // General action results
+        setActionRecast({ name: actionName, array: loopRecastArray });
+        const actionDataIndex = actionData.findIndex((element) => element.name === actionName);
+        if (actionData[actionDataIndex].status !== undefined) {
+          setStatus({ name: actionData[actionDataIndex].status, array: loopStatusArray });
+        }
+      }
+
+      // Increment for next weave
+      advanceLoopTime({ time: 1 });
+      ogcdWindow -= 1;
+      weaveCount += 1;
+    }
+
+    // Advance remaining ogcd window
+    advanceLoopTime({ time: ogcdWindow });
+    ogcdWindow = 0;
+  }
+
+  syncOverlay();
+
+  clearTimeout(loopTimeout);
+  loopTimeout = setTimeout(startLoop, playerData.gcd * 2);
+};
 
 const onPlayerChangedEvent = (e) => {
   if (e.detail.name !== playerData.name
@@ -77,7 +179,6 @@ const onPlayerChangedEvent = (e) => {
     playerData.decimalid = e.detail.id; // ID defaults to decimal value
     playerData.id = e.detail.id.toString(16).toUpperCase();
 
-    const jobLowerCase = playerData.job.toLowerCase();
     const { name } = playerData;
     const { level } = playerData;
     const { job } = playerData;
@@ -103,37 +204,75 @@ const onPlayerChangedEvent = (e) => {
     const { role } = playerData;
 
     // Filter into new action data array
-    actionData = allActionData.filter(
+    actionData = baseActionData.filter(
       (element) => (element.affinity === job || element.affinity === role)
       && element.level <= level,
     );
 
-    // Apply job and level specific traits defined in js
-    [`${jobLowerCase}Traits`]();
+    statusData = [...baseStatusData];
 
+    // Apply job and level specific traits defined in js
+    if (job === 'RDM') {
+      rdmTraits();
+    }
     // Create separate list for casted actions
     castingActionData = actionData.filter((element) => (element.cast > 0));
 
     // Create Regexes
     const actionMap = actionData.map((element) => element.name);
     const actionNameRegex = actionMap.join('|');
+    // console.log(`Matched actions: ${actionNameRegex}`);
 
     const castingActionMap = castingActionData.map((element) => element.name);
     const castingActionNameRegex = castingActionMap.join('|');
+    // console.log(`Matched cast actions: ${castingActionNameRegex}`);
 
-    actionEffectRegex = new RegExp(`^.{15}(?<logType>ActionEffect 15|AOEActionEffect 16):(?<sourceID>${id}):(?<sourceName>${name}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${actionNameRegex}):(?<targetID>[\\dA-F]{8}):`);
-    statusRegex = new RegExp('^.{15}(?<logType>StatusAdd 1A|StatusRemove 1E):(?<statusID>[\\dA-F]{2,8}):(?<statusName>.+?):(?<statusSeconds>[0-9]+\\.[0-9]+):(?<sourceID>[\\dA-F]{8}):(?<sourceName>.+?):(?<targetID>[\\dA-F]{8}):');
-    startsCastingRegex = new RegExp(`^.{15}(?<logType>StartsCasting 14):(?<sourceID>${id}):(?<sourceName>${name}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${castingActionNameRegex}):(?<targetID>[\\dA-F]{8}):`);
-    cancelActionRegex = new RegExp(`^.{15}(?<logType>CancelAction 17):(?<sourceID>${id}):(?<sourceName>${name}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${castingActionNameRegex}):(?<cancelReason>Cancelled|Interrupted):`);
+    actionEffectRegex = new RegExp(`^.{15}(?<logType>ActionEffect|AOEActionEffect) 1[56]:(?<sourceID>${id}):(?<sourceName>${name}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${actionNameRegex}):(?<targetID>[\\dA-F]{8}):`);
+    statusRegex = new RegExp('^.{15}(?<logType>StatusAdd|StatusRemove) 1[AE]:(?<statusID>[\\dA-F]{2,8}):(?<statusName>.+?):(?<statusSeconds>[0-9]+\\.[0-9]+):(?<sourceID>[\\dA-F]{8}):(?<sourceName>.+?):(?<targetID>[\\dA-F]{8}):');
+    startsCastingRegex = new RegExp(`^.{15}(?<logType>StartsCasting) 14:(?<sourceID>${id}):(?<sourceName>${name}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${castingActionNameRegex}):(?<targetID>[\\dA-F]{8}):`);
+    cancelActionRegex = new RegExp(`^.{15}(?<logType>CancelAction) 17:(?<sourceID>${id}):(?<sourceName>${name}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${castingActionNameRegex}):(?<cancelReason>Cancelled|Interrupted):`);
+  } else if (playerData.job === 'RDM') { rdmPlayerChanged(e); }
+};
 
-    // eslint-disable-next-line no-console
-    console.log(`Changed to ${job}${level}, matched actions are ${actionNameRegex}`);
-  } else {
-    const { job } = playerData;
-    const jobLowerCase = job.toLowerCase();
-    // Just the usual player changed event
-    `${jobLowerCase}PlayerChangedEvent`(e);
+const actionMatch = ({ logType, actionName, targetID } = {}) => {
+  if (Date.now() - actionMatchTimestamp < 10) { return; }
+  actionMatchTimestamp = Date.now();
+  const index = actionData.findIndex((element) => element.name === actionName);
+  overlayArray.splice(index, 1);
+  let delay;
+
+  // Job specific
+  if (playerData.job === 'RDM') { delay = rdmActionMatch({ logType, actionName, targetID }); }
+  // else if (playerData.job === 'SMN') { smnActionMatch({ logType, actionName, targetID }); }
+
+  // All jobs
+  setActionRecast({ name: actionName });
+  if (delay !== undefined) { startLoop({ delay }); }
+};
+
+const statusMatch = ({
+  logType, statusName, statusSeconds, sourceID, targetID,
+} = {}) => {
+  if (playerData.job === 'RDM') {
+    rdmStatusMatch({ logType, statusName, sourceID });
   }
+  setStatus({
+    name: statusName, sourceID, targetID, duration: statusSeconds,
+  });
+};
+
+const startsCastingMatch = ({ actionName } = {}) => {
+  removeStatus({ name: 'Combo' });
+
+  // Call loop again with casting parameter
+  if (playerData.job === 'RDM') { startLoop({ casting: actionName }); }
+
+  fadeIcon({ name: actionName });
+};
+
+const cancelActionMatch = ({ actionName } = {}) => {
+  unfadeIcon({ name: actionName });
+  if (playerData.job === 'RDM') { startLoop(); }
 };
 
 // eslint-disable-next-line no-unused-vars
@@ -146,104 +285,50 @@ const onLogEvent = (e) => {
   const { length } = e.detail.logs;
 
   for (let i = 0; i < length; i += 1) {
-    const actionMatch = logs[i].match(actionEffectRegex);
-    const statusMatch = logs[i].match(statusRegex);
-    const startsCastingMatch = logs[i].match(startsCastingRegex);
-    const cancelActionMatch = logs[i].match(cancelActionRegex);
-    const playerStatsMatch = logs[i].match(playerStatsRegex);
-    const fadeOutMatch = logs[i].match(fadeOutRegex);
+    const actionEffectLine = logs[i].match(actionEffectRegex);
+    const statusLine = logs[i].match(statusRegex);
+    const startsCastingLine = logs[i].match(startsCastingRegex);
+    const cancelActionLine = logs[i].match(cancelActionRegex);
+    const playerStatsLine = logs[i].match(playerStatsRegex);
+    const fadeOutLine = logs[i].match(fadeOutRegex);
 
-    if (actionMatch && Date.now() - actionMatchTimestamp > 10) {
+    if (actionEffectLine && Date.now() - actionMatchTimestamp > 10) {
       actionMatch({
-        logType: actionMatch.logType,
-        actionName: actionMatch.actionName,
-        targetID: actionMatch.targetID,
+        logType: actionEffectLine.logType,
+        actionName: actionEffectLine.actionName,
+        targetID: actionEffectLine.targetID,
       });
-    } else if (statusMatch) {
+    } else if (statusLine) {
       statusMatch({
-        // logType: statusMatch.logType,
-        statusName: statusMatch.statusName,
-        statusSeconds: statusMatch.statusSeconds,
-        sourceID: statusMatch.sourceID,
-        targetID: statusMatch.targetID,
+        logType: statusLine.logType,
+        statusName: statusLine.statusName,
+        statusSeconds: statusLine.statusSeconds,
+        sourceID: statusLine.sourceID,
+        targetID: statusLine.targetID,
       });
-    } else if (startsCastingMatch) {
+    } else if (startsCastingLine) {
       startsCastingMatch({
         // logType: startsCastingMatch.logType,
-        actionName: startsCastingMatch.actionName,
+        actionName: startsCastingLine.actionName,
         // targetID: startsCastingMatch.targetID,
       });
-    } else if (cancelActionMatch) {
+    } else if (cancelActionLine) {
       cancelActionMatch({
         // logType: cancelActionMatch.logType,
-        actionName: cancelActionMatch.actionName,
+        actionName: cancelActionLine.actionName,
         // cancelReason: cancelActionMatch.cancelReason,
       });
-    } else if (playerStatsMatch) {
+    } else if (playerStatsLine) {
       // playerStatsMatch({ piety, skillSpeed, spellSpeed });
-    } else if (fadeOutMatch) {
+    } else if (fadeOutLine) {
       // Reset data on wipes?
       clearTimeout(loopTimeout);
       recastArray = [];
       statusArray = [];
-      actionArray = [];
+      overlayArray = [];
       syncOverlay();
     }
   }
-};
-
-// eslint-disable-next-line no-unused-vars
-const actionMatch = ({ logType, actionName, targetID } = {}) => {
-  if (Date.now() - actionMatchTimestamp < 10) { return; }
-  actionMatchTimestamp = Date.now();
-  const index = actionData.findIndex((element) => element.name === actionName);
-  actionArray = actionArray.splice(index, 1);
-  if (playerData.job === 'RDM') { rdmActionMatch({ logType, actionName, targetID }); }
-  // else if (playerData.job === 'SMN') { smnActionMatch({ logType, actionName, targetID }); }
-};
-
-// eslint-disable-next-line no-unused-vars
-const statusMatch = ({
-  statusName, statusSeconds, sourceID, targetID,
-} = {}) => {
-  setStatus({
-    name: statusName, sourceID, targetID, duration: statusSeconds,
-  });
-
-  if (playerData.job === 'RDM') {
-    rdmStatusMatch({ statusName });
-  }
-};
-
-// eslint-disable-next-line no-unused-vars
-const startsCastingMatch = ({ actionName } = {}) => {
-  removeStatus({ name: 'Combo' });
-
-  // Call loop again with casting parameter
-  if (playerData.job === 'RDM') { rdmLoop({ casting: actionName }); }
-
-  fadeIcon({ name: actionName });
-};
-
-// eslint-disable-next-line no-unused-vars
-const cancelActionMatch = ({ actionName } = {}) => {
-  showIcon({ name: actionName });
-  if (playerData.job === 'RDM') { rdmLoop(); }
-};
-
-// eslint-disable-next-line no-unused-vars
-const startLoop = () => {
-  clearTimeout(loopTimeout);
-  const { job } = playerData;
-  if (job === 'RDM') { loopTimeout = setTimeout(rdmLoop, playerData.gcd * 2); }
-};
-
-// eslint-disable-next-line no-unused-vars
-const getActionProperty = ({ name, property } = {}) => {
-  const index = actionData.findIndex((e) => e.name === name);
-
-  if (actionData[index][property]) { return actionData[index][property]; }
-  return '';
 };
 
 const EnmityTargetData = (e) => {
@@ -275,7 +360,7 @@ const EnmityTargetData = (e) => {
     if (e.Target.ID !== targetData.decimalid) {
       targetData.name = e.Target.Name; // Set new targetData
       targetData.id = e.Target.ID.toString(16).toUpperCase();
-      if (job === 'RDM') { rdmChangedTarget(); }
+      if (job === 'RDM') { rdmTargetChanged(); }
     }
   }
 
@@ -316,23 +401,6 @@ const onPartyWipe = () => {
   recastArray = [];
   statusArray = [];
 };
-
-// // Haven't figured out how to use the rest of these...
-
-// addOverlayListener('onZoneChangedEvent', (e) => {
-//   // Not sure how to use this but I'm sure there's a fun way to
-//   console.log(`onZoneChangedEvent: ${JSON.stringify(e)}`);
-// });
-
-// addOverlayListener('onGameExistsEvent', (e) => {
-//   // console.log(`onGameExistsEvent: ${JSON.stringify(e)}`);
-//   // gameExists = e.detail.exists; // Appears to only have this
-// });
-
-// addOverlayListener('onGameActiveChangedEvent', (e) => {
-//   // console.log(`onGameActiveChangedEvent: ${JSON.stringify(e)}`);
-//   // gameActive = e.detail.active; // Appears to only have this
-// });
 
 const calculateRecast = ({
   recast = 2.5,
@@ -391,5 +459,22 @@ addOverlayListener('onPartyWipe', (e) => {
 
 addOverlayListener('onPlayerChangedEvent', (e) => {
   // console.log(`onPlayerChangedEvent: ${JSON.stringify(e)}`);
-  if (overlayReady === true) { onPlayerChangedEvent(e); }
+  onPlayerChangedEvent(e);
 });
+
+// // Haven't figured out how to use the rest of these...
+
+// addOverlayListener('onZoneChangedEvent', (e) => {
+//   // Not sure how to use this but I'm sure there's a fun way to
+//   console.log(`onZoneChangedEvent: ${JSON.stringify(e)}`);
+// });
+
+// addOverlayListener('onGameExistsEvent', (e) => {
+//   // console.log(`onGameExistsEvent: ${JSON.stringify(e)}`);
+//   // gameExists = e.detail.exists; // Appears to only have this
+// });
+
+// addOverlayListener('onGameActiveChangedEvent', (e) => {
+//   // console.log(`onGameActiveChangedEvent: ${JSON.stringify(e)}`);
+//   // gameActive = e.detail.active; // Appears to only have this
+// });

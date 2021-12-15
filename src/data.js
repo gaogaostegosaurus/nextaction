@@ -1,5 +1,7 @@
+/* global actionData */
+
 // eslint-disable-next-line no-unused-vars
-const allActionData = [
+const baseActionData = [
   // Use base values and modify during job load
 
   // Properties used
@@ -9,7 +11,7 @@ const allActionData = [
   // type: Spell or Weaponskill, useful for filtering GCD calculations
   // (no need to define Ability... yet?)
   // cast: For spells (not added if instant)
-  // recast: Effectively GCD cooldown for Weaponskills and instant or low cast time Spells
+  // recast: Anything not effectively GCD cooldown
   // mpCost
   // Any other resource costs also listed for calculations
 
@@ -21,7 +23,6 @@ const allActionData = [
     name: 'Spinning Edge',
     affinity: 'NIN',
     type: 'Weaponskill',
-    recast: 2.5,
     level: 1,
     icon: '',
   },
@@ -38,7 +39,6 @@ const allActionData = [
     name: 'Gust Slash',
     affinity: 'NIN',
     type: 'Weaponskill',
-    recast: 2.5,
     level: 4,
     comboAction: 'Spinning Edge',
     icon: '',
@@ -56,7 +56,6 @@ const allActionData = [
     name: 'Throwing Dagger',
     affinity: 'NIN',
     type: 'Weaponskill',
-    recast: 2.5,
     level: 15,
     icon: '',
   },
@@ -81,7 +80,6 @@ const allActionData = [
     name: 'Aeolian Edge',
     affinity: 'NIN',
     type: 'Weaponskill',
-    recast: 2.5,
     level: 26,
     comboAction: 'Gust Slash',
     icon: '',
@@ -93,7 +91,6 @@ const allActionData = [
     name: 'Death Blossom',
     affinity: 'NIN',
     type: 'Weaponskill',
-    recast: 2.5,
     level: 38,
     icon: '',
   },
@@ -119,7 +116,6 @@ const allActionData = [
     name: 'Hakke Mujinsatsu',
     affinity: 'NIN',
     type: 'Weaponskill',
-    recast: 2.5,
     level: 52,
     comboAction: 'Death Blossom',
     icon: '',
@@ -129,7 +125,6 @@ const allActionData = [
     name: 'Armor Crush',
     affinity: 'NIN',
     type: 'Weaponskill',
-    recast: 2.5,
     level: 54,
     comboAction: 'Gust Slash',
     icon: '',
@@ -147,7 +142,6 @@ const allActionData = [
     name: 'Hurajin',
     affinity: 'NIN',
     type: 'Weaponskill',
-    recast: 2.5,
     level: 60,
     status: 'Huton',
     icon: '',
@@ -157,7 +151,6 @@ const allActionData = [
     name: 'Death Blossom',
     affinity: 'NIN',
     type: 'Weaponskill',
-    recast: 2.5,
     level: 38,
     icon: '',
   },
@@ -211,7 +204,6 @@ const allActionData = [
     name: 'Phantom Kamaitachi',
     affinity: 'NIN',
     type: 'Weaponskill',
-    recast: 2.5,
     level: 82,
     icon: '',
   },
@@ -220,7 +212,6 @@ const allActionData = [
     name: 'Forked Raiju',
     affinity: 'NIN',
     type: 'Weaponskill',
-    recast: 2.5,
     level: 90,
     status: 'Fleeting Raiju Ready',
     icon: '',
@@ -230,7 +221,6 @@ const allActionData = [
     name: 'Fleeting Raiju',
     affinity: 'NIN',
     type: 'Weaponskill',
-    recast: 2.5,
     level: 90,
     icon: '',
   },
@@ -313,7 +303,6 @@ const allActionData = [
     name: 'Fast Blade',
     affinity: 'PLD',
     type: 'Weaponskill',
-    recast: 2.5,
     level: 1,
     icon: '',
   },
@@ -322,7 +311,6 @@ const allActionData = [
     name: 'Riot Blade',
     affinity: 'PLD',
     type: 'Weaponskill',
-    recast: 2.5,
     level: 4,
     icon: '',
   },
@@ -343,7 +331,6 @@ const allActionData = [
     level: 2,
     type: 'Spell',
     cast: 2,
-    recast: 2.5,
     mpCost: 200,
     blackMana: 2,
     whiteMana: 2,
@@ -356,7 +343,6 @@ const allActionData = [
     level: 4,
     type: 'Spell',
     cast: 5,
-    recast: 2.5,
     mpCost: 300,
     blackMana: 6,
     icon: '003203',
@@ -377,7 +363,6 @@ const allActionData = [
     level: 10,
     type: 'Spell',
     cast: 5,
-    recast: 2.5,
     mpCost: 300,
     whiteMana: 6,
     icon: '003205',
@@ -389,7 +374,6 @@ const allActionData = [
     level: 15,
     type: 'Spell',
     cast: 5,
-    recast: 2.5,
     mpCost: 400,
     blackMana: 3,
     whiteMana: 3,
@@ -402,7 +386,6 @@ const allActionData = [
     level: 18,
     type: 'Spell',
     cast: 2,
-    recast: 2.5,
     mpCost: 400,
     blackMana: 7,
     icon: '003229',
@@ -414,7 +397,6 @@ const allActionData = [
     level: 22,
     type: 'Spell',
     cast: 2,
-    recast: 2.5,
     mpCost: 400,
     whiteMana: 7,
     icon: '003230',
@@ -426,7 +408,6 @@ const allActionData = [
     level: 26,
     type: 'Spell',
     cast: 2,
-    recast: 2.5,
     mpCost: 200,
     blackMana: 5,
     icon: '003208',
@@ -438,7 +419,6 @@ const allActionData = [
     level: 30,
     type: 'Spell',
     cast: 2,
-    recast: 2.5,
     mpCost: 200,
     whiteMana: 5,
     icon: '003209',
@@ -508,7 +488,6 @@ const allActionData = [
     affinity: 'RDM',
     level: 54,
     type: 'Spell',
-    recast: 2.5,
     cast: 2,
     mpCost: 500,
     icon: '',
@@ -545,7 +524,6 @@ const allActionData = [
     level: 62,
     type: 'Spell',
     cast: 2,
-    recast: 2.5,
     mpCost: 200,
     blackMana: 3,
     whiteMana: 3,
@@ -568,7 +546,6 @@ const allActionData = [
     level: 66,
     type: 'Spell',
     cast: 5,
-    recast: 2.5,
     mpCost: 400,
     blackMana: 3,
     whiteMana: 3,
@@ -580,7 +557,6 @@ const allActionData = [
     affinity: 'RDM',
     level: 68,
     type: 'Spell',
-    recast: 2.5,
     mpCost: 380,
     blackMana: 21,
     manaStackCost: 3,
@@ -592,7 +568,6 @@ const allActionData = [
     affinity: 'RDM',
     level: 70,
     type: 'Spell',
-    recast: 2.5,
     mpCost: 380,
     whiteMana: 21,
     manaStackCost: 3,
@@ -612,7 +587,6 @@ const allActionData = [
     affinity: 'RDM',
     level: 80,
     type: 'Spell',
-    recast: 2.5,
     mpCost: 400,
     blackMana: 7,
     whiteMana: 7,
@@ -626,7 +600,6 @@ const allActionData = [
     level: 82,
     type: 'Spell',
     cast: 5,
-    recast: 2.5,
     mpCost: 300,
     blackMana: 6,
     icon: '003235',
@@ -638,7 +611,6 @@ const allActionData = [
     level: 82,
     type: 'Spell',
     cast: 5,
-    recast: 2.5,
     mpCost: 300,
     whiteMana: 6,
     icon: '003236',
@@ -657,7 +629,6 @@ const allActionData = [
     affinity: 'RDM',
     level: 90,
     type: 'Spell',
-    recast: 2.5,
     mpCost: 400,
     blackMana: 4,
     whiteMana: 4,
@@ -715,7 +686,7 @@ const allActionData = [
     affinity: 'RDM',
     level: 76,
     type: 'Weaponskill',
-    recast: 2.5, // Double check?
+    recast: 2.5, // Not modified by spell speed
     manaCost: 5,
     icon: '003232',
   },
@@ -727,7 +698,6 @@ const allActionData = [
     level: 1,
     type: 'Spell',
     cast: 1.5,
-    recast: 2.5,
     mpCost: 300,
     icon: '',
   },
@@ -738,7 +708,6 @@ const allActionData = [
     level: 2,
     type: 'Spell',
     cast: 1.5,
-    recast: 2.5,
     mpCost: 400,
     icon: '',
   },
@@ -757,7 +726,6 @@ const allActionData = [
     level: 4,
     type: 'Spell',
     cast: 1.5,
-    recast: 2.5,
     mpCost: 300,
     icon: '',
   },
@@ -776,7 +744,6 @@ const allActionData = [
     affinity: 'SMN',
     level: 6,
     type: 'Spell',
-    recast: 2.5,
     icon: '',
   },
 
@@ -786,7 +753,6 @@ const allActionData = [
     level: 6,
     type: 'Spell',
     cast: 2.8,
-    recast: 2.5,
     mpCost: 300,
     icon: '',
   },
@@ -815,7 +781,6 @@ const allActionData = [
     level: 12,
     type: 'Spell',
     cast: 8,
-    recast: 2.5,
     mpCost: 2400,
     icon: '',
   },
@@ -825,7 +790,6 @@ const allActionData = [
     affinity: 'SMN',
     level: 15,
     type: 'Spell',
-    recast: 2.5,
     icon: '',
   },
 
@@ -834,7 +798,6 @@ const allActionData = [
     affinity: 'SMN',
     level: 15,
     type: 'Spell',
-    recast: 2.5,
     mpCost: 300,
     icon: '',
   },
@@ -844,7 +807,6 @@ const allActionData = [
     affinity: 'SMN',
     level: 22,
     type: 'Spell',
-    recast: 2.5,
     icon: '',
   },
 
@@ -864,7 +826,6 @@ const allActionData = [
     level: 26,
     type: 'Spell',
     cast: 1.5,
-    recast: 2.5,
     mpCost: 300,
     icon: '',
   },
@@ -875,7 +836,6 @@ const allActionData = [
     level: 26,
     type: 'Spell',
     cast: 2.8,
-    recast: 2.5,
     mpCost: 300,
     icon: '',
   },
@@ -885,7 +845,6 @@ const allActionData = [
     affinity: 'SMN',
     level: 26,
     type: 'Spell',
-    recast: 2.5,
     mpCost: 300,
     icon: '',
   },
@@ -906,7 +865,6 @@ const allActionData = [
     level: 30,
     type: 'Spell',
     cast: 1.5,
-    recast: 2.5,
     mpCost: 300,
     icon: '',
   },
@@ -916,7 +874,6 @@ const allActionData = [
     affinity: 'SMN',
     level: 30,
     type: 'Spell',
-    recast: 2.5,
     icon: '',
   },
 
@@ -926,7 +883,6 @@ const allActionData = [
     level: 30,
     type: 'Spell',
     cast: 2.8,
-    recast: 2.5,
     mpCost: 300,
     icon: '',
   },
@@ -936,7 +892,6 @@ const allActionData = [
     affinity: 'SMN',
     level: 30,
     type: 'Spell',
-    recast: 2.5,
     mpCost: 300,
     icon: '',
   },
@@ -956,7 +911,6 @@ const allActionData = [
     affinity: 'SMN',
     level: 35,
     type: 'Spell',
-    recast: 2.5,
     icon: '',
   },
 
@@ -974,7 +928,6 @@ const allActionData = [
     affinity: 'SMN',
     level: 45,
     type: 'Spell',
-    recast: 2.5,
     icon: '',
   },
 
@@ -993,7 +946,6 @@ const allActionData = [
     level: 54,
     type: 'Spell',
     cast: 1.5,
-    recast: 2.5,
     mpCost: 300,
     icon: '',
   },
@@ -1004,7 +956,6 @@ const allActionData = [
     level: 54,
     type: 'Spell',
     cast: 2.8,
-    recast: 2.5,
     mpCost: 300,
     icon: '',
   },
@@ -1014,7 +965,6 @@ const allActionData = [
     affinity: 'SMN',
     level: 54,
     type: 'Spell',
-    recast: 2.5,
     mpCost: 300,
     icon: '',
   },
@@ -1044,7 +994,6 @@ const allActionData = [
     affinity: 'SMN',
     level: 58,
     type: 'Spell',
-    recast: 2.5,
     mpCost: 300,
     icon: '',
   },
@@ -1054,7 +1003,6 @@ const allActionData = [
     affinity: 'SMN',
     level: 58,
     type: 'Spell',
-    recast: 2.5,
     mpCost: 300,
     icon: '',
   },
@@ -1072,7 +1020,6 @@ const allActionData = [
     affinity: 'SMN',
     level: 62,
     type: 'Spell',
-    recast: 2.5,
     mpCost: 400,
     icon: '',
   },
@@ -1090,7 +1037,7 @@ const allActionData = [
     affinity: 'SMN',
     level: 70,
     type: 'Spell',
-    recast: 2.5,
+    recast: 60,
     icon: '',
   },
 
@@ -1108,7 +1055,6 @@ const allActionData = [
     level: 72,
     type: 'Spell',
     cast: 2.8,
-    recast: 2.5,
     mpCost: 300,
     icon: '',
   },
@@ -1118,7 +1064,6 @@ const allActionData = [
     affinity: 'SMN',
     level: 72,
     type: 'Spell',
-    recast: 2.5,
     mpCost: 300,
     icon: '',
   },
@@ -1139,7 +1084,6 @@ const allActionData = [
     level: 74,
     type: 'Spell',
     cast: 1.5,
-    recast: 2.5,
     mpCost: 300,
     icon: '',
   },
@@ -1150,7 +1094,6 @@ const allActionData = [
     level: 74,
     type: 'Spell',
     cast: 2.8,
-    recast: 2.5,
     mpCost: 300,
     icon: '',
   },
@@ -1160,7 +1103,6 @@ const allActionData = [
     affinity: 'SMN',
     level: 74,
     type: 'Spell',
-    recast: 2.5,
     mpCost: 300,
     icon: '',
   },
@@ -1180,7 +1122,6 @@ const allActionData = [
     affinity: 'SMN',
     level: 80,
     type: 'Spell',
-    recast: 2.5,
     mpCost: 300,
     icon: '',
   },
@@ -1190,7 +1131,6 @@ const allActionData = [
     affinity: 'SMN',
     level: 80,
     type: 'Spell',
-    recast: 2.5,
     mpCost: 300,
     icon: '',
   },
@@ -1367,16 +1307,20 @@ const allActionData = [
 ];
 
 // eslint-disable-next-line no-unused-vars
-const statusData = [
+const baseStatusData = [
   {
     name: 'Combo',
     duration: 15,
   },
 
   {
+    name: 'Swiftcast',
+    duration: 10,
+  },
+
+  {
     name: 'Acceleration',
     duration: 20,
-    stacks: 3,
   },
 
   {
@@ -1385,11 +1329,9 @@ const statusData = [
   },
 
   {
-    name: 'Manafication', // Level 74 trait
+    name: 'Manafication',
     duration: 15,
-    stacks: 4, // ????
-    blackMana: 50,
-    whiteMana: 50,
+    // stacks: 4, // ????
   },
 
   {
@@ -1502,27 +1444,35 @@ const playerStatsData = [
   { level: 90, baseStat: 400, levelMod: 1900 },
 ];
 
+// // eslint-disable-next-line no-unused-vars
+// const testActionData = [
+//   {
+//     name: 'GCD1',
+//     type: 'Weaponskill',
+//     icon: '000001',
+//   },
+
+//   {
+//     name: 'OGCD2',
+//     icon: '000002',
+//   },
+
+//   {
+//     name: 'GCD3',
+//     type: 'Spell',
+//     icon: '000003',
+//   },
+
+//   {
+//     name: 'OGCD4',
+//     icon: '000004',
+//   },
+// ];
+
 // eslint-disable-next-line no-unused-vars
-const testActionData = [
-  {
-    name: 'GCD1',
-    type: 'Weaponskill',
-    icon: '000001',
-  },
-
-  {
-    name: 'OGCD2',
-    icon: '000002',
-  },
-
-  {
-    name: 'GCD3',
-    type: 'Spell',
-    icon: '000003',
-  },
-
-  {
-    name: 'OGCD4',
-    icon: '000004',
-  },
-];
+const getActionProperty = ({ name, property } = {}) => {
+  const index = actionData.findIndex((e) => e.name === name);
+  if (index < 0) { return undefined; }
+  // if (actionData[index][property] === undefined) { return undefined; }
+  return actionData[index][property];
+};

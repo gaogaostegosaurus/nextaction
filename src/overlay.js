@@ -15,7 +15,7 @@
 //   return rowID;
 // };
 
-/* global actionArray */
+/* global actionData overlayArray */
 
 // Uses an array of objects to create a new set of icons
 // If icons exist, it removes any icons that don't match first and then adds any necessary ones
@@ -23,19 +23,21 @@
 const syncOverlay = () => {
   // Get the div element
   const rowDiv = document.getElementById('actions');
+  // console.log(`overlayArray: ${JSON.stringify(overlayArray)}`);
 
   // Find current div length
   const rowLength = rowDiv.children.length;
 
   // Check to see how many icons currently match the array, removing any that don't
-  let actionIndex = 0;
+  let overlayArrayIndex = 0;
   const actionMax = 10;
   for (let rowIndex = 0; rowIndex < rowLength; rowIndex += 1) {
     const iconDiv = rowDiv.children[rowIndex];
-    if (actionArray[actionIndex] && actionArray[actionIndex].name === iconDiv.dataset.name) {
+    if (overlayArray[overlayArrayIndex]
+    && overlayArray[overlayArrayIndex].name === iconDiv.dataset.name) {
       // Go on to next array item if the div already contains the icon
-      if (actionIndex >= actionMax - 1) { break; }
-      actionIndex += 1;
+      if (overlayArrayIndex >= actionMax - 1) { break; }
+      overlayArrayIndex += 1;
     } else {
       // Remove icon if it doesn't match
       iconDiv.dataset.name = '';
@@ -44,11 +46,12 @@ const syncOverlay = () => {
     }
   }
 
-  const stopIndex = actionIndex;
+  const stopIndex = overlayArrayIndex;
 
   // Add icons up to actionMax
   if (stopIndex < actionMax - 1) {
-    for (actionIndex = stopIndex; actionIndex < actionArray.length; actionIndex += 1) {
+    for (overlayArrayIndex = stopIndex;
+      overlayArrayIndex < overlayArray.length; overlayArrayIndex += 1) {
       // Define new divs
       const iconDiv = document.createElement('div');
       const iconImg = document.createElement('img');
@@ -65,12 +68,19 @@ const syncOverlay = () => {
       iconOverlay.className = 'iconoverlay';
 
       // Add icon images
-      iconDiv.dataset.name = actionArray[actionIndex].name;
-      iconImg.src = `iconhr/${actionArray[actionIndex].img}.png`;
-      iconOverlay.src = 'iconoverlay.png';
+      const actionName = overlayArray[overlayArrayIndex].name;
+      iconDiv.dataset.name = actionName;
+      const actionDataIndex = actionData.findIndex((element) => element.name === actionName);
+      const iconFile = `${actionData[actionDataIndex].icon}.png`;
+      const iconFolderNumber = Math.floor(
+        parseInt(iconFile, 10) / 1000,
+      ) * 1000;
+      const iconFolder = iconFolderNumber.toString().padStart(6, '0');
+      iconImg.src = `img/icon/${iconFolder}/${iconFile}`;
+      iconOverlay.src = 'img/icon/iconoverlay.png';
 
       // Add OGCD stuff
-      if (actionArray[actionIndex].ogcd === true) {
+      if (overlayArray[overlayArrayIndex].ogcd === true) {
         iconDiv.classList.add('icon-small');
       }
 
@@ -78,29 +88,35 @@ const syncOverlay = () => {
       void iconDiv.offsetWidth; // Can't remember what this does, but probably do reflow smoothly
 
       iconDiv.classList.replace('icon-hide', 'icon-show');
-      if (actionIndex >= actionMax - 1) { break; }
+      if (overlayArrayIndex >= actionMax - 1) { break; }
     }
   }
 };
 
 // eslint-disable-next-line no-unused-vars
-const showIcon = ({
+const fadeIcon = ({ // Sets an action to lower opacity, for casting or whatever
   name,
-  row = 'icon-b',
-  match = 'exact',
 } = {}) => {
-  // Undos fadeAction effect
+  if (name === undefined) { return; }
 
-  const rowDiv = document.getElementById(row);
+  const rowDiv = document.getElementById('actions');
+  const matchDiv = rowDiv.querySelector(`div[data-name="${name}"]:not([class~="icon-hide"])`);
 
-  // removeOldIcons({ rowID });
-
-  let matchDiv;
-  if (match === 'contains') {
-    matchDiv = rowDiv.querySelector(`div[data-name~="${name}"]:not([class~="icon-hide"])`);
-  } else {
-    matchDiv = rowDiv.querySelector(`div[data-name="${name}"]:not([class~="icon-hide"])`);
+  if (matchDiv) {
+    // eslint-disable-next-line no-void
+    void matchDiv.offsetWidth; // I can't remember why this was needed...
+    matchDiv.classList.add('icon-fade');
   }
+};
+
+// eslint-disable-next-line no-unused-vars
+const unfadeIcon = ({ // Undos fadeAction effect
+  name,
+} = {}) => {
+  if (name === undefined) { return; }
+
+  const rowDiv = document.getElementById('actions');
+  const matchDiv = rowDiv.querySelector(`div[data-name="${name}"]:not([class~="icon-hide"])`);
 
   if (matchDiv) {
     // eslint-disable-next-line no-void
@@ -110,54 +126,21 @@ const showIcon = ({
 };
 
 // eslint-disable-next-line no-unused-vars
-const fadeIcon = ({
-  name,
-  row = 'icon-b',
-  match = 'exact',
-} = {}) => {
-  // Sets an action to lower opacity, for casting or whatever
-
-  const rowDiv = document.getElementById(row);
-
-  // removeOldIcons({ rowID });
-
-  let matchDiv;
-  if (match === 'contains') {
-    matchDiv = rowDiv.querySelector(`div[data-name~="${name}"]:not([class~="icon-hide"])`);
-  } else {
-    matchDiv = rowDiv.querySelector(`div[data-name="${name}"]:not([class~="icon-hide"])`);
-  }
-
-  if (matchDiv) {
-    // eslint-disable-next-line no-void
-    void matchDiv.offsetWidth;
-    matchDiv.classList.add('icon-fade');
-  }
-};
-
-// eslint-disable-next-line no-unused-vars
 const removeIcon = ({
   name,
-  row = 'icon-b',
-  match = 'exact',
 } = {}) => {
-  const rowDiv = document.getElementById(row);
+  if (name === undefined) { return; }
 
-  let matchDiv;
-  if (match === 'contains') {
-    matchDiv = rowDiv.querySelector(`div[data-name~="${name}"]:not([class~="icon-hide"])`);
-  } else {
-    matchDiv = rowDiv.querySelector(`div[data-name="${name}"]:not([class~="icon-hide"])`);
-  }
+  const rowDiv = document.getElementById('actions');
+  const matchDiv = rowDiv.querySelector(`div[data-name="${name}"]:not([class~="icon-hide"])`);
 
   if (matchDiv) {
     // eslint-disable-next-line no-void
-    void matchDiv.offsetWidth; // Don't need this when removing... probably
+    void matchDiv.offsetWidth; // Don't need this when removing...?
     matchDiv.dataset.name = 'none';
     if (!matchDiv.classList.contains('icon-hide')) {
       matchDiv.classList.replace('icon-show', 'icon-hide');
     }
-    // setTimeout(() => { matchDiv.remove(); }, 1000);
   }
 };
 
