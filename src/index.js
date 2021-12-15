@@ -12,7 +12,9 @@ rdmLoopGCDAction rdmLoopGCDActionResult rdmLoopOGCDAction rdmLoopOGCDActionResul
 // All possible events:
 // https://github.com/quisquous/cactbot/blob/master/plugin/CactbotEventSource/CactbotEventSource.cs
 
-const maxActions = 10; // Maximum number of actions looked up
+const maxActions = 20; // Maximum number of actions looked up
+// eslint-disable-next-line no-unused-vars
+const maxIcons = 10;
 
 // eslint-disable-next-line no-unused-vars
 let recastArray = [];
@@ -47,7 +49,7 @@ const fadeOutRegex = new RegExp('^.{15}(?<logType>Director) 21:8[\\dA-F]{7}:4000
 const supportedJobs = ['RDM'];
 let overlayVisible = false;
 let overlayReady = false;
-
+let regexReady = false;
 // const overlayTest = () => {
 //   actionData = testActionData;
 //   overlayArray = [{ name: 'GCD1' }, { name: 'OGCD2' }];
@@ -152,9 +154,6 @@ const startLoop = ({ delay = 0, casting } = {}) => {
   }
 
   syncOverlay();
-
-  clearTimeout(loopTimeout);
-  loopTimeout = setTimeout(startLoop, playerData.gcd * 2);
 };
 
 const onPlayerChangedEvent = (e) => {
@@ -228,17 +227,19 @@ const onPlayerChangedEvent = (e) => {
     // console.log(`Matched cast actions: ${castingActionNameRegex}`);
 
     actionEffectRegex = new RegExp(`^.{15}(?<logType>ActionEffect|AOEActionEffect) 1[56]:(?<sourceID>${id}):(?<sourceName>${name}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${actionNameRegex}):(?<targetID>[\\dA-F]{8}):`);
-    statusRegex = new RegExp('^.{15}(?<logType>StatusAdd|StatusRemove) 1[AE]:(?<statusID>[\\dA-F]{2,8}):(?<statusName>.+?):(?<statusSeconds>[0-9]+\\.[0-9]+):(?<sourceID>[\\dA-F]{8}):(?<sourceName>.+?):(?<targetID>[\\dA-F]{8}):');
-    startsCastingRegex = new RegExp(`^.{15}(?<logType>StartsCasting) 14:(?<sourceID>${id}):(?<sourceName>${name}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${castingActionNameRegex}):(?<targetID>[\\dA-F]{8}):`);
+    statusRegex = new RegExp(`^.{15}(?<logType>StatusAdd|StatusRemove) 1[AE]:(?<statusID>[\\dA-F]{2,8}):(?<statusName>.+?):(?<statusSeconds>[0-9]+\\.[0-9]+):(?<sourceID>[\\dA-F]{8}):(?<sourceName>${name}):(?<targetID>[\\dA-F]{8}):`);
+    if (castingActionData.length > 0) {
+      startsCastingRegex = new RegExp(`^.{15}(?<logType>StartsCasting) 14:(?<sourceID>${id}):(?<sourceName>${name}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${castingActionNameRegex}):(?<targetID>[\\dA-F]{8}):`);
+    }
     cancelActionRegex = new RegExp(`^.{15}(?<logType>CancelAction) 17:(?<sourceID>${id}):(?<sourceName>${name}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${castingActionNameRegex}):(?<cancelReason>Cancelled|Interrupted):`);
+    regexReady = true;
   } else if (playerData.job === 'RDM') { rdmPlayerChanged(e); }
 };
 
 const actionMatch = ({ logType, actionName, targetID } = {}) => {
-  if (Date.now() - actionMatchTimestamp < 10) { return; }
   actionMatchTimestamp = Date.now();
-  const index = actionData.findIndex((element) => element.name === actionName);
-  overlayArray.splice(index, 1);
+  // const actionDataIndex = actionData.findIndex((element) => element.name === actionName);
+  syncOverlay();
   let delay;
 
   // Job specific
@@ -262,6 +263,7 @@ const statusMatch = ({
 };
 
 const startsCastingMatch = ({ actionName } = {}) => {
+  // console.log(`Casting ${actionName}`);
   removeStatus({ name: 'Combo' });
 
   // Call loop again with casting parameter
@@ -277,7 +279,7 @@ const cancelActionMatch = ({ actionName } = {}) => {
 
 // eslint-disable-next-line no-unused-vars
 const onLogEvent = (e) => {
-  if (!overlayReady) { return; }
+  if (regexReady === false) { return; }
   // const { playerData } = nextActionOverlay;
   // const { supportedJobs } = nextActionOverlay;
 
@@ -293,29 +295,30 @@ const onLogEvent = (e) => {
     const fadeOutLine = logs[i].match(fadeOutRegex);
 
     if (actionEffectLine && Date.now() - actionMatchTimestamp > 10) {
+      // console.log(actionEffectLine);
       actionMatch({
-        logType: actionEffectLine.logType,
-        actionName: actionEffectLine.actionName,
-        targetID: actionEffectLine.targetID,
+        logType: actionEffectLine.groups.logType,
+        actionName: actionEffectLine.groups.actionName,
+        targetID: actionEffectLine.groups.targetID,
       });
     } else if (statusLine) {
       statusMatch({
-        logType: statusLine.logType,
-        statusName: statusLine.statusName,
-        statusSeconds: statusLine.statusSeconds,
-        sourceID: statusLine.sourceID,
-        targetID: statusLine.targetID,
+        logType: statusLine.groups.logType,
+        statusName: statusLine.groups.statusName,
+        statusSeconds: statusLine.groups.statusSeconds,
+        sourceID: statusLine.groups.sourceID,
+        targetID: statusLine.groups.targetID,
       });
     } else if (startsCastingLine) {
       startsCastingMatch({
         // logType: startsCastingMatch.logType,
-        actionName: startsCastingLine.actionName,
+        actionName: startsCastingLine.groups.actionName,
         // targetID: startsCastingMatch.targetID,
       });
     } else if (cancelActionLine) {
       cancelActionMatch({
         // logType: cancelActionMatch.logType,
-        actionName: cancelActionLine.actionName,
+        actionName: cancelActionLine.groups.actionName,
         // cancelReason: cancelActionMatch.cancelReason,
       });
     } else if (playerStatsLine) {

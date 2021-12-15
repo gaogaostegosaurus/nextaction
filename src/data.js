@@ -1329,6 +1329,11 @@ const baseStatusData = [
   },
 
   {
+    name: 'Embolden',
+    duration: 20,
+  },
+
+  {
     name: 'Manafication',
     duration: 15,
     // stacks: 4, // ????

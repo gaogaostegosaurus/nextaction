@@ -63,24 +63,25 @@ const rdmPlayerChanged = (e) => {
 
 // eslint-disable-next-line no-unused-vars
 const rdmActionMatch = ({ logType, actionName, targetID } = {}) => {
-  let { targetCount } = playerData;
+  // let { targetCount } = playerData;
   let delay;
   // const actionType = getActionProperty({ name: actionName, property: 'type' });
   // const actionRecast = getActionProperty({ name: actionName, property: 'recast' });
   const actionCast = getActionProperty({ name: actionName, property: 'cast' });
 
-  // Identify probable target count
-  if (logType === 'AOEActionEffect') {
-    if (['Scatter', 'Verthunder II', 'Veraero II', 'Moulinet'].includes(actionName)) {
-      targetCount = 3;
-    } else if (actionName === 'Impact' && targetCount === 1) {
-      targetCount = 2;
-    }
-  } else if (['Jolt', 'Verfire', 'Verstone', 'Jolt II'].includes(actionName) && targetCount < 2) {
-    targetCount = 2;
-  } else {
-    targetCount = 1;
-  }
+  // // Identify probable target count
+  // if (logType === 'AOEActionEffect') {
+  //   if (['Scatter', 'Verthunder II', 'Veraero II', 'Moulinet'].includes(actionName)) {
+  //     targetCount = 3;
+  //   } else if (actionName === 'Impact' && targetCount === 1) {
+  //     targetCount = 2;
+  //   }
+  // } else if (['Jolt', 'Verfire', 'Verstone', 'Jolt II'].includes(actionName)
+  // && targetCount < 2) {
+  //   targetCount = 2;
+  // } else {
+  //   targetCount = 1;
+  // }
 
   // Add linked cooldowns
   if (actionName === 'Displacement') { setActionRecast({ name: 'Engagement' }); }
@@ -95,6 +96,7 @@ const rdmActionMatch = ({ logType, actionName, targetID } = {}) => {
       // Dualcast or Swiftcast
       delay = playerData.gcd;
     } else {
+      setStatus({ name: 'Dualcast' }); // Probably easiest to set Dualcast on this line
       delay = Math.min(0, playerData.gcd - actionCast);
     }
   } else {
