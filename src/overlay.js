@@ -21,20 +21,24 @@
 // If icons exist, it removes any icons that don't match first and then adds any necessary ones
 // eslint-disable-next-line no-unused-vars
 const syncOverlay = () => {
-  // Get the div element
-  const rowDiv = document.getElementById('actions');
+  if (overlayArray === undefined) { return; }
   // console.log(`overlayArray: ${JSON.stringify(overlayArray)}`);
 
+  // Get the div element
+  const rowDiv = document.getElementById('actions');
   // Find current div length
   const rowLength = rowDiv.children.length;
-  overlayArray.length = maxIcons;
+  // overlayArray.length = maxIcons;
   // Check to see how many icons currently match the array, removing any that don't
   let overlayArrayIndex = 0;
+  let iconCount = 0;
   for (let rowIndex = 0; rowIndex < rowLength; rowIndex += 1) {
+    if (iconCount >= maxIcons) { break; }
     const iconDiv = rowDiv.children[rowIndex];
     if (overlayArray[overlayArrayIndex].name === iconDiv.dataset.name) {
       // Go on to next array item if the div already contains the icon
       overlayArrayIndex += 1;
+      iconCount += 1;
     } else {
       // Remove icon if it doesn't match
       // overlayArrayIndex stays the same to match next icon
@@ -49,6 +53,7 @@ const syncOverlay = () => {
 
   for (overlayArrayIndex;
     overlayArrayIndex < overlayArray.length; overlayArrayIndex += 1) {
+    if (iconCount >= maxIcons) { break; }
     // Define new divs
     const iconDiv = document.createElement('div');
     const iconImg = document.createElement('img');
@@ -85,6 +90,7 @@ const syncOverlay = () => {
     void iconDiv.offsetWidth; // Can't remember what this does, but probably do reflow smoothly
 
     iconDiv.classList.replace('icon-hide', 'icon-show');
+    iconCount += 1;
   }
 };
 
@@ -121,6 +127,19 @@ const unfadeIcon = ({ // Undos fadeAction effect
 };
 
 // eslint-disable-next-line no-unused-vars
+const removeIcon = ({ name } = {}) => {
+  if (name === undefined) { return; }
+
+  // Removes first instance of action and then syncs array, technically?
+  const actionName = name;
+  const overlayArrayIndex = overlayArray.findIndex((element) => element.name === actionName);
+  if (overlayArrayIndex > -1) {
+    overlayArray.splice(overlayArrayIndex, 1);
+    syncOverlay();
+  }
+};
+
+// eslint-disable-next-line no-unused-vars
 // const removeIcon = ({
 //   name,
 // } = {}) => {
@@ -132,7 +151,7 @@ const unfadeIcon = ({ // Undos fadeAction effect
 //   if (matchDiv) {
 //     // eslint-disable-next-line no-void
 //     void matchDiv.offsetWidth; // Don't need this when removing...?
-//     matchDiv.dataset.name = 'none';
+//     matchDiv.dataset.name = '';
 //     if (!matchDiv.classList.contains('icon-hide')) {
 //       matchDiv.classList.replace('icon-show', 'icon-hide');
 //     }

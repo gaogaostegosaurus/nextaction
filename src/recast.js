@@ -1,97 +1,137 @@
-/* globals recastArray actionData */
+/* globals actionData */
 
 // eslint-disable-next-line no-unused-vars
-const setActionRecast = ({
+const addActionRecast = ({
   name,
   recast, // In seconds
-  array = recastArray,
+  recastArray,
 } = {}) => {
-  if (name === undefined) { return; }
-  let defaultRecast = recast;
+  if (name === undefined) {
+    // eslint-disable-next-line no-console
+    console.log('addActionRecast: name is undefined');
+    return;
+  }
+
+  if (recastArray === undefined) {
+    // eslint-disable-next-line no-console
+    console.log('addActionRecast: recastArray is undefined');
+    return;
+  }
+
+  let newRecast = recast;
+  const actionDataIndex = actionData.findIndex((element) => element.name === name);
+  if (actionDataIndex === -1) { console.log(`addActionRecast: ${name} not in actionData`); return; }
 
   // Get default recast if recast not provided
-  if (recast === undefined) {
-    const actionDataIndex = actionData.findIndex((element) => element.name === name);
-    defaultRecast = actionData[actionDataIndex].recast;
-  }
+  if (recast === undefined) { newRecast = actionData[actionDataIndex].recast; }
 
-  if (defaultRecast === undefined) { return; }
+  // Exit if no recast is defined (function will have no effect)
+  if (newRecast === undefined) { return; }
 
-  const defaultRecastMilliseconds = defaultRecast * 1000;
+  // Convert to milliseconds for array timestamp
+  const newRecastMilliseconds = newRecast * 1000;
 
   // Look for existing entry in recasts
-  const arrayIndex = array.findIndex((element) => element.name === name);
+  const arrayIndex = recastArray.findIndex((element) => element.name === name);
 
+  // If entry exists, set recast timestamp
   if (arrayIndex > -1) {
-    // If entry exists, set recast time
-    // eslint-disable-next-line no-param-reassign
-    array[arrayIndex].recast = defaultRecastMilliseconds
-    + Math.max(array[arrayIndex].recast, Date.now());
-    // Adding Math.max for charge skills
+    // Math.max() to calculate "total" recast for charge skills
+    // eslint-disable-next-line max-len, no-param-reassign
+    recastArray[arrayIndex].recast = newRecastMilliseconds + Math.max(recastArray[arrayIndex].recast, Date.now());
   } else {
     // Add new entry if entry does not exist
-    array.push({ name, recast: defaultRecastMilliseconds + Date.now() });
+    recastArray.push({ name, recast: newRecastMilliseconds + Date.now() });
   }
-
-  // console.log(`Actions: ${JSON.stringify(array)}`);
 };
 
-const getActionRecast = ({
+// eslint-disable-next-line no-unused-vars
+const checkActionRecast = ({
   name,
-  array = recastArray,
+  recastArray,
 } = {}) => {
-  if (name === undefined) { return 9999; }
+  if (name === undefined) {
+    // eslint-disable-next-line no-console
+    console.log('checkActionRecast: name is undefined, returning 9999');
+    return 9999;
+  }
+
+  if (recastArray === undefined) {
+    // eslint-disable-next-line no-console
+    console.log('checkActionRecast: recastArray is undefined, returning 9999');
+    return 9999;
+  }
 
   // Get data from actionList
   const actionDataIndex = actionData.findIndex((element) => element.name === name);
   if (actionDataIndex === -1) { return 9999; } // "It's not available yet"
 
-  // Get index of existing entry (if it does)
-  const arrayIndex = array.findIndex((element) => element.name === name);
-
-  // Return 0 if not found ("it's off recast")
-  if (arrayIndex === -1) { return 0; }
-
+  // Check for recast data
   const defaultRecast = actionData[actionDataIndex].recast;
   if (defaultRecast === undefined) { return 0; }
-
   const defaultCharges = actionData[actionDataIndex].charges;
 
-  const recastTimestamp = array[arrayIndex].recast;
+  // Get index of existing entry
+  const recastArrayIndex = recastArray.findIndex((element) => element.name === name);
+
+  // Return 0 if not found ("it's off recast")
+  if (recastArrayIndex === -1) { return 0; }
+  // console.log(`${recastArray[recastArrayIndex].name} ${recastArray[recastArrayIndex].recast}`);
+
+  // Calculate recast
+  const recastTimestamp = recastArray[recastArrayIndex].recast;
   let recastSeconds = (recastTimestamp - Date.now()) / 1000;
 
-  // (Charges are a headache. Note to self.)
-  // A 30 second recast ability with 3 charges would have the following:
-  // 2 charges left if the "initial" recast is at 25 (x < 30 * 1)
-  // 1 charge at 50 (30 * 1 < x < 30 * 2)
-  // 0 charges at 70 seconds (30 * 2 > x)
-  // Recast needs to be incremented for charge abilities in the other functions because of this
-
-  if (defaultCharges) { recastSeconds -= (defaultCharges - 1) * defaultRecast; }
+  // If action has charges, reduce recastSeconds * number of charges beyond the first
+  // Allows this function to return 0 if the ability is usable at all
+  if (defaultCharges !== undefined) {
+    recastSeconds -= (defaultCharges - 1) * defaultRecast;
+  }
 
   // Return a minimum of 0 to prevent shenanigans
-  if (recastSeconds < 0) { return 0; }
+  if (recastSeconds < 0) { recastSeconds = 0; }
 
   // Return recast time if found
   return recastSeconds;
 };
 
 // eslint-disable-next-line no-unused-vars
-const getActionCharges = ({
+const checkActionCharges = ({
   name,
-  array = recastArray,
+  recastArray,
 } = {}) => {
-  if (!name) { return 0; }
+  if (name === undefined) {
+    // eslint-disable-next-line no-console
+    console.log('checkActionCharges: name is undefined, returning 0');
+    return 0;
+  }
 
-  const i = actionData.findIndex((e) => e.name === name);
-  if (i < 0) { return 0; }
+  if (recastArray === undefined) {
+    // eslint-disable-next-line no-console
+    console.log('checkActionCharges: recastArray is undefined, returning 0');
+    return 0;
+  }
 
-  const defaultCharges = actionData[i].charges;
-  if (!defaultCharges) { return 1; }
+  // Search data for action
+  const actionDataIndex = actionData.findIndex((e) => e.name === name);
 
-  const recastSeconds = getActionRecast({ name, array });
-  const defaultRecast = actionData[i].recast;
+  // Return 0 if not found
+  if (actionDataIndex === -1) { return 0; }
 
+  // Return 0 if this ability has no charges by default
+  const defaultCharges = actionData[actionDataIndex].charges;
+  if (defaultCharges === undefined) { return 0; }
+
+  // Calculate remaining charges using recast
+  const defaultRecast = actionData[actionDataIndex].recast;
+  const recastArrayIndex = recastArray.findIndex((e) => e.name === name);
+  let recastTimestamp = 0;
+  if (recastArrayIndex > -1) {
+    recastTimestamp = recastArray[recastArrayIndex].recast;
+  }
+  const recastSeconds = (recastTimestamp - Date.now()) / 1000;
   const chargesRemaining = defaultCharges - Math.ceil(recastSeconds / defaultRecast);
+
+  // Return charges remaining from above calculation
   return chargesRemaining;
 };

@@ -1,6 +1,7 @@
-/reference
 /.eslintrc.js
+/.vscode/bookmarks.json
 /node_modules
+/old
 /package.json
 /package-lock.json
-/old
+/triggernometry.xml

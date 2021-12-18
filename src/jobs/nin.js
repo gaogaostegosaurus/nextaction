@@ -16,127 +16,147 @@ const ninTraits = () => {
         element.ninki = 5;
       }
     });
-    const actionDataIndex = actionData.findIndex((element) => element.name === 'Manafication');
-    actionData[actionDataIndex].recast = 110;
   }
 
-  comboStep = '';
-  mudraCount = 0;
+  if (level >= 66) {
+    const actionDataIndex = actionData.findIndex((element) => element.name === 'Mug');
+    actionData[actionDataIndex].ninki = 40;
+  }
 
-  actionList.weaponskills = [
-    'Spinning Edge', 'Gust Slash', 'Aeolian Edge', 'Armor Crush',
-    'Death Blossom', 'Hakke Mujinsatsu',
-    'Throwing Dagger',
-    'Shadow Fang',
-  ];
+  if (level >= 78) {
+    let actionDataIndex;
+    actionDataIndex = actionData.findIndex((element) => element.name === 'Aeolian Edge');
+    actionData[actionDataIndex].ninki = 10;
+    actionDataIndex = actionData.findIndex((element) => element.name === 'Armor Crush');
+    actionData[actionDataIndex].ninki = 10;
+  }
 
-  actionList.ninjutsu = [
-    'Fuma Shuriken', 'Katon', 'Raiton', 'Hyoton', 'Huton', 'Doton', 'Suiton',
-    'Rabbit Medium',
-    'Goka Mekkyaku', 'Hyosho Ranryu',
-  ];
+  if (level >= 84) {
+    let actionDataIndex;
+    actionDataIndex = actionData.findIndex((element) => element.name === 'Aeolian Edge');
+    actionData[actionDataIndex].ninki = 15;
+    actionDataIndex = actionData.findIndex((element) => element.name === 'Armor Crush');
+    actionData[actionDataIndex].ninki = 15;
+  }
 
-  actionList.mudra = [
-    'Ten', 'Chi', 'Jin',
-  ];
+  if (level >= 88) {
+    const actionDataIndex = actionData.findIndex((element) => element.name === 'Meisui');
+    actionData[actionDataIndex].status = 'Meisui'; // check name later
+  }
 
-  actionList.abilities = [
-    'Shade Shift', 'Hide', 'Mug', 'Shukuchi', 'Dream Within A Dream', 'Assassinate',
-    'Kassatsu', 'Ten Chi Jin',
-    'Trick Attack', 'Meisui',
-    'Hellfrog Medium', 'Bhavacakra', 'Bunshin',
-    'Second Wind', 'Leg Sweep', 'Bloodbath', 'Feint', 'Arm\'s Length', 'True North',
-  ];
-
-  statusList.self = [
-    'Shade Shift', 'Kassatsu', 'Assassinate Ready', 'Ten Chi Jin', 'Bunshin',
-    'Mudra', 'Doton', 'Suiton',
-    'Bloodbath', 'Feint', 'Arm\'s Length', 'True North',
-  ];
-
-  statusList.target = ['Shadow Fang'];
-
-  const { recast } = nextActionOverlay;
-  recast.shadeshift = 120000;
-  recast.hide = 20000;
-  recast.mug = 120000;
-  recast.trickattack = 60000;
-  recast.shadowfang = 70000;
-  recast.mudra1 = 20000;
-  recast.mudra2 = recast.mudra1;
-  recast.shukuchi1 = 60000;
-  recast.shukuchi2 = 60000;
-  recast.kassatsu = 60000;
-  recast.dreamwithinadream = 60000;
-  recast.tenchijin = 120000;
-  recast.meisui = 120000;
-  recast.bunshin = 90000;
-
-  const { duration } = nextActionOverlay;
-  duration.trickattack = 15000;
-  duration.shadowfang = 30000;
-  duration.mudra = 6000;
-  duration.huton = 70000;
-  duration.doton = 24000;
-  duration.suiton = 20000;
-  duration.kassatsu = 15000;
-  duration.armorcrush = 30000;
-  duration.assassinateready = 15000;
-  duration.hakkemujinsatsu = 10000;
-  duration.tenchijin = 6000;
-  duration.bunshin = 30000;
-
-  const { icon } = nextActionOverlay;
-  icon.spinningedge = '000601';
-  icon.gustslash = '000602';
-  icon.aeolianedge = '000605';
-  icon.shadowfang = '000606';
-  icon.hide = '000609';
-  icon.assassinate = '000612';
-  icon.mug = '000613';
-  icon.deathblossom = '000615';
-  icon.trickattack = '000618';
-  icon.ten = '002901';
-  icon.chi = '002902';
-  icon.jin = '002903';
-  icon.ninjutsu = '002904';
-  icon.mudra1 = '002904';
-  icon.mudra2 = '002904';
-  icon.kassatsu = '002906';
-  icon.fumashuriken = '002907';
-  icon.katon = '002908';
-  icon.hyoton = '002909';
-  icon.huton = '002910';
-  icon.doton = '002911';
-  icon.raiton = '002912';
-  icon.suiton = '002913';
-  icon.rabbitmedium = '002913';
-  icon.armorcrush = '002915';
-  icon.dreamwithinadream = '002918';
-  icon.hellfrogmedium = '002920';
-  icon.bhavacakra = '002921';
-  icon.tenchijin = '002922';
-  icon.hakkemujinsatsu = '002923';
-  icon.meisui = '002924';
-  icon.gokamekkyaku = '002925';
-  icon.hyoshoranryu = '002926';
-  icon.bunshin = '002927';
-
-  meleedpsRoleChange();
+  if (level >= 90) {
+    const actionDataIndex = actionData.findIndex((element) => element.name === 'Raiton');
+    actionData[actionDataIndex].status = 'Forked Raiju Ready';
+  }
 }; // Keep collapsed, probably
 
-ninPlayerChange = (e) => {
+const ninPlayerChanged = (e) => {
   playerData.huton = e.detail.jobDetail.hutonMilliseconds;
-  if (playerData.huton === 0) {
-    playerData.huton = -1;
-  }
   playerData.ninki = e.detail.jobDetail.ninkiAmount;
+
+  // Huton call GCD
 };
 
-ninTargetChange = () => {
-  if (combat) {
-    ninNextAction();
-  }
+const ninTargetChange = () => {
+  // 
+};
+
+
+const ninActionMatch = ({ logType, actionName, targetID } = {}) => {
+  let delay = playerData.gcd;
+  
+
+  return delay;
+
+  // // Set recast
+  // if (mudra.includes(actionName) && mudraCount === 0 && checkStatus({ statusName: 'Kassatsu' }) < 0) {
+  //   // Don't increase Mudra recast under Kassatsu
+  //   addRecast({ actionName: 'Mudra 1', recast: checkRecast({ actionName: 'Mudra 2' }) });
+  //   addRecast({ actionName: 'Mudra 2', recast: checkRecast({ actionName: 'Mudra 2' }) + 20000 });
+  //   mudraCount += 1;
+  // } else if (recast[propertyName]) { addRecast({ actionName }); }
+
+  // // Set duration
+  // if (duration[propertyName]) { addStatus({ statusName: actionName }); }
+
+  // if (weaponskills.includes(actionName)) {
+  //   // Combo
+  //   if (comboCheck && ((level >= 4 && actionName === 'Spinning Edge')
+  //   || (level >= 26 && actionName === 'Gust Slash')
+  //   || (level >= 52 && actionName === 'Death Blossom'))) {
+  //     addStatus({ statusName: 'Combo' });
+  //     comboStep = actionName;
+  //   } else {
+  //     removeStatus({ statusName: 'Combo' });
+  //     comboStep = '';
+  //   }
+
+  //   // Add recasts
+  //   if (actionName === 'Shadow Fang') {
+  //     addRecast({ actionName: 'Shadow Fang', recast: recast.shadowfang * hutonModifier });
+  //     // Since Shadow Fang can't be on more than one target anyway, treat it like a buff
+  //   } else if (recast[propertyName]) { addRecast({ actionName }); }
+
+  //   // Add durations
+  //   if (duration[propertyName]) { addStatus({ statusName: actionName }); }
+
+  //   ninNextAction({ delay: gcd });
+  // } else if (mudra.includes(actionName)) {
+  //   if (checkStatus({ statusName: 'Kassatsu' }) > 0) {
+  //     // Nothing
+  //   } else if (mudraCount === 0) {
+  //     // Don't increase Mudra recast under Kassatsu
+  //     addRecast({ actionName: 'Mudra 1', recast: checkRecast({ actionName: 'Mudra 2' }) });
+  //     addRecast({ actionName: 'Mudra 2', recast: checkRecast({ actionName: 'Mudra 2' }) + 20000 });
+  //   }
+  //   mudraCount += 1;
+  // } else if (ninjutsu.includes(actionName)) {
+  //   mudraCount = 0;
+
+  //   // Probably safe to remove this regardless of what actually happens
+  //   removeStatus({ statusName: 'Kassatsu' });
+
+  //   if (duration[propertyName]) { addStatus({ statusName: actionName }); }
+
+  //   if (checkStatus({ statusName: 'Ten Chi Jin' }) > 0) {
+  //     tenchijinCount += 1;
+  //     if (tenchijinCount >= 3) {
+  //       removeStatus({ statusName: 'Ten Chi Jin' });
+  //       tenchijinCount = 0;
+  //     }
+  //   } else {
+  //     tenchijinCount = 0;
+  //   }
+
+  //   // Set gcd delay for ninjutsu (or final ninjutsu of TCJ)
+  //   if (checkStatus({ statusName: 'Ten Chi Jin' }) < 0) {
+  //     ninNextAction({ delay: 1500 });
+  //   }
+  // } else if (abilities.includes(actionName)) {
+  //   if (recast[propertyName]) { addRecast({ actionName }); }
+  //   if (duration[propertyName]) { addStatus({ statusName: actionName }); }
+
+  //   if (actionName === 'Trick Attack') {
+  //     removeStatus({ statusName: 'Suiton' });
+  //     // ninNextAction();
+  //   } else if (level >= 30 && actionName === 'Hide') {
+  //     addRecast({ actionName: 'Mudra 1', recast: -1 });
+  //     addRecast({ actionName: 'Mudra 2', recast: -1 });
+  //     ninNextAction();
+  //   } else if (actionName === 'Kassatsu') {
+  //     // ninNextAction();
+  //   } else if (actionName === 'Dream Within A Dream') {
+  //     if (level >= 60) { addStatus({ statusName: 'Assassinate Ready' }); }
+  //   } else if (actionName === 'Assassinate') {
+  //     removeStatus({ statusName: 'Assassinate Ready' });
+  //   } else if (actionName === 'Ten Chi Jin') {
+  //     tenchijinCount = 0;
+  //     // Don't call next action here since the next actions are pretty much decided
+  //   } else if (actionName === 'Meisui') {
+  //     removeStatus({ statusName: 'Suiton' });
+  //     // ninNextAction();
+  //   }
+  // }
 };
 
 ninNextAction = ({
@@ -541,18 +561,8 @@ ninNextNinjutsu = ({
 ninNextOGCD = ({
   weave, ninki, ninkiTarget, loopRecast, loopStatus,
 } = {}) => {
-  const { duration } = nextActionOverlay;
-  const { recast } = nextActionOverlay;
-  const { level } = playerData;
-  const zeroTime = 100 + 1250 * (weave - 1);
-
-  let { gcd } = nextActionOverlay;
-  if (loopStatus.huton > zeroTime) {
-    gcd *= 0.85;
-  }
-
   // Prioritize these actions if the related buff is about to wear off for some reason
-  if (loopStatus.suiton > zeroTime && loopStatus.suiton < gcd * 2) {
+  if (checkStatusDuration({ name: 'Suiton', statusArray })) {
     if (loopRecast.trickattack < zeroTime) { return 'Trick Attack'; }
 
     if (level >= 72 && loopStatus.suiton < loopRecast.trickattack && ninki < ninkiTarget
@@ -618,139 +628,7 @@ ninNextOGCD = ({
   return '';
 };
 
-ninActionMatch = (actionMatch) => {
-  const singletargetActions = [
-    'Raiton', 'Hyosho Ranryu',
-  ];
 
-  // Shortens some stuff
-  const { duration } = nextActionOverlay;
-  const { recast } = nextActionOverlay;
-  // const targetID = actionMatch.groups.targetID;
-  const { weaponskills } = actionList;
-  const { abilities } = actionList;
-  const { mudra } = actionList;
-  const { ninjutsu } = actionList;
-  const { level } = playerData;
-  const { huton } = playerData;
-
-  // Shorten common functions
-  const { addStatus } = nextActionOverlay;
-  const { checkStatus } = nextActionOverlay;
-  const { removeStatus } = nextActionOverlay;
-  const { addRecast } = nextActionOverlay;
-  const { checkRecast } = nextActionOverlay;
-
-  const { actionName } = actionMatch.groups;
-  const { comboCheck } = actionMatch.groups;
-
-  // Remove icon before reflow
-  NEWremoveIcon({ name: actionName });
-
-  // Set GCD based on Huton
-  let hutonModifier = 1;
-  if (huton >= 0) {
-    hutonModifier = 0.85;
-  }
-
-  const gcd = gcd * hutonModifier;
-
-  if (singletargetActions.includes(actionName)) {
-    targetCount = 1;
-  }
-
-  const propertyName = actionName.replace(/[\s':-]/g, '').toLowerCase();
-
-  // Set recast
-  if (mudra.includes(actionName) && mudraCount === 0 && checkStatus({ statusName: 'Kassatsu' }) < 0) {
-    // Don't increase Mudra recast under Kassatsu
-    addRecast({ actionName: 'Mudra 1', recast: checkRecast({ actionName: 'Mudra 2' }) });
-    addRecast({ actionName: 'Mudra 2', recast: checkRecast({ actionName: 'Mudra 2' }) + 20000 });
-    mudraCount += 1;
-  } else if (recast[propertyName]) { addRecast({ actionName }); }
-
-  // Set duration
-  if (duration[propertyName]) { addStatus({ statusName: actionName }); }
-
-  if (weaponskills.includes(actionName)) {
-    // Combo
-    if (comboCheck && ((level >= 4 && actionName === 'Spinning Edge')
-    || (level >= 26 && actionName === 'Gust Slash')
-    || (level >= 52 && actionName === 'Death Blossom'))) {
-      addStatus({ statusName: 'Combo' });
-      comboStep = actionName;
-    } else {
-      removeStatus({ statusName: 'Combo' });
-      comboStep = '';
-    }
-
-    // Add recasts
-    if (actionName === 'Shadow Fang') {
-      addRecast({ actionName: 'Shadow Fang', recast: recast.shadowfang * hutonModifier });
-      // Since Shadow Fang can't be on more than one target anyway, treat it like a buff
-    } else if (recast[propertyName]) { addRecast({ actionName }); }
-
-    // Add durations
-    if (duration[propertyName]) { addStatus({ statusName: actionName }); }
-
-    ninNextAction({ delay: gcd });
-  } else if (mudra.includes(actionName)) {
-    if (checkStatus({ statusName: 'Kassatsu' }) > 0) {
-      // Nothing
-    } else if (mudraCount === 0) {
-      // Don't increase Mudra recast under Kassatsu
-      addRecast({ actionName: 'Mudra 1', recast: checkRecast({ actionName: 'Mudra 2' }) });
-      addRecast({ actionName: 'Mudra 2', recast: checkRecast({ actionName: 'Mudra 2' }) + 20000 });
-    }
-    mudraCount += 1;
-  } else if (ninjutsu.includes(actionName)) {
-    mudraCount = 0;
-
-    // Probably safe to remove this regardless of what actually happens
-    removeStatus({ statusName: 'Kassatsu' });
-
-    if (duration[propertyName]) { addStatus({ statusName: actionName }); }
-
-    if (checkStatus({ statusName: 'Ten Chi Jin' }) > 0) {
-      tenchijinCount += 1;
-      if (tenchijinCount >= 3) {
-        removeStatus({ statusName: 'Ten Chi Jin' });
-        tenchijinCount = 0;
-      }
-    } else {
-      tenchijinCount = 0;
-    }
-
-    // Set gcd delay for ninjutsu (or final ninjutsu of TCJ)
-    if (checkStatus({ statusName: 'Ten Chi Jin' }) < 0) {
-      ninNextAction({ delay: 1500 });
-    }
-  } else if (abilities.includes(actionName)) {
-    if (recast[propertyName]) { addRecast({ actionName }); }
-    if (duration[propertyName]) { addStatus({ statusName: actionName }); }
-
-    if (actionName === 'Trick Attack') {
-      removeStatus({ statusName: 'Suiton' });
-      // ninNextAction();
-    } else if (level >= 30 && actionName === 'Hide') {
-      addRecast({ actionName: 'Mudra 1', recast: -1 });
-      addRecast({ actionName: 'Mudra 2', recast: -1 });
-      ninNextAction();
-    } else if (actionName === 'Kassatsu') {
-      // ninNextAction();
-    } else if (actionName === 'Dream Within A Dream') {
-      if (level >= 60) { addStatus({ statusName: 'Assassinate Ready' }); }
-    } else if (actionName === 'Assassinate') {
-      removeStatus({ statusName: 'Assassinate Ready' });
-    } else if (actionName === 'Ten Chi Jin') {
-      tenchijinCount = 0;
-      // Don't call next action here since the next actions are pretty much decided
-    } else if (actionName === 'Meisui') {
-      removeStatus({ statusName: 'Suiton' });
-      // ninNextAction();
-    }
-  }
-};
 
 ninStatusMatch = (statusMatch) => {
   const { addStatus } = nextActionOverlay;

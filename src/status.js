@@ -1,159 +1,250 @@
-/* global playerData statusData statusArray  */
+/* global currentPlayerData statusData */
 
-const setStatus = ({
+const addStatus = ({
   name,
-  targetID = playerData.id,
-  sourceID = playerData.id,
+  targetID = currentPlayerData.id,
+  sourceID = currentPlayerData.id,
   duration,
-  stacks = 0,
-  array = statusArray,
+  stacks,
+  statusArray,
 } = {}) => {
-  if (name === undefined) { return; }
-  let arrayIndex = array.findIndex(
-    (element) => element.name === name
-    && element.targetID === targetID
-    && element.sourceID === sourceID,
-  );
+  // Function should return array index of status
+
+  if (name === undefined) {
+    // eslint-disable-next-line no-console
+    console.log('addStatus: name is undefined');
+    return -1;
+  }
+
+  if (statusArray === undefined) {
+    // eslint-disable-next-line no-console
+    console.log('addStatus: statusArray is undefined');
+    return -1;
+  }
 
   const statusDataIndex = statusData.findIndex((element) => element.name === name);
   if (statusDataIndex === -1) {
     // eslint-disable-next-line no-console
-    console.log(`Could not find ${name} in statusData array`);
-    return;
+    console.log(`addStatus: ${name} not in statusData array`);
+    return -1;
   }
-  let newDuration;
+
+  let newDurationMilliseconds; // Conversion for array use
   if (duration === undefined) {
     // Get default duration if recast not provided
-    newDuration = statusData[statusDataIndex].duration * 1000 + Date.now();
+    newDurationMilliseconds = statusData[statusDataIndex].duration * 1000;
   } else {
     // Use provided recast
-    newDuration = duration * 1000 + Date.now();
+    newDurationMilliseconds = duration * 1000;
   }
 
-  let newStacks;
-  if (stacks === undefined) {
-    newStacks = statusData[statusDataIndex].stacks;
-  } else { newStacks = stacks; }
+  // Create timestamp value for array
+  const newDurationTimestamp = newDurationMilliseconds + Date.now();
 
-  if (arrayIndex > -1) {
+  // let newStacks;
+  // if (stacks !== undefined) {
+  //   newStacks = stacks;
+  // } else if (statusData[statusDataIndex].stacks !== undefined) {
+  //   // Get default value of stacks if this exists
+  //   newStacks = statusData[statusDataIndex].stacks;
+  // }
+
+  // Look for matching entry
+  let statusArrayIndex = statusArray.findIndex(
+    (element) => element.name === name
+    && element.targetID === targetID && element.sourceID === sourceID,
+  );
+
+  if (statusArrayIndex > -1) {
+    // Adjust existing timestamp if existing element found
     // eslint-disable-next-line no-param-reassign
-    array[arrayIndex].duration = newDuration;
-    if (newStacks) {
-      // eslint-disable-next-line no-param-reassign
-      array[arrayIndex].stacks = newStacks;
-    // eslint-disable-next-line no-param-reassign
-    } else { delete array[arrayIndex].stacks; }
+    statusArray[statusArrayIndex].duration = newDurationTimestamp;
+    // if (newStacks !== undefined) {
+    //   // Assign stacks if set
+    //   // eslint-disable-next-line no-param-reassign
+    //   statusArray[statusArrayIndex].stacks = newStacks;
+    // }
   } else {
-    // Add new ID and status to durations array
-    arrayIndex = array.push({
-      name, targetID, sourceID, duration: newDuration,
+    // Add new ID and status to array
+    statusArrayIndex = statusArray.push({
+      name, targetID, sourceID, duration: newDurationTimestamp,
     });
+    // if (newStacks !== undefined) {
+    // Add stacks if defined
     // eslint-disable-next-line no-param-reassign
-    if (newStacks) { array[arrayIndex].stacks = newStacks; }
+    // statusArray[statusArrayIndex].stacks = newStacks;
+    // }
   }
+
+  return statusArrayIndex;
 };
 
 // eslint-disable-next-line no-unused-vars
 const removeStatus = ({
   name,
-  targetID = playerData.id,
-  sourceID = playerData.id,
-  array = statusArray,
+  targetID = currentPlayerData.id,
+  sourceID = currentPlayerData.id,
+  statusArray,
 } = {}) => {
+  if (name === undefined) {
+    // eslint-disable-next-line no-console
+    console.log('removeStatus: name is undefined');
+    return;
+  }
+
+  if (statusArray === undefined) {
+    // eslint-disable-next-line no-console
+    console.log('removeStatus: statusArray is undefined');
+    return;
+  }
+
+  const statusDataIndex = statusData.findIndex((element) => element.name === name);
+  if (statusDataIndex === -1) {
+    // eslint-disable-next-line no-console
+    console.log(`removeStatus: ${name} not in statusData array`);
+    return;
+  }
+
   // Just "sets" status with duration 0
-  setStatus({
-    name, targetID, sourceID, duration: 0, stacks: 0, array,
+  const statusArrayIndex = addStatus({
+    name, targetID, sourceID, duration: 0, statusArray,
   });
+
+  // // Set stacks to 0 if needed
+  // if (statusArrayIndex > -1) {
+  //   if (statusArray[statusArrayIndex].stacks !== undefined) {
+  //     // eslint-disable-next-line no-param-reassign
+  //     statusArray[statusArrayIndex].stacks = 0;
+  //   }
+  // }
 };
 
 // eslint-disable-next-line no-unused-vars
-const getStatusDuration = ({
+const checkStatusDuration = ({
   name,
-  targetID = playerData.id,
-  sourceID = playerData.id,
-  array = statusArray,
+  targetID = currentPlayerData.id,
+  sourceID = currentPlayerData.id,
+  statusArray,
 } = {}) => {
-  if (!name) { return 0; }
+  if (name === undefined) {
+    // eslint-disable-next-line no-console
+    console.log('checkStatusDuration: name is undefined');
+    return null;
+  }
 
-  const arrayIndex = array.findIndex(
+  if (statusArray === undefined) {
+    // eslint-disable-next-line no-console
+    console.log('checkStatusDuration: statusArray is undefined');
+    return null;
+  }
+
+  const statusDataIndex = statusData.findIndex((element) => element.name === name);
+  if (statusDataIndex === -1) {
+    // eslint-disable-next-line no-console
+    console.log(`checkStatusDuration: ${name} not in statusData array`);
+    return null;
+  }
+
+  const statusArrayIndex = statusArray.findIndex(
     (element) => element.name === name
     && element.targetID === targetID
     && element.sourceID === sourceID,
   );
 
-  if (arrayIndex > -1) {
+  if (statusArrayIndex > -1) {
     // Returns seconds
-    const statusDuration = (array[arrayIndex].duration - Date.now()) / 1000;
+    const statusDuration = (statusArray[statusArrayIndex].duration - Date.now()) / 1000;
     return statusDuration;
   }
 
+  // Not found in array
   return 0;
 };
 
 // eslint-disable-next-line no-unused-vars
-const setStatusStacks = ({
+const checkStatusStacks = ({
   name,
-  targetID = playerData.id,
-  sourceID = playerData.id,
-  array = statusArray,
-  stacks,
+  targetID = currentPlayerData.id,
+  sourceID = currentPlayerData.id,
+  statusArray,
 } = {}) => {
-  if (!name) { return; }
-  const i = array.findIndex(
-    (e) => e.name === name && e.targetID === targetID && e.sourceID === sourceID,
+  if (name === undefined) {
+    // eslint-disable-next-line no-console
+    console.log('checkStatusStacks: name is undefined');
+    return null;
+  }
+
+  if (statusArray === undefined) {
+    // eslint-disable-next-line no-console
+    console.log('checkStatusStacks: statusArray is undefined');
+    return null;
+  }
+
+  const statusDataIndex = statusData.findIndex((element) => element.name === name);
+  if (statusDataIndex === -1) {
+    // eslint-disable-next-line no-console
+    console.log(`checkStatusStacks: ${name} not in statusData array`);
+    return null;
+  }
+
+  const statusArrayIndex = statusArray.findIndex(
+    (element) => element.name === name
+    && element.targetID === targetID && element.sourceID === sourceID,
   );
 
-  if (i > -1) {
+  let statusStacks;
+  if (statusArrayIndex > -1) {
     // eslint-disable-next-line no-param-reassign
-    array[i].stacks = stacks;
+    statusStacks = statusArray[statusArrayIndex].stacks;
+  } else {
+    statusStacks = null;
   }
+
+  return statusStacks;
 };
 
 // eslint-disable-next-line no-unused-vars
-const useStatusStacks = ({
+const removeStatusStacks = ({
   name,
-  targetID = playerData.id,
-  sourceID = playerData.id,
-  array = statusArray,
+  targetID = currentPlayerData.id,
+  sourceID = currentPlayerData.id,
+  stacks = 1,
+  statusArray,
 } = {}) => {
-  if (!name) { return; }
-  // console.log(`useStatusStacks array: ${JSON.stringify(array)}`);
+  if (name === undefined) {
+    // eslint-disable-next-line no-console
+    console.log('removeStatusStacks: name is undefined');
+    return;
+  }
 
-  const arrayIndex = array.findIndex(
+  if (statusArray === undefined) {
+    // eslint-disable-next-line no-console
+    console.log('removeStatusStacks: statusArray is undefined');
+    return;
+  }
+
+  const statusDataIndex = statusData.findIndex((element) => element.name === name);
+  if (statusDataIndex === -1) {
+    // eslint-disable-next-line no-console
+    console.log(`removeStatusStacks: ${name} not in statusData array`);
+    return;
+  }
+
+  const statusArrayIndex = statusArray.findIndex(
     (element) => element.name === name
     && element.targetID === targetID
     && element.sourceID === sourceID,
   );
 
-  if (arrayIndex === -1) { return; }
-
   // eslint-disable-next-line no-param-reassign
-  if (arrayIndex > -1) { array[arrayIndex].stacks -= 1; }
+  if (statusArrayIndex > -1) {
+    // eslint-disable-next-line max-len, no-param-reassign
+    statusArray[statusArrayIndex].stacks = Math.max(statusArray[statusArrayIndex].stacks - stacks, 0);
+  } else { return; }
 
-  if (array[arrayIndex].stacks <= 0) {
+  if (statusArray[statusArrayIndex].stacks <= 0) {
     removeStatus({
-      name, targetID, sourceID, array,
+      name, targetID, sourceID, statusArray,
     });
   }
-};
-
-// eslint-disable-next-line no-unused-vars
-const getStatusStacks = ({
-  name,
-  targetID = playerData.id,
-  sourceID = playerData.id,
-  array = statusArray,
-} = {}) => {
-  if (!name) { return 0; }
-  const i = array.findIndex(
-    (e) => e.name === name && e.targetID === targetID && e.sourceID === sourceID,
-  );
-
-  if (i > -1) {
-    // eslint-disable-next-line no-param-reassign
-    if (array[i].duration <= 0) { array[i].stacks = 0; }
-    return array[i].stacks;
-  }
-
-  return 0;
 };

@@ -24,16 +24,16 @@ const baseActionData = [
     affinity: 'NIN',
     type: 'Weaponskill',
     level: 1,
-    icon: '',
+    icon: '000601',
   },
 
-  {
-    name: 'Shade Shift',
-    affinity: 'NIN',
-    recast: 120,
-    level: 2,
-    icon: '',
-  },
+  // {
+  //   name: 'Shade Shift',
+  //   affinity: 'NIN',
+  //   recast: 120,
+  //   level: 2,
+  //   icon: '',
+  // },
 
   {
     name: 'Gust Slash',
@@ -41,7 +41,7 @@ const baseActionData = [
     type: 'Weaponskill',
     level: 4,
     comboAction: 'Spinning Edge',
-    icon: '',
+    icon: '000602',
   },
 
   {
@@ -49,23 +49,23 @@ const baseActionData = [
     affinity: 'NIN',
     recast: 20,
     level: 10,
-    icon: '',
+    icon: '000609',
   },
 
-  {
-    name: 'Throwing Dagger',
-    affinity: 'NIN',
-    type: 'Weaponskill',
-    level: 15,
-    icon: '',
-  },
+  // {
+  //   name: 'Throwing Dagger',
+  //   affinity: 'NIN',
+  //   type: 'Weaponskill',
+  //   level: 15,
+  //   icon: '',
+  // },
 
   {
     name: 'Mug',
     affinity: 'NIN',
     recast: 120,
     level: 15,
-    icon: '',
+    icon: '000613',
   },
 
   {
@@ -73,7 +73,7 @@ const baseActionData = [
     affinity: 'NIN',
     recast: 60,
     level: 1,
-    icon: '',
+    icon: '000618',
   },
 
   {
@@ -82,7 +82,7 @@ const baseActionData = [
     type: 'Weaponskill',
     level: 26,
     comboAction: 'Gust Slash',
-    icon: '',
+    icon: '000605',
   },
 
   // Probably need to do something special for Mudra, all those inputs would be super annoying
@@ -92,7 +92,7 @@ const baseActionData = [
     affinity: 'NIN',
     type: 'Weaponskill',
     level: 38,
-    icon: '',
+    icon: '000615',
   },
 
   {
@@ -100,7 +100,7 @@ const baseActionData = [
     affinity: 'NIN',
     recast: 60,
     level: 40,
-    icon: '',
+    icon: '000612',
   },
 
   {
@@ -109,7 +109,7 @@ const baseActionData = [
     recast: 60,
     level: 50,
     status: 'Kassatsu',
-    icon: '',
+    icon: '002906',
   },
 
   {
@@ -118,7 +118,7 @@ const baseActionData = [
     type: 'Weaponskill',
     level: 52,
     comboAction: 'Death Blossom',
-    icon: '',
+    icon: '002923',
   },
 
   {
@@ -127,7 +127,7 @@ const baseActionData = [
     type: 'Weaponskill',
     level: 54,
     comboAction: 'Gust Slash',
-    icon: '',
+    icon: '002915',
   },
 
   {
@@ -135,7 +135,7 @@ const baseActionData = [
     affinity: 'NIN',
     recast: 60,
     level: 56,
-    icon: '',
+    icon: '002918',
   },
 
   {
@@ -144,15 +144,7 @@ const baseActionData = [
     type: 'Weaponskill',
     level: 60,
     status: 'Huton',
-    icon: '',
-  },
-
-  {
-    name: 'Death Blossom',
-    affinity: 'NIN',
-    type: 'Weaponskill',
-    level: 38,
-    icon: '',
+    icon: '002928',
   },
 
   {
@@ -161,7 +153,7 @@ const baseActionData = [
     recast: 1,
     level: 62,
     ninkiCost: 50,
-    icon: '',
+    icon: '002920',
   },
 
   {
@@ -170,7 +162,7 @@ const baseActionData = [
     recast: 1,
     level: 68,
     ninkiCost: 50,
-    icon: '',
+    icon: '002921',
   },
 
   {
@@ -179,7 +171,7 @@ const baseActionData = [
     recast: 1,
     level: 70,
     status: 'Ten Chi Jin',
-    icon: '',
+    icon: '002922',
   },
 
   {
@@ -188,7 +180,7 @@ const baseActionData = [
     recast: 120,
     level: 72,
     ninki: 50,
-    icon: '',
+    icon: '002924',
   },
 
   {
@@ -196,8 +188,9 @@ const baseActionData = [
     affinity: 'NIN',
     recast: 90,
     level: 80,
+    status: 'Phantom Kamaitachi Ready', // Check later
     ninkiCost: 50,
-    icon: '',
+    icon: '002927',
   },
 
   {
@@ -205,7 +198,7 @@ const baseActionData = [
     affinity: 'NIN',
     type: 'Weaponskill',
     level: 82,
-    icon: '',
+    icon: '002929',
   },
 
   {
@@ -214,7 +207,7 @@ const baseActionData = [
     type: 'Weaponskill',
     level: 90,
     status: 'Fleeting Raiju Ready',
-    icon: '',
+    icon: '002931',
   },
 
   {
@@ -222,7 +215,7 @@ const baseActionData = [
     affinity: 'NIN',
     type: 'Weaponskill',
     level: 90,
-    icon: '',
+    icon: '002932',
   },
 
   {
@@ -230,7 +223,7 @@ const baseActionData = [
     affinity: 'NIN',
     recast: 1.5,
     level: 30,
-    icon: '',
+    icon: '002907',
   },
 
   {
@@ -238,7 +231,7 @@ const baseActionData = [
     affinity: 'NIN',
     recast: 1.5,
     level: 35,
-    icon: '',
+    icon: '002908',
   },
 
   {
@@ -246,7 +239,7 @@ const baseActionData = [
     affinity: 'NIN',
     recast: 1.5,
     level: 35,
-    icon: '',
+    icon: '002912',
   },
 
   {
@@ -254,7 +247,7 @@ const baseActionData = [
     affinity: 'NIN',
     recast: 1.5,
     level: 45,
-    icon: '',
+    icon: '002909',
   },
 
   {
@@ -262,7 +255,7 @@ const baseActionData = [
     affinity: 'NIN',
     recast: 1.5,
     level: 45,
-    icon: '',
+    icon: '002910',
   },
 
   {
@@ -270,7 +263,7 @@ const baseActionData = [
     affinity: 'NIN',
     recast: 1.5,
     level: 45,
-    icon: '',
+    icon: '002911',
   },
 
   {
@@ -278,7 +271,7 @@ const baseActionData = [
     affinity: 'NIN',
     recast: 1.5,
     level: 45,
-    icon: '',
+    icon: '002913',
   },
 
   {
@@ -286,7 +279,7 @@ const baseActionData = [
     affinity: 'NIN',
     recast: 1.5,
     level: 76,
-    icon: '',
+    icon: '002925',
   },
 
   {
@@ -294,7 +287,7 @@ const baseActionData = [
     affinity: 'NIN',
     recast: 1.5,
     level: 76,
-    icon: '',
+    icon: '002926',
   },
 
   // PLD
@@ -322,7 +315,7 @@ const baseActionData = [
     affinity: 'RDM',
     level: 1,
     type: 'Weaponskill',
-    icon: '',
+    icon: '003201',
   },
 
   {
@@ -537,7 +530,7 @@ const baseActionData = [
     type: 'Spell',
     cast: 10,
     mpCost: 2400,
-    icon: '',
+    icon: '003221',
   },
 
   {
@@ -643,7 +636,6 @@ const baseActionData = [
     type: 'Weaponskill',
     recast: 1.5,
     manaCost: 20,
-    manaStack: 1,
     icon: '003225',
   },
 
@@ -654,7 +646,6 @@ const baseActionData = [
     type: 'Weaponskill',
     recast: 1.5,
     manaCost: 15,
-    manaStack: 1,
     comboAction: 'Enchanted Riposte',
     icon: '003226',
   },
@@ -677,7 +668,6 @@ const baseActionData = [
     type: 'Weaponskill',
     recast: 1.5,
     manaCost: 20,
-    manaStack: 1,
     icon: '003228',
   },
 
@@ -1277,7 +1267,7 @@ const baseActionData = [
   //   level: 8,
   //   type: 'Ability',
   //   recast: 90,
-  //   icon: '',
+  //   icon: '000861',
   // },
 
   {
@@ -1285,7 +1275,7 @@ const baseActionData = [
     affinity: 'Magic Ranged DPS',
     level: 18,
     recast: 60,
-    icon: '',
+    icon: '000866',
   },
 
   {
@@ -1293,7 +1283,8 @@ const baseActionData = [
     affinity: 'Magic Ranged DPS',
     level: 24,
     recast: 60,
-    icon: '',
+    status: 'Lucid Dreaming',
+    icon: '000865',
   },
 
   // {
@@ -1317,7 +1308,10 @@ const baseStatusData = [
     name: 'Swiftcast',
     duration: 10,
   },
-
+  {
+    name: 'Lucid Dreaming',
+    duration: 21,
+  },
   {
     name: 'Acceleration',
     duration: 20,
@@ -1475,9 +1469,9 @@ const playerStatsData = [
 // ];
 
 // eslint-disable-next-line no-unused-vars
-const getActionProperty = ({ name, property } = {}) => {
-  const index = actionData.findIndex((e) => e.name === name);
-  if (index < 0) { return undefined; }
-  // if (actionData[index][property] === undefined) { return undefined; }
-  return actionData[index][property];
+const getActionDataProperty = ({ name, property } = {}) => {
+  const actionDataIndex = actionData.findIndex((e) => e.name === name);
+  if (actionDataIndex < 0) { return undefined; }
+  // if (actionData[actionDataIndex][property] === undefined) { return undefined; }
+  return actionData[actionDataIndex][property];
 };
