@@ -10,25 +10,25 @@
 let loopPlayerData = {}; let loopRecastArray = []; let loopStatusArray = [];
 
 // Loop finds the next this many actions
-const maxActions = 20;
+const maxActions = 100;
 
 // Just to make things easier on myself... maybe
 // eslint-disable-next-line no-unused-vars
-const loopActionMatch = ({
-  logType,
-  actionName,
-  targetID,
-} = {}) => {
-  actionMatch({
-    logType,
-    actionName,
-    targetID,
-    playerData: loopPlayerData,
-    recastArray: loopRecastArray,
-    statusArray: loopStatusArray,
-    loop: true,
-  });
-};
+// const loopActionMatch = ({
+//   logType,
+//   actionName,
+//   targetID,
+// } = {}) => {
+//   actionMatch({
+//     logType,
+//     actionName,
+//     targetID,
+//     playerData: loopPlayerData,
+//     recastArray: loopRecastArray,
+//     statusArray: loopStatusArray,
+//     loop: true,
+//   });
+// };
 
 const advanceLoopTime = ({
   time = 0, // In seconds
@@ -85,8 +85,6 @@ const startLoop = ({
   // }
 
   while (overlayArray.length <= maxActions) {
-    // console.log(JSON.stringify(overlayArray));
-
     if (ogcdWindow === 0) {
       let actionName;
 
@@ -103,6 +101,7 @@ const startLoop = ({
         // eslint-disable-next-line no-loop-func
         for (let index = 0; index < actionName.length - 1; index += 1) {
           // Push Mudra - all but last entry
+
           overlayArray.push({ name: actionName[index] });
           actionMatch({
             actionName: actionName[index],
@@ -112,15 +111,25 @@ const startLoop = ({
             loop: true,
           });
           // Advancing time for Mudras
-          advanceLoopTime({ time: 0.5 });
+          if (checkStatusDuration({ statusName: 'Ten Chi Jin', statusArray: loopStatusArray }) > 0) {
+            advanceLoopTime({ time: 1 });
+          } else {
+            advanceLoopTime({ time: 0.5 });
+          }
+
         }
+
+
         // Last entry (should be ninjutsu itself)
         overlayArray.push({ name: actionName[actionName.length - 1] });
         loopPlayerChanged({ actionName: actionName[actionName.length - 1] });
+
         addActionRecast({
           actionName: actionName[actionName.length - 1],
           recastArray: loopRecastArray,
         });
+
+
         actionMatch({
           actionName: actionName[actionName.length - 1],
           playerData: loopPlayerData,
@@ -128,13 +137,20 @@ const startLoop = ({
           statusArray: loopStatusArray,
           loop: true,
         });
+
+
+
         ogcdWindow = calculateDelay({
           actionName: actionName[actionName.length - 1],
           playerData: loopPlayerData,
           recastArray: loopRecastArray,
           statusArray: loopStatusArray,
         });
+
+
+
       } else {
+
         overlayArray.push({ name: actionName });
         setComboAction({
           actionName,
@@ -156,6 +172,7 @@ const startLoop = ({
           recastArray: loopRecastArray,
           statusArray: loopStatusArray,
         });
+
       }
       // Testing for errors here, comment out when ready?
       if (!ogcdWindow) {console.log(`startLoop: ${actionName} returned with no delay`); }
@@ -180,7 +197,9 @@ const startLoop = ({
           actionName = rdmLoopOGCDAction({ weaveCount });
         }
 
+        // Push into array
         if (actionName) {
+          overlayArray.push({ name: actionName, ogcd: true });
           actionMatch({
             actionName,
             playerData: loopPlayerData,
@@ -190,12 +209,6 @@ const startLoop = ({
           });
           addActionRecast({ actionName, recastArray: loopRecastArray });
           loopPlayerChanged({ actionName });
-        }
-
-        // Push into array
-        if (actionName) {
-          overlayArray.push({ name: actionName, ogcd: true });
-          loopActionMatch({ actionName });
         }
 
         // Increment for next weave (maximum 1 second)
@@ -216,29 +229,29 @@ const startLoop = ({
 };
 
 // eslint-disable-next-line no-unused-vars
-const loopCalculateDelay = ({
-  actionName,
-  playerData = loopPlayerData,
-  recastArray = loopRecastArray,
-  statusArray = loopStatusArray,
-} = {}) => {
-  const delay = calculateDelay({
-    actionName, playerData, recastArray, statusArray,
-  });
-  return delay;
-};
+// const loopCalculateDelay = ({
+//   actionName,
+//   playerData = loopPlayerData,
+//   recastArray = loopRecastArray,
+//   statusArray = loopStatusArray,
+// } = {}) => {
+//   const delay = calculateDelay({
+//     actionName, playerData, recastArray, statusArray,
+//   });
+//   return delay;
+// };
 
-const loopSetComboAction = ({
-  actionName,
-  playerData = loopPlayerData,
-  statusArray = loopStatusArray,
-} = {}) => {
-  setComboAction({
-    actionName,
-    playerData,
-    statusArray,
-  });
-};
+// const loopSetComboAction = ({
+//   actionName,
+//   playerData = loopPlayerData,
+//   statusArray = loopStatusArray,
+// } = {}) => {
+//   setComboAction({
+//     actionName,
+//     playerData,
+//     statusArray,
+//   });
+// };
 
 const loopPlayerChanged = ({
   actionName,

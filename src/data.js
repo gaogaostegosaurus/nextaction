@@ -75,6 +75,7 @@ const baseActionData = [
     affinity: 'NIN',
     recast: 60,
     level: 18,
+    status: 'Trick Attack',
     icon: '000618',
   },
 
@@ -176,7 +177,7 @@ const baseActionData = [
   {
     name: 'Ten Chi Jin',
     affinity: 'NIN',
-    recast: 1,
+    recast: 120,
     level: 70,
     status: 'Ten Chi Jin',
     icon: '002922',

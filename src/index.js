@@ -18,7 +18,7 @@ ninLoopGCDAction ninLoopOGCDAction
 
 // Maximum number of actions looked up
 // eslint-disable-next-line no-unused-vars
-const maxIcons = 20;
+const maxIcons = 10;
 
 const currentPlayerData = {};
 // eslint-disable-next-line no-unused-vars
@@ -58,7 +58,6 @@ addOverlayListener('onLogEvent', (e) => {
 
 // Possily switch to this? Don't know how it's different
 // addOverlayListener('LogLine', (data) => {
-//   console.log('other stuff');
 //   console.log(`line: ${data.line} | rawLine: ${data.rawLine}`);
 // });
 
@@ -251,9 +250,9 @@ const actionMatch = ({
   // setComboAction({ actionName });
 
   // Weird errors?
-  if (!playerData) { console.log('actionMatch: No playerData defined'); return 0; }
-  if (!recastArray) { console.log('actionMatch: No recastArray defined'); return 0; }
-  if (!statusArray) { console.log('actionMatch: No statusArray defined'); return 0; }
+  if (!playerData) { console.log('actionMatch: No playerData defined'); return; }
+  if (!recastArray) { console.log('actionMatch: No recastArray defined'); return; }
+  if (!statusArray) { console.log('actionMatch: No statusArray defined'); return; }
 
   // const actionDataIndex = actionData.findIndex((element) => element.name === actionName);
 
@@ -286,13 +285,10 @@ const actionMatch = ({
     });
   }
 
-  
-  
   // Start loop with certain things only
   if (!loop && checkStatusDuration({ statusName: 'Ten Chi Jin', statusArray }) === 0
   && ['Spell', 'Weaponskill', 'Ninjutsu'].includes(actionType)) {
     const delay = calculateDelay({ actionName });
-    // console.log(`Loop started with ${actionName}`);
     startLoop({ delay });
   }
 };
@@ -308,13 +304,13 @@ const statusMatch = ({
     stacks: statusStacks,
     statusArray: currentStatusArray,
   });
-  if (currentPlayerData.job === 'NIN') {
-    ninStatusMatch({ logType, statusName, sourceID });
-  } else if (currentPlayerData.job === 'RDM') { rdmStatusMatch({ logType, statusName, sourceID }); }
+  // if (currentPlayerData.job === 'NIN') {
+  //   ninStatusMatch({ logType, statusName, sourceID });
+  // } else
+  if (currentPlayerData.job === 'RDM') { rdmStatusMatch({ logType, statusName, sourceID }); }
 };
 
 const startsCastingMatch = ({ actionName } = {}) => {
-  // console.log(`Casting ${actionName}`);
   removeStatus({ statusName: 'Combo', statusArray: currentStatusArray });
 
   // Call loop again with casting parameter
@@ -453,7 +449,7 @@ const setComboAction = ({
   if (actionDataIndex === -1) { console.log(`setComboAction: ${actionName} not found`); return; }
   // if (!actionData[actionDataIndex].type || !actionData[actionDataIndex].comboBreak) {
 
-    if (!actionData[actionDataIndex].comboBreak) {
+  if (!actionData[actionDataIndex].comboBreak) {
     return; // Action will not affect combo
   }
 

@@ -1,5 +1,6 @@
 /* global currentPlayerData statusData */
 
+// eslint-disable-next-line no-unused-vars
 const addStatus = ({
   statusName,
   targetID = currentPlayerData.id,
@@ -44,7 +45,7 @@ const addStatus = ({
   let newStacks;
   if (stacks) {
     newStacks = stacks;
-  } else if (statusData[statusDataIndex].stacks !== undefined) {
+  } else if (statusData[statusDataIndex].stacks) {
     // Get default value of stacks if this exists
     newStacks = statusData[statusDataIndex].stacks;
   }
@@ -59,13 +60,20 @@ const addStatus = ({
     // Adjust existing timestamp if existing element found
     // eslint-disable-next-line no-param-reassign
     statusArray[statusArrayIndex].duration = newDurationTimestamp;
+    if (newStacks) {
+      // eslint-disable-next-line no-param-reassign
+      statusArray[statusArrayIndex].stacks = newStacks;
+    }
     // if (newStacks !== undefined) {
     //   // Assign stacks if set
     //   // eslint-disable-next-line no-param-reassign
     //   statusArray[statusArrayIndex].stacks = newStacks;
     // }
+  } else if (newStacks) {
+    statusArray.push({
+      name: statusName, targetID, sourceID, duration: newDurationTimestamp, stacks: newStacks,
+    });
   } else {
-    // Add new ID and status to array
     statusArray.push({
       name: statusName, targetID, sourceID, duration: newDurationTimestamp,
     });
@@ -108,9 +116,11 @@ const removeStatus = ({
     && element.targetID === targetID && element.sourceID === sourceID,
   );
   
-  statusArray.splice(statusArrayIndex, 1);
+  if (statusArrayIndex > -1) {
+    statusArray.splice(statusArrayIndex, 1);
+  }
   // // Set stacks to 0 if needed
-  // if (statusArrayIndex > -1) {
+  
   //   if (statusArray[statusArrayIndex].stacks !== undefined) {
   //     // eslint-disable-next-line no-param-reassign
   //     statusArray[statusArrayIndex].stacks = 0;
@@ -159,7 +169,8 @@ const checkStatusDuration = ({
     // Remove if status is zero and allow return zero at buttom
     removeStatus({
       statusName, targetID, sourceID, statusArray,
-    });  }
+    });
+  }
 
   return 0;
 };
@@ -201,7 +212,8 @@ const checkStatusStacks = ({
     if (statusStacks > 0) { return statusStacks; }
     removeStatus({
       statusName, targetID, sourceID, statusArray,
-    });  }
+    });
+  }
 
   return 0;
 };

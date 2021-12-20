@@ -14,6 +14,8 @@ const ninActionMatch = ({
   recastArray,
   statusArray,
 } = {}) => {
+
+
   const actionType = getActionDataProperty({ actionName, property: 'type' });
 
   // Ninjutsu is so damn annoying
@@ -25,11 +27,14 @@ const ninActionMatch = ({
     addStatus({ statusName: 'Mudra', statusArray });
   }
 
+
+
   if (actionType === 'Ninjutsu') {
     // Remove Mudra/Kassatsu/TCJ on Ninjutsu activation
     removeStatus({ statusName: 'Mudra', statusArray });
     removeStatus({ statusName: 'Kassatsu', statusArray });
     removeStatusStacks({ statusName: 'Ten Chi Jin', statusArray });
+
     if (actionName === 'Doton') {
       addStatus({ statusName: 'Doton', statusArray });
     } else if (actionName === 'Suiton') {
@@ -37,13 +42,15 @@ const ninActionMatch = ({
     }
   }
 
+
+
   if (actionName === 'Hide') {
     // Hide reset
     resetActionRecast({ actionName: 'Mudra', recastArray });
   } else if (actionName === 'Trick Attack') {
     // "Self-buff" to simplify alignment calculations
-    addStatus({ statusName: 'Trick Attack', statusArray });
     removeStatus({ statusName: 'Suiton', statusArray });
+    addStatus({ statusName: 'Trick Attack', statusArray });
   } else if (actionName === 'Kassatsu') {
     addStatus({ statusName: 'Kassatsu', statusArray });
   } else if (actionName === 'Ten Chi Jin') {
@@ -89,6 +96,7 @@ const ninLoopGCDAction = (
 ) => {
   const { comboAction } = playerData;
   const { huton } = playerData;
+  const { level } = playerData;
 
   const gustSlashAcquired = actionData.some((element) => element.name === 'Gust Slash');
   const aeolianEdgeAcquired = actionData.some((element) => element.name === 'Aeolian Edge');
@@ -120,18 +128,21 @@ const ninLoopGCDAction = (
   // Put Huton up if it's not
   if (mudraRecast < 20 && huton === 0) { return ['Chi', 'Jin', 'Ten', 'Huton']; }
 
+  // TCJ?
+  if (tenChiJinStatus > 0) { return ['Fuma Shuriken', 'Raiton', 'Suiton']; }
+
   // Trick Attack priority
   if (trickAttackStatus > 0) {
-    if (kassatsuStatus > 0) { return ['Ten', 'Jin', 'Hyosho Ranryu']; }
-    if (tenChiJinStatus > 0) { return ['Fuma Shuriken', 'Raiton', 'Suiton']; }
-    // if (bunshinStatus > 0) { return 'Phantom Kamaitachi'; }
+    if (kassatsuStatus > 0) {
+      if (level >= 76) { return ['Ten', 'Jin', 'Hyosho Ranryu']; } return ['Ten', 'Chi', 'Raiton'];
+    }
+    if (phantomKamaitachiReadyStatus > 0) { return 'Phantom Kamaitachi'; }
     if (fleetingRaijuStatus > 0) { return 'Fleeting Raiju'; }
     if (forkedRaijuStatus > 0) { return 'Forked Raiju'; }
     if (mudraRecast < 20) { return ['Ten', 'Chi', 'Raiton']; } // Dump Mudras during TA
   }
 
   // TCJ
-  if (tenChiJinStatus > 0) { return ['Fuma Shuriken', 'Raiton', 'Suiton']; }
 
   // Prep for Trick Attack
   if (mudraRecast < 20 && suitonAcquired && suitonStatus <= trickAttackRecast && trickAttackRecast < 20) { return ['Ten', 'Chi', 'Jin', 'Suiton']; }
@@ -194,7 +205,7 @@ const ninLoopOGCDAction = ({
   if (ninki <= 50 && mugRecast < 1) { return 'Mug'; }
 
   // Kassatsu right before Trick Attack
-  if (kassatsuRecast < 1 && (trickAttackRecast < 10 || trickAttackStatus > 0)) { return 'Kassatsu'; }
+  if (kassatsuRecast < 1 && (trickAttackRecast < suitonStatus || trickAttackStatus > 0)) { return 'Kassatsu'; }
 
   // Trick Attack
   if (suitonStatus > 0 && trickAttackRecast < 1) { return 'Trick Attack'; }

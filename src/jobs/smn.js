@@ -25,7 +25,7 @@ const smnActionMatch = ({
   if (actionType === 'Ninjutsu') {
     // Remove Mudra/Kassatsu/TCJ on Ninjutsu activation
     removeStatus({ statusName: 'Kassatsu', statusArray });
-    removeStatusStacks({ statusName: 'Ten Chi Jin', statusArray });
+    // removeStatusStacks({ statusName: 'Ten Chi Jin', statusArray });
     if (actionName === 'Doton') {
       addStatus({ statusName: 'Doton', statusArray });
     } else if (actionName === 'Suiton') {
@@ -38,8 +38,8 @@ const smnActionMatch = ({
     addActionRecast({ actionName: 'Mudra', recast: 0, recastArray });
   } else if (actionName === 'Trick Attack') {
     // "Self-buff" to simplify alignment calculations
-    addStatus({ statusName: 'Trick Attack', statusArray });
     removeStatus({ statusName: 'Suiton', statusArray });
+    addStatus({ statusName: 'Trick Attack', statusArray });
   } else if (actionName === 'Kassatsu') {
     addStatus({ statusName: 'Kassatsu', statusArray });
   } else if (actionName === 'Ten Chi Jin') {
@@ -50,6 +50,8 @@ const smnActionMatch = ({
 const smnLoopGCDAction = ({
   
 }) => {
+  const aetherchargeRecast = checkActionRecast({ actionName: 'Aethercharge', })
+  if ()
   return 'Summon Bahamut';
   return 'Ruin III';
 };

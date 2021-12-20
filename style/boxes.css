@@ -1,6 +1,8 @@
 
 .next {
   display: block;
+  transform: scale(0.75);
+  transform-origin: top left;
 }
 
 .next-show {
