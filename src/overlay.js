@@ -127,17 +127,18 @@ const unfadeIcon = ({ // Undos fadeAction effect
 };
 
 // eslint-disable-next-line no-unused-vars
-const removeIcon = ({ name } = {}) => {
-  if (name === undefined) { return; }
+const removeIcon = ({ actionName } = {}) => {
+  if (actionName === undefined) { return; }
 
   // Removes first instance of action and then syncs array, technically?
-  const actionName = name;
   const overlayArrayIndex = overlayArray.findIndex((element) => element.name === actionName);
   if (overlayArrayIndex > -1) {
     overlayArray.splice(overlayArrayIndex, 1);
     syncOverlay();
   }
 };
+
+
 
 // eslint-disable-next-line no-unused-vars
 // const removeIcon = ({

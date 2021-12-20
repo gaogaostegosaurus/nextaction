@@ -9,80 +9,13 @@ addStatus removeStatus checkStatusDuration
 */
 
 // eslint-disable-next-line no-unused-vars
-const rdmTraits = () => {
-  const { level } = currentPlayerData;
-
-  if (level >= 62) {
-    const actionDataIndex = actionData.findIndex((element) => element.name === 'Jolt');
-    actionData.splice(actionDataIndex, 1);
-  }
-
-  if (level >= 66) {
-    const actionDataIndex = actionData.findIndex((element) => element.name === 'Scatter');
-    actionData.splice(actionDataIndex, 1);
-  }
-
-  if (level >= 68) {
-    let actionDataIndex;
-    actionDataIndex = actionData.findIndex((element) => element.name === 'Enchanted Riposte');
-    actionData[actionDataIndex].manaStacks = 1;
-    actionDataIndex = actionData.findIndex((element) => element.name === 'Enchanted Zwerchhau');
-    actionData[actionDataIndex].manaStacks = 1;
-    actionDataIndex = actionData.findIndex((element) => element.name === 'Enchanted Redoublement');
-    actionData[actionDataIndex].manaStacks = 1;
-    actionDataIndex = actionData.findIndex((element) => element.name === 'Enchanted Moulinet');
-    actionData[actionDataIndex].manaStacks = 1;
-  }
-
-  if (level >= 74) {
-    const actionDataIndex = actionData.findIndex((element) => element.name === 'Manafication');
-    actionData[actionDataIndex].recast = 110;
-    actionData[actionDataIndex].status = 'Manafication';
-
-    const statusDataIndex = statusData.findIndex((element) => element.name === 'Manafication');
-    statusData[statusDataIndex].stacks = 4;
-  }
-
-  if (level >= 78) {
-    const actionDataIndex = actionData.findIndex((element) => element.name === 'Contre Sixte');
-    actionData[actionDataIndex].recast = 35000;
-  }
-
-  if (level >= 80) {
-    const statusDataIndex = statusData.findIndex((element) => element.name === 'Manafication');
-    statusData[statusDataIndex].stacks = 5;
-  }
-
-  if (level >= 88) {
-    const actionDataIndex = actionData.findIndex((element) => element.name === 'Acceleration');
-    actionData[actionDataIndex].charges = 2;
-  }
-
-  if (level >= 90) {
-    const statusDataIndex = statusData.findIndex((element) => element.name === 'Manafication');
-    statusData[statusDataIndex].stacks = 6;
-  }
-
-  // console.log(`Actions: ${JSON.stringify(actionData)}`);
-  // console.log(`Actions: ${JSON.stringify(statusData)}`);
-};
-
-// eslint-disable-next-line no-unused-vars
-const rdmPlayerChanged = (e) => {
-  currentPlayerData.mp = e.detail.currentMP;
-  currentPlayerData.blackMana = e.detail.jobDetail.blackMana;
-  currentPlayerData.whiteMana = e.detail.jobDetail.whiteMana;
-  currentPlayerData.manaStacks = e.detail.jobDetail.manaStacks;
-  // console.log(`rdmPlayerChanged: ${currentPlayerData.blackMana}|${currentPlayerData.whiteMana}|${currentPlayerData.manaStacks}`);
-};
-
-// eslint-disable-next-line no-unused-vars
 const rdmActionMatch = ({
   // logType, // Use for AoE checker?
   actionName,
   // targetID, // Not used (yet?)
   loop = false,
 } = {}) => {
+  // Function returns gcd delay
   if (actionName === undefined) { return 0; }
 
   let playerData;
@@ -98,6 +31,14 @@ const rdmActionMatch = ({
     recastArray = currentRecastArray;
     statusArray = currentStatusArray;
   }
+
+  const { gcd } = playerData;
+  const accelerationSpells = ['Verthunder', 'Veraero', 'Scatter', 'Verthunder III', 'Aero III', 'Impact'];
+  const actionCast = getActionDataProperty({ actionName, property: 'cast' });
+  // const actionRecast = getActionProperty({ actionName, property: 'recast' });
+  const actionType = getActionDataProperty({ actionName, property: 'type' });
+
+  let delay = 0;
 
   // Identify probable target count
 
@@ -119,43 +60,32 @@ const rdmActionMatch = ({
   //   targetCount = 1;
   // }
 
-  
-
   // Add linked cooldowns
-  if (actionName === 'Displacement') { addActionRecast({ name: 'Engagement', recastArray }); }
-  if (actionName === 'Engagement') { addActionRecast({ name: 'Displacement', recastArray }); }
+  if (actionName === 'Displacement') { addActionRecast({ actionName: 'Engagement', recastArray }); }
+  if (actionName === 'Engagement') { addActionRecast({ actionName: 'Displacement', recastArray }); }
 
   // Remove Verfire/Verstone proc
   if (actionName === 'Verfire') {
-    removeStatus({ name: 'Verfire Ready', statusArray });
+    removeStatus({ statusName: 'Verfire Ready', statusArray });
   } else if (actionName === 'Verstone') {
-    removeStatus({ name: 'Verstone Ready', statusArray });
+    removeStatus({ statusName: 'Verstone Ready', statusArray });
   }
-
-  // const { gcd } = playerData;
-  const { gcd } = playerData;
-  const accelerationSpells = ['Verthunder', 'Veraero', 'Scatter', 'Verthunder III', 'Aero III', 'Impact'];
-  const actionCast = getActionDataProperty({ name: actionName, property: 'cast' });
-  // const actionRecast = getActionProperty({ name: actionName, property: 'recast' });
-  const actionType = getActionDataProperty({ name: actionName, property: 'type' });
-
-  let delay;
 
   // Get GCD time
   if (actionType === 'Spell' && actionCast !== undefined) {
     // console.log(actionCast);
     // Check for fastcast buffs and remove if necessary
-    if (accelerationSpells.includes(actionName) && checkStatusDuration({ name: 'Acceleration', statusArray }) > 0) {
-      removeStatus({ name: 'Acceleration', statusArray });
+    if (accelerationSpells.includes(actionName) && checkStatusDuration({ statusName: 'Acceleration', statusArray }) > 0) {
+      removeStatus({ statusName: 'Acceleration', statusArray });
       delay = gcd;
-    } else if (checkStatusDuration({ name: 'Dualcast', statusArray }) > 0) {
-      removeStatus({ name: 'Dualcast', statusArray });
+    } else if (checkStatusDuration({ statusName: 'Dualcast', statusArray }) > 0) {
+      removeStatus({ statusName: 'Dualcast', statusArray });
       delay = gcd;
-    } else if (checkStatusDuration({ name: 'Swiftcast', statusArray }) > 0) {
-      removeStatus({ name: 'Swiftcast', statusArray });
+    } else if (checkStatusDuration({ statusName: 'Swiftcast', statusArray }) > 0) {
+      removeStatus({ statusName: 'Swiftcast', statusArray });
       delay = gcd;
     } else {
-      addStatus({ name: 'Dualcast', statusArray });
+      addStatus({ statusName: 'Dualcast', statusArray });
       delay = Math.max(gcd - actionCast, 0);
     }
   } else if (actionType === 'Spell') {
@@ -164,18 +94,18 @@ const rdmActionMatch = ({
     delay = gcd;
   }
 
-  if (loop === false && delay !== undefined) {
+  if (loop === false) {
     startLoop({ delay });
   } else {
     // Make other playerData adjustments to mimic playerChangedEvent
 
     // Get properties of action
-    const mpCost = getActionDataProperty({ name: actionName, property: 'mpCost' });
-    const blackMana = getActionDataProperty({ name: actionName, property: 'blackMana' });
-    const whiteMana = getActionDataProperty({ name: actionName, property: 'whiteMana' });
-    const manaCost = getActionDataProperty({ name: actionName, property: 'manaCost' });
-    const manaStacks = getActionDataProperty({ name: actionName, property: 'manaStacks' });
-    const manaStackCost = getActionDataProperty({ name: actionName, property: 'manaStackCost' });
+    const mpCost = getActionDataProperty({ actionName, property: 'mpCost' });
+    const blackMana = getActionDataProperty({ actionName, property: 'blackMana' });
+    const whiteMana = getActionDataProperty({ actionName, property: 'whiteMana' });
+    const manaCost = getActionDataProperty({ actionName, property: 'manaCost' });
+    const manaStacks = getActionDataProperty({ actionName, property: 'manaStacks' });
+    const manaStackCost = getActionDataProperty({ actionName, property: 'manaStackCost' });
 
     // Adjust resources
     if (mpCost !== undefined) { loopPlayerData.mp = Math.max(loopPlayerData.mp - mpCost, 0); }
@@ -215,13 +145,8 @@ const rdmStatusMatch = ({ logType, statusName, sourceID }) => {
 };
 
 // eslint-disable-next-line no-unused-vars
-const rdmTargetChanged = () => {
-  // startLoop();
-};
-
-// eslint-disable-next-line no-unused-vars
 const rdmLoopGCDAction = () => {
-  const recastArray = loopRecastArray;
+  // const recastArray = loopRecastArray;
   const statusArray = loopStatusArray;
 
   const zwerchhauAcquired = actionData.some((element) => element.name === 'Enchanted Zwerchhau');
@@ -255,8 +180,8 @@ const rdmLoopGCDAction = () => {
   const verflareMana = actionData[actionData.findIndex((element) => element.name === 'Verflare')].blackMana;
   const verholyMana = actionData[actionData.findIndex((element) => element.name === 'Verholy')].whiteMana;
 
-  const verfireDuration = checkStatusDuration({ name: 'Verfire Ready', statusArray });
-  const verstoneDuration = checkStatusDuration({ name: 'Verstone Ready', statusArray });
+  const verfireDuration = checkStatusDuration({ statusName: 'Verfire Ready', statusArray });
+  const verstoneDuration = checkStatusDuration({ statusName: 'Verstone Ready', statusArray });
 
   let finisherTime = 0;
   if (verflareAcquired) { finisherTime += gcd; }
@@ -276,7 +201,7 @@ const rdmLoopGCDAction = () => {
 
     // Old 5.x stuff, keeping around for no reason probably
     // // "Use Acceleration to proc (100%)"
-    // if (getStatusStacks({ name: 'Acceleration', statusArray }) > 0) {
+    // if (getStatusStacks({ statusName: 'Acceleration', statusArray }) > 0) {
     //   if (verholyAcquired && verstoneDuration < finisherTime + gcd) { return 'Verholy'; }
     //   if (verfireDuration < finisherTime + gcd) { return 'Verflare'; }
     // }
@@ -290,9 +215,9 @@ const rdmLoopGCDAction = () => {
     return 'Verflare';
   }
 
-  const dualcastDuration = checkStatusDuration({ name: 'Dualcast', statusArray });
-  const accelerationDuration = checkStatusDuration({ name: 'Acceleration', statusArray });
-  const swiftcastDuration = checkStatusDuration({ name: 'Swiftcast', statusArray });
+  const dualcastDuration = checkStatusDuration({ statusName: 'Dualcast', statusArray });
+  const accelerationDuration = checkStatusDuration({ statusName: 'Acceleration', statusArray });
+  const swiftcastDuration = checkStatusDuration({ statusName: 'Swiftcast', statusArray });
 
   // "Use Dualcast/Swiftcast/Acceleration"
   if (Math.max(dualcastDuration, accelerationDuration, swiftcastDuration) > 0) {
@@ -336,15 +261,15 @@ const rdmLoopGCDAction = () => {
     return 'Jolt';
   }
 
-  const manaficationRecast = checkActionRecast({ name: 'Manafication', recastArray });
+  // const manaficationRecast = checkActionRecast({ actionName: 'Manafication', recastArray });
 
-  // const repriseAcquired = actionData.some((element) => element.name === 'Enchanted Reprise');
-  // const repriseCost = actionData[actionData.findIndex((element) => element.name === 'Enchanted Reprise')].manaCost;
-  // const repriseGCD = actionData[actionData.findIndex((element) => element.name === 'Enchanted Reprise')].recast;
+  // const repriseIndex = actionData.findIndex((element) => element.name === 'Enchanted Reprise');
+  // const repriseCost = actionData[repriseIndex].manaCost;
+  // const repriseGCD = actionData[repriseIndex].recast;
 
-  // const moulinetAcquired = actionData.some((element) => element.name === 'Enchanted Moulinet');
-  // const moulinetCost = actionData[actionData.findIndex((element) => element.name === 'Enchanted Moulinet')].manaCost;
-  // const moulinetGCD = actionData[actionData.findIndex((element) => element.name === 'Enchanted Moulinet')].recast;
+  // const moulinetIndex = actionData.findIndex((element) => element.name === 'Enchanted Moulinet');
+  // const moulinetCost = actionData[moulinetIndex].manaCost;
+  // const moulinetGCD = actionData[moulinetIndex].recast;
 
   // if (moulinetAcquired && lowerMana >= moulinetCost) {
   // if (targetCount >= 3) {
@@ -377,13 +302,15 @@ const rdmLoopGCDAction = () => {
 
   // Burn GCDs with Reprise (if Manafication comes up at a weird time)
   // if (repriseAcquired && lowerMana >= repriseCost) {
-  //   if (manaficationRecast < comboTime + finisherTime && lowerMana >= 50) { return 'Enchanted Reprise'; }
+  //   if (manaficationRecast < comboTime + finisherTime && lowerMana >= 50) {
+  // return 'Enchanted Reprise';
+  // }
   //   if (manaficationRecast < repriseGCD) { return 'Enchanted Reprise'; }
   // }
 
   if (lowerMana >= comboCost) {
     // Start combo immediately under Manafication
-    if (checkStatusDuration({ name: 'Manafication', statusArray }) > 0) { return 'Enchanted Riposte'; }
+    if (checkStatusDuration({ statusName: 'Manafication', statusArray }) > 0) { return 'Enchanted Riposte'; }
 
     // Proc guaranteed after Verholy/Verflare
     if (verflareAcquired && verfireDuration <= comboTime + finisherTime + gcd && whiteMana > blackMana) { return 'Enchanted Riposte'; }
@@ -457,17 +384,17 @@ const rdmLoopOGCDAction = () => {
 
   // const lowerMana = Math.min(blackMana, whiteMana);
   const higherMana = Math.max(blackMana, whiteMana);
-  const manaficationRecast = checkActionRecast({ name: 'Manafication', recastArray });
+  const manaficationRecast = checkActionRecast({ actionName: 'Manafication', recastArray });
   // Manafication on cooldown (???)
   if (manaficationRecast < 1 && !comboAction) { return 'Manafication'; }
-  const contresixteRecast = checkActionRecast({ name: 'Contre Sixte', recastArray });
-  const flecheRecast = checkActionRecast({ name: 'Fleche', recastArray });
+  const contresixteRecast = checkActionRecast({ actionName: 'Contre Sixte', recastArray });
+  const flecheRecast = checkActionRecast({ actionName: 'Fleche', recastArray });
   // console.log(flecheRecast);
 
-  const accelerationRecast = checkActionRecast({ name: 'Acceleration', recastArray });
-  const accelerationCharges = checkActionCharges({ name: 'Acceleration', recastArray });
+  // const accelerationRecast = checkActionRecast({ actionName: 'Acceleration', recastArray });
+  const accelerationCharges = checkActionCharges({ actionName: 'Acceleration', recastArray });
 
-  const swiftcastRecast = checkActionRecast({ name: 'Swiftcast', recastArray });
+  // const swiftcastRecast = checkActionRecast({ actionName: 'Swiftcast', recastArray });
 
   // Acceleration/Swiftcast for Manafication during next GCD
   // if (manaficationRecast < gcd + 1) {
@@ -491,19 +418,125 @@ const rdmLoopOGCDAction = () => {
   // }
 
   // Acceleration for damage/procs if 2 charges up?
-  if (accelerationCharges > 1 && checkStatusDuration({ name: 'Acceleration', statusArray }) <= 0) {
+  if (accelerationCharges > 1 && checkStatusDuration({ statusName: 'Acceleration', statusArray }) <= 0) {
     if (targetCount > 1) { return 'Acceleration'; }
-    if (higherMana < 80 && Math.min(checkStatusDuration({ name: 'Verfire Ready', statusArray }), checkStatusDuration({ name: 'Verstone Ready', statusArray })) < gcd + 1) { return 'Acceleration'; }
+    if (higherMana < 80 && Math.min(checkStatusDuration({ statusName: 'Verfire Ready', statusArray }), checkStatusDuration({ statusName: 'Verstone Ready', statusArray })) < gcd + 1) { return 'Acceleration'; }
     if (higherMana < 60) { return 'Acceleration'; }
   }
 
   // Other OGCDs, I guess
-  if (actionData.some((element) => element.name === 'Embolden') && checkActionRecast({ name: 'Embolden', recastArray }) < 1) { return 'Embolden'; }
-  if (actionData.some((element) => element.name === 'Corps-a-corps') && checkActionCharges({ name: 'Corps-a-corps', recastArray }) > 1) { return 'Corps-a-corps'; }
-  if (actionData.some((element) => element.name === 'Engagement') && checkActionCharges({ name: 'Engagement', recastArray }) > 1) { return 'Engagement'; }
+  if (actionData.some((element) => element.name === 'Embolden') && checkActionRecast({ actionName: 'Embolden', recastArray }) < 1) { return 'Embolden'; }
+  if (actionData.some((element) => element.name === 'Corps-a-corps') && checkActionCharges({ actionName: 'Corps-a-corps', recastArray }) > 1) { return 'Corps-a-corps'; }
+  if (actionData.some((element) => element.name === 'Engagement') && checkActionCharges({ actionName: 'Engagement', recastArray }) > 1) { return 'Engagement'; }
 
   // Lucid, but is this even needed anymore
-  if (actionData.some((element) => element.name === 'Lucid Dreaming') && mp < 8000 && checkActionRecast({ name: 'Lucid Dreaming', recastArray }) < 1) { return 'Lucid Dreaming'; }
+  if (actionData.some((element) => element.name === 'Lucid Dreaming') && mp < 8000 && checkActionRecast({ actionName: 'Lucid Dreaming', recastArray }) < 1) { return 'Lucid Dreaming'; }
 
   return null;
+};
+
+// eslint-disable-next-line no-unused-vars
+const rdmTraits = ({ level } = {}) => {
+  if (level >= 62) {
+    const actionDataIndex = actionData.findIndex((element) => element.name === 'Jolt');
+    actionData.splice(actionDataIndex, 1);
+  }
+
+  if (level >= 66) {
+    const actionDataIndex = actionData.findIndex((element) => element.name === 'Scatter');
+    actionData.splice(actionDataIndex, 1);
+  }
+
+  if (level >= 68) {
+    let actionDataIndex;
+    actionDataIndex = actionData.findIndex((element) => element.name === 'Enchanted Riposte');
+    actionData[actionDataIndex].manaStacks = 1;
+    actionDataIndex = actionData.findIndex((element) => element.name === 'Enchanted Zwerchhau');
+    actionData[actionDataIndex].manaStacks = 1;
+    actionDataIndex = actionData.findIndex((element) => element.name === 'Enchanted Redoublement');
+    actionData[actionDataIndex].manaStacks = 1;
+    actionDataIndex = actionData.findIndex((element) => element.name === 'Enchanted Moulinet');
+    actionData[actionDataIndex].manaStacks = 1;
+  }
+
+  if (level >= 74) {
+    const actionDataIndex = actionData.findIndex((element) => element.name === 'Manafication');
+    actionData[actionDataIndex].recast = 110;
+    actionData[actionDataIndex].status = 'Manafication';
+
+    const statusDataIndex = statusData.findIndex((element) => element.name === 'Manafication');
+    statusData[statusDataIndex].stacks = 4;
+  }
+
+  if (level >= 78) {
+    const actionDataIndex = actionData.findIndex((element) => element.name === 'Contre Sixte');
+    actionData[actionDataIndex].recast = 35000;
+  }
+
+  if (level >= 80) {
+    const statusDataIndex = statusData.findIndex((element) => element.name === 'Manafication');
+    statusData[statusDataIndex].stacks = 5;
+  }
+
+  if (level >= 88) {
+    const actionDataIndex = actionData.findIndex((element) => element.name === 'Acceleration');
+    actionData[actionDataIndex].charges = 2;
+  }
+
+  if (level >= 90) {
+    const statusDataIndex = statusData.findIndex((element) => element.name === 'Manafication');
+    statusData[statusDataIndex].stacks = 6;
+  }
+
+  // console.log(`Actions: ${JSON.stringify(actionData)}`);
+  // console.log(`Actions: ${JSON.stringify(statusData)}`);
+};
+
+// eslint-disable-next-line no-unused-vars
+const rdmPlayerChanged = (e) => {
+  currentPlayerData.mp = e.detail.currentMP;
+  currentPlayerData.blackMana = e.detail.jobDetail.blackMana;
+  currentPlayerData.whiteMana = e.detail.jobDetail.whiteMana;
+  currentPlayerData.manaStacks = e.detail.jobDetail.manaStacks;
+};
+
+// eslint-disable-next-line no-unused-vars
+const rdmTargetChanged = () => { startLoop(); };
+
+// eslint-disable-next-line no-unused-vars
+const rdmCalculateDelay = ({
+  actionName,
+  playerData = currentPlayerData,
+  // recastArray = currentRecastArray,
+  statusArray = currentStatusArray,
+} = {}) => {
+  const { gcd } = playerData;
+  const actionCast = getActionDataProperty({ actionName, property: 'cast' });
+  const actionType = getActionDataProperty({ actionName, property: 'type' });
+
+  const accelerationSpells = ['Verthunder', 'Veraero', 'Scatter', 'Verthunder III', 'Aero III', 'Impact'];
+
+  let delay = 0;
+  // Get GCD time
+  if (actionType === 'Spell' && actionCast !== undefined) {
+    // Check for fastcast status and remove if necessary
+    if (accelerationSpells.includes(actionName) && checkStatusDuration({ statusName: 'Acceleration', statusArray }) > 0) {
+      removeStatus({ statusName: 'Acceleration', statusArray });
+      delay = gcd;
+    } else if (checkStatusDuration({ statusName: 'Dualcast', statusArray }) > 0) {
+      removeStatus({ statusName: 'Dualcast', statusArray });
+      delay = gcd;
+    } else if (checkStatusDuration({ statusName: 'Swiftcast', statusArray }) > 0) {
+      removeStatus({ statusName: 'Swiftcast', statusArray });
+      delay = gcd;
+    } else {
+      addStatus({ statusName: 'Dualcast', statusArray });
+      delay = Math.max(gcd - actionCast, 0);
+    }
+  } else {
+    // Weaponskills and no-cast spells
+    delay = gcd;
+  }
+
+  return delay;
 };

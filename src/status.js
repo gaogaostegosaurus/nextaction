@@ -1,7 +1,7 @@
 /* global currentPlayerData statusData */
 
 const addStatus = ({
-  name,
+  statusName,
   targetID = currentPlayerData.id,
   sourceID = currentPlayerData.id,
   duration,
@@ -10,23 +10,23 @@ const addStatus = ({
 } = {}) => {
   // Function should return array index of status
 
-  if (name === undefined) {
+  if (!statusName) {
     // eslint-disable-next-line no-console
-    console.log('addStatus: name is undefined');
-    return -1;
+    console.log('addStatus: no statusName');
+    return;
   }
 
-  if (statusArray === undefined) {
+  if (!statusArray) {
     // eslint-disable-next-line no-console
-    console.log('addStatus: statusArray is undefined');
-    return -1;
+    console.log('addStatus:: no statusArray');
+    return;
   }
 
-  const statusDataIndex = statusData.findIndex((element) => element.name === name);
+  const statusDataIndex = statusData.findIndex((element) => element.name === statusName);
   if (statusDataIndex === -1) {
     // eslint-disable-next-line no-console
-    console.log(`addStatus: ${name} not in statusData array`);
-    return -1;
+    console.log(`addStatus: ${statusName} not in statusData array`);
+    return;
   }
 
   let newDurationMilliseconds; // Conversion for array use
@@ -41,17 +41,17 @@ const addStatus = ({
   // Create timestamp value for array
   const newDurationTimestamp = newDurationMilliseconds + Date.now();
 
-  // let newStacks;
-  // if (stacks !== undefined) {
-  //   newStacks = stacks;
-  // } else if (statusData[statusDataIndex].stacks !== undefined) {
-  //   // Get default value of stacks if this exists
-  //   newStacks = statusData[statusDataIndex].stacks;
-  // }
+  let newStacks;
+  if (stacks) {
+    newStacks = stacks;
+  } else if (statusData[statusDataIndex].stacks !== undefined) {
+    // Get default value of stacks if this exists
+    newStacks = statusData[statusDataIndex].stacks;
+  }
 
   // Look for matching entry
-  let statusArrayIndex = statusArray.findIndex(
-    (element) => element.name === name
+  const statusArrayIndex = statusArray.findIndex(
+    (element) => element.name === statusName
     && element.targetID === targetID && element.sourceID === sourceID,
   );
 
@@ -66,8 +66,8 @@ const addStatus = ({
     // }
   } else {
     // Add new ID and status to array
-    statusArrayIndex = statusArray.push({
-      name, targetID, sourceID, duration: newDurationTimestamp,
+    statusArray.push({
+      name: statusName, targetID, sourceID, duration: newDurationTimestamp,
     });
     // if (newStacks !== undefined) {
     // Add stacks if defined
@@ -75,41 +75,40 @@ const addStatus = ({
     // statusArray[statusArrayIndex].stacks = newStacks;
     // }
   }
-
-  return statusArrayIndex;
 };
 
 // eslint-disable-next-line no-unused-vars
 const removeStatus = ({
-  name,
+  statusName,
   targetID = currentPlayerData.id,
   sourceID = currentPlayerData.id,
   statusArray,
 } = {}) => {
-  if (name === undefined) {
+  if (!statusName) {
     // eslint-disable-next-line no-console
-    console.log('removeStatus: name is undefined');
+    console.log('removeStatus: no name');
     return;
   }
 
-  if (statusArray === undefined) {
+  if (!statusArray) {
     // eslint-disable-next-line no-console
-    console.log('removeStatus: statusArray is undefined');
+    console.log('removeStatus:: no statusArray');
     return;
   }
 
-  const statusDataIndex = statusData.findIndex((element) => element.name === name);
+  const statusDataIndex = statusData.findIndex((element) => element.name === statusName);
   if (statusDataIndex === -1) {
     // eslint-disable-next-line no-console
-    console.log(`removeStatus: ${name} not in statusData array`);
+    console.log(`removeStatus: ${statusName} not in statusData array`);
     return;
   }
 
-  // Just "sets" status with duration 0
-  const statusArrayIndex = addStatus({
-    name, targetID, sourceID, duration: 0, statusArray,
-  });
-
+  const statusArrayIndex = statusArray.findIndex(
+    (element) => element.name === statusName
+    && element.targetID === targetID && element.sourceID === sourceID,
+  );
+  
+  statusArray.splice(statusArrayIndex, 1);
   // // Set stacks to 0 if needed
   // if (statusArrayIndex > -1) {
   //   if (statusArray[statusArrayIndex].stacks !== undefined) {
@@ -121,32 +120,32 @@ const removeStatus = ({
 
 // eslint-disable-next-line no-unused-vars
 const checkStatusDuration = ({
-  name,
+  statusName,
   targetID = currentPlayerData.id,
   sourceID = currentPlayerData.id,
   statusArray,
 } = {}) => {
-  if (name === undefined) {
+  if (!statusName) {
     // eslint-disable-next-line no-console
-    console.log('checkStatusDuration: name is undefined');
-    return null;
+    console.log('checkStatusDuration: no name');
+    return 0;
   }
 
-  if (statusArray === undefined) {
+  if (!statusArray) {
     // eslint-disable-next-line no-console
-    console.log('checkStatusDuration: statusArray is undefined');
-    return null;
+    console.log('checkStatusDuration:: no statusArray');
+    return 0;
   }
 
-  const statusDataIndex = statusData.findIndex((element) => element.name === name);
+  const statusDataIndex = statusData.findIndex((element) => element.name === statusName);
   if (statusDataIndex === -1) {
     // eslint-disable-next-line no-console
-    console.log(`checkStatusDuration: ${name} not in statusData array`);
-    return null;
+    console.log(`checkStatusDuration: ${statusName} not in statusData array`);
+    return 0;
   }
 
   const statusArrayIndex = statusArray.findIndex(
-    (element) => element.name === name
+    (element) => element.name === statusName
     && element.targetID === targetID
     && element.sourceID === sourceID,
   );
@@ -154,84 +153,88 @@ const checkStatusDuration = ({
   if (statusArrayIndex > -1) {
     // Returns seconds
     const statusDuration = (statusArray[statusArrayIndex].duration - Date.now()) / 1000;
-    return statusDuration;
-  }
+    if (statusDuration > 0) {
+      return statusDuration; // Only return positive values
+    }
+    // Remove if status is zero and allow return zero at buttom
+    removeStatus({
+      statusName, targetID, sourceID, statusArray,
+    });  }
 
-  // Not found in array
   return 0;
 };
 
 // eslint-disable-next-line no-unused-vars
 const checkStatusStacks = ({
-  name,
+  statusName,
   targetID = currentPlayerData.id,
   sourceID = currentPlayerData.id,
   statusArray,
 } = {}) => {
-  if (name === undefined) {
+  if (!statusName) {
     // eslint-disable-next-line no-console
-    console.log('checkStatusStacks: name is undefined');
-    return null;
+    console.log('checkStatusStacks: no name');
+    return 0;
   }
 
-  if (statusArray === undefined) {
+  if (!statusArray) {
     // eslint-disable-next-line no-console
-    console.log('checkStatusStacks: statusArray is undefined');
-    return null;
+    console.log('checkStatusStacks:: no statusArray');
+    return 0;
   }
 
-  const statusDataIndex = statusData.findIndex((element) => element.name === name);
+  const statusDataIndex = statusData.findIndex((element) => element.name === statusName);
   if (statusDataIndex === -1) {
     // eslint-disable-next-line no-console
-    console.log(`checkStatusStacks: ${name} not in statusData array`);
-    return null;
+    console.log(`checkStatusStacks: ${statusName} not in statusData array`);
+    return 0;
   }
 
   const statusArrayIndex = statusArray.findIndex(
-    (element) => element.name === name
+    (element) => element.name === statusName
     && element.targetID === targetID && element.sourceID === sourceID,
   );
 
-  let statusStacks;
   if (statusArrayIndex > -1) {
     // eslint-disable-next-line no-param-reassign
-    statusStacks = statusArray[statusArrayIndex].stacks;
-  } else {
-    statusStacks = null;
-  }
+    const statusStacks = statusArray[statusArrayIndex].stacks;
+    if (statusStacks > 0) { return statusStacks; }
+    removeStatus({
+      statusName, targetID, sourceID, statusArray,
+    });  }
 
-  return statusStacks;
+  return 0;
 };
 
 // eslint-disable-next-line no-unused-vars
 const removeStatusStacks = ({
-  name,
+  statusName,
   targetID = currentPlayerData.id,
   sourceID = currentPlayerData.id,
   stacks = 1,
   statusArray,
 } = {}) => {
-  if (name === undefined) {
+  if (!statusName) {
     // eslint-disable-next-line no-console
-    console.log('removeStatusStacks: name is undefined');
+    console.log('removeStatusStacks: no name');
     return;
   }
 
-  if (statusArray === undefined) {
+  if (!statusArray) {
     // eslint-disable-next-line no-console
-    console.log('removeStatusStacks: statusArray is undefined');
+    console.log('removeStatusStacks: no statusArray');
     return;
   }
 
-  const statusDataIndex = statusData.findIndex((element) => element.name === name);
+  const statusDataIndex = statusData.findIndex((element) => element.name === statusName);
   if (statusDataIndex === -1) {
     // eslint-disable-next-line no-console
-    console.log(`removeStatusStacks: ${name} not in statusData array`);
+    console.log(`removeStatusStacks: ${statusName} not in statusData array`);
     return;
   }
 
   const statusArrayIndex = statusArray.findIndex(
-    (element) => element.name === name
+    (element) => element.name === statusName
     && element.targetID === targetID
     && element.sourceID === sourceID,
   );
@@ -239,12 +242,11 @@ const removeStatusStacks = ({
   // eslint-disable-next-line no-param-reassign
   if (statusArrayIndex > -1) {
     // eslint-disable-next-line max-len, no-param-reassign
-    statusArray[statusArrayIndex].stacks = Math.max(statusArray[statusArrayIndex].stacks - stacks, 0);
-  } else { return; }
-
-  if (statusArray[statusArrayIndex].stacks <= 0) {
-    removeStatus({
-      name, targetID, sourceID, statusArray,
-    });
+    statusArray[statusArrayIndex].stacks -= stacks;
+    if (statusArray[statusArrayIndex].stacks <= 0) {
+      removeStatus({
+        statusName, targetID, sourceID, statusArray,
+      });
+    }
   }
 };

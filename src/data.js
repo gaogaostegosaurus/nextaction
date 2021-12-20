@@ -24,6 +24,7 @@ const baseActionData = [
     affinity: 'NIN',
     type: 'Weaponskill',
     level: 1,
+    comboBreak: true,
     icon: '000601',
   },
 
@@ -41,6 +42,7 @@ const baseActionData = [
     type: 'Weaponskill',
     level: 4,
     comboAction: 'Spinning Edge',
+    comboBreak: true,
     icon: '000602',
   },
 
@@ -52,13 +54,13 @@ const baseActionData = [
     icon: '000609',
   },
 
-  // {
-  //   name: 'Throwing Dagger',
-  //   affinity: 'NIN',
-  //   type: 'Weaponskill',
-  //   level: 15,
-  //   icon: '',
-  // },
+  {
+    name: 'Throwing Dagger', // This is here to trigger loops
+    affinity: 'NIN',
+    type: 'Weaponskill',
+    level: 15,
+    icon: '', // Leaving this blank just because I can I guess
+  },
 
   {
     name: 'Mug',
@@ -72,7 +74,7 @@ const baseActionData = [
     name: 'Trick Attack',
     affinity: 'NIN',
     recast: 60,
-    level: 1,
+    level: 18,
     icon: '000618',
   },
 
@@ -82,6 +84,7 @@ const baseActionData = [
     type: 'Weaponskill',
     level: 26,
     comboAction: 'Gust Slash',
+    comboBreak: true,
     icon: '000605',
   },
 
@@ -92,6 +95,7 @@ const baseActionData = [
     affinity: 'NIN',
     type: 'Weaponskill',
     level: 38,
+    comboBreak: true,
     icon: '000615',
   },
 
@@ -118,6 +122,8 @@ const baseActionData = [
     type: 'Weaponskill',
     level: 52,
     comboAction: 'Death Blossom',
+    comboBreak: true,
+    huton: 10,
     icon: '002923',
   },
 
@@ -127,6 +133,8 @@ const baseActionData = [
     type: 'Weaponskill',
     level: 54,
     comboAction: 'Gust Slash',
+    comboBreak: true,
+    huton: 30,
     icon: '002915',
   },
 
@@ -139,11 +147,11 @@ const baseActionData = [
   },
 
   {
-    name: 'Hurajin',
+    name: 'Huraijin',
     affinity: 'NIN',
     type: 'Weaponskill',
     level: 60,
-    status: 'Huton',
+    huton: 60,
     icon: '002928',
   },
 
@@ -198,6 +206,7 @@ const baseActionData = [
     affinity: 'NIN',
     type: 'Weaponskill',
     level: 82,
+    huton: 10,
     icon: '002929',
   },
 
@@ -219,16 +228,52 @@ const baseActionData = [
   },
 
   {
+    name: 'Mudra',
+    affinity: 'NIN',
+    recast: 20,
+    level: 30,
+    charges: 2,
+    // icon: '',
+  },
+
+  {
+    name: 'Ten',
+    affinity: 'NIN',
+    type: 'Mudra',
+    level: 30,
+    icon: '002901',
+  },
+
+  {
     name: 'Fuma Shuriken',
     affinity: 'NIN',
+    type: 'Ninjutsu', // Why is Ninjutsu so weird
     recast: 1.5,
     level: 30,
     icon: '002907',
   },
 
   {
+    name: 'Rabbit Medium',
+    affinity: 'NIN',
+    type: 'Ninjutsu', // Why is Ninjutsu so weird
+    recast: 1.5,
+    level: 30,
+    icon: '',
+  },
+
+  {
+    name: 'Chi',
+    affinity: 'NIN',
+    type: 'Mudra',
+    level: 35,
+    icon: '002902',
+  },
+
+  {
     name: 'Katon',
     affinity: 'NIN',
+    type: 'Ninjutsu',
     recast: 1.5,
     level: 35,
     icon: '002908',
@@ -237,14 +282,24 @@ const baseActionData = [
   {
     name: 'Raiton',
     affinity: 'NIN',
+    type: 'Ninjutsu',
     recast: 1.5,
     level: 35,
     icon: '002912',
   },
 
   {
+    name: 'Jin',
+    affinity: 'NIN',
+    type: 'Mudra',
+    level: 45,
+    icon: '002903',
+  },
+
+  {
     name: 'Hyoton',
     affinity: 'NIN',
+    type: 'Ninjutsu',
     recast: 1.5,
     level: 45,
     icon: '002909',
@@ -253,30 +308,37 @@ const baseActionData = [
   {
     name: 'Huton',
     affinity: 'NIN',
+    type: 'Ninjutsu',
     recast: 1.5,
     level: 45,
+    huton: 60,
     icon: '002910',
   },
 
   {
     name: 'Doton',
     affinity: 'NIN',
+    type: 'Ninjutsu',
     recast: 1.5,
     level: 45,
+    status: 'Doton',
     icon: '002911',
   },
 
   {
     name: 'Suiton',
     affinity: 'NIN',
+    type: 'Ninjutsu',
     recast: 1.5,
     level: 45,
+    status: 'Suiton',
     icon: '002913',
   },
 
   {
     name: 'Goka Mekkyaku',
     affinity: 'NIN',
+    type: 'Ninjutsu',
     recast: 1.5,
     level: 76,
     icon: '002925',
@@ -285,6 +347,7 @@ const baseActionData = [
   {
     name: 'Hyosho Ranryu',
     affinity: 'NIN',
+    type: 'Ninjutsu',
     recast: 1.5,
     level: 76,
     icon: '002926',
@@ -734,6 +797,9 @@ const baseActionData = [
     affinity: 'SMN',
     level: 6,
     type: 'Spell',
+    attunementStacks: 2,
+    attunementElement: 'Fire',
+    attunementSeconds: 30,
     icon: '',
   },
 
@@ -744,6 +810,7 @@ const baseActionData = [
     type: 'Spell',
     cast: 2.8,
     mpCost: 300,
+    attunementCost: 1,
     icon: '',
   },
 
@@ -1299,54 +1366,26 @@ const baseActionData = [
 
 // eslint-disable-next-line no-unused-vars
 const baseStatusData = [
-  {
-    name: 'Combo',
-    duration: 15,
-  },
+  { name: 'Combo', duration: 15 }, // Might be easier to put this in playerData later
 
-  {
-    name: 'Swiftcast',
-    duration: 10,
-  },
-  {
-    name: 'Lucid Dreaming',
-    duration: 21,
-  },
-  {
-    name: 'Acceleration',
-    duration: 20,
-  },
-
-  {
-    name: 'Dualcast',
-    duration: 15,
-  },
-
-  {
-    name: 'Embolden',
-    duration: 20,
-  },
-
-  {
-    name: 'Manafication',
-    duration: 15,
-    // stacks: 4, // ????
-  },
-
-  {
-    name: 'Trick Attack', // Technically not a status effect, but we'll make it one
-    duration: 15,
-  },
-
-  {
-    name: 'Verfire Ready',
-    duration: 30,
-  },
-
-  {
-    name: 'Verstone Ready',
-    duration: 30,
-  },
+  { name: 'Acceleration', duration: 20 },
+  { name: 'Bunshin', duration: 30 },
+  { name: 'Doton', duration: 24 },
+  { name: 'Dualcast', duration: 15 },
+  { name: 'Embolden', duration: 20 },
+  { name: 'Fleeting Raiju Ready', duration: 15 },
+  { name: 'Forked Raiju Ready', duration: 15 },
+  { name: 'Kassatsu', duration: 15 },
+  { name: 'Lucid Dreaming', duration: 21 },
+  { name: 'Manafication', duration: 15 },
+  { name: 'Mudra', duration: 6 },
+  { name: 'Phantom Kamaitachi Ready', duration: 10 },
+  { name: 'Suiton', duration: 20 },
+  { name: 'Swiftcast', duration: 10 },
+  { name: 'Ten Chi Jin', duration: 6 },
+  { name: 'Trick Attack', duration: 15 }, // Technically not a self status effect - easier set as one
+  { name: 'Verfire Ready', duration: 30 },
+  { name: 'Verstone Ready', duration: 30 },
 ];
 
 // eslint-disable-next-line no-unused-vars
@@ -1469,9 +1508,11 @@ const playerStatsData = [
 // ];
 
 // eslint-disable-next-line no-unused-vars
-const getActionDataProperty = ({ name, property } = {}) => {
-  const actionDataIndex = actionData.findIndex((e) => e.name === name);
-  if (actionDataIndex < 0) { return undefined; }
-  // if (actionData[actionDataIndex][property] === undefined) { return undefined; }
-  return actionData[actionDataIndex][property];
+const getActionDataProperty = ({ actionName, property } = {}) => {
+  const actionDataIndex = actionData.findIndex((e) => e.name === actionName);
+  if (actionDataIndex < 0) { return 0; }
+  if (actionData[actionDataIndex][property]) {
+    return actionData[actionDataIndex][property];
+  }
+  return 0;
 };
