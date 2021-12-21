@@ -138,8 +138,6 @@ const removeIcon = ({ actionName } = {}) => {
   }
 };
 
-
-
 // eslint-disable-next-line no-unused-vars
 // const removeIcon = ({
 //   name,
