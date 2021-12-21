@@ -3,14 +3,13 @@
 
 /* global
 addOverlayListener startOverlayEvents
-syncOverlay fadeIcon unfadeIcon removeIcon
+fadeIcon unfadeIcon removeIcon
 baseActionData baseStatusData playerStatsData getActionDataProperty
 addActionRecast
 addStatus removeStatus
-rdmTraits rdmPlayerChanged rdmTargetChanged rdmActionMatch rdmStatusMatch
-rdmLoopGCDAction rdmLoopOGCDAction
-ninTraits ninPlayerChanged ninTargetChanged ninActionMatch ninStatusMatch
-ninLoopGCDAction ninLoopOGCDAction
+rdmPlayerChanged rdmTargetChanged rdmActionMatch rdmStatusMatch
+ninTraits ninPlayerChanged ninTargetChanged ninActionMatch
+
 */
 
 // All possible events:
