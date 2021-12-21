@@ -158,7 +158,7 @@ const onPlayerChangedEvent = (e) => {
     const castingActionNameRegex = castingActionMap.join('|');
 
     actionEffectRegex = new RegExp(`^.{15}(?<logType>ActionEffect|AOEActionEffect) 1[56]:(?<sourceID>${playerID}):(?<sourceName>${playerName}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${actionNameRegex}):(?<targetID>[\\dA-F]{8}):`);
-    statusRegex = new RegExp(`^.{15}(?<logType>StatusAdd|StatusRemove) 1[AE]:(?<statusID>[\\dA-F]{2,8}):(?<statusName>.+?):(?<statusSeconds>[0-9]+\\.[0-9]+):(?<sourceID>[\\dA-F]{8}):(?<sourceName>${playerName}):(?<targetID>[\\dA-F]{8}):(?:<statusStacks>[\\d]{2}:)`);
+    statusRegex = new RegExp(`^.{15}(?<logType>StatusAdd|StatusRemove) 1[AE]:(?<statusID>[\\dA-F]{2,8}):(?<statusName>.+?):(?<statusSeconds>[0-9]+\\.[0-9]+):(?<sourceID>[${playerID}):(?<sourceName>${playerName}):(?<targetID>[\\dA-F]{8}):(?:<statusStacks>[\\d]{2}:)`);
     startsCastingRegex = new RegExp(`^.{15}(?<logType>StartsCasting) 14:(?<sourceID>${playerID}):(?<sourceName>${playerName}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${castingActionNameRegex}):(?<targetID>[\\dA-F]{8}):`);
     cancelActionRegex = new RegExp(`^.{15}(?<logType>CancelAction) 17:(?<sourceID>${playerID}):(?<sourceName>${playerName}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${castingActionNameRegex}):(?<cancelReason>Cancelled|Interrupted):`);
     regexReady = true;
@@ -199,6 +199,7 @@ const onLogEvent = (e) => {
       const { targetID } = actionEffectLine.groups;
       // console.log(`onLogEvent actionEffectLine: ${logType} ${actionName} ${targetID}`);
       removeIcon({ actionName });
+
       actionMatch({ logType, actionName, targetID });
     } else if (statusLine) {
       statusMatch({
@@ -284,6 +285,8 @@ const actionMatch = ({
     });
   }
 
+
+
   // Start loop with certain things only
   if (!loop && checkStatusDuration({ statusName: 'Ten Chi Jin', statusArray }) === 0
   && ['Spell', 'Weaponskill', 'Ninjutsu'].includes(actionType)) {
@@ -303,10 +306,9 @@ const statusMatch = ({
     stacks: statusStacks,
     statusArray: currentStatusArray,
   });
-  // if (currentPlayerData.job === 'NIN') {
-  //   ninStatusMatch({ logType, statusName, sourceID });
-  // } else
-  if (currentPlayerData.job === 'RDM') { rdmStatusMatch({ logType, statusName, sourceID }); }
+  if (currentPlayerData.job === 'NIN') {
+    ninStatusMatch({ logType, statusName, sourceID });
+  } else if (currentPlayerData.job === 'RDM') { rdmStatusMatch({ logType, statusName, sourceID }); }
 };
 
 const startsCastingMatch = ({ actionName } = {}) => {
@@ -352,10 +354,7 @@ const onInCombatChangedEvent = (e) => {
 };
 
 const EnmityTargetData = (e) => {
-  if (overlayReady !== true) {
-    console.log('overlayReady not true');
-    return;
-  }
+  
   const { job } = currentPlayerData;
 
   // Possible properties for e.Target are
@@ -376,18 +375,27 @@ const EnmityTargetData = (e) => {
 
   // const { currentPlayerData } = nextActionOverlay;
   // const { job } = currentPlayerData;
+  if (regexReady !== true) {
+    // TODO: rename this or set overlayReady to a different point
+    console.log('regexReady !== true');
+    return;
+  }
 
   if (e.Target) {
     targetData.distance = e.Target.EffectiveDistance; // Distance to "outside of circle"
 
     if (e.Target.ID !== targetData.decimalID) {
       targetData.name = e.Target.Name; // Set new targetData
-      targetData.targetID = e.Target.ID.toString(16).toUpperCase();
+      targetData.decimalID = e.Target.ID;
+      targetData.id = targetData.decimalID.toString(16).toUpperCase();
       if (job === 'NIN') {
         ninTargetChanged();
-      } else if (job === 'RDM') {
-        rdmTargetChanged();
+      } else {
+        startLoop();
       }
+      // } else if (job === 'RDM') {
+      //   rdmTargetChanged();
+      // }
     }
   }
 

@@ -237,11 +237,10 @@ const ninLoopOGCDAction = ({
 
 // eslint-disable-next-line no-unused-vars
 const ninStatusMatch = ({ logType, statusName, sourceID }) => {
-  // if (logType === 'StatusRemove'
-  // && sourceID === currentPlayerData.id
-  // && statusName === 'Ten Chi Jin') {
-  //   startLoop();
-  // }
+  if (logType === 'StatusRemove' && ['Mudra', 'Kassatsu', 'Ten Chi Jin'].includes(statusName)) {
+    // These should all come off after an final ninjutsu cast
+    startLoop({ delay: 1.5 });
+  }
 };
 
 // eslint-disable-next-line no-unused-vars
@@ -311,5 +310,10 @@ const ninPlayerChanged = (e) => {
 
 // eslint-disable-next-line no-unused-vars
 const ninTargetChanged = () => {
-  // startLoop();
+  const mudraDuration = checkStatusDuration({ statusName: 'Mudra', statusArray: currentStatusArray});
+  const kassatsuDuration = checkStatusDuration({ statusName: 'Kassatsu', statusArray: currentStatusArray});
+  const tenChiJinDuration = checkStatusDuration({ statusName: 'Ten Chi Jin', statusArray: currentStatusArray});
+  if (Math.max(mudraDuration, kassatsuDuration, tenChiJinDuration) === 0) {
+    startLoop();
+  }
 };
