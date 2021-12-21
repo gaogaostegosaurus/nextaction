@@ -116,9 +116,7 @@ const startLoop = ({
           } else {
             advanceLoopTime({ time: 0.5 });
           }
-
         }
-
 
         // Last entry (should be ninjutsu itself)
         overlayArray.push({ name: actionName[actionName.length - 1] });
@@ -129,7 +127,6 @@ const startLoop = ({
           recastArray: loopRecastArray,
         });
 
-
         actionMatch({
           actionName: actionName[actionName.length - 1],
           playerData: loopPlayerData,
@@ -138,19 +135,13 @@ const startLoop = ({
           loop: true,
         });
 
-
-
         ogcdWindow = calculateDelay({
           actionName: actionName[actionName.length - 1],
           playerData: loopPlayerData,
           recastArray: loopRecastArray,
           statusArray: loopStatusArray,
         });
-
-
-
       } else {
-
         overlayArray.push({ name: actionName });
         setComboAction({
           actionName,
@@ -172,10 +163,9 @@ const startLoop = ({
           recastArray: loopRecastArray,
           statusArray: loopStatusArray,
         });
-
       }
       // Testing for errors here, comment out when ready?
-      if (!ogcdWindow) {console.log(`startLoop: ${actionName} returned with no delay`); }
+      if (!ogcdWindow) { console.log(`startLoop: ${actionName} returned with no delay`); }
     }
 
     if (ogcdWindow > 0.1) {
