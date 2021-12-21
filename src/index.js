@@ -7,7 +7,7 @@ fadeIcon unfadeIcon removeIcon
 baseActionData baseStatusData playerStatsData getActionDataProperty
 addActionRecast
 addStatus removeStatus
-rdmPlayerChanged rdmTargetChanged rdmActionMatch rdmStatusMatch
+rdmPlayerChanged rdmActionMatch rdmStatusMatch
 ninTraits ninPlayerChanged ninTargetChanged ninActionMatch
 
 */
