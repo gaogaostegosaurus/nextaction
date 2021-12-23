@@ -1,21 +1,96 @@
 /* globals
-actionData
-currentPlayerData
-calculateRecast
+actionData currentPlayerData
 loopPlayerData loopRecastArray loopStatusArray
+calculateRecast
+resetActionRecast
+removeStatus
 getActionDataProperty addActionRecast addStatus checkStatusDuration checkActionRecast
 */
+
+// eslint-disable-next-line no-unused-vars
+const ninTraits = ({ level } = {}) => {
+  if (level >= 56) {
+    const actionDataIndex = actionData.findIndex((element) => element.name === 'Assassinate');
+    actionData.splice(actionDataIndex, 1);
+  }
+
+  if (level >= 62) {
+    actionData.forEach((element) => {
+      if (element.type === 'Weaponskill') {
+        // eslint-disable-next-line no-param-reassign
+        element.ninki = 5;
+      }
+    });
+  }
+
+  if (level >= 66) {
+    const actionDataIndex = actionData.findIndex((element) => element.name === 'Mug');
+    actionData[actionDataIndex].ninki = 40;
+  }
+
+  if (level >= 78) {
+    let actionDataIndex;
+    actionDataIndex = actionData.findIndex((element) => element.name === 'Aeolian Edge');
+    actionData[actionDataIndex].ninki = 10;
+    actionDataIndex = actionData.findIndex((element) => element.name === 'Armor Crush');
+    actionData[actionDataIndex].ninki = 10;
+  }
+
+  if (level >= 84) {
+    let actionDataIndex;
+    actionDataIndex = actionData.findIndex((element) => element.name === 'Aeolian Edge');
+    actionData[actionDataIndex].ninki = 15;
+    actionDataIndex = actionData.findIndex((element) => element.name === 'Armor Crush');
+    actionData[actionDataIndex].ninki = 15;
+  }
+
+  if (level >= 88) {
+    const actionDataIndex = actionData.findIndex((element) => element.name === 'Meisui');
+    actionData[actionDataIndex].status = 'Meisui'; // check name later
+  }
+
+  if (level >= 90) {
+    const actionDataIndex = actionData.findIndex((element) => element.name === 'Raiton');
+    actionData[actionDataIndex].status = 'Forked Raiju Ready';
+  }
+};
+
+// eslint-disable-next-line no-unused-vars
+const ninPlayerChanged = (e) => {
+  // Recalculate GCD if Huton status has apparently changed
+  if (currentPlayerData.huton > 0 && e.detail.jobDetail.hutonMilliseconds === 0) {
+    // Huton recently fell off
+    currentPlayerData.gcd = calculateRecast({ modifier: 1 });
+  } else if (currentPlayerData.huton === 0 && e.detail.jobDetail.hutonMilliseconds > 0) {
+    // Huton recently applied
+    currentPlayerData.gcd = calculateRecast({ modifier: 0.85 });
+  }
+
+  // Standard stuff otherwise
+  currentPlayerData.hp = e.detail.currentHP;
+  currentPlayerData.huton = e.detail.jobDetail.hutonMilliseconds / 1000;
+  currentPlayerData.ninki = e.detail.jobDetail.ninkiAmount;
+};
+
+// eslint-disable-next-line no-unused-vars
+const ninTargetChanged = () => {
+  const mudraDuration = checkStatusDuration({ statusName: 'Mudra', statusArray: currentStatusArray });
+  const kassatsuDuration = checkStatusDuration({ statusName: 'Kassatsu', statusArray: currentStatusArray });
+  const tenChiJinDuration = checkStatusDuration({ statusName: 'Ten Chi Jin', statusArray: currentStatusArray });
+  if (Math.max(mudraDuration, kassatsuDuration, tenChiJinDuration) === 0) {
+    startLoop();
+  }
+};
+
 // eslint-disable-next-line no-unused-vars
 const ninActionMatch = ({
-  // logType,
+  // logType, // Currently unused parameters commented out
   actionName,
   // targetID,
   // playerData,
   recastArray,
   statusArray,
 } = {}) => {
-
-
   const actionType = getActionDataProperty({ actionName, property: 'type' });
 
   // Ninjutsu is so damn annoying
@@ -27,12 +102,12 @@ const ninActionMatch = ({
     addStatus({ statusName: 'Mudra', statusArray });
   }
 
-
-
   if (actionType === 'Ninjutsu') {
     // Remove Mudra/Kassatsu/TCJ on Ninjutsu activation
     removeStatus({ statusName: 'Mudra', statusArray });
     removeStatus({ statusName: 'Kassatsu', statusArray });
+
+    // Best way to account for TCJ weirdness is to treat it like it has stacks... maybe
     removeStatusStacks({ statusName: 'Ten Chi Jin', statusArray });
 
     if (actionName === 'Doton') {
@@ -41,8 +116,6 @@ const ninActionMatch = ({
       addStatus({ statusName: 'Suiton', statusArray });
     }
   }
-
-
 
   if (actionName === 'Hide') {
     // Hide reset
@@ -55,6 +128,15 @@ const ninActionMatch = ({
     addStatus({ statusName: 'Kassatsu', statusArray });
   } else if (actionName === 'Ten Chi Jin') {
     addStatus({ statusName: 'Ten Chi Jin', stacks: 3, statusArray });
+  }
+};
+
+// eslint-disable-next-line no-unused-vars
+const ninStatusMatch = ({ logType, statusName, sourceID }) => {
+  if (logType === 'StatusRemove' && ['Mudra', 'Kassatsu', 'Ten Chi Jin'].includes(statusName)) {
+    // These should all come off after an final ninjutsu cast
+    // Good point to update?
+    startLoop({ delay: 1.5 });
   }
 };
 
@@ -149,7 +231,7 @@ const ninLoopGCDAction = (
 
   const raitonLength = 0.5 + 0.5 + 1.5;
   const fumaShurikenLength = 0.5 + 1.5;
-  const suitonLength = 0.5 + 0.5 + 0.5 + 1.5;
+  // const suitonLength = 0.5 + 0.5 + 0.5 + 1.5;
 
   // Keep Ninjutsu off cooldown
   if (raitonAcquired && mudraRecast < raitonLength + 1) { return ['Ten', 'Chi', 'Raiton']; }
@@ -179,7 +261,7 @@ const ninLoopOGCDAction = ({
 
   // const { gcd } = playerData;
   // const { targetCount } = playerData;
-  const { comboAction } = playerData;
+  // const { comboAction } = playerData;
 
   const { ninki } = playerData;
   // const { huton } = playerData;
@@ -202,22 +284,24 @@ const ninLoopOGCDAction = ({
 
   // Bunshin all the things
   if (ninki >= 50 && bunshinRecast < 1 && bunshinStatus === 0) { return 'Bunshin'; }
-  if (ninki <= 50 && mugRecast < 1) { return 'Mug'; }
+
+  // Increase Ninki
+  if (ninki < 60 && mugRecast < 1) { return 'Mug'; }
+  if (meisuiRecast < 1 && ninki <= 50 && suitonStatus > 0 && suitonStatus <= trickAttackRecast) { return 'Meisui'; }
 
   // Kassatsu right before Trick Attack
-  if (kassatsuRecast < 1 && (trickAttackRecast < suitonStatus || trickAttackStatus > 0)) { return 'Kassatsu'; }
+  if (kassatsuRecast < 1 && trickAttackRecast < suitonStatus) { return 'Kassatsu'; }
 
   // Trick Attack
   if (suitonStatus > 0 && trickAttackRecast < 1) { return 'Trick Attack'; }
 
   // Trick Attack window
   if (trickAttackStatus > 0) {
-    if (assassinateRecast < 1) { return 'Assassinate'; }
+    if (kassatsuRecast < 1) { return 'Kassatsu'; }
     if (dreamwithinadreamRecast < 1) { return 'Dream Within a Dream'; }
+    if (assassinateRecast < 1) { return 'Assassinate'; }
     if (kassatsuStatus === 0 && mudraRecast > 4 && tenChiJinRecast < 1) { return 'Ten Chi Jin'; }
   }
-
-  if (meisuiRecast < 1 && ninki <= 50 && suitonStatus > 0 && suitonStatus <= trickAttackRecast) { return 'Meisui'; }
 
   if (bhavacakraRecast < 1 && (ninki === 100
     || (mugRecast < bunshinRecast && ninki >= 60)
@@ -225,95 +309,15 @@ const ninLoopOGCDAction = ({
     return 'Bhavacakra';
   }
 
-  // // Prevent ninki overcap
+  // Prevent ninki overcap
+  // Not needed? Who knows?
   // let nextWeaponskillNinki = 5;
   // if (comboAction === 'Gust Slash') {
-  //   nextWeaponskillNinki = getActionDataProperty({ actionName: 'Aeolian Edge', property: 'ninki' });
+  //   nextWeaponskillNinki = getActionDataProperty(
+  //     { actionName: 'Aeolian Edge', property: 'ninki' }
+  //   );
   // }
   // if (ninki + nextWeaponskillNinki > 100 && bhavacakraRecast < 1) { return 'Bhavacakra'; }
 
   return '';
-};
-
-// eslint-disable-next-line no-unused-vars
-const ninStatusMatch = ({ logType, statusName, sourceID }) => {
-  if (logType === 'StatusRemove' && ['Mudra', 'Kassatsu', 'Ten Chi Jin'].includes(statusName)) {
-    // These should all come off after an final ninjutsu cast
-    startLoop({ delay: 1.5 });
-  }
-};
-
-// eslint-disable-next-line no-unused-vars
-const ninTraits = ({ level } = {}) => {
-  if (level >= 56) {
-    const actionDataIndex = actionData.findIndex((element) => element.name === 'Assassinate');
-    actionData.splice(actionDataIndex, 1);
-  }
-
-  if (level >= 62) {
-    actionData.forEach((element) => {
-      if (element.type === 'Weaponskill') {
-        // eslint-disable-next-line no-param-reassign
-        element.ninki = 5;
-      }
-    });
-  }
-
-  if (level >= 66) {
-    const actionDataIndex = actionData.findIndex((element) => element.name === 'Mug');
-    actionData[actionDataIndex].ninki = 40;
-  }
-
-  if (level >= 78) {
-    let actionDataIndex;
-    actionDataIndex = actionData.findIndex((element) => element.name === 'Aeolian Edge');
-    actionData[actionDataIndex].ninki = 10;
-    actionDataIndex = actionData.findIndex((element) => element.name === 'Armor Crush');
-    actionData[actionDataIndex].ninki = 10;
-  }
-
-  if (level >= 84) {
-    let actionDataIndex;
-    actionDataIndex = actionData.findIndex((element) => element.name === 'Aeolian Edge');
-    actionData[actionDataIndex].ninki = 15;
-    actionDataIndex = actionData.findIndex((element) => element.name === 'Armor Crush');
-    actionData[actionDataIndex].ninki = 15;
-  }
-
-  if (level >= 88) {
-    const actionDataIndex = actionData.findIndex((element) => element.name === 'Meisui');
-    actionData[actionDataIndex].status = 'Meisui'; // check name later
-  }
-
-  if (level >= 90) {
-    const actionDataIndex = actionData.findIndex((element) => element.name === 'Raiton');
-    actionData[actionDataIndex].status = 'Forked Raiju Ready';
-  }
-};
-
-// eslint-disable-next-line no-unused-vars
-const ninPlayerChanged = (e) => {
-  // Recalculate GCD if Huton status has apparently changed
-  if (currentPlayerData.huton > 0 && e.detail.jobDetail.hutonMilliseconds === 0) {
-    // Huton recently fell off
-    currentPlayerData.gcd = calculateRecast({ modifier: 1 });
-  } else if (currentPlayerData.huton === 0 && e.detail.jobDetail.hutonMilliseconds > 0) {
-    // Huton recently applied
-    currentPlayerData.gcd = calculateRecast({ modifier: 0.85 });
-  }
-
-  // Standard stuff otherwise
-  currentPlayerData.hp = e.detail.currentHP;
-  currentPlayerData.huton = e.detail.jobDetail.hutonMilliseconds / 1000;
-  currentPlayerData.ninki = e.detail.jobDetail.ninkiAmount;
-};
-
-// eslint-disable-next-line no-unused-vars
-const ninTargetChanged = () => {
-  const mudraDuration = checkStatusDuration({ statusName: 'Mudra', statusArray: currentStatusArray});
-  const kassatsuDuration = checkStatusDuration({ statusName: 'Kassatsu', statusArray: currentStatusArray});
-  const tenChiJinDuration = checkStatusDuration({ statusName: 'Ten Chi Jin', statusArray: currentStatusArray});
-  if (Math.max(mudraDuration, kassatsuDuration, tenChiJinDuration) === 0) {
-    startLoop();
-  }
 };
