@@ -2,7 +2,7 @@
 
 ## What does it doooooo (hopefully)
 
-- Snapshots your current character and suggests the next 15 seconds or so of actions. Ideally, it should show an basic opener and then suggest perfect or close-to-perfect single target "dummy play".
+- Snapshots your current character, simulates actions into an unreasonablely distant future, then displays the first few actions of that simulation. Ideally, it should show an basic opener and then suggest perfect or close-to-perfect single target "dummy play".
 - Re-snapshots your character after every major action and modifies the action list. This means that the list will often change on proc-based jobs (DNC, RDM), and also that if you screw up, disconnect, or decide on a better action situationally, it adjusts the action list for when a return to "dummy play" is desired.
 - On jobs that have rotations revolving around static abilities used on cooldown (like SAM, PLD etc.) it attempts to automatically align actions around those abilities so that they can be used ASAP.
 
