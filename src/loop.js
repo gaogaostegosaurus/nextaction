@@ -76,13 +76,19 @@ const startLoop = ({
 
   let ogcdWindow = delay;
 
-  // if (casting) {
-  //   // console.log(`Casting ${casting}`);
-  //   const actionName = casting;
-  //   overlayArray.push({ name: casting });
-  //   loopActionMatch({ actionName });
-  //   ogcdWindow = loopCalculateDelay({ actionName });
-  // }
+  if (casting) {
+    // Begin loop with placing casted action
+    // console.log(`Casting ${casting}`);
+    const actionName = casting;
+    overlayArray.push({ name: casting });
+    loopActionMatch({ actionName });
+    ogcdWindow = calculateDelay({
+      actionName,
+      playerData: loopPlayerData,
+      recastArray: loopRecastArray,
+      statusArray: loopStatusArray,
+    });
+  }
 
   while (overlayArray.length <= maxActions) {
     if (ogcdWindow === 0) {
