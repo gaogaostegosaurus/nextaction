@@ -745,6 +745,61 @@ const baseActionData = [
     icon: '003232',
   },
 
+  // RPR
+
+  {
+    name: 'Slice',
+    affinity: 'RPR',
+    level: 1,
+    type: 'Weaponskill',
+    soul: 10,
+    icon: '',
+  },
+
+  {
+    name: 'Waxing Slice',
+    affinity: 'RPR',
+    level: 5,
+    type: 'Weaponskill',
+    comboAction: 'Slice',
+    soul: 10,
+    icon: '',
+  },
+
+  {
+    name: 'Shadow of Death',
+    affinity: 'RPR',
+    level: 10,
+    type: 'Weaponskill',
+    status: 'Death\'s Design',
+    statusTarget: 'target',
+    statusDuration: 30,
+    statusMaxDuration: 60,
+    icon: '',
+    // Not sure how to model this:
+    // Additional Effect: Increases Soul Gauge by 10 if target is KO'd before effect expires
+  },
+
+  {
+    name: 'Harpe',
+    affinity: 'RPR',
+    level: 15,
+    type: 'Spell',
+    cast: 1.3,
+    icon: '',
+  },
+
+  {
+    name: 'Hell\'s Ingress',
+    affinity: 'RPR',
+    level: 20,
+    type: 'Weaponskill',
+    comboAction: 'Slice',
+    soul: 10,
+    icon: '',
+  },
+
+
   // SMN
   {
     name: 'Ruin',
