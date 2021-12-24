@@ -131,7 +131,11 @@ const ninActionMatch = ({
   } else if (actionName === 'Bunshin') {
     // Leaving actual Bunshin out because it doesn't really affect decision-making(?)
     // addStatus({ statusName: 'Bunshin', stacks: 5, statusArray });
-    addStatus({ statusName: 'Phantom Kamaitachi Ready', statusArray });
+    // Add Phantom Kamaitachi alongside Bunshin for simulation
+    if (actionData.some((element) => element.name === 'Phantom Kamaitachi')) { addStatus({ statusName: 'Phantom Kamaitachi Ready', statusArray }); }
+  } else if (actionName === 'Phantom Kamaitachi') {
+    // Remove since it effectively has an infinite time
+    removeStatus({ statusName: 'Phantom Kamaitachi Ready', statusArray });
   }
 };
 
