@@ -79,9 +79,4 @@ const smnPlayerChanged = (e) => {
   currentPlayerData.attunementSeconds = e.detail.jobDetail.attunementMilliseconds / 1000;
   currentPlayerData.activePrimal = e.detail.jobDetail.activePrimal; // Array?
   currentPlayerData.usableArcanum = e.detail.jobDetail.usableArcanum; // Array
-
-  `${detail.jobDetail.aetherflowStacks} | ${detail.jobDetail.tranceMilliseconds} | ${detail.jobDetail.attunement} | ${detail.jobDetail.attunementMilliseconds} | [${
-    detail.jobDetail.activePrimal.join(', ')
-  }] | [${detail.jobDetail.usableArcanum.join(', ')}] | ${detail.jobDetail.nextSummoned}`;
-
 };
