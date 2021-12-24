@@ -62,7 +62,10 @@ return 'Summon }
   if (summonBahamutRecast < 1) { return 'Summon Bahamut'; }
   if (summonBahamutRecast < 1) { return 'Summon Bahamut'; }
 
-  return 'Ruin III';
+  // Ruin for filling gaps
+  if (actionData.some((element) => element.name === 'Ruin III')) { return 'Ruin III'; }
+  if (actionData.some((element) => element.name === 'Ruin II')) { return 'Ruin II'; }
+  return 'Ruin';
 };
 
 
