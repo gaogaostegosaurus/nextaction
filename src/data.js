@@ -1380,7 +1380,7 @@ const baseStatusData = [
   { name: 'Lucid Dreaming', duration: 21 },
   { name: 'Manafication', duration: 15 },
   { name: 'Mudra', duration: 6 },
-  { name: 'Phantom Kamaitachi Ready', duration: 10 },
+  { name: 'Phantom Kamaitachi Ready', duration: 9999 },
   { name: 'Suiton', duration: 20 },
   { name: 'Swiftcast', duration: 10 },
   { name: 'Ten Chi Jin', duration: 6 },

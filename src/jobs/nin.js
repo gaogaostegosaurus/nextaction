@@ -128,6 +128,10 @@ const ninActionMatch = ({
     addStatus({ statusName: 'Kassatsu', statusArray });
   } else if (actionName === 'Ten Chi Jin') {
     addStatus({ statusName: 'Ten Chi Jin', stacks: 3, statusArray });
+  } else if (actionName === 'Bunshin') {
+    // Leaving actual Bunshin out because it doesn't really affect decision-making(?)
+    // addStatus({ statusName: 'Bunshin', stacks: 5, statusArray });
+    addStatus({ statusName: 'Phantom Kamaitachi Ready', statusArray });
   }
 };
 
