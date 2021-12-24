@@ -440,10 +440,30 @@ const calculateDelay = ({
   // const { job } = playerData;
 
   const { gcd } = playerData;
-  const actionType = getActionDataProperty({ actionName, property: 'type' });
+  const accelerationSpells = ['Verthunder', 'Veraero', 'Scatter', 'Verthunder III', 'Aero III', 'Impact'];
 
+  // Use status effets to determine delay
+  let fastCastDuration;
+
+  if (accelerationSpells.includes(actionName)) {
+    fastCastDuration = Math.max(
+      checkStatusDuration({ statusName: 'Swiftcast', statusArray }),
+      checkStatusDuration({ statusName: 'Dualcast', statusArray }),
+      checkStatusDuration({ statusName: 'Acceleration', statusArray }),
+    );
+  } else {
+    fastCastDuration = Math.max(
+      checkStatusDuration({ statusName: 'Swiftcast', statusArray }),
+      checkStatusDuration({ statusName: 'Dualcast', statusArray }),
+    );
+  }
+
+  if (fastCastDuration > 0) { return gcd; }
+  
+  const actionType = getActionDataProperty({ actionName, property: 'type' });
   if (actionType === 'Mudra') { return 0.5; }
   if (actionType === 'Ninjutsu') { return 1.5; }
+  
   return gcd;
 };
 
