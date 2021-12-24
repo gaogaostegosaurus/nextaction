@@ -51,8 +51,17 @@ const smnLoopGCDAction = ({
   
 }) => {
   const aetherchargeRecast = checkActionRecast({ actionName: 'Aethercharge', })
-  if ()
-  return 'Summon Bahamut';
+  const summonBahamutRecast = checkActionRecast({ actionName: 'Summon Bahamut', })
+  const summonPhoenixRecast = checkActionRecast({ actionName: 'Summon Phoenix', })
+
+  if (summonBahamutRecast < 1) { return 'Summon Bahamut'; }
+  if (something) { return 'Summon Phoenix'; }
+  
+  if (arcanum) { return 'Summon Garuda';
+return 'Summon }
+  if (summonBahamutRecast < 1) { return 'Summon Bahamut'; }
+  if (summonBahamutRecast < 1) { return 'Summon Bahamut'; }
+
   return 'Ruin III';
 };
 
