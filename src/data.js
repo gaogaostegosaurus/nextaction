@@ -901,9 +901,99 @@ const baseActionData = [
     icon: '',
   },
   
+  {
+    name: 'Arcane Circle',
+    affinity: 'RPR',
+    level: 72,
+    icon: '',
+  },
   
-
+  {
+    name: 'Regress',
+    affinity: 'RPR',
+    level: 74,
+    icon: '',
+  },
+  
+  {
+    name: 'Gluttony',
+    affinity: 'RPR',
+    level: 76,
+    icon: '',
+  },
+  
+  {
+    name: 'Enshroud',
+    affinity: 'RPR',
+    level: 80,
+    icon: '',
+  },
+  
+  {
+    name: 'Void Reaping',
+    affinity: 'RPR',
+    level: 80,
+    icon: '',
+  },
+  
+  {
+    name: 'Cross Reaping',
+    affinity: 'RPR',
+    level: 80,
+    icon: '',
+  },
+  
+  {
+    name: 'Grim Reaping',
+    affinity: 'RPR',
+    level: 80,
+    icon: '',
+  },
+  
+  {
+    name: 'Soulsow',
+    affinity: 'RPR',
+    level: 82,
+    icon: '',
+  },
+  
+  {
+    name: 'Harvest Moon',
+    affinity: 'RPR',
+    level: 82,
+    icon: '',
+  },
+  
+  {
+    name: 'Lemure\'s Slice',
+    affinity: 'RPR',
+    level: 86,
+    icon: '',
+  },
+  
+  {
+    name: 'Lemure\'s Scythe',
+    affinity: 'RPR',
+    level: 86,
+    icon: '',
+  },
+  
+  {
+    name: 'Plentiful Harvest',
+    affinity: 'RPR',
+    level: 88,
+    icon: '',
+  },
+  
+  {
+    name: 'Communio',
+    affinity: 'RPR',
+    level: 90,
+    icon: '',
+  },
+  
   // SMN
+  
   {
     name: 'Ruin',
     affinity: 'SMN',
