@@ -5,11 +5,11 @@
 addOverlayListener startOverlayEvents
 fadeIcon unfadeIcon removeIcon
 baseActionData baseStatusData playerStatsData getActionDataProperty
-addActionRecast
+addActionRecast calculateRecast
 addStatus removeStatus checkStatusDuration
 startLoop syncOverlay
 rdmPlayerChanged rdmActionMatch rdmStatusMatch
-ninTraits ninPlayerChanged ninTargetChanged ninActionMatch ninStatusMatch
+ninTraits ninPlayerChanged ninTargetChanged ninActionMatch ninStatusMatch ninCalculateDelay
 */
 
 // All possible events:
@@ -51,30 +51,18 @@ let regexReady;
 
 document.addEventListener('DOMContentLoaded', () => {
   console.log('DOM fully loaded and parsed');
-  startOverlayEvents();
   overlayReady = true;
+  startOverlayEvents();
 });
-
-addOverlayListener('onLogEvent', (e) => {
-  if (overlayReady !== true) { return; }
-  onLogEvent(e);
-});
-
-// Possily switch to this? Don't know how it's different
-// addOverlayListener('LogLine', (data) => {
-//   console.log(`line: ${data.line} | rawLine: ${data.rawLine}`);
-// });
 
 addOverlayListener('onPlayerChangedEvent', (e) => {
   // console.log(`onPlayerChangedEvent: ${JSON.stringify(e)}`);
-  if (overlayReady !== true) { return; }
-  onPlayerChangedEvent(e);
+  if (overlayReady === true) { onPlayerChangedEvent(e); }
 });
 
 addOverlayListener('onInCombatChangedEvent', (e) => {
   // console.log(`onInCombatChangedEvent: ${JSON.stringify(e)}`);
-  if (overlayReady !== true) { return; }
-  onInCombatChangedEvent(e);
+  if (overlayReady === true) { onInCombatChangedEvent(e); }
 });
 
 // addOverlayListener('onPartyWipe', (e) => {
@@ -84,20 +72,28 @@ addOverlayListener('onInCombatChangedEvent', (e) => {
 
 addOverlayListener('EnmityTargetData', (e) => {
   // console.log(`EnmityTargetData: ${JSON.stringify(e)}`);
-  if (overlayReady !== true) { return; }
-  EnmityTargetData(e);
+  if (overlayReady === true) { EnmityTargetData(e); }
 });
+
+addOverlayListener('onLogEvent', (e) => {
+  if (regexReady === true) { onLogEvent(e); }
+});
+
+// Possily switch to this? Don't know how it's different
+// addOverlayListener('LogLine', (data) => {
+//   console.log(`line: ${data.line} | rawLine: ${data.rawLine}`);
+// });
 
 const onPlayerChangedEvent = (e) => {
   // This triggers on job or level change
   if (e.detail.name !== currentPlayerData.name
   || e.detail.level !== currentPlayerData.level
   || e.detail.job !== currentPlayerData.job) {
-    // Clear all elements
-    // const rowDiv = document.getElementById('actions');
-    // while (rowDiv.hasChildElements()) {
-    //   rowDiv.removeChild(rowDiv.lastChild);
-    // }
+    // Clear row
+    document.getElementById('actions').innerHTML = '';
+
+    // Set regex as not available
+    regexReady = false;
 
     // Set new player data
     currentPlayerData.name = e.detail.name;
@@ -184,13 +180,6 @@ const onPlayerChangedEvent = (e) => {
 
 // eslint-disable-next-line no-unused-vars
 const onLogEvent = (e) => {
-  if (regexReady !== true) {
-    // console.log('regexReady !== true');
-    return;
-  }
-  // const { currentPlayerData } = nextActionOverlay;
-  // const { supportedJobs } = nextActionOverlay;
-
   const { logs } = e.detail;
   const { length } = e.detail.logs;
 
@@ -283,6 +272,7 @@ const actionMatch = ({
       playerData,
       recastArray,
       statusArray,
+      loop,
     });
   } else if (job === 'RDM') {
     rdmActionMatch({
@@ -292,15 +282,16 @@ const actionMatch = ({
       playerData,
       recastArray,
       statusArray,
+      loop,
     });
   }
 
   // Start loop with certain things only
-  if (!loop && checkStatusDuration({ statusName: 'Ten Chi Jin', statusArray }) === 0
-  && ['Spell', 'Weaponskill', 'Ninjutsu'].includes(actionType)) {
-    const delay = calculateDelay({ actionName });
-    startLoop({ delay });
-  }
+  // if (!loop && checkStatusDuration({ statusName: 'Ten Chi Jin', statusArray }) === 0
+  // && ['Spell', 'Weaponskill', 'Ninjutsu'].includes(actionType)) {
+  //   const delay = calculateDelay({ actionName });
+  //   startLoop({ delay });
+  // }
 };
 
 const statusMatch = ({
@@ -439,6 +430,7 @@ const toggleOverlayClass = () => {
   }
 };
 
+// eslint-disable-next-line no-unused-vars
 const calculateDelay = ({
   actionName,
   playerData = currentPlayerData,
