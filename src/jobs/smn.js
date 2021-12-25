@@ -68,6 +68,27 @@ return 'Summon }
   return 'Ruin';
 };
 
+const smnLoopGCDAction = ({
+  
+}) => {
+  const aetherchargeRecast = checkActionRecast({ actionName: 'Aethercharge', })
+  const summonBahamutRecast = checkActionRecast({ actionName: 'Summon Bahamut', })
+  const summonPhoenixRecast = checkActionRecast({ actionName: 'Summon Phoenix', })
+
+  if (summonBahamutRecast < 1) { return 'Summon Bahamut'; }
+  if (something) { return 'Summon Phoenix'; }
+  
+  if (arcanum) { return 'Summon Garuda';
+return 'Summon 
+  if (summonBahamutRecast < 1) { return 'Summon Bahamut'; }
+  if (summonBahamutRecast < 1) { return 'Summon Bahamut'; }
+
+  // Ruin for filling gaps
+  if (actionData.some((element) => element.name === 'Ruin III')) { return 'Ruin III'; }
+  if (actionData.some((element) => element.name === 'Ruin II')) { return 'Ruin II'; }
+  return 'Ruin';
+};
+
 
 // eslint-disable-next-line no-unused-vars
 const smnPlayerChanged = (e) => {
