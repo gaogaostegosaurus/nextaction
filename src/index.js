@@ -128,9 +128,11 @@ const onPlayerChangedEvent = (e) => {
 
     // Quit here if job isn't one of the supported ones atm
     if (!supportedJobs.includes(e.detail.job)) {
-      console.log('Job not supported');
+      console.log(`${job} not supported yet`);
       return;
     }
+
+    console.log(`Changed to ${job}${level}`);
 
     // Clone and filter into new action data array
     actionData = JSON.parse(JSON.stringify(baseActionData));
@@ -395,8 +397,8 @@ const EnmityTargetData = (e) => {
       //   rdmTargetChanged();
       // }
       console.log(`Switched targets to {Name: ${targetData.name} ID: ${targetData.id} Distance: ${targetData.distance}}`);
-      toggleOverlayClass();
     }
+    toggleOverlayClass();
   } else if (targetData.decimalID !== 0) {
     // Runs once per target loss (hopefully)
     // Set ID 0 for conditonals
@@ -423,7 +425,7 @@ const toggleOverlayClass = () => {
       document.getElementById('nextdiv').classList.replace('next-hide', 'next-show');
       overlayClass = 'show';
     }
-  } else {
+  } else if (overlayClass === 'show') {
     console.log('Hiding overlay');
     document.getElementById('nextdiv').classList.replace('next-show', 'next-hide');
     overlayClass = 'hide';
