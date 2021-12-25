@@ -358,12 +358,14 @@ const playerStatsMatch = ({ piety, skillSpeed, spellSpeed } = {}) => {
 const onInCombatChangedEvent = (e) => {
   if (currentPlayerData.combat !== e.detail.inGameCombat) { // Combat status changed
     currentPlayerData.combat = e.detail.inGameCombat; // true or false
+    console.log(`currentPlayerData.combat ${currentPlayerData.combat}`);
     toggleOverlayClass();
   }
 };
 
 const EnmityTargetData = (e) => {
-  const { job } = currentPlayerData;
+  // Stop if regexes aren't loaded up yet
+  if (regexReady !== true) { return; }
 
   // Possible properties for e.Target are
   // ID - as decimal number instead of hex
@@ -381,22 +383,18 @@ const EnmityTargetData = (e) => {
   // Copied from stringify for notes:
   // {"type":"EnmityTargetData","Target":{"ID":1111111111,"OwnerID":0,"Type":2,"TargetID":275370607,"Job":0,"Name":"Striking Dummy","CurrentHP":254,"MaxHP":16000,"PosX":-706.4552,"PosY":23.5000038,"PosZ":-583.5873,"Rotation":-0.461016417,"Distance":"2.78","EffectiveDistance":0,"Effects":[{"BuffID":508,"Stack":0,"Timer":10.7531652,"ActorID":275370607,"isOwner":false}]},"Focus":null,"Hover":null,"TargetOfTarget":{"ID":275370607,"OwnerID":0,"Type":1,"TargetID":3758096384,"Job":30,"Name":"Lyn Tah'row","CurrentHP":87008,"MaxHP":87008,"PosX":-708.9726,"PosY":23.5000038,"PosZ":-582.397156,"Rotation":2.01241565,"Distance":"0.00","EffectiveDistance":0,"Effects":[{"BuffID":365,"Stack":10,"Timer":30,"ActorID":3758096384,"isOwner":false},{"BuffID":360,"Stack":10,"Timer":30,"ActorID":3758096384,"isOwner":false}]},"Entries":[{"ID":275370607,"OwnerID":0,"Name":"Lyn Tah'row","Enmity":100,"isMe":true,"HateRate":100,"Job":30}]} (Source: file:///C:/asdf/asdf/asdf/listeners.js, Line: 219)
 
-  // const { currentPlayerData } = nextActionOverlay;
-  // const { job } = currentPlayerData;
-  // if (regexReady !== true) {
-  //   // TODO: rename this or set overlayReady to a different point
-  //   console.log('regexReady !== true');
-  //   return;
-  // }
-
   if (e.Target) {
     // Distance to "outside of circle" - helps if this is continuously updated?
     targetData.distance = e.Target.EffectiveDistance;
 
     if (e.Target.ID !== targetData.decimalID) {
+      // Everything here runs once per target change (hopefully)
       targetData.decimalID = e.Target.ID;
       targetData.id = targetData.decimalID.toString(16).toUpperCase();
       targetData.name = e.Target.Name; // Set new targetData
+
+      const { job } = currentPlayerData;
+
       if (job === 'NIN') {
         ninTargetChanged();
       // } else {
@@ -405,15 +403,16 @@ const EnmityTargetData = (e) => {
       // } else if (job === 'RDM') {
       //   rdmTargetChanged();
       // }
-      console.log(`Switched targets Name: ${targetData.name} ID: ${targetData.id} Distance: ${targetData.distance}`);
+      console.log(`Switched targets to {Name: ${targetData.name} ID: ${targetData.id} Distance: ${targetData.distance}}`);
       toggleOverlayClass();
     }
   } else if (targetData.decimalID !== 0) {
+    // Runs once per target loss (hopefully)
     // Set ID 0 for conditonals
     targetData.decimalID = 0;
-    targetData.id = 0;
+    targetData.id = '';
     targetData.distance = 9999;
-    console.log('Switched to no target');
+    console.log('Switched targets to no target');
     toggleOverlayClass();
   }
 };
@@ -423,33 +422,21 @@ const toggleOverlayClass = () => {
   if (targetData.id.startsWith('4') && targetData.distance < 30) {
     // Show overlay if targetting enemy and distance < 30
     if (overlayClass !== 'show') {
+      console.log('Showing overlay');
       document.getElementById('nextdiv').classList.replace('next-hide', 'next-show');
       overlayClass = 'show';
     }
   } else if (currentPlayerData.combat === true) {
     if (overlayClass !== 'show') {
+      console.log('Showing overlay');
       document.getElementById('nextdiv').classList.replace('next-hide', 'next-show');
       overlayClass = 'show';
     }
   } else {
+    console.log('Hiding overlay');
     document.getElementById('nextdiv').classList.replace('next-show', 'next-hide');
     overlayClass = 'hide';
   }
-};
-
-const calculateRecast = ({
-  recast = 2.5, // Should work with other stuff too like Aethercharge
-  modifier = 1, // 0.85 for Huton, etc. etc.
-} = {}) => {
-  const { level } = currentPlayerData;
-
-  let { speed } = currentPlayerData;
-  // Set speed to base stat if there hasn't been a chance to update things
-  if (!speed) { speed = playerStatsData[level - 1].baseStat; }
-
-  // eslint-disable-next-line max-len
-  const newRecast = Math.floor(Math.floor(Math.floor((1000 - Math.floor((130 * (speed - playerStatsData[level - 1].baseStat)) / playerStatsData[level - 1].levelMod)) * recast) * modifier) / 10) / 100;
-  return newRecast;
 };
 
 const calculateDelay = ({
@@ -458,38 +445,12 @@ const calculateDelay = ({
   // recastArray = currentRecastArray,
   statusArray = currentStatusArray,
 } = {}) => {
-  const { job } = playerData;
+  const { job } = currentPlayerData;
 
-  const { gcd } = playerData;
+  // if (job === 'RDM') { return rdmCalculateDelay({ actionName, playerData, statusArray }); }
+  if (job === 'NIN') { return ninCalculateDelay({ actionName, playerData, statusArray }); }
 
-  // Use status effets to determine delay
-
-  if (job === 'RDM') { return rdmCalculateDelay({ actionName, playerData, statusArray }); }
-
-  const actionType = getActionDataProperty({ actionName, property: 'type' });
-  if (actionType === 'Mudra') { return 0.5; }
-  if (actionType === 'Ninjutsu') { return 1.5; }
-  if (actionType === 'Spell') {
-    let fastCastDuration;
-    const accelerationSpells = ['Verthunder', 'Veraero', 'Scatter', 'Verthunder III', 'Aero III', 'Impact'];
-    if (playerData.job === 'RDM') {
-      if (accelerationSpells.includes(actionName)) {
-        fastCastDuration = Math.max(
-          checkStatusDuration({ statusName: 'Swiftcast', statusArray }),
-          checkStatusDuration({ statusName: 'Dualcast', statusArray }),
-          checkStatusDuration({ statusName: 'Acceleration', statusArray }),
-        );
-      } else {
-        fastCastDuration = Math.max(
-          checkStatusDuration({ statusName: 'Swiftcast', statusArray }),
-          checkStatusDuration({ statusName: 'Dualcast', statusArray }),
-        );
-      }
-      if (fastCastDuration > 0) { return gcd; }
-    }
-  }
-
-  return gcd;
+  return 0;
 };
 
 const setComboAction = ({
@@ -497,6 +458,8 @@ const setComboAction = ({
   playerData = currentPlayerData,
   statusArray = currentStatusArray,
 } = {}) => {
+  // TODO: This still needs some tweaking to drop combos properly
+
   const actionDataIndex = actionData.findIndex((e) => e.name === actionName);
   if (actionDataIndex === -1) { console.log(`setComboAction: ${actionName} not found`); return; }
   // if (!actionData[actionDataIndex].type || !actionData[actionDataIndex].comboBreak) {

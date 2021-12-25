@@ -1,10 +1,10 @@
 /* globals
-actionData currentPlayerData
+actionData getActionDataProperty
+currentPlayerData
 loopPlayerData loopRecastArray loopStatusArray
-calculateRecast
-resetActionRecast
-removeStatus
-getActionDataProperty addActionRecast addStatus checkStatusDuration checkActionRecast
+addActionRecast checkActionRecast resetActionRecast calculateRecast
+addStatus removeStatus checkStatusDuration
+startLoop
 */
 
 // eslint-disable-next-line no-unused-vars
@@ -328,4 +328,16 @@ const ninLoopOGCDAction = ({
   // if (ninki + nextWeaponskillNinki > 100 && bhavacakraRecast < 1) { return 'Bhavacakra'; }
 
   return '';
+};
+
+
+const ninCalculateDelay = ({
+  actionName,
+  playerData = currentPlayerData,
+  statusArray = currentStatusArray,
+} = {}) => {
+  const actionType = getActionDataProperty({ actionName, property: 'type' });
+  if (actionType === 'Mudra') { return 0.5; }
+  if (actionType === 'Ninjutsu') { return 1.5; }
+  return playerData.gcd;
 };

@@ -1,4 +1,7 @@
-/* globals actionData */
+/* globals
+actionData playerStatsData
+currentPlayerData
+*/
 
 // eslint-disable-next-line no-unused-vars
 const addActionRecast = ({
@@ -157,3 +160,19 @@ const checkActionRecast = ({
 //   // Return charges remaining from above calculation
 //   return chargesRemaining;
 // };
+
+// eslint-disable-next-line no-unused-vars
+const calculateRecast = ({
+  recast = 2.5, // Should work with other stuff too like Aethercharge
+  modifier = 1, // 0.85 for Huton, etc. etc.
+} = {}) => {
+  const { level } = currentPlayerData;
+
+  let { speed } = currentPlayerData;
+  // Set speed to base stat if there hasn't been a chance to update things
+  if (!speed) { speed = playerStatsData[level - 1].baseStat; }
+
+  // eslint-disable-next-line max-len
+  const newRecast = Math.floor(Math.floor(Math.floor((1000 - Math.floor((130 * (speed - playerStatsData[level - 1].baseStat)) / playerStatsData[level - 1].levelMod)) * recast) * modifier) / 10) / 100;
+  return newRecast;
+};
