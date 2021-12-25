@@ -1,10 +1,10 @@
 /* globals
-actionData currentPlayerData
+actionData getActionDataProperty
+currentPlayerData
 loopPlayerData loopRecastArray loopStatusArray
-calculateRecast
-resetActionRecast
-removeStatus
-getActionDataProperty addActionRecast addStatus checkStatusDuration checkActionRecast
+addActionRecast checkActionRecast resetActionRecast calculateRecast
+addStatus removeStatus checkStatusDuration
+startLoop
 */
 
 // eslint-disable-next-line no-unused-vars
