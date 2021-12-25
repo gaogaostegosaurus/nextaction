@@ -793,13 +793,207 @@ const baseActionData = [
     name: 'Hell\'s Ingress',
     affinity: 'RPR',
     level: 20,
-    type: 'Weaponskill',
-    comboAction: 'Slice',
-    soul: 10,
+    icon: '',
+  },
+
+  {
+    name: 'Hell\'s Egress',
+    affinity: 'RPR',
+    level: 20,
+    icon: '',
+  },
+
+  {
+    name: 'Spinning Scythe',
+    affinity: 'RPR',
+    level: 25,
+    icon: '',
+  },
+
+  {
+    name: 'Infernal Slice',
+    affinity: 'RPR',
+    level: 30,
+    icon: '',
+  },
+
+  {
+    name: 'Whorl of Death',
+    affinity: 'RPR',
+    level: 35,
+    icon: '',
+  },
+
+  {
+    name: 'Arcane Crest',
+    affinity: 'RPR',
+    level: 40,
+    icon: '',
+  },
+
+  {
+    name: 'Nightmare Scythe',
+    affinity: 'RPR',
+    level: 45,
+    icon: '',
+  },
+
+  {
+    name: 'Blood Stalk',
+    affinity: 'RPR',
+    level: 50,
+    icon: '',
+  },
+
+  {
+    name: 'Grim Swathe',
+    affinity: 'RPR',
+    level: 55,
+    icon: '',
+  },
+
+  {
+    name: 'Soul Slice',
+    affinity: 'RPR',
+    level: 60,
+    icon: '',
+  },
+
+  {
+    name: 'Soul Scythe',
+    affinity: 'RPR',
+    level: 65,
+    icon: '',
+  },
+
+  {
+    name: 'Gibbet',
+    affinity: 'RPR',
+    level: 70,
+    icon: '',
+  },
+
+  {
+    name: 'Gallows',
+    affinity: 'RPR',
+    level: 70,
+    icon: '',
+  },
+
+  {
+    name: 'Guillotine',
+    affinity: 'RPR',
+    level: 70,
+    icon: '',
+  },
+
+  {
+    name: 'Unveiled Gibbet',
+    affinity: 'RPR',
+    level: 70,
+    icon: '',
+  },
+
+  {
+    name: 'Unveiled Gallows',
+    affinity: 'RPR',
+    level: 70,
+    icon: '',
+  },
+
+  {
+    name: 'Arcane Circle',
+    affinity: 'RPR',
+    level: 72,
+    icon: '',
+  },
+
+  {
+    name: 'Regress',
+    affinity: 'RPR',
+    level: 74,
+    icon: '',
+  },
+
+  {
+    name: 'Gluttony',
+    affinity: 'RPR',
+    level: 76,
+    icon: '',
+  },
+
+  {
+    name: 'Enshroud',
+    affinity: 'RPR',
+    level: 80,
+    icon: '',
+  },
+
+  {
+    name: 'Void Reaping',
+    affinity: 'RPR',
+    level: 80,
+    icon: '',
+  },
+
+  {
+    name: 'Cross Reaping',
+    affinity: 'RPR',
+    level: 80,
+    icon: '',
+  },
+
+  {
+    name: 'Grim Reaping',
+    affinity: 'RPR',
+    level: 80,
+    icon: '',
+  },
+
+  {
+    name: 'Soulsow',
+    affinity: 'RPR',
+    level: 82,
+    icon: '',
+  },
+
+  {
+    name: 'Harvest Moon',
+    affinity: 'RPR',
+    level: 82,
+    icon: '',
+  },
+
+  {
+    name: 'Lemure\'s Slice',
+    affinity: 'RPR',
+    level: 86,
+    icon: '',
+  },
+
+  {
+    name: 'Lemure\'s Scythe',
+    affinity: 'RPR',
+    level: 86,
+    icon: '',
+  },
+
+  {
+    name: 'Plentiful Harvest',
+    affinity: 'RPR',
+    level: 88,
+    icon: '',
+  },
+
+  {
+    name: 'Communio',
+    affinity: 'RPR',
+    level: 90,
     icon: '',
   },
 
   // SMN
+
   {
     name: 'Ruin',
     affinity: 'SMN',
