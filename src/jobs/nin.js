@@ -329,3 +329,15 @@ const ninLoopOGCDAction = ({
 
   return '';
 };
+
+
+const ninCalculateDelay = ({
+  actionName,
+  playerData = currentPlayerData,
+  statusArray = currentStatusArray,
+} = {}) => {
+  const actionType = getActionDataProperty({ actionName, property: 'type' });
+  if (actionType === 'Mudra') { return 0.5; }
+  if (actionType === 'Ninjutsu') { return 1.5; }
+  return playerData.gcd;
+};
