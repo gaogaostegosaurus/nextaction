@@ -6,25 +6,29 @@ addOverlayListener startOverlayEvents
 fadeIcon unfadeIcon removeIcon
 baseActionData baseStatusData playerStatsData getActionDataProperty
 addActionRecast
-addStatus removeStatus
+addStatus removeStatus checkStatusDuration
+startLoop syncOverlay
 rdmPlayerChanged rdmActionMatch rdmStatusMatch
-ninTraits ninPlayerChanged ninTargetChanged ninActionMatch
-
+ninTraits ninPlayerChanged ninTargetChanged ninActionMatch ninStatusMatch
 */
 
 // All possible events:
 // https://github.com/quisquous/cactbot/blob/master/plugin/CactbotEventSource/CactbotEventSource.cs
 
+// Declaring all variables here
+
 // Maximum number of actions looked up
 // eslint-disable-next-line no-unused-vars
 const maxIcons = 10;
 
-const currentPlayerData = {};
-// eslint-disable-next-line no-unused-vars
-const currentRecastArray = []; const currentStatusArray = []; let overlayArray = [];
-// eslint-disable-next-line no-unused-vars
+// eslint-disable-next-line no-unused-vars, prefer-const
+let currentPlayerData = {}; let currentRecastArray = []; let currentStatusArray = [];
+// eslint-disable-next-line no-unused-vars, prefer-const
+let loopPlayerData = {}; let loopRecastArray = []; let loopStatusArray = [];
 
 const targetData = {};
+// eslint-disable-next-line no-unused-vars
+let overlayClass; let overlayArray = [];
 // eslint-disable-next-line no-unused-vars
 let statusData = []; let actionData = []; let castingActionData = [];
 
@@ -40,7 +44,7 @@ let actionMatchTimestamp = 0;
 const playerStatsRegex = new RegExp('^.{15}(?<logType>PlayerStats) 0C:(?<jobID>[\\d]+):(?<strength>[\\d]+):(?<dexterity>[\\d]+):(?<vitality>[\\d]+):(?<intelligence>[\\d]+):(?<mind>[\\d]+):(?<piety>[\\d]+):(?<attackPower>[\\d]+):(?<directHitRate>[\\d]+):(?<criticalHit>[\\d]+):(?<attackMagicPotency>[\\d]+):(?<healingMagicPotency>[\\d]+):(?<determination>[\\d]+):(?<skillSpeed>[\\d]+):(?<spellSpeed>[\\d]+):0:(?<tenacity>[\\d]+):'); // This regex is always static for now, maybe not in future?
 const fadeOutRegex = new RegExp('^.{15}(?<logType>Director) 21:8[\\dA-F]{7}:40000005:');
 
-const supportedJobs = ['NIN', 'RDM'];
+const supportedJobs = ['NIN'];
 // let overlayVisible = false;
 let overlayReady;
 let regexReady;
@@ -52,6 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 addOverlayListener('onLogEvent', (e) => {
+  if (overlayReady !== true) { return; }
   onLogEvent(e);
 });
 
@@ -62,11 +67,13 @@ addOverlayListener('onLogEvent', (e) => {
 
 addOverlayListener('onPlayerChangedEvent', (e) => {
   // console.log(`onPlayerChangedEvent: ${JSON.stringify(e)}`);
+  if (overlayReady !== true) { return; }
   onPlayerChangedEvent(e);
 });
 
 addOverlayListener('onInCombatChangedEvent', (e) => {
   // console.log(`onInCombatChangedEvent: ${JSON.stringify(e)}`);
+  if (overlayReady !== true) { return; }
   onInCombatChangedEvent(e);
 });
 
@@ -77,23 +84,20 @@ addOverlayListener('onInCombatChangedEvent', (e) => {
 
 addOverlayListener('EnmityTargetData', (e) => {
   // console.log(`EnmityTargetData: ${JSON.stringify(e)}`);
+  if (overlayReady !== true) { return; }
   EnmityTargetData(e);
 });
 
 const onPlayerChangedEvent = (e) => {
-  if (overlayReady !== true) {
-    console.log('overlayReady !== true');
-    return;
-  }
-
   // This triggers on job or level change
   if (e.detail.name !== currentPlayerData.name
-  || e.detail.job !== currentPlayerData.job
-  || e.detail.level !== currentPlayerData.level) {
-    if (!supportedJobs.includes(e.detail.job)) {
-      console.log('Job not supported');
-      return;
-    }
+  || e.detail.level !== currentPlayerData.level
+  || e.detail.job !== currentPlayerData.job) {
+    // Clear all elements
+    // const rowDiv = document.getElementById('actions');
+    // while (rowDiv.hasChildElements()) {
+    //   rowDiv.removeChild(rowDiv.lastChild);
+    // }
 
     // Set new player data
     currentPlayerData.name = e.detail.name;
@@ -125,6 +129,12 @@ const onPlayerChangedEvent = (e) => {
     }
 
     const { role } = currentPlayerData;
+
+    // Quit here if job isn't one of the supported ones atm
+    if (!supportedJobs.includes(e.detail.job)) {
+      console.log('Job not supported');
+      return;
+    }
 
     // Clone and filter into new action data array
     actionData = JSON.parse(JSON.stringify(baseActionData));
@@ -175,7 +185,7 @@ const onPlayerChangedEvent = (e) => {
 // eslint-disable-next-line no-unused-vars
 const onLogEvent = (e) => {
   if (regexReady !== true) {
-    console.log('regexReady !== true');
+    // console.log('regexReady !== true');
     return;
   }
   // const { currentPlayerData } = nextActionOverlay;
@@ -210,27 +220,27 @@ const onLogEvent = (e) => {
         targetID: statusLine.groups.targetID,
         statusStacks: statusLine.groups.statusStacks,
       });
-    // } else if (startsCastingLine) {
-    //   startsCastingMatch({
-    //     // logType: startsCastingMatch.logType,
-    //     actionName: startsCastingLine.groups.actionName,
-    //     // targetID: startsCastingMatch.targetID,
-    //   });
-    // } else if (cancelActionLine) {
-    //   cancelActionMatch({
-    //     // logType: cancelActionMatch.logType,
-    //     actionName: cancelActionLine.groups.actionName,
-    //     // cancelReason: cancelActionMatch.cancelReason,
-    //   });
-    // } else if (playerStatsLine) {
-    //   // playerStatsMatch({ piety, skillSpeed, spellSpeed });
-    // } else if (fadeOutLine) {
-    //   // Reset data on wipes?
-    //   // clearTimeout(loopTimeout);
-    //   currentStatusArray = [];
-    //   currentRecastArray = [];
-    //   overlayArray = [];
-    //   syncOverlay();
+    } else if (startsCastingLine) {
+      startsCastingMatch({
+        // logType: startsCastingMatch.logType,
+        actionName: startsCastingLine.groups.actionName,
+        // targetID: startsCastingMatch.targetID,
+      });
+    } else if (cancelActionLine) {
+      cancelActionMatch({
+        // logType: cancelActionMatch.logType,
+        actionName: cancelActionLine.groups.actionName,
+        // cancelReason: cancelActionMatch.cancelReason,
+      });
+    } else if (playerStatsLine) {
+      // playerStatsMatch({ piety, skillSpeed, spellSpeed });
+    } else if (fadeOutLine) {
+      // Reset data on wipes?
+      // clearTimeout(loopTimeout);
+      currentStatusArray = [];
+      currentRecastArray = [];
+      overlayArray = [];
+      syncOverlay();
     }
   }
 };
@@ -284,8 +294,6 @@ const actionMatch = ({
       statusArray,
     });
   }
-
-
 
   // Start loop with certain things only
   if (!loop && checkStatusDuration({ statusName: 'Ten Chi Jin', statusArray }) === 0
@@ -350,11 +358,11 @@ const playerStatsMatch = ({ piety, skillSpeed, spellSpeed } = {}) => {
 const onInCombatChangedEvent = (e) => {
   if (currentPlayerData.combat !== e.detail.inGameCombat) { // Combat status changed
     currentPlayerData.combat = e.detail.inGameCombat; // true or false
+    toggleOverlayClass();
   }
 };
 
 const EnmityTargetData = (e) => {
-  
   const { job } = currentPlayerData;
 
   // Possible properties for e.Target are
@@ -375,45 +383,57 @@ const EnmityTargetData = (e) => {
 
   // const { currentPlayerData } = nextActionOverlay;
   // const { job } = currentPlayerData;
-  if (regexReady !== true) {
-    // TODO: rename this or set overlayReady to a different point
-    console.log('regexReady !== true');
-    return;
-  }
+  // if (regexReady !== true) {
+  //   // TODO: rename this or set overlayReady to a different point
+  //   console.log('regexReady !== true');
+  //   return;
+  // }
 
   if (e.Target) {
-    targetData.distance = e.Target.EffectiveDistance; // Distance to "outside of circle"
+    // Distance to "outside of circle" - helps if this is continuously updated?
+    // targetData.distance = e.Target.EffectiveDistance;
 
     if (e.Target.ID !== targetData.decimalID) {
-      targetData.name = e.Target.Name; // Set new targetData
       targetData.decimalID = e.Target.ID;
       targetData.id = targetData.decimalID.toString(16).toUpperCase();
+      targetData.name = e.Target.Name; // Set new targetData
       if (job === 'NIN') {
         ninTargetChanged();
-      } else {
-        startLoop();
+      // } else {
+      //   startLoop();
       }
       // } else if (job === 'RDM') {
       //   rdmTargetChanged();
       // }
+      console.log(`Switched targets to ${targetData.name} ${targetData.id}`);
+      toggleOverlayClass();
     }
+  } else if (targetData.decimalID !== 0) {
+    // Set ID 0 for conditonals
+    targetData.decimalID = 0;
+    targetData.id = 0;
+    console.log('Switched to no target');
+    toggleOverlayClass();
   }
+};
 
+const toggleOverlayClass = () => {
   // Control overlay visiblity based on target
-  // if (targetData.targetID && targetData.targetID.startsWith('4') && targetData.distance <= 30) {
-  //   if (overlayVisible !== true) {
-  //     document.getElementById('nextdiv').classList.replace('next-hide', 'next-show');
-  //     overlayVisible = true;
-  //   }
-  // } else if (currentPlayerData.combat === true) {
-  //   if (overlayVisible !== true) {
-  //     document.getElementById('nextdiv').classList.replace('next-hide', 'next-show');
-  //     overlayVisible = true;
-  //   }
-  // } else {
-  //   document.getElementById('nextdiv').classList.replace('next-show', 'next-hide');
-  //   overlayVisible = true;
-  // }
+  if (targetData.id.startsWith('4') && targetData.distance < 30) {
+    // Show overlay if targetting enemy and distance < 30
+    if (overlayClass !== 'show') {
+      document.getElementById('nextdiv').classList.replace('next-hide', 'next-show');
+      overlayClass = 'show';
+    }
+  } else if (currentPlayerData.combat === true) {
+    if (overlayClass !== 'show') {
+      document.getElementById('nextdiv').classList.replace('next-hide', 'next-show');
+      overlayClass = 'show';
+    }
+  } else {
+    document.getElementById('nextdiv').classList.replace('next-show', 'next-hide');
+    overlayClass = 'hide';
+  }
 };
 
 const calculateRecast = ({
@@ -434,36 +454,38 @@ const calculateRecast = ({
 const calculateDelay = ({
   actionName,
   playerData = currentPlayerData,
-  recastArray = currentRecastArray,
+  // recastArray = currentRecastArray,
   statusArray = currentStatusArray,
 } = {}) => {
   // const { job } = playerData;
 
   const { gcd } = playerData;
-  const accelerationSpells = ['Verthunder', 'Veraero', 'Scatter', 'Verthunder III', 'Aero III', 'Impact'];
 
   // Use status effets to determine delay
-  let fastCastDuration;
 
-  if (accelerationSpells.includes(actionName)) {
-    fastCastDuration = Math.max(
-      checkStatusDuration({ statusName: 'Swiftcast', statusArray }),
-      checkStatusDuration({ statusName: 'Dualcast', statusArray }),
-      checkStatusDuration({ statusName: 'Acceleration', statusArray }),
-    );
-  } else {
-    fastCastDuration = Math.max(
-      checkStatusDuration({ statusName: 'Swiftcast', statusArray }),
-      checkStatusDuration({ statusName: 'Dualcast', statusArray }),
-    );
-  }
-
-  if (fastCastDuration > 0) { return gcd; }
-  
   const actionType = getActionDataProperty({ actionName, property: 'type' });
   if (actionType === 'Mudra') { return 0.5; }
   if (actionType === 'Ninjutsu') { return 1.5; }
-  
+  if (actionType === 'Spell') {
+    let fastCastDuration;
+    const accelerationSpells = ['Verthunder', 'Veraero', 'Scatter', 'Verthunder III', 'Aero III', 'Impact'];
+    if (playerData.job === 'RDM') {
+      if (accelerationSpells.includes(actionName)) {
+        fastCastDuration = Math.max(
+          checkStatusDuration({ statusName: 'Swiftcast', statusArray }),
+          checkStatusDuration({ statusName: 'Dualcast', statusArray }),
+          checkStatusDuration({ statusName: 'Acceleration', statusArray }),
+        );
+      } else {
+        fastCastDuration = Math.max(
+          checkStatusDuration({ statusName: 'Swiftcast', statusArray }),
+          checkStatusDuration({ statusName: 'Dualcast', statusArray }),
+        );
+      }
+      if (fastCastDuration > 0) { return gcd; }
+    }
+  }
+
   return gcd;
 };
 

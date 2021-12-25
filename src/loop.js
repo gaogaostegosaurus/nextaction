@@ -1,13 +1,11 @@
 /* globals
   actionMatch
   currentPlayerData currentRecastArray currentStatusArray
-  loopPlayerData:writable loopRecastArray:writable loopStatusArray:writable
-  overlayArray:writable
   ninLoopGCDAction ninLoopOGCDAction ninLoopPlayerChanged
   rdmLoopGCDAction rdmLoopOGCDAction rdmLoopPlayerChanged
 */
 
-let loopPlayerData = {}; let loopRecastArray = []; let loopStatusArray = [];
+
 
 // Loop finds the next this many actions
 const maxActions = 100;
