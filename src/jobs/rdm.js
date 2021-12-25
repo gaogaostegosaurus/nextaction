@@ -513,30 +513,36 @@ const rdmCalculateDelay = ({
   const { gcd } = playerData;
   const actionCast = getActionDataProperty({ actionName, property: 'cast' });
   const actionType = getActionDataProperty({ actionName, property: 'type' });
+  const actionRecast = getActionDataProperty({ actionName, property: 'recast' });
 
   const accelerationSpells = ['Verthunder', 'Veraero', 'Scatter', 'Verthunder III', 'Aero III', 'Impact'];
 
   let delay = 0;
-  // Get GCD time
-  if (actionType === 'Spell' && actionCast !== undefined) {
-    // Check for fastcast status and remove if necessary
-    if (accelerationSpells.includes(actionName) && checkStatusDuration({ statusName: 'Acceleration', statusArray }) > 0) {
-      removeStatus({ statusName: 'Acceleration', statusArray });
-      delay = gcd;
-    } else if (checkStatusDuration({ statusName: 'Dualcast', statusArray }) > 0) {
-      removeStatus({ statusName: 'Dualcast', statusArray });
-      delay = gcd;
-    } else if (checkStatusDuration({ statusName: 'Swiftcast', statusArray }) > 0) {
-      removeStatus({ statusName: 'Swiftcast', statusArray });
-      delay = gcd;
-    } else {
-      addStatus({ statusName: 'Dualcast', statusArray });
-      delay = Math.max(gcd - actionCast, 0);
-    }
-  } else {
-    // Weaponskills and no-cast spells
-    delay = gcd;
+
+  if (actionType === 'Weaponskill') {
+    if (actionName === 'Enchanted Riposte') { return 1.5; }
+    if (actionName === 'Enchanted Zwerchhau') { return 1.5; }
+    if (actionName === 'Enchanted Redoublement') { return 2.2; }
+    return 2.5;
   }
 
-  return delay;
+  // Get GCD time for spells with cast times
+  if (actionType === 'Spell' && actionCast) {    
+    if (accelerationSpells.includes(actionName) && checkStatusDuration({ statusName: 'Acceleration', statusArray }) > 0) {
+      removeStatus({ statusName: 'Acceleration', statusArray });
+      return gcd;
+    } else if (checkStatusDuration({ statusName: 'Dualcast', statusArray }) > 0) {
+      removeStatus({ statusName: 'Dualcast', statusArray });
+      return gcd;
+    }
+    if (checkStatusDuration({ statusName: 'Swiftcast', statusArray }) > 0) {
+      removeStatus({ statusName: 'Swiftcast', statusArray });
+      return gcd;
+    }
+    
+    addStatus({ statusName: 'Dualcast', statusArray });
+    return Math.max(gcd - actionCast, 0);
+  }
+
+  return gcd; // Includes no-cast spells
 };
