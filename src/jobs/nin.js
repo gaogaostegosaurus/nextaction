@@ -1,6 +1,6 @@
 /* globals
 actionData getActionDataProperty
-currentPlayerData
+currentPlayerData calculateDelay
 loopPlayerData loopRecastArray loopStatusArray
 addActionRecast checkActionRecast resetActionRecast calculateRecast
 addStatus removeStatus checkStatusDuration
@@ -87,9 +87,10 @@ const ninActionMatch = ({
   // logType, // Currently unused parameters commented out
   actionName,
   // targetID,
-  // playerData,
+  playerData,
   recastArray,
   statusArray,
+  loop,
 } = {}) => {
   const actionType = getActionDataProperty({ actionName, property: 'type' });
 
@@ -136,6 +137,13 @@ const ninActionMatch = ({
   } else if (actionName === 'Phantom Kamaitachi') {
     // Remove since it effectively has an infinite time
     removeStatus({ statusName: 'Phantom Kamaitachi Ready', statusArray });
+  }
+
+  // Start loop if not in it already
+  if (!loop && checkStatusDuration({ statusName: 'Ten Chi Jin', statusArray }) === 0
+  && ['Spell', 'Weaponskill', 'Ninjutsu'].includes(actionType)) {
+    const delay = calculateDelay({ actionName, playerData, statusArray });
+    startLoop({ delay });
   }
 };
 

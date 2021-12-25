@@ -110,7 +110,7 @@ const checkActionRecast = ({
   // Example: Mudra will return < 20 if it has one charge left, 0 at 2 charges
   const recastTimestamp = recastArray[recastArrayIndex].recast;
   const recastSeconds = (recastTimestamp - Date.now()) / 1000;
- 
+
   // Return 0 and remove if recast <= 0 (to prevent shenanigans)
   if (recastSeconds <= 0) {
     resetActionRecast({ actionName, recastArray });
