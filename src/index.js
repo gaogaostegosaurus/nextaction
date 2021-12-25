@@ -437,8 +437,6 @@ const toggleOverlayClass = () => {
   }
 };
 
-
-
 const calculateDelay = ({
   actionName,
   playerData = currentPlayerData,
