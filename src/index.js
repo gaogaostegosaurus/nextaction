@@ -391,7 +391,7 @@ const EnmityTargetData = (e) => {
 
   if (e.Target) {
     // Distance to "outside of circle" - helps if this is continuously updated?
-    // targetData.distance = e.Target.EffectiveDistance;
+    targetData.distance = e.Target.EffectiveDistance;
 
     if (e.Target.ID !== targetData.decimalID) {
       targetData.decimalID = e.Target.ID;
@@ -405,13 +405,14 @@ const EnmityTargetData = (e) => {
       // } else if (job === 'RDM') {
       //   rdmTargetChanged();
       // }
-      console.log(`Switched targets to ${targetData.name} ${targetData.id}`);
+      console.log(`Switched targets Name: ${targetData.name} ID: ${targetData.id} Distance: ${targetData.distance}`);
       toggleOverlayClass();
     }
   } else if (targetData.decimalID !== 0) {
     // Set ID 0 for conditonals
     targetData.decimalID = 0;
     targetData.id = 0;
+    targetData.distance = 9999;
     console.log('Switched to no target');
     toggleOverlayClass();
   }
@@ -457,11 +458,13 @@ const calculateDelay = ({
   // recastArray = currentRecastArray,
   statusArray = currentStatusArray,
 } = {}) => {
-  // const { job } = playerData;
+  const { job } = playerData;
 
   const { gcd } = playerData;
 
   // Use status effets to determine delay
+
+  if (job === 'RDM') { return rdmCalculateDelay({ actionName, playerData, statusArray }); }
 
   const actionType = getActionDataProperty({ actionName, property: 'type' });
   if (actionType === 'Mudra') { return 0.5; }
