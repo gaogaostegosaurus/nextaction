@@ -799,7 +799,6 @@ const baseActionData = [
     icon: '',
   },
 
-
   // SMN
   {
     name: 'Ruin',
