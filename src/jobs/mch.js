@@ -1,64 +1,68 @@
 /* globals
-actionData currentPlayerData
+actionData getActionDataProperty
+currentPlayerData calculateDelay
 loopPlayerData loopRecastArray loopStatusArray
-calculateRecast
-resetActionRecast
-removeStatus
-getActionDataProperty addActionRecast addStatus checkStatusDuration checkActionRecast
+addActionRecast checkActionRecast resetActionRecast calculateRecast
+addStatus removeStatus checkStatusDuration
+startLoop
 */
 
 // eslint-disable-next-line no-unused-vars
-const rprTraits = ({ level } = {}) => {
-  if (level >= 50) {
-    let actionDataIndex;
-    actionDataIndex = actionData.findIndex((element) => element.name === 'Slice');
-    actionData[actionDataIndex].soul = 10;
-    actionDataIndex = actionData.findIndex((element) => element.name === 'Waxing Slice');
-    actionData[actionDataIndex].soul = 10;
-    actionDataIndex = actionData.findIndex((element) => element.name === 'Spinning Scythe');
-    actionData[actionDataIndex].soul = 10;
-    actionDataIndex = actionData.findIndex((element) => element.name === 'Infernal Slice');
-    actionData[actionDataIndex].soul = 10;
-    actionDataIndex = actionData.findIndex((element) => element.name === 'Nightmare Scythe');
-    actionData[actionDataIndex].soul = 10;
+const mchTraits = ({ level } = {}) => {
+  if (level >= 54) {
+    const actionDataIndex = actionData.findIndex((element) => element.name === 'Split Shot');
+    actionData.splice(actionDataIndex, 1);
   }
 
-  if (level >= 70) {
-    let actionDataIndex;
-    actionDataIndex = actionData.findIndex((element) => element.name === 'Blood Stalk');
-    actionData[actionDataIndex].status = 'Soul Reaver';
-    actionData[actionDataIndex].statusDuration = 30;
-    actionDataIndex = actionData.findIndex((element) => element.name === 'Grim Swathe');
-    actionData[actionDataIndex].status = 'Soul Reaver';
-    actionData[actionDataIndex].statusDuration = 30;
+  if (level >= 60) {
+    const actionDataIndex = actionData.findIndex((element) => element.name === 'Slug Shot');
+    actionData.splice(actionDataIndex, 1);
   }
 
-  if (level >= 78) {
-    let actionDataIndex;
-    actionDataIndex = actionData.findIndex((element) => element.name === 'Soul Slice');
-    actionData[actionDataIndex].charges = 2;
-    actionDataIndex = actionData.findIndex((element) => element.name === 'Soul Scythe');
-    actionData[actionDataIndex].charges = 2;
+  if (level >= 64) {
+    const actionDataIndex = actionData.findIndex((element) => element.name === 'Clean Shot');
+    actionData.splice(actionDataIndex, 1);
   }
 
-  // if (level >= 80) {
-  //   let actionDataIndex;
-  //   actionDataIndex = actionData.findIndex((element) => element.name === 'Gibbet');
-  //   actionData[actionDataIndex].lemureShroud = 10;
-  //   actionDataIndex = actionData.findIndex((element) => element.name === 'Gallows');
-  //   actionData[actionDataIndex].lemureShroud = 10;
-  //   actionDataIndex = actionData.findIndex((element) => element.name === 'Guillotine');
-  //   actionData[actionDataIndex].lemureShroud = 10;
-  // }
-};
+  if (level >= 74) {
+    let actionDataIndex;
+    actionDataIndex = actionData.findIndex((element) => element.name === 'Gauss Round');
+    actionData[actionDataIndex].charges = 3;
+    actionDataIndex = actionData.findIndex((element) => element.name === 'Ricochet');
+    actionData[actionDataIndex].charges = 3;
+  }
 
-// Use debugJob until stuff updated for RPR?
-const rprPlayerChanged = (e) => {
-  currentPlayerData.jobHex = e.detail.debugJob;
+  if (level >= 76) {
+    const actionDataIndex = actionData.findIndex((element) => element.name === 'Hot Shot');
+    actionData.splice(actionDataIndex, 1);
+  }
+
+  if (level >= 80) {
+    let actionDataIndex;
+    actionDataIndex = actionData.findIndex((element) => element.name === 'Rook Autoturret');
+    actionData.splice(actionDataIndex, 1);
+    actionDataIndex = actionData.findIndex((element) => element.name === 'Rook Overdrive');
+    actionData.splice(actionDataIndex, 1);
+  }
+
+  if (level >= 82) {
+    const actionDataIndex = actionData.findIndex((element) => element.name === 'Spread Shot');
+    actionData.splice(actionDataIndex, 1);
+  }
+
+  if (level >= 84) {
+    const actionDataIndex = actionData.findIndex((element) => element.name === 'Reassemble');
+    actionData[actionDataIndex].charges = 3;
+  }
+
+  if (level >= 88) {
+    const actionDataIndex = actionData.findIndex((element) => element.name === 'Tactician');
+    actionData[actionDataIndex].recast = 90;
+  }
 };
 
 // eslint-disable-next-line no-unused-vars
-const ninPlayerChanged = (e) => {
+const mchPlayerChanged = (e) => {
   // Recalculate GCD if Huton status has apparently changed
   if (currentPlayerData.huton > 0 && e.detail.jobDetail.hutonMilliseconds === 0) {
     // Huton recently fell off
@@ -89,9 +93,10 @@ const ninActionMatch = ({
   // logType, // Currently unused parameters commented out
   actionName,
   // targetID,
-  // playerData,
+  playerData,
   recastArray,
   statusArray,
+  loop,
 } = {}) => {
   const actionType = getActionDataProperty({ actionName, property: 'type' });
 
@@ -139,6 +144,13 @@ const ninActionMatch = ({
     // Remove since it effectively has an infinite time
     removeStatus({ statusName: 'Phantom Kamaitachi Ready', statusArray });
   }
+
+  // Start loop if not in it already
+  if (!loop && checkStatusDuration({ statusName: 'Ten Chi Jin', statusArray }) === 0
+  && ['Spell', 'Weaponskill', 'Ninjutsu'].includes(actionType)) {
+    const delay = calculateDelay({ actionName, playerData, statusArray });
+    startLoop({ delay });
+  }
 };
 
 // eslint-disable-next-line no-unused-vars
@@ -181,16 +193,13 @@ const ninLoopPlayerChanged = ({
 };
 
 // eslint-disable-next-line no-unused-vars
-const rprLoopGCDAction = (
+const ninLoopGCDAction = (
   playerData = loopPlayerData,
   recastArray = loopRecastArray,
   statusArray = loopStatusArray,
-  // target???
 ) => {
-  // Use Soul Reaver
-  
-  
   const { comboAction } = playerData;
+  const { huton } = playerData;
   const { level } = playerData;
 
   const gustSlashAcquired = actionData.some((element) => element.name === 'Gust Slash');
@@ -249,15 +258,18 @@ const rprLoopGCDAction = (
   // Keep Ninjutsu off cooldown
   if (raitonAcquired && mudraRecast < raitonLength + 1) { return ['Ten', 'Chi', 'Raiton']; }
   if (fumaShurikenAcquired && mudraRecast < fumaShurikenLength + 1) { return ['Ten', 'Fuma Shuriken']; }
-  if (checkStatusDuration({ statusName: 'Death\'s Design', targetID})
-  if (targetCount >= 3) { return 'Spinning Scythe'; }
 
-  // Continue/start combos
-  if (nightmareScytheAcquired && comboAction === 'Spinning Scythe') { return 'Nightmare Scythe'; }
-  if (infernalSliceAcquired && comboAction === 'Waxing Slice') { return 'Infernal Slice'; }
-  if (waxingSliceAcquired && comboAction === 'Slice') { return 'Waxing Slice'; }
-  if (targetCount >= 3) { return 'Spinning Scythe'; }
-  return 'Slice';
+  // Continue combos
+  if (comboAction) {
+    if (comboAction === 'Gust Slash') {
+      if (armorCrushAcquired && huton <= 30) { return 'Armor Crush'; }
+      if (aeolianEdgeAcquired) { return 'Aeolian Edge'; }
+    }
+    if (gustSlashAcquired && comboAction === 'Spinning Edge') { return 'Gust Slash'; }
+    if (hakkeMujinsatsuAcquired && comboAction === 'Death Blossom') { return 'Hakke Mujinsatsu'; }
+  }
+
+  return 'Spinning Edge';
 };
 
 // eslint-disable-next-line no-unused-vars
@@ -332,3 +344,14 @@ const ninLoopOGCDAction = ({
   return '';
 };
 
+// eslint-disable-next-line no-unused-vars
+const ninCalculateDelay = ({
+  actionName,
+  playerData = currentPlayerData,
+  statusArray = currentStatusArray,
+} = {}) => {
+  const actionType = getActionDataProperty({ actionName, property: 'type' });
+  if (actionType === 'Mudra') { return 0.5; }
+  if (actionType === 'Ninjutsu') { return 1.5; }
+  return playerData.gcd;
+};
