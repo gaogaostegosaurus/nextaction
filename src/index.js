@@ -32,17 +32,18 @@ let overlayClass; let overlayArray = [];
 // eslint-disable-next-line no-unused-vars
 let statusData = []; let actionData = []; let castingActionData = [];
 
+// let loopTimeout;
+let actionMatchTimestamp = 0;
+
+// Regexs
+// Set regexes that don't rely on playerID, etc as const
+const playerStatsRegex = new RegExp('^.{15}(?<logType>PlayerStats) 0C:(?<jobID>[\\d]+):(?<strength>[\\d]+):(?<dexterity>[\\d]+):(?<vitality>[\\d]+):(?<intelligence>[\\d]+):(?<mind>[\\d]+):(?<piety>[\\d]+):(?<attackPower>[\\d]+):(?<directHitRate>[\\d]+):(?<criticalHit>[\\d]+):(?<attackMagicPotency>[\\d]+):(?<healingMagicPotency>[\\d]+):(?<determination>[\\d]+):(?<skillSpeed>[\\d]+):(?<spellSpeed>[\\d]+):0:(?<tenacity>[\\d]+):'); // This regex is always static for now, maybe not in future?
+const fadeOutRegex = new RegExp('^.{15}(?<logType>Director) 21:8[\\dA-F]{7}:40000005:');
 let actionEffectRegex;
 let statusRegex;
 let startsCastingRegex;
 let cancelActionRegex;
-
-// let loopTimeout;
-let actionMatchTimestamp = 0;
-
-// Constant across jobs
-const playerStatsRegex = new RegExp('^.{15}(?<logType>PlayerStats) 0C:(?<jobID>[\\d]+):(?<strength>[\\d]+):(?<dexterity>[\\d]+):(?<vitality>[\\d]+):(?<intelligence>[\\d]+):(?<mind>[\\d]+):(?<piety>[\\d]+):(?<attackPower>[\\d]+):(?<directHitRate>[\\d]+):(?<criticalHit>[\\d]+):(?<attackMagicPotency>[\\d]+):(?<healingMagicPotency>[\\d]+):(?<determination>[\\d]+):(?<skillSpeed>[\\d]+):(?<spellSpeed>[\\d]+):0:(?<tenacity>[\\d]+):'); // This regex is always static for now, maybe not in future?
-const fadeOutRegex = new RegExp('^.{15}(?<logType>Director) 21:8[\\dA-F]{7}:40000005:');
+// let gaugeRegex;
 
 const supportedJobs = ['NIN'];
 // let overlayVisible = false;
@@ -169,6 +170,7 @@ const onPlayerChangedEvent = (e) => {
     statusRegex = new RegExp(`^.{15}(?<logType>StatusAdd|StatusRemove) 1[AE]:(?<statusID>[\\dA-F]{2,8}):(?<statusName>.+?):(?<statusSeconds>[0-9]+\\.[0-9]+):(?<sourceID>[${playerID}):(?<sourceName>${playerName}):(?<targetID>[\\dA-F]{8}):(?:<statusStacks>[\\d]{2}:)`);
     startsCastingRegex = new RegExp(`^.{15}(?<logType>StartsCasting) 14:(?<sourceID>${playerID}):(?<sourceName>${playerName}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${castingActionNameRegex}):(?<targetID>[\\dA-F]{8}):`);
     cancelActionRegex = new RegExp(`^.{15}(?<logType>CancelAction) 17:(?<sourceID>${playerID}):(?<sourceName>${playerName}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${castingActionNameRegex}):(?<cancelReason>Cancelled|Interrupted):`);
+    // gaugeRegex = new RegExp(`^.{15}(?<logType>Gauge) 1F:${playerID}:(?<gaugeHex>[\\dA-F]{0,8}):`);
     regexReady = true;
   }
 
@@ -191,6 +193,7 @@ const onLogEvent = (e) => {
     const startsCastingLine = logs[i].match(startsCastingRegex);
     const cancelActionLine = logs[i].match(cancelActionRegex);
     const playerStatsLine = logs[i].match(playerStatsRegex);
+    // const gaugeLine = logs[i].match(gaugeRegex);
     const fadeOutLine = logs[i].match(fadeOutRegex);
 
     if (actionEffectLine && Date.now() - actionMatchTimestamp > 10) {
@@ -225,6 +228,8 @@ const onLogEvent = (e) => {
       });
     } else if (playerStatsLine) {
       // playerStatsMatch({ piety, skillSpeed, spellSpeed });
+    // } else if (gaugeLine) {
+      // something something
     } else if (fadeOutLine) {
       // Reset data on wipes?
       // clearTimeout(loopTimeout);

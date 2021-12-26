@@ -25,6 +25,7 @@ const baseActionData = [
     type: 'Weaponskill',
     level: 1,
     comboBreak: true,
+    targetCount: 1,
     icon: '000601',
   },
 
@@ -43,6 +44,7 @@ const baseActionData = [
     level: 4,
     comboAction: 'Spinning Edge',
     comboBreak: true,
+    targetCount: 1,
     icon: '000602',
   },
 
@@ -86,6 +88,7 @@ const baseActionData = [
     level: 26,
     comboAction: 'Gust Slash',
     comboBreak: true,
+    targetCount: 1,
     icon: '000605',
   },
 
@@ -97,6 +100,7 @@ const baseActionData = [
     type: 'Weaponskill',
     level: 38,
     comboBreak: true,
+    targetCount: 3,
     icon: '000615',
   },
 
@@ -125,6 +129,7 @@ const baseActionData = [
     comboAction: 'Death Blossom',
     comboBreak: true,
     huton: 10,
+    targetCount: 3,
     icon: '002923',
   },
 
@@ -136,6 +141,7 @@ const baseActionData = [
     comboAction: 'Gust Slash',
     comboBreak: true,
     huton: 30,
+    targetCount: 3,
     icon: '002915',
   },
 
@@ -277,6 +283,7 @@ const baseActionData = [
     type: 'Ninjutsu',
     recast: 1.5,
     level: 35,
+    targetCount: 3,
     icon: '002908',
   },
 
@@ -286,6 +293,7 @@ const baseActionData = [
     type: 'Ninjutsu',
     recast: 1.5,
     level: 35,
+    targetCount: 1,
     icon: '002912',
   },
 
@@ -342,6 +350,7 @@ const baseActionData = [
     type: 'Ninjutsu',
     recast: 1.5,
     level: 76,
+    targetCount: 3,
     icon: '002925',
   },
 
@@ -351,6 +360,7 @@ const baseActionData = [
     type: 'Ninjutsu',
     recast: 1.5,
     level: 76,
+    targetCount: 1,
     icon: '002926',
   },
 
