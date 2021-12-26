@@ -141,7 +141,7 @@ const baseActionData = [
     comboAction: 'Gust Slash',
     comboBreak: true,
     huton: 30,
-    targetCount: 3,
+    targetCount: 1,
     icon: '002915',
   },
 

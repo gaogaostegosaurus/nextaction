@@ -115,12 +115,12 @@ const removeStatus = ({
     (element) => element.name === statusName
     && element.targetID === targetID && element.sourceID === sourceID,
   );
-  
+
   if (statusArrayIndex > -1) {
     statusArray.splice(statusArrayIndex, 1);
   }
   // // Set stacks to 0 if needed
-  
+
   //   if (statusArray[statusArrayIndex].stacks !== undefined) {
   //     // eslint-disable-next-line no-param-reassign
   //     statusArray[statusArrayIndex].stacks = 0;
@@ -216,6 +216,23 @@ const checkStatusStacks = ({
   }
 
   return 0;
+};
+
+// eslint-disable-next-line no-unused-vars
+const addStatusStacks = ({
+  statusName,
+  targetID = currentPlayerData.id,
+  sourceID = currentPlayerData.id,
+  stacks = 1,
+  statusArray,
+} = {}) => {
+  const initialStacks = checkStatusStacks({
+    statusName, targetID, sourceID, statusArray,
+  });
+
+  addStatus({
+    statusName, targetID, sourceID, stacks: stacks + initialStacks, statusArray,
+  });
 };
 
 // eslint-disable-next-line no-unused-vars
