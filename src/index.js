@@ -6,7 +6,7 @@ addOverlayListener startOverlayEvents
 fadeIcon unfadeIcon removeIcon
 baseActionData baseStatusData playerStatsData getActionDataProperty
 addActionRecast calculateRecast
-addStatus removeStatus checkStatusDuration
+addStatus removeStatus
 startLoop syncOverlay
 rdmPlayerChanged rdmActionMatch rdmStatusMatch
 ninTraits ninPlayerChanged ninTargetChanged ninActionMatch ninStatusMatch ninCalculateDelay
@@ -46,15 +46,15 @@ let cancelActionRegex;
 // let gaugeRegex;
 
 const supportedJobs = ['NIN'];
-// let overlayVisible = false;
 let overlayReady;
-let regexReady;
 
 document.addEventListener('DOMContentLoaded', () => {
   console.log('DOM fully loaded and parsed');
   overlayReady = true;
   startOverlayEvents();
 });
+
+let regexReady;
 
 addOverlayListener('onPlayerChangedEvent', (e) => {
   // console.log(`onPlayerChangedEvent: ${JSON.stringify(e)}`);
@@ -63,7 +63,7 @@ addOverlayListener('onPlayerChangedEvent', (e) => {
 
 addOverlayListener('onInCombatChangedEvent', (e) => {
   // console.log(`onInCombatChangedEvent: ${JSON.stringify(e)}`);
-  if (overlayReady === true) { onInCombatChangedEvent(e); }
+  if (regexReady === true) { onInCombatChangedEvent(e); }
 });
 
 // addOverlayListener('onPartyWipe', (e) => {
@@ -73,14 +73,14 @@ addOverlayListener('onInCombatChangedEvent', (e) => {
 
 addOverlayListener('EnmityTargetData', (e) => {
   // console.log(`EnmityTargetData: ${JSON.stringify(e)}`);
-  if (overlayReady === true) { EnmityTargetData(e); }
+  if (regexReady === true) { EnmityTargetData(e); }
 });
 
 addOverlayListener('onLogEvent', (e) => {
   if (regexReady === true) { onLogEvent(e); }
 });
 
-// Possily switch to this? Don't know how it's different
+// Possily switch to this? Don't know if it's different/better...
 // addOverlayListener('LogLine', (data) => {
 //   console.log(`line: ${data.line} | rawLine: ${data.rawLine}`);
 // });
@@ -108,10 +108,6 @@ const onPlayerChangedEvent = (e) => {
     const { level } = currentPlayerData;
     const { job } = currentPlayerData;
 
-    // Set some default values
-    currentPlayerData.gcd = 2.5;
-    currentPlayerData.mpRegen = 200;
-
     // set role
     if (['PLD', 'WAR', 'DRK', 'GNB'].includes(job)) {
       currentPlayerData.role = 'Tank';
@@ -134,6 +130,10 @@ const onPlayerChangedEvent = (e) => {
     }
 
     console.log(`Changed to ${job}${level}`);
+
+    // Set some default values
+    currentPlayerData.gcd = 2.5;
+    currentPlayerData.mpRegen = 200;
 
     // Clone and filter into new action data array
     actionData = JSON.parse(JSON.stringify(baseActionData));
@@ -170,7 +170,9 @@ const onPlayerChangedEvent = (e) => {
     statusRegex = new RegExp(`^.{15}(?<logType>StatusAdd|StatusRemove) 1[AE]:(?<statusID>[\\dA-F]{2,8}):(?<statusName>.+?):(?<statusSeconds>[0-9]+\\.[0-9]+):(?<sourceID>[${playerID}):(?<sourceName>${playerName}):(?<targetID>[\\dA-F]{8}):(?:<statusStacks>[\\d]{2}:)`);
     startsCastingRegex = new RegExp(`^.{15}(?<logType>StartsCasting) 14:(?<sourceID>${playerID}):(?<sourceName>${playerName}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${castingActionNameRegex}):(?<targetID>[\\dA-F]{8}):`);
     cancelActionRegex = new RegExp(`^.{15}(?<logType>CancelAction) 17:(?<sourceID>${playerID}):(?<sourceName>${playerName}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${castingActionNameRegex}):(?<cancelReason>Cancelled|Interrupted):`);
-    // gaugeRegex = new RegExp(`^.{15}(?<logType>Gauge) 1F:${playerID}:(?<gaugeHex>[\\dA-F]{0,8}):`);
+    // gaugeRegex = new RegExp(
+    //   `^.{15}(?<logType>Gauge) 1F:${playerID}:(?<gaugeHex>[\\dA-F]{0,8}):`,
+    // );
     regexReady = true;
   }
 
@@ -227,7 +229,11 @@ const onLogEvent = (e) => {
         // cancelReason: cancelActionMatch.cancelReason,
       });
     } else if (playerStatsLine) {
-      // playerStatsMatch({ piety, skillSpeed, spellSpeed });
+      playerStatsMatch({
+        piety: playerStatsLine.groups.piety,
+        skillSpeed: playerStatsLine.groups.skillSpeed,
+        spellSpeed: playerStatsLine.groups.spellSpeed,
+      });
     // } else if (gaugeLine) {
       // something something
     } else if (fadeOutLine) {
@@ -271,6 +277,7 @@ const actionMatch = ({
   }
 
   // Job specific stuff here
+  // Since loop conditions are too different between jobs, start loop inside job functions
   if (job === 'NIN') {
     ninActionMatch({
       // logType, // Some of these aren't used currently
@@ -341,16 +348,16 @@ const playerStatsMatch = ({ piety, skillSpeed, spellSpeed } = {}) => {
     (150 * (piety - playerStatsData[level - 1].baseStat)) / playerStatsData[level - 1].levelMod,
   );
 
-  for (let index = 0; index < actionData.length; index += 1) {
-    if (['Spell', 'Weaponskill'].includes(actionData[index].type)) {
-      if (actionData[index].cast) {
-        actionData[index].cast = calculateRecast({ recast: actionData[index].cast });
-      }
-      if (actionData[index].recast) {
-        actionData[index].recast = calculateRecast({ recast: actionData[index].recast });
-      }
-    }
-  }
+  // for (let index = 0; index < actionData.length; index += 1) {
+  //   if (['Spell', 'Weaponskill'].includes(actionData[index].type)) {
+  //     if (actionData[index].cast) {
+  //       actionData[index].cast = calculateRecast({ recast: actionData[index].cast });
+  //     }
+  //     if (actionData[index].recast) {
+  //       actionData[index].recast = calculateRecast({ recast: actionData[index].recast });
+  //     }
+  //   }
+  // }
 };
 
 const onInCombatChangedEvent = (e) => {
