@@ -72,7 +72,7 @@ const rdmActionMatch = ({
   }
 
   // Get GCD time
-  if (actionType === 'Spell' && actionCast !== undefined) {
+  if (actionType === 'Spell' && actionCast) {
     // console.log(actionCast);
     // Check for fastcast buffs and remove if necessary
     if (accelerationSpells.includes(actionName) && checkStatusDuration({ statusName: 'Acceleration', statusArray }) > 0) {
