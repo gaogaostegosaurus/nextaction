@@ -279,6 +279,7 @@ const ninLoopGCDAction = (
       }
       return ['Ten', 'Fuma Shuriken'];
     }
+    // Maybe there should be a "> 3 stacks" conditional but it seems like a super edge case
     if (fleetingRaijuStatus > 0) { return 'Fleeting Raiju'; }
     if (forkedRaijuStatus > 0) { return 'Forked Raiju'; }
   }
