@@ -92,8 +92,6 @@ const baseActionData = [
     icon: '000605',
   },
 
-  // Probably need to do something special for Mudra, all those inputs would be super annoying
-
   {
     name: 'Death Blossom',
     affinity: 'NIN',
@@ -412,6 +410,7 @@ const baseActionData = [
     cast: 5,
     mpCost: 300,
     blackMana: 6,
+    accelerationSpell: true,
     icon: '003203',
   },
 
@@ -432,6 +431,7 @@ const baseActionData = [
     cast: 5,
     mpCost: 300,
     whiteMana: 6,
+    accelerationSpell: true,
     icon: '003205',
   },
 
@@ -444,6 +444,7 @@ const baseActionData = [
     mpCost: 400,
     blackMana: 3,
     whiteMana: 3,
+    accelerationSpell: true,
     icon: '003207',
   },
 
@@ -616,6 +617,7 @@ const baseActionData = [
     mpCost: 400,
     blackMana: 3,
     whiteMana: 3,
+    accelerationSpell: true,
     icon: '003222',
   },
 
@@ -669,6 +671,7 @@ const baseActionData = [
     cast: 5,
     mpCost: 300,
     blackMana: 6,
+    accelerationSpell: true,
     icon: '003235',
   },
 
@@ -680,6 +683,7 @@ const baseActionData = [
     cast: 5,
     mpCost: 300,
     whiteMana: 6,
+    accelerationSpell: true,
     icon: '003236',
   },
 
