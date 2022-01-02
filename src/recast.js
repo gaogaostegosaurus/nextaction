@@ -176,3 +176,12 @@ const calculateRecast = ({
   const newRecast = Math.floor(Math.floor(Math.floor((1000 - Math.floor((130 * (speed - playerStatsData[level - 1].baseStat)) / playerStatsData[level - 1].levelMod)) * recast) * modifier) / 10) / 100;
   return newRecast;
 };
+
+// I'm assuming it's the same...
+// eslint-disable-next-line no-unused-vars
+const calculateCast = ({
+  cast = 2.5,
+  modifier = 1, // 0.85 for Huton, etc. etc.
+} = {}) => {
+  calculateRecast({ recast: cast, modifier });
+};

@@ -1,7 +1,7 @@
 /* globals
 actionData getActionDataProperty
 currentPlayerData currentStatusArray calculateDelay
-loopPlayerData loopRecastArray loopStatusArray
+loopPlayerData loopTargetData loopRecastArray loopStatusArray
 addActionRecast checkActionRecast resetActionRecast calculateRecast
 addStatus removeStatus addStatusStacks removeStatusStacks checkStatusDuration
 startLoop
@@ -29,8 +29,12 @@ const samTraits = ({ level } = {}) => {
     actionData.forEach((element) => {
       if (element.type === 'Weaponskill') {
         if (element.kenki) {
-          element.kenki += 5;  
-        } else { element.kenki = 5; }
+          // eslint-disable-next-line no-param-reassign
+          element.kenki = 10;
+        } else {
+          // eslint-disable-next-line no-param-reassign
+          element.kenki = 5;
+        }
       }
     });
   }
@@ -47,13 +51,8 @@ const samTraits = ({ level } = {}) => {
     actionData[actionDataIndex].cast = 1.3;
   }
 
-  if (level >= 78) {
-    // Modifies speed buff 10% - 13%?
-  }
-
   if (level >= 84) {
-    let actionDataIndex;
-    actionDataIndex = actionData.findIndex((element) => element.name === 'Tsubame Gaeshi');
+    const actionDataIndex = actionData.findIndex((element) => element.name === 'Tsubame-gaeshi');
     actionData[actionDataIndex].charges = 2;
   }
 
@@ -63,8 +62,7 @@ const samTraits = ({ level } = {}) => {
   }
 
   if (level >= 88) {
-    let actionDataIndex;
-    actionDataIndex = actionData.findIndex((element) => element.name === 'Meikyo Shisui');
+    const actionDataIndex = actionData.findIndex((element) => element.name === 'Meikyo Shisui');
     actionData[actionDataIndex].charges = 2;
   }
 
@@ -76,359 +74,454 @@ const samTraits = ({ level } = {}) => {
 };
 
 // eslint-disable-next-line no-unused-vars
-const ninPlayerChanged = (e) => {
-  // Recalculate GCD if Huton status has apparently changed
-  if (currentPlayerData.huton > 0 && e.detail.jobDetail.hutonMilliseconds === 0) {
-    // Huton recently fell off
-    currentPlayerData.gcd = calculateRecast({ modifier: 1 });
-  } else if (currentPlayerData.huton === 0 && e.detail.jobDetail.hutonMilliseconds > 0) {
-    // Huton recently applied
-    currentPlayerData.gcd = calculateRecast({ modifier: 0.85 });
-  }
-
-  // Standard stuff otherwise
+const samPlayerChanged = (e) => {
   currentPlayerData.hp = e.detail.currentHP;
-  currentPlayerData.huton = e.detail.jobDetail.hutonMilliseconds / 1000;
-  currentPlayerData.ninki = e.detail.jobDetail.ninkiAmount;
+  currentPlayerData.kenki = e.detail.jobDetail.kenki;
+  currentPlayerData.meditationStacks = e.detail.jobDetail.meditationStacks;
+  currentPlayerData.setsu = e.detail.jobDetail.setsu;
+  currentPlayerData.getsu = e.detail.jobDetail.getsu;
+  currentPlayerData.ka = e.detail.jobDetail.ka;
 };
 
 // eslint-disable-next-line no-unused-vars
-const ninTargetChanged = () => {
-  const mudraDuration = checkStatusDuration({ statusName: 'Mudra', statusArray: currentStatusArray });
-  const kassatsuDuration = checkStatusDuration({ statusName: 'Kassatsu', statusArray: currentStatusArray });
-  const tenChiJinDuration = checkStatusDuration({ statusName: 'Ten Chi Jin', statusArray: currentStatusArray });
-  if (Math.max(mudraDuration, kassatsuDuration, tenChiJinDuration) === 0) {
-    startLoop();
+const samTargetChanged = () => {
+  // Get Higanbana status and "apply to self" for easier calculation
+  const higanbanaDuration = checkStatusDuration({ statusName: 'Higanbana', targetID: targetData.id, statusArray: currentStatusArray });
+  if (higanbanaDuration > 0) {
+    addStatus({ statusName: 'Higanbana', duration: higanbanaDuration, statusArray: currentStatusArray });
+    console.log(higanbanaDuration);
   }
+  startLoop();
 };
 
-// eslint-disable-next-line no-unused-vars
-const ninActionMatch = ({
-  // logType, // Currently unused parameters commented out
-  actionName,
-  // targetID,
-  playerData,
-  recastArray,
-  statusArray,
-  loop,
-} = {}) => {
-  removeStatus({ statusName: 'Hide', statusArray });
-
-  const actionTargetCount = getActionDataProperty({ actionName, property: 'targetCount' });
-  // eslint-disable-next-line no-param-reassign
-  if (actionTargetCount) { playerData.targetCount = actionTargetCount; }
-
-  const actionType = getActionDataProperty({ actionName, property: 'type' });
-
-  // Ninjutsu is so damn annoying
-  if (actionType === 'Mudra'
-  && checkStatusDuration({ statusName: 'Mudra', statusArray }) === 0
-  && checkStatusDuration({ statusName: 'Kassatsu', statusArray }) === 0) {
-    // Only add recast if Mudra and Kassatsu are not activated
-    addActionRecast({ actionName: 'Mudra', recastArray });
-    addStatus({ statusName: 'Mudra', statusArray });
-  }
-
-  if (actionType === 'Ninjutsu') {
-    // Remove Mudra/Kassatsu/TCJ on Ninjutsu activation
-    removeStatus({ statusName: 'Mudra', statusArray });
-    removeStatus({ statusName: 'Kassatsu', statusArray });
-
-    // Best way to account for TCJ weirdness is to treat it like it has stacks... maybe
-    removeStatusStacks({ statusName: 'Ten Chi Jin', statusArray });
-
-    if (actionName === 'Doton') {
-      addStatus({ statusName: 'Doton', statusArray });
-    } else if (actionName === 'Suiton') {
-      addStatus({ statusName: 'Suiton', statusArray });
-    }
-  }
-
-  if (actionType === 'Weaponskill') {
-    removeStatusStacks({ statusName: 'Bunshin', statusArray });
-    if (checkStatusDuration({ statusName: 'Bunshin', statusArray }) === 0) {
-      removeStatus({ statusName: 'Phantom Kamaitachi Ready', statusArray });
-    }
-    if (!['Forked Raiju', 'Fleeting Raiju'].includes(actionName)) {
-      removeStatus({ statusName: 'Forked Raiju Ready', statusArray });
-      removeStatus({ statusName: 'Fleeting Raiju Ready', statusArray });
-    }
-  }
-
-  if (actionName === 'Hide') {
-    // Hide reset
-    resetActionRecast({ actionName: 'Mudra', recastArray });
-  } else if (actionName === 'Trick Attack') {
-    // "Self-buff" to simplify alignment calculations
-    removeStatus({ statusName: 'Suiton', statusArray });
-    addStatus({ statusName: 'Trick Attack', statusArray });
-  } else if (actionName === 'Kassatsu') {
-    addStatus({ statusName: 'Kassatsu', statusArray });
-  } else if (actionName === 'Ten Chi Jin') {
-    addStatus({ statusName: 'Ten Chi Jin', stacks: 3, statusArray });
-  } else if (actionName === 'Bunshin') {
-    addStatus({ statusName: 'Bunshin', stacks: 5, statusArray });
-    // Add Phantom Kamaitachi alongside Bunshin for simulation
-    if (actionData.some((element) => element.name === 'Phantom Kamaitachi')) {
-      addStatus({ statusName: 'Phantom Kamaitachi Ready', statusArray });
-    }
-  } else if (actionName === 'Phantom Kamaitachi') {
-    // Remove since it effectively has an infinite time
-    removeStatus({ statusName: 'Phantom Kamaitachi Ready', statusArray });
-  } else if (actionName === 'Raiton' && actionData.some((element) => element.name === 'Forked Raiju')) {
-    addStatusStacks({ statusName: 'Forked Raiju Ready', statusArray });
-  } else if (actionName === 'Forked Raiju') {
-    removeStatusStacks({ statusName: 'Forked Raiju Ready', statusArray });
-    addStatus({ statusName: 'Fleeting Raiju Ready', statusArray });
-  } else if (actionName === 'Fleeting Raiju') {
-    removeStatus({ statusName: 'Fleeting Raiju Ready', statusArray });
-  }
-
-  // Start loop if not in it already
-  if (!loop && checkStatusDuration({ statusName: 'Ten Chi Jin', statusArray }) === 0
-  && ['Spell', 'Weaponskill', 'Ninjutsu'].includes(actionType)) {
-    // eslint-disable-next-line no-param-reassign
-    if (!['Hide', 'Huton'].includes(actionName)) { playerData.combat = true; }
-    const delay = calculateDelay({ actionName, playerData, statusArray });
-    startLoop({ delay });
-  }
-};
-
-// eslint-disable-next-line no-unused-vars
-const ninStatusMatch = ({ logType, statusName, sourceID }) => {
-  // if (logType === 'StatusRemove' && ['Mudra', 'Kassatsu', 'Ten Chi Jin'].includes(statusName)) {
-  //   // These should all come off after an final ninjutsu cast
-  //   // Good point to update?
-  //   startLoop({ delay: 1.5 });
-  // }
-};
-
-// eslint-disable-next-line no-unused-vars
-const ninLoopPlayerChanged = ({
-  actionName,
-  playerData = loopPlayerData,
-  // recastArray = loopRecastArray,
-  statusArray = loopStatusArray,
-} = {}) => {
-  const actionType = getActionDataProperty({ actionName, property: 'type' });
-
-  // Add Huton time
-  const huton = getActionDataProperty({ actionName, property: 'huton' });
-  // eslint-disable-next-line no-param-reassign
-  playerData.huton = Math.min(playerData.huton + huton, 60);
-
-  // Make changes to Ninki
-  const ninki = getActionDataProperty({ actionName, property: 'ninki' });
-  const ninkiCost = getActionDataProperty({ actionName, property: 'ninkiCost' });
-  const bunshinDuration = checkStatusDuration({ statusName: 'Bunshin', statusArray });
-  // eslint-disable-next-line no-param-reassign
-  playerData.ninki = Math.min(playerData.ninki + ninki, 100);
-  // eslint-disable-next-line no-param-reassign
-  playerData.ninki = Math.max(playerData.ninki - ninkiCost, 0);
-  // Bunshin adds another 5 ninki per weaponskill when active
-  if (actionType === 'Weaponskill' && bunshinDuration > 0) {
-    // eslint-disable-next-line no-param-reassign
-    playerData.ninki = Math.min(playerData.ninki + 5, 100);
-  }
-  // console.log(`loopPlayerData huton|ninki: ${playerData.huton}|${playerData.ninki}`);
-};
-
-// eslint-disable-next-line no-unused-vars
-const ninLoopGCDAction = (
-  playerData = loopPlayerData,
-  recastArray = loopRecastArray,
-  statusArray = loopStatusArray,
-) => {
-  // TCJ active
-  const { targetCount } = playerData;
-  const tenChiJinStatus = checkStatusDuration({ statusName: 'Ten Chi Jin', statusArray });
-  if (tenChiJinStatus > 0) {
-    if (targetCount >= 3) { return ['Fuma Shuriken', 'Katon', 'Suiton']; }
-    return ['Fuma Shuriken', 'Raiton', 'Suiton'];
-  }
-
-  // Kassatsu oopsies
-  const hyoshoRanryuAcquired = actionData.some((element) => element.name === 'Hyosho Ranryu');
-  const trickAttackRecast = checkActionRecast({ actionName: 'Trick Attack', recastArray });
-  const kassatsuStatus = checkStatusDuration({ statusName: 'Kassatsu', statusArray });
-  if (kassatsuStatus > 0 && kassatsuStatus < trickAttackRecast) {
-    if (hyoshoRanryuAcquired) {
-      if (targetCount >= 3) { return ['Chi', 'Ten', 'Goka Mekkyaku']; }
-      return ['Ten', 'Jin', 'Hyosho Ranryu'];
-    }
-    if (targetCount >= 3) { return ['Chi', 'Ten', 'Katon']; }
-    return ['Ten', 'Chi', 'Raiton'];
-  }
-
-  // Huton oopsies
-  const { combat } = playerData;
-  const { huton } = playerData;
-  const huraijinAcquired = actionData.some((element) => element.name === 'Huraijin');
-  const jinAcquired = actionData.some((element) => element.name === 'Jin');
-  const mudraRecast = checkActionRecast({ actionName: 'Mudra', recastArray });
-  if (huton === 0 && jinAcquired) {
-    if (combat && huraijinAcquired) { return 'Huraijin'; }
-    if (mudraRecast < 20) { return ['Chi', 'Jin', 'Ten', 'Huton']; }
-  }
-
-  // Trick Attack
-  const chiAcquired = actionData.some((element) => element.name === 'Chi');
-  const forkedRaijuStatus = checkStatusDuration({ statusName: 'Forked Raiju Ready', statusArray });
-  const fleetingRaijuStatus = checkStatusDuration({ statusName: 'Fleeting Raiju Ready', statusArray });
-  const phantomKamaitachiReadyStatus = checkStatusDuration({ statusName: 'Phantom Kamaitachi Ready', statusArray });
-  // const bunshinStatus = checkStatusDuration({ statusName: 'Bunshin', statusArray });
-  const trickAttackStatus = checkStatusDuration({ statusName: 'Trick Attack', statusArray });
-  if (trickAttackStatus > 0) {
-    if (kassatsuStatus > 0) {
-      if (hyoshoRanryuAcquired) {
-        if (targetCount >= 3) { return ['Chi', 'Ten', 'Goka Mekkyaku']; }
-        return ['Ten', 'Jin', 'Hyosho Ranryu'];
-      }
-      if (targetCount >= 3) { return ['Chi', 'Ten', 'Katon']; }
-      return ['Ten', 'Chi', 'Raiton'];
-    }
-    if (phantomKamaitachiReadyStatus > 0) { return 'Phantom Kamaitachi'; }
-    if (tenChiJinStatus > 0) {
-      if (targetCount >= 3) { return ['Fuma Shuriken', 'Katon', 'Suiton']; }
-      return ['Fuma Shuriken', 'Raiton', 'Suiton'];
-    }
-    if (mudraRecast < 20) { // Dump Mudras during TA
-      if (chiAcquired) {
-        if (targetCount >= 3) { return ['Chi', 'Ten', 'Katon']; }
-        return ['Ten', 'Chi', 'Raiton'];
-      }
-      return ['Ten', 'Fuma Shuriken'];
-    }
-    // Maybe there should be a "> 3 stacks" conditional but it seems like a super edge case
-    if (fleetingRaijuStatus > 0) { return 'Fleeting Raiju'; }
-    if (forkedRaijuStatus > 0) { return 'Forked Raiju'; }
-  }
-
-  // Prep for Trick Attack
-  const { gcd } = playerData;
-  const suitonStatus = checkStatusDuration({ statusName: 'Suiton', statusArray });
-  if (mudraRecast < 20 && jinAcquired && suitonStatus <= trickAttackRecast
-  && trickAttackRecast < 20 - gcd * 2) {
-    return ['Ten', 'Chi', 'Jin', 'Suiton'];
-  }
-
-  // Phantom Kamaitachi
-  const bunshinStacks = checkStatusStacks({ statusName: 'Bunshin', statusArray });
-  if (bunshinStacks === 1 && phantomKamaitachiReadyStatus > 0) { return 'Phantom Kamaitachi'; }
-
-  // Keep Ninjutsu off cooldown
-  const raitonLength = 0.5 + 0.5 + 1.5;
-  const fumaShurikenLength = 0.5 + 1.5;
-  if (chiAcquired && mudraRecast < raitonLength + 1) {
-    if (targetCount >= 3) { return ['Chi', 'Ten', 'Katon']; }
-    return ['Ten', 'Chi', 'Raiton'];
-  }
-  if (mudraRecast < fumaShurikenLength + 1) { return ['Ten', 'Fuma Shuriken']; }
-
-  // Forked/Fleeting Raiju
-  if (fleetingRaijuStatus > 0) { return 'Fleeting Raiju'; }
-  if (forkedRaijuStatus > 0) { return 'Forked Raiju'; }
-
-  // Continue combos
-  const { comboAction } = playerData;
-  const gustSlashAcquired = actionData.some((element) => element.name === 'Gust Slash');
-  const aeolianEdgeAcquired = actionData.some((element) => element.name === 'Aeolian Edge');
-  const armorCrushAcquired = actionData.some((element) => element.name === 'Armor Crush');
-  const hakkeMujinsatsuAcquired = actionData.some((element) => element.name === 'Hakke Mujinsatsu');
-  if (comboAction) {
-    if (comboAction === 'Gust Slash') {
-      if (armorCrushAcquired && huton <= 30) { return 'Armor Crush'; }
-      if (aeolianEdgeAcquired) { return 'Aeolian Edge'; }
-    }
-    if (gustSlashAcquired && comboAction === 'Spinning Edge') { return 'Gust Slash'; }
-    if (hakkeMujinsatsuAcquired && comboAction === 'Death Blossom') { return 'Hakke Mujinsatsu'; }
-  }
-
-  // Start combos
-  const deathBlossomAcquired = actionData.some((element) => element.name === 'Death Blossom');
-  if (deathBlossomAcquired && targetCount >= 3) { return 'Death Blossom'; }
-  return 'Spinning Edge';
-};
-
-// eslint-disable-next-line no-unused-vars
-const ninLoopOGCDAction = ({
-  weaveCount,
-  playerData = loopPlayerData,
-  recastArray = loopRecastArray,
-  statusArray = loopStatusArray,
-} = {}) => {
-  if (weaveCount > 1) { return ''; } // No double weaving on NIN because lazy
-
-  const { combat } = playerData;
-  const hideRecast = checkActionRecast({ actionName: 'Hide', recastArray });
-  const mudraRecast = checkActionRecast({ actionName: 'Mudra', recastArray });
-  if (!combat && hideRecast === 0 && mudraRecast > 0) { return 'Hide'; }
-
-  // Bunshin all the things
-  const { ninki } = playerData;
-  const bunshinRecast = checkActionRecast({ actionName: 'Bunshin', recastArray });
-  const bunshinStatus = checkStatusDuration({ statusName: 'Bunshin', statusArray });
-  if (ninki >= 50 && bunshinRecast < 1 && bunshinStatus === 0) { return 'Bunshin'; }
-
-  // Increase Ninki
-  const meisuiRecast = checkActionRecast({ actionName: 'Meisui', recastArray });
-  const mugRecast = checkActionRecast({ actionName: 'Mug', recastArray });
-  const trickAttackRecast = checkActionRecast({ actionName: 'Trick Attack', recastArray });
-  const suitonStatus = checkStatusDuration({ statusName: 'Suiton', statusArray });
-  const trickAttackStatus = checkStatusDuration({ statusName: 'Trick Attack', statusArray });
-  if (ninki < 60 && mugRecast < 1) { return 'Mug'; }
-  if (meisuiRecast < 1 && ninki <= 50 && suitonStatus > 0 && suitonStatus <= trickAttackRecast) { return 'Meisui'; }
-
-  // Kassatsu right before Trick Attack
-  const kassatsuRecast = checkActionRecast({ actionName: 'Kassatsu', recastArray });
-  if (kassatsuRecast < 1 && trickAttackRecast < suitonStatus) { return 'Kassatsu'; }
-
-  // Trick Attack
-  if (suitonStatus > 0 && trickAttackRecast < 1) { return 'Trick Attack'; }
-
-  // Trick Attack window
-  const assassinateRecast = checkActionRecast({ actionName: 'Assassinate', recastArray });
-  const dreamwithinadreamRecast = checkActionRecast({ actionName: 'Dream Within a Dream', recastArray });
-  const tenChiJinRecast = checkActionRecast({ actionName: 'Ten Chi Jin', recastArray });
-  const kassatsuStatus = checkStatusDuration({ statusName: 'Kassatsu', statusArray });
-  if (trickAttackStatus > 0) {
-    if (dreamwithinadreamRecast < 1) { return 'Dream Within a Dream'; }
-    if (assassinateRecast < 1) { return 'Assassinate'; }
-    if (kassatsuStatus === 0 && mudraRecast > 5 && tenChiJinRecast < 1) { return 'Ten Chi Jin'; }
-  }
-
-  // Ninki
-  const { targetCount } = playerData;
-  if (
-    ninki === 100
-    || (mugRecast < bunshinRecast && ninki >= 60)
-    || (meisuiRecast < bunshinRecast && ninki >= 50)
-  ) {
-    if (targetCount >= 3) { return 'Hellfrog Medium'; }
-    return 'Bhavacakra';
-  }
-
-  // Prevent ninki overcap
-  // Not needed? Who knows?
-  // let nextWeaponskillNinki = 5;
-  // if (comboAction === 'Gust Slash') {
-  //   nextWeaponskillNinki = getActionDataProperty(
-  //     { actionName: 'Aeolian Edge', property: 'ninki' }
-  //   );
-  // }
-  // if (ninki + nextWeaponskillNinki > 100 && bhavacakraRecast < 1) { return 'Bhavacakra'; }
-
-  return '';
-};
-
-// eslint-disable-next-line no-unused-vars
-const ninCalculateDelay = ({
+const samCalculateDelay = ({
   actionName,
   playerData = currentPlayerData,
   // statusArray = currentStatusArray,
 } = {}) => {
   const actionType = getActionDataProperty({ actionName, property: 'type' });
-  if (actionType === 'Mudra') { return 0.5; }
-  if (actionType === 'Ninjutsu') { return 1.5; }
+  if (actionType === 'Iaijutsu') { return 0; } // For now? Probably not most efficient
   return playerData.gcd;
+};
+
+// eslint-disable-next-line no-unused-vars
+const samActionMatch = ({
+  // logType, // Currently unused parameters commented out
+  actionName,
+  targetID,
+  playerData,
+  recastArray,
+  statusArray,
+  loop,
+} = {}) => {
+  const { level } = playerData;
+  const actionType = getActionDataProperty({ actionName, property: 'type' });
+  const sen = getActionDataProperty({ actionName, property: 'sen' });
+  const kenki = getActionDataProperty({ actionName, property: 'kenki' });
+  const kenkiCost = getActionDataProperty({ actionName, property: 'kenkiCost' });
+  const meditationStacks = getActionDataProperty({ actionName, property: 'meditationStacks' });
+  const meditationStackCost = getActionDataProperty({ actionName, property: 'meditationStackCost' });
+  const meikyoShisuiDuration = checkStatusDuration({ statusName: 'Meikyo Shisui', statusArray });
+  const { gcd } = playerData;
+  // Only do these things during loops
+  // Probably best to keep it to stuff that player changed would take care of normally
+  if (loop) {
+    // Sen
+    if (actionType === 'Iaijutsu' || actionName === 'Hagakure') {
+      // eslint-disable-next-line no-param-reassign
+      playerData.setsu = false; playerData.getsu = false; playerData.ka = false;
+      // console.log(`${playerData.setsu} ${playerData.getsu} ${playerData.ka}`);
+    } else if (sen === 'Getsu') {
+      // eslint-disable-next-line no-param-reassign
+      playerData.getsu = true;
+    } else if (sen === 'Ka') {
+      // eslint-disable-next-line no-param-reassign
+      playerData.ka = true;
+    } else if (sen === 'Setsu') {
+      // eslint-disable-next-line no-param-reassign
+      playerData.setsu = true;
+    }
+    // Kenki
+    // eslint-disable-next-line no-param-reassign
+    playerData.kenki = Math.min(playerData.kenki + kenki, 100);
+    // eslint-disable-next-line no-param-reassign
+    playerData.kenki = Math.max(playerData.kenki - kenkiCost, 0);
+
+    // Meditation stacks
+    // eslint-disable-next-line no-param-reassign
+    playerData.meditationStacks = Math.min(playerData.meditationStacks + meditationStacks, 3);
+    // eslint-disable-next-line no-param-reassign
+    playerData.meditationStacks = Math.max(playerData.meditationStacks - meditationStackCost, 0);
+  }
+
+  // Calculate delay here, probably
+  const delay = samCalculateDelay({ actionName, playerData, statusArray });
+
+  if (['Jinpu', 'Mangetsu'].includes(actionName)) {
+    addStatus({ statusName: 'Fugetsu', statusArray });
+  } else if (['Shifu', 'Oka'].includes(actionName)) {
+    addStatus({ statusName: 'Fuka', statusArray });
+    if (level >= 78) {
+      // eslint-disable-next-line no-param-reassign
+      playerData.gcd = calculateRecast({ modifier: 0.87 });
+    } else {
+      // eslint-disable-next-line no-param-reassign
+      playerData.gcd = calculateRecast({ modifier: 0.9 });
+    }
+  } else if (meikyoShisuiDuration > 0) {
+    if (actionType === 'Weaponskill') {
+      removeStatusStacks({ statusName: 'Meikyo Shisui', statusArray });
+    }
+
+    if (actionName === 'Gekko') {
+      addStatus({ statusName: 'Fugetsu', statusArray });
+    } else if (actionName === 'Kasha') {
+      addStatus({ statusName: 'Fuka', statusArray });
+      if (level >= 78) {
+        // eslint-disable-next-line no-param-reassign
+        playerData.gcd = calculateRecast({ modifier: 0.87 });
+      } else {
+        // eslint-disable-next-line no-param-reassign
+        playerData.gcd = calculateRecast({ modifier: 0.9 });
+      }
+    }
+  } else if (actionName === 'Higanbana') {
+    addStatus({ statusName: 'Higanbana', statusArray });
+  } else if (actionName === 'Hissatsu: Kaiten') {
+    addStatus({ statusName: 'Kaiten', statusArray });
+  } else if (actionName === 'Meikyo Shisui') {
+    addStatus({ statusName: 'Meikyo Shisui', statusArray });
+  } else if (actionName === 'Ikishoten' && actionData.some((element) => element.name === 'Ogi Namikiri')) {
+    addStatus({ statusName: 'Ogi Namikiri Ready', statusArray });
+  } else if (actionName === 'Ogi Namikiri') {
+    removeStatus({ statusName: 'Ogi Namikiri Ready', statusArray });
+  } else if (actionType === 'Tsubame-gaeshi') {
+    addActionRecast({ actionName: 'Tsubame-gaeshi', recastArray });
+  }
+
+  // Flag for Tsubame-gaeshi
+  let tsubameGaeshiReady = false;
+  if (['Tenka Goken', 'Midare Setsugekka'].includes(actionName)
+  && checkActionRecast({ actionName: 'Tsubame-gaeshi', recastArray }) < gcd) {
+    tsubameGaeshiReady = true;
+  }
+
+  // Start loop if not in one already
+  if (!loop && ['Weaponskill', 'Iaijutsu', 'Tsubame-gaeshi'].includes(actionType) && !tsubameGaeshiReady) {
+    startLoop({ delay });
+  }
+};
+
+// eslint-disable-next-line no-unused-vars
+const samStatusMatch = ({ logType, statusName }) => {
+  if (statusName === 'Fuka') {
+    if (logType === 'StatusAdd') {
+      if (currentPlayerData.level >= 78) {
+        currentPlayerData.gcd = calculateRecast({ modifier: 0.87 });
+      } else { currentPlayerData.gcd = calculateRecast({ modifier: 0.9 }); }
+    } else {
+      currentPlayerData.gcd = calculateRecast();
+    }
+  } else if (statusName === 'Higanbana') {
+    if (logType === 'StatusAdd') {
+      addStatus({ statusName: 'Higanbana', statusArray: currentStatusArray });
+    } else {
+      removeStatus({ statusName: 'Higanbana', statusArray: currentStatusArray });
+    }
+  }
+  checkStatusDuration({ statusName: 'Higanbana', statusArray: currentStatusArray });
+};
+
+// eslint-disable-next-line no-unused-vars
+const samLoopGCDAction = (
+  playerData = loopPlayerData,
+  recastArray = loopRecastArray,
+  statusArray = loopStatusArray,
+) => {
+  const { level } = playerData;
+  const { comboAction } = playerData;
+  // const { targetCount } = playerData;
+  const { gcd } = playerData;
+
+  const { setsu } = playerData;
+  const { getsu } = playerData;
+  const { ka } = playerData;
+  const sen = setsu + getsu + ka;
+  const fugetsuDuration = checkStatusDuration({ statusName: 'Fugetsu', statusArray });
+  const fukaDuration = checkStatusDuration({ statusName: 'Fuka', statusArray });
+  const meikyoShisuiDuration = checkStatusDuration({ statusName: 'Meikyo Shisui', statusArray });
+  const higanbanaDuration = checkStatusDuration({ statusName: 'Higanbana', statusArray });
+
+  const tsubameGaeshiRecast = checkActionRecast({ actionName: 'Tsubame-gaeshi', recastArray });
+  const { kenki } = playerData;
+  const ogiNamikiriReadyDuration = checkStatusDuration({ statusName: 'Ogi Namikiri Ready', statusArray });
+
+  if (sen === 3) {
+    if (tsubameGaeshiRecast <= gcd) { return 'Iaijutsu'; }
+
+    if (tsubameGaeshiRecast <= gcd * 2 && meikyoShisuiDuration === 0) {
+      if (comboAction === 'Jinpu') { return 'Enpi'; }
+      if (comboAction === 'Shifu') { return 'Enpi'; }
+      if (comboAction === 'Hakaze' && fugetsuDuration <= fukaDuration) { return 'Jinpu'; }
+      if (comboAction === 'Hakaze' && fukaDuration < fugetsuDuration) { return 'Shifu'; }
+      if (!comboAction) { return 'Hakaze'; }
+    }
+
+    if (tsubameGaeshiRecast <= gcd * 3 && meikyoShisuiDuration === 0) {
+      if (!comboAction) { return 'Hakaze'; }
+    }
+
+    if (tsubameGaeshiRecast <= gcd * 4 && meikyoShisuiDuration === 0) {
+      if (!comboAction) { return 'Enpi'; }
+    }
+
+    // something crazy happened I hope
+    if (tsubameGaeshiRecast > gcd * 4) { return 'Iaijutsu'; } // Temporary?
+
+    if (tsubameGaeshiRecast > gcd * 9) { return 'Iaijutsu'; }
+  }
+
+  if (sen === 1 && tsubameGaeshiRecast > gcd * 9) {
+    if (higanbanaDuration < gcd) { return 'Iaijutsu'; }
+    if (higanbanaDuration < gcd * 2 && meikyoShisuiDuration === 0) {
+      if (comboAction === 'Hakaze' && fugetsuDuration <= fukaDuration) { return 'Jinpu'; }
+      if (comboAction === 'Hakaze' && fukaDuration < fugetsuDuration) { return 'Shifu'; }
+      if (!comboAction) { return 'Hakaze'; }
+    }
+    if (higanbanaDuration < gcd * 3 && meikyoShisuiDuration === 0) {
+      if (!comboAction) { return 'Hakaze'; }
+    }
+  }
+
+  // if (sen === 2) {
+  //   if (tsubameGaeshiRecast <= gcd * 4) { return 'Iaijutsu'; }
+
+  //   if (tsubameGaeshiRecast <= gcd * 5) {
+  //     if (comboAction === 'Hakaze' && fugetsuDuration <= fukaDuration) { return 'Jinpu'; }
+  //     if (comboAction === 'Hakaze' && fukaDuration < fugetsuDuration) { return 'Shifu'; }
+  //     if (!comboAction) { return 'Hakaze'; }
+  //     return 'Enpi';
+  //   }
+
+  //   if (tsubameGaeshiRecast <= gcd * 6) {
+  //     if (!comboAction) { return 'Hakaze'; }
+  //     return 'Enpi';
+  //   }
+  // }
+
+  if (kenki >= 20 && ogiNamikiriReadyDuration > 0) {
+    return 'Ogi Namikiri';
+  }
+
+
+  // // Continue combos
+  // const gekkoAcquired = actionData.some((element) => element.name === 'Gekko');
+  // const kashaAcquired = actionData.some((element) => element.name === 'Kasha');
+  // const yukikazeAcquired = actionData.some((element) => element.name === 'Yukikaze');
+  // const shifuAcquired = actionData.some((element) => element.name === 'Shifu');
+  // const jinpuAcquired = actionData.some((element) => element.name === 'Jinpu');
+  // const mangetsuAcquired = actionData.some((element) => element.name === 'Mangetsu');
+  // const okaAcquired = actionData.some((element) => element.name === 'Oka');
+
+  if (meikyoShisuiDuration > 0) {
+    if (!getsu && !ka) {
+      if (fugetsuDuration === 0 || fugetsuDuration <= fukaDuration) { return 'Gekko'; }
+      if (fukaDuration === 0 || fukaDuration < fugetsuDuration) { return 'Kasha'; }
+    }
+    if (!getsu && ka) { return 'Gekko'; }
+    if (getsu && !ka) { return 'Kasha'; }
+    if (!setsu) { return 'Yukikaze'; }
+  }
+
+  if (comboAction === 'Jinpu') { return 'Gekko'; }
+  if (comboAction === 'Shifu') { return 'Kasha'; }
+
+  if (comboAction === 'Hakaze') {
+    if (!getsu && !ka) {
+      if (fugetsuDuration === 0 || fugetsuDuration <= fukaDuration) { return 'Jinpu'; }
+      if (fukaDuration === 0 || fukaDuration < fugetsuDuration) { return 'Shifu'; }
+    }
+    if (!getsu && ka) { return 'Jinpu'; }
+    if (getsu && !ka) { return 'Shifu'; }
+    if (!setsu) { return 'Yukikaze'; }
+
+    if (fugetsuDuration === 0 || fugetsuDuration <= fukaDuration) { return 'Jinpu'; }
+    if (fukaDuration === 0 || fukaDuration < fugetsuDuration) { return 'Shifu'; }
+  }
+  return 'Hakaze';
+};
+
+// eslint-disable-next-line no-unused-vars
+const samLoopOGCDAction = ({
+  weaveCount,
+  playerData = loopPlayerData,
+  recastArray = loopRecastArray,
+  statusArray = loopStatusArray,
+} = {}) => {
+  if (weaveCount > 1) { return ''; } // No double weaving on SAM because lazy
+
+  const { level } = playerData;
+  const { comboAction } = playerData;
+  const { kenki } = playerData;
+  const { gcd } = playerData;
+  const { setsu } = playerData;
+  const { getsu } = playerData;
+  const { ka } = playerData;
+  const sen = playerData.setsu + playerData.getsu + playerData.ka;
+  const ikishotenRecast = checkActionRecast({ actionName: 'Ikishoten', recastArray });
+  if (kenki <= 50 && ikishotenRecast < 1) { return 'Ikishoten'; }
+  const tsubameGaeshiRecast = checkActionRecast({ actionName: 'Tsubame-gaeshi', recastArray });
+  const higanbanaDuration = checkStatusDuration({ statusName: 'Higanbana', statusArray });
+
+  if (!comboAction) {
+    if (sen === 1 && tsubameGaeshiRecast <= gcd * 12 && tsubameGaeshiRecast >= gcd * 9) { return 'Hagakure'; }
+    if (sen === 2 && setsu && tsubameGaeshiRecast <= gcd * 12 && tsubameGaeshiRecast >= gcd * 9) { return 'Hagakure'; }
+    if (sen === 3 && tsubameGaeshiRecast <= gcd * 10 && tsubameGaeshiRecast >= gcd * 9) { return 'Hagakure'; }
+  }
+
+  const meikyoShisuiRecast = checkActionRecast({ actionName: 'Meikyo Shisui', recastArray });
+  // const tsubameGaeshiRecast = checkActionRecast({ actionName: 'Tsubame-gaeshi', recastArray });
+  if (!comboAction && sen === 0) { // Should activate after Tsubame-gaeshi or weaponskills
+    if (level >= 88 && meikyoShisuiRecast < 56) { return 'Meikyo Shisui'; }
+    if (meikyoShisuiRecast < 1) { return 'Meikyo Shisui'; }
+  }
+
+  const { meditationStacks } = playerData;
+  if (meditationStacks === 3) {
+    // if (targetCount >= 3) {}
+    return 'Shoha';
+  }
+
+  let kenkiTarget = 0; // Checks for when to use kenki with spenders
+  // Maybe adjust later to "save" more kenki?
+  const hissatsuGurenRecast = checkActionRecast({ actionName: 'Hissatsu: Guren', recastArray });
+  if (level >= 52) { kenkiTarget = 30; }
+  if (level >= 62) { kenkiTarget = 45; }
+  // if (level >= 68) { kenkiCap = 45; }
+  if (level >= 70) {
+    if (ikishotenRecast <= hissatsuGurenRecast) { kenkiTarget = 45; } else { kenkiTarget = 70; }
+  }
+
+  if (kenki >= kenkiTarget) {
+    // if (targetCount >= 3)
+    return 'Hissatsu: Shinten';
+  }
+
+  return '';
+};
+
+const samPushIaijutsu = () => {
+  // Replace other Hissatsu with Kaiten
+  if (checkActionRecast({ actionName: 'Hissatsu: Kaiten', recastArray: loopRecastArray })) {
+    if (overlayArray[overlayArray.length - 1] && ['Hissatsu: Shinten', 'Hissatsu: Kyuten'].includes(overlayArray[overlayArray.length - 1].name)) {
+      overlayArray[overlayArray.length - 1].name = 'Hissatsu: Kaiten';
+      loopPlayerData.kenki += 25;
+      actionMatch({
+        actionName: 'Hissatsu: Kaiten',
+        playerData: loopPlayerData,
+        recastArray: loopRecastArray,
+        statusArray: loopStatusArray,
+        loop: true,
+      });
+    } else if (loopPlayerData.kenki >= 20) {
+      overlayArray.push({ name: 'Hissatsu: Kaiten', ogcd: true });
+      actionMatch({
+        actionName: 'Hissatsu: Kaiten',
+        playerData: loopPlayerData,
+        recastArray: loopRecastArray,
+        statusArray: loopStatusArray,
+        loop: true,
+      });
+    }
+  }
+  
+  const { gcd } = loopPlayerData;
+  const sen = loopPlayerData.setsu + loopPlayerData.getsu + loopPlayerData.ka;
+  const tsubameGaeshiRecast = checkActionRecast({ actionName: 'Tsubame-gaeshi', recastArray: loopRecastArray });
+  if (sen === 1) {
+    overlayArray.push({ name: 'Higanbana' });
+    actionMatch({
+      actionName: 'Higanbana',
+      playerData: loopPlayerData,
+      recastArray: loopRecastArray,
+      statusArray: loopStatusArray,
+      loop: true,
+    });
+  } else if (sen === 2) {
+    overlayArray.push({ name: 'Tenka Goken' });
+    actionMatch({
+      actionName: 'Tenka Goken',
+      playerData: loopPlayerData,
+      recastArray: loopRecastArray,
+      statusArray: loopStatusArray,
+      loop: true,
+    });
+    if (tsubameGaeshiRecast <= gcd) {
+      advanceLoopTime({ time: gcd });
+      overlayArray.push({ name: 'Kaeshi: Goken' });
+      actionMatch({
+        actionName: 'Tenka Goken',
+        playerData: loopPlayerData,
+        recastArray: loopRecastArray,
+        statusArray: loopStatusArray,
+        loop: true,
+      });
+    }
+  } else if (sen === 3) {
+    overlayArray.push({ name: 'Midare Setsugekka' });
+    actionMatch({
+      actionName: 'Midare Setsugekka',
+      playerData: loopPlayerData,
+      recastArray: loopRecastArray,
+      statusArray: loopStatusArray,
+      loop: true,
+    });
+    if (tsubameGaeshiRecast <= gcd) {
+      advanceLoopTime({ time: gcd });
+      overlayArray.push({ name: 'Kaeshi: Setsugekka' });
+      actionMatch({
+        actionName: 'Kaeshi: Setsugekka',
+        playerData: loopPlayerData,
+        recastArray: loopRecastArray,
+        statusArray: loopStatusArray,
+        loop: true,
+      });
+    }
+  }
+};
+
+const samPushEnpi = () => {
+  if (checkActionRecast({ actionName: 'Hissatsu: Yaten', recastArray: loopRecastArray })) {
+    if (overlayArray[overlayArray.length - 1] && ['Hissatsu: Shinten', 'Hissatsu: Kyuten'].includes(overlayArray[overlayArray.length - 1].name)) {
+      overlayArray[overlayArray.length - 1].name = 'Hissatsu: Yaten';
+      loopPlayerData.kenki += 25;
+      actionMatch({
+        actionName: 'Hissatsu: Yaten',
+        playerData: loopPlayerData,
+        recastArray: loopRecastArray,
+        statusArray: loopStatusArray,
+        loop: true,
+      });
+    } else if (loopPlayerData.kenki >= 10) {
+      overlayArray.push({ name: 'Hissatsu: Yaten', ogcd: true });
+      actionMatch({
+        actionName: 'Hissatsu: Yaten',
+        playerData: loopPlayerData,
+        recastArray: loopRecastArray,
+        statusArray: loopStatusArray,
+        loop: true,
+      });
+    }
+  }
+  
+  overlayArray.push({ name: 'Enpi' });
+    actionMatch({
+      actionName: 'Enpi',
+      playerData: loopPlayerData,
+      recastArray: loopRecastArray,
+      statusArray: loopStatusArray,
+      loop: true,
+    });
+
+
 };

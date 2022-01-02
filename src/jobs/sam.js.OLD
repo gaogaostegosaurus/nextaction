@@ -69,34 +69,6 @@ nextActionOverlay.samJobChange = () => {
 
   const { icon } = nextActionOverlay;
 
-  icon.hakaze = '003151';
-  icon.jinpu = '003152';
-  icon.shifu = '003156';
-  icon.fuga = '003157';
-  icon.gekko = '003158';
-  icon.iaijutsu = '003159';
-  icon.higanbana = '003160';
-  icon.tenkagoken = '003161';
-  icon.midaresetsugekka = '003162';
-  icon.mangetsu = '003163';
-  icon.kasha = '003164';
-  icon.oka = '003165';
-  icon.yukikaze = '003166';
-  icon.meikyoshisui = '003167';
-  icon.hissatsukaiten = '003168';
-  icon.hissatsuyaten = '003170';
-  icon.hissatsushinten = '003173';
-  icon.hissatsukyuten = '003174';
-  icon.hissatsuseigan = '003175';
-  icon.hagakure = '003176';
-  icon.hissatsuguren = '003177';
-  icon.hissatsusenei = '003178';
-  icon.ikishoten = '003179';
-  icon.tsubamegaeshi = '003180';
-  icon.kaeshihiganbana = '003181';
-  icon.kaeshigoken = '003182';
-  icon.kaeshisetsugekka = '003183';
-  icon.shoha = '003184';
 
   nextActionOverlay.meleedpsRoleChange();
 }; // Keep collapsed, probably

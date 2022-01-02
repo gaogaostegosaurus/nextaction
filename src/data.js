@@ -24,8 +24,8 @@ const baseActionData = [
     affinity: 'NIN',
     type: 'Weaponskill',
     level: 1,
-    comboBreak: true,
     targetCount: 1,
+    breaksCombo: true,
     icon: '000601',
   },
 
@@ -43,8 +43,8 @@ const baseActionData = [
     type: 'Weaponskill',
     level: 4,
     comboAction: 'Spinning Edge',
-    comboBreak: true,
     targetCount: 1,
+    breaksCombo: true,
     icon: '000602',
   },
 
@@ -53,6 +53,7 @@ const baseActionData = [
     affinity: 'NIN',
     recast: 20,
     level: 10,
+    statusName: 'Hide',
     icon: '000609',
   },
 
@@ -77,7 +78,7 @@ const baseActionData = [
     affinity: 'NIN',
     recast: 60,
     level: 18,
-    status: 'Trick Attack',
+    statusName: 'Trick Attack', // "self buff"
     icon: '000618',
   },
 
@@ -87,8 +88,8 @@ const baseActionData = [
     type: 'Weaponskill',
     level: 26,
     comboAction: 'Gust Slash',
-    comboBreak: true,
     targetCount: 1,
+    breaksCombo: true,
     icon: '000605',
   },
 
@@ -97,8 +98,8 @@ const baseActionData = [
     affinity: 'NIN',
     type: 'Weaponskill',
     level: 38,
-    comboBreak: true,
     targetCount: 3,
+    breaksCombo: true,
     icon: '000615',
   },
 
@@ -115,7 +116,7 @@ const baseActionData = [
     affinity: 'NIN',
     recast: 60,
     level: 50,
-    status: 'Kassatsu',
+    statusName: 'Kassatsu',
     icon: '002906',
   },
 
@@ -125,9 +126,9 @@ const baseActionData = [
     type: 'Weaponskill',
     level: 52,
     comboAction: 'Death Blossom',
-    comboBreak: true,
     huton: 10,
     targetCount: 3,
+    breaksCombo: true,
     icon: '002923',
   },
 
@@ -137,9 +138,9 @@ const baseActionData = [
     type: 'Weaponskill',
     level: 54,
     comboAction: 'Gust Slash',
-    comboBreak: true,
     huton: 30,
     targetCount: 1,
+    breaksCombo: true,
     icon: '002915',
   },
 
@@ -183,7 +184,7 @@ const baseActionData = [
     affinity: 'NIN',
     recast: 120,
     level: 70,
-    status: 'Ten Chi Jin',
+    statusName: 'Ten Chi Jin',
     icon: '002922',
   },
 
@@ -193,6 +194,7 @@ const baseActionData = [
     recast: 120,
     level: 72,
     ninki: 50,
+    statusName: 'Meisui',
     icon: '002924',
   },
 
@@ -201,7 +203,7 @@ const baseActionData = [
     affinity: 'NIN',
     recast: 90,
     level: 80,
-    status: 'Phantom Kamaitachi Ready', // Check later
+    statusName: 'Bunshin',
     ninkiCost: 50,
     icon: '002927',
   },
@@ -220,7 +222,7 @@ const baseActionData = [
     affinity: 'NIN',
     type: 'Weaponskill',
     level: 90,
-    status: 'Fleeting Raiju Ready',
+    statusName: 'Fleeting Raiju Ready',
     icon: '002931',
   },
 
@@ -328,7 +330,7 @@ const baseActionData = [
     type: 'Ninjutsu',
     recast: 1.5,
     level: 45,
-    status: 'Doton',
+    statusName: 'Doton',
     icon: '002911',
   },
 
@@ -338,7 +340,7 @@ const baseActionData = [
     type: 'Ninjutsu',
     recast: 1.5,
     level: 45,
-    status: 'Suiton',
+    statusName: 'Suiton',
     icon: '002913',
   },
 
@@ -369,6 +371,7 @@ const baseActionData = [
     affinity: 'PLD',
     type: 'Weaponskill',
     level: 1,
+    breaksCombo: true,
     icon: '',
   },
 
@@ -377,6 +380,7 @@ const baseActionData = [
     affinity: 'PLD',
     type: 'Weaponskill',
     level: 4,
+    breaksCombo: true,
     icon: '',
   },
 
@@ -387,6 +391,7 @@ const baseActionData = [
     affinity: 'RDM',
     level: 1,
     type: 'Weaponskill',
+    breaksCombo: true,
     icon: '003201',
   },
 
@@ -399,6 +404,7 @@ const baseActionData = [
     mpCost: 200,
     blackMana: 2,
     whiteMana: 2,
+    breaksCombo: true,
     icon: '003202',
   },
 
@@ -411,6 +417,7 @@ const baseActionData = [
     mpCost: 300,
     blackMana: 6,
     accelerationSpell: true,
+    breaksCombo: true,
     icon: '003203',
   },
 
@@ -432,6 +439,7 @@ const baseActionData = [
     mpCost: 300,
     whiteMana: 6,
     accelerationSpell: true,
+    breaksCombo: true,
     icon: '003205',
   },
 
@@ -445,6 +453,7 @@ const baseActionData = [
     blackMana: 3,
     whiteMana: 3,
     accelerationSpell: true,
+    breaksCombo: true,
     icon: '003207',
   },
 
@@ -456,6 +465,7 @@ const baseActionData = [
     cast: 2,
     mpCost: 400,
     blackMana: 7,
+    breaksCombo: true,
     icon: '003229',
   },
 
@@ -467,6 +477,7 @@ const baseActionData = [
     cast: 2,
     mpCost: 400,
     whiteMana: 7,
+    breaksCombo: true,
     icon: '003230',
   },
 
@@ -478,6 +489,7 @@ const baseActionData = [
     cast: 2,
     mpCost: 200,
     blackMana: 5,
+    breaksCombo: true,
     icon: '003208',
   },
 
@@ -489,6 +501,7 @@ const baseActionData = [
     cast: 2,
     mpCost: 200,
     whiteMana: 5,
+    breaksCombo: true,
     icon: '003209',
   },
 
@@ -497,6 +510,7 @@ const baseActionData = [
   //   affinity: 'RDM',
   //   level: 35,
   //   type: 'Weaponskill',
+  //   breaksCombo: true,
   //   icon: '',
   // },
 
@@ -558,6 +572,7 @@ const baseActionData = [
     type: 'Spell',
     cast: 2,
     mpCost: 500,
+    breaksCombo: true,
     icon: '',
   },
 
@@ -595,6 +610,7 @@ const baseActionData = [
     mpCost: 200,
     blackMana: 3,
     whiteMana: 3,
+    breaksCombo: true,
     icon: '003220',
   },
 
@@ -605,6 +621,7 @@ const baseActionData = [
     type: 'Spell',
     cast: 10,
     mpCost: 2400,
+    breaksCombo: true,
     icon: '003221',
   },
 
@@ -618,6 +635,7 @@ const baseActionData = [
     blackMana: 3,
     whiteMana: 3,
     accelerationSpell: true,
+    breaksCombo: true,
     icon: '003222',
   },
 
@@ -629,6 +647,7 @@ const baseActionData = [
     mpCost: 380,
     blackMana: 21,
     manaStackCost: 3,
+    breaksCombo: true,
     icon: '003223',
   },
 
@@ -640,6 +659,7 @@ const baseActionData = [
     mpCost: 380,
     whiteMana: 21,
     manaStackCost: 3,
+    breaksCombo: true,
     icon: '003224',
   },
 
@@ -660,6 +680,7 @@ const baseActionData = [
     blackMana: 7,
     whiteMana: 7,
     comboAction: 'Verflare, Verholy',
+    breaksCombo: true,
     icon: '003234',
   },
 
@@ -672,6 +693,7 @@ const baseActionData = [
     mpCost: 300,
     blackMana: 6,
     accelerationSpell: true,
+    breaksCombo: true,
     icon: '003235',
   },
 
@@ -684,6 +706,7 @@ const baseActionData = [
     mpCost: 300,
     whiteMana: 6,
     accelerationSpell: true,
+    breaksCombo: true,
     icon: '003236',
   },
 
@@ -704,6 +727,7 @@ const baseActionData = [
     blackMana: 4,
     whiteMana: 4,
     comboAction: 'Scorch',
+    breaksCombo: true,
     icon: '003238',
   },
 
@@ -714,6 +738,7 @@ const baseActionData = [
     type: 'Weaponskill',
     recast: 1.5,
     manaCost: 20,
+    breaksCombo: true,
     icon: '003225',
   },
 
@@ -725,6 +750,7 @@ const baseActionData = [
     recast: 1.5,
     manaCost: 15,
     comboAction: 'Enchanted Riposte',
+    breaksCombo: true,
     icon: '003226',
   },
 
@@ -736,6 +762,7 @@ const baseActionData = [
     recast: 2.2,
     manaCost: 15,
     comboAction: 'Enchanted Zwerchhau',
+    breaksCombo: true,
     icon: '003227',
   },
 
@@ -746,6 +773,7 @@ const baseActionData = [
     type: 'Weaponskill',
     recast: 1.5,
     manaCost: 20,
+    breaksCombo: true,
     icon: '003228',
   },
 
@@ -756,6 +784,7 @@ const baseActionData = [
     type: 'Weaponskill',
     recast: 2.5, // Not modified by spell speed
     manaCost: 5,
+    breaksCombo: true,
     icon: '003232',
   },
 
@@ -1004,6 +1033,338 @@ const baseActionData = [
     affinity: 'RPR',
     level: 90,
     icon: '',
+  },
+
+  // SAM
+
+  {
+    name: 'Hakaze',
+    affinity: 'SAM',
+    level: 1,
+    type: 'Weaponskill',
+    breaksCombo: true,
+    icon: '003151',
+  },
+
+  {
+    name: 'Jinpu',
+    affinity: 'SAM',
+    level: 4,
+    type: 'Weaponskill',
+    comboAction: 'Hakaze',
+    statusName: 'Fugetsu',
+    breaksCombo: true,
+    icon: '003152',
+  },
+
+  {
+    name: 'Enpi',
+    affinity: 'SAM',
+    level: 15,
+    type: 'Weaponskill',
+    icon: '003155',
+  },
+
+  {
+    name: 'Shifu',
+    affinity: 'SAM',
+    level: 18,
+    type: 'Weaponskill',
+    comboAction: 'Hakaze',
+    statusName: 'Fuka',
+    breaksCombo: true,
+    icon: '003156',
+  },
+
+  {
+    name: 'Fuga',
+    affinity: 'SAM',
+    level: 26,
+    type: 'Weaponskill',
+    targetCount: 3,
+    breaksCombo: true,
+    icon: '003157',
+  },
+
+  {
+    name: 'Gekko',
+    affinity: 'SAM',
+    level: 30,
+    type: 'Weaponskill',
+    comboAction: 'Jinpu',
+    sen: 'Getsu',
+    breaksCombo: true,
+    icon: '003158',
+  },
+
+  {
+    name: 'Iaijutsu', // Used for testing
+    affinity: 'SAM',
+    level: 30,
+    type: 'Iaijutsu',
+    cast: 1.8,
+    icon: '003159',
+  },
+
+  {
+    name: 'Mangetsu',
+    affinity: 'SAM',
+    level: 35,
+    type: 'Weaponskill',
+    comboAction: 'Fuga',
+    statusName: 'Fugetsu',
+    sen: 'Getsu',
+    targetCount: 3,
+    breaksCombo: true,
+    icon: '003163',
+  },
+
+  {
+    name: 'Kasha',
+    affinity: 'SAM',
+    level: 40,
+    type: 'Weaponskill',
+    comboAction: 'Shifu',
+    sen: 'Ka',
+    breaksCombo: true,
+    icon: '003164',
+  },
+
+  {
+    name: 'Oka',
+    affinity: 'SAM',
+    level: 45,
+    type: 'Weaponskill',
+    comboAction: 'Fuga',
+    statusName: 'Fuka',
+    sen: 'Ka',
+    targetCount: 3,
+    breaksCombo: true,
+    icon: '003165',
+  },
+
+  {
+    name: 'Yukikaze',
+    affinity: 'SAM',
+    level: 50,
+    type: 'Weaponskill',
+    comboAction: 'Hakaze',
+    sen: 'Setsu',
+    breaksCombo: true,
+    icon: '003166',
+  },
+
+  {
+    name: 'Meikyo Shisui',
+    affinity: 'SAM',
+    level: 50,
+    recast: 55,
+    statusName: 'Meikyo Shisui',
+    statusDuration: 15,
+    statusStacks: 3, // Technically no, actually yes
+    icon: '003167',
+  },
+
+  {
+    name: 'Hissatsu: Kaiten',
+    affinity: 'SAM',
+    level: 52,
+    recast: 1,
+    statusName: 'Hissatsu: Kaiten',
+    statusDuration: 10,
+    kenkiCost: 20,
+    icon: '003168',
+  },
+
+  {
+    name: 'Hissatsu: Gyoten',
+    affinity: 'SAM',
+    level: 54,
+    recast: 10,
+    kenkiCost: 10,
+    icon: '003169',
+  },
+
+  {
+    name: 'Hissatsu: Yaten',
+    affinity: 'SAM',
+    level: 56,
+    recast: 10,
+    statusName: 'Enhanced Enpi',
+    statusDuration: 15,
+    kenkiCost: 10,
+    icon: '003170',
+  },
+
+  {
+    name: 'Meditate',
+    affinity: 'SAM',
+    level: 60,
+    recast: 60,
+    statusName: 'Meditate',
+    statusDuration: 15,
+    icon: '003172',
+  },
+
+  {
+    name: 'Hissatsu: Shinten',
+    affinity: 'SAM',
+    level: 62,
+    recast: 1,
+    kenkiCost: 25,
+    icon: '003173',
+  },
+
+  {
+    name: 'Hissatsu: Kyuten',
+    affinity: 'SAM',
+    level: 64,
+    recast: 1,
+    kenkiCost: 25,
+    targetCount: 3,
+    icon: '003174',
+  },
+
+  {
+    name: 'Hagakure',
+    affinity: 'SAM',
+    level: 68,
+    recast: 5,
+    icon: '003176',
+  },
+
+  {
+    name: 'Ikishoten',
+    affinity: 'SAM',
+    level: 68,
+    recast: 120,
+    kenki: 50,
+    icon: '003179',
+  },
+
+  {
+    name: 'Hissatsu: Guren',
+    affinity: 'SAM',
+    level: 70,
+    recast: 120,
+    kenkiCost: 25,
+    icon: '003177',
+  },
+
+  {
+    name: 'Hissatsu: Senei',
+    affinity: 'SAM',
+    level: 72,
+    recast: 120,
+    kenkiCost: 25,
+    icon: '003178',
+  },
+
+  {
+    name: 'Tsubame-gaeshi',
+    affinity: 'SAM',
+    level: 76,
+    recast: 60,
+    icon: '003180',
+  },
+
+  {
+    name: 'Shoha',
+    affinity: 'SAM',
+    level: 80,
+    recast: 15,
+    meditationStackCost: 3,
+    icon: '003184',
+  },
+
+  {
+    name: 'Shoha II',
+    affinity: 'SAM',
+    level: 82,
+    recast: 15,
+    meditationStackCost: 3,
+    targetCount: 3,
+    icon: '003185',
+  },
+
+  {
+    name: 'Fuko',
+    affinity: 'SAM',
+    level: 86,
+    type: 'Weaponskill',
+    targetCount: 3,
+    breaksCombo: true,
+    icon: '003189',
+  },
+
+  {
+    name: 'Ogi Namikiri',
+    affinity: 'SAM',
+    level: 90,
+    type: 'Iaijutsu',
+    cast: 1.3,
+    icon: '003187',
+  },
+
+  {
+    name: 'Higanbana',
+    affinity: 'SAM',
+    level: 30,
+    type: 'Iaijutsu',
+    cast: 1.8,
+    statusName: 'Higanbana',
+    statusTarget: 'target',
+    icon: '003160',
+  },
+
+  {
+    name: 'Tenka Goken',
+    affinity: 'SAM',
+    level: 40,
+    type: 'Iaijutsu',
+    cast: 1.8,
+    icon: '003161',
+  },
+
+  {
+    name: 'Midare Setsugekka',
+    affinity: 'SAM',
+    level: 50,
+    type: 'Iaijutsu',
+    cast: 1.8,
+    icon: '003162',
+  },
+
+  // {
+  //   name: 'Kaeshi: Higanbana',
+  //   affinity: 'SAM',
+  //   level: 76,
+  //   type: 'Tsubame-gaeshi',
+  //   icon: '003181',
+  // },
+
+  {
+    name: 'Kaeshi: Goken',
+    affinity: 'SAM',
+    level: 76,
+    type: 'Tsubame-gaeshi',
+    icon: '003182',
+  },
+
+  {
+    name: 'Kaeshi: Setsugekka',
+    affinity: 'SAM',
+    level: 76,
+    type: 'Tsubame-gaeshi',
+    icon: '003183',
+  },
+
+  {
+    name: 'Kaeshi: Namikiri',
+    affinity: 'SAM',
+    level: 90,
+    type: 'Weaponskill',
+    icon: '003188',
   },
 
   // SMN
@@ -1629,23 +1990,33 @@ const baseActionData = [
 
 // eslint-disable-next-line no-unused-vars
 const baseStatusData = [
-  { name: 'Combo', duration: 15 }, // Might be easier to put this in playerData later
+  // { name: 'Combo', duration: 15 }, // Might be easier to put this in playerData later
 
   { name: 'Acceleration', duration: 20 },
-  { name: 'Bunshin', duration: 30 },
+  { name: 'Bunshin', duration: 30, stacks: 5 },
   { name: 'Doton', duration: 24 },
   { name: 'Dualcast', duration: 15 },
   { name: 'Embolden', duration: 20 },
   { name: 'Fleeting Raiju Ready', duration: 15 },
-  { name: 'Forked Raiju Ready', duration: 15 },
+  {
+    name: 'Forked Raiju Ready', duration: 15, stacks: 1, maxStacks: 3,
+  },
+  { name: 'Fugetsu', duration: 40 },
+  { name: 'Fuka', duration: 40 },
+  { name: 'Higanbana', duration: 60 },
+  { name: 'Hide', duration: 9999 },
+  { name: 'Kaiten', duration: 10 },
   { name: 'Kassatsu', duration: 15 },
   { name: 'Lucid Dreaming', duration: 21 },
   { name: 'Manafication', duration: 15 },
+  { name: 'Meikyo Shisui', duration: 15, stacks: 3 },
+  { name: 'Meisui', duration: 30 },
   { name: 'Mudra', duration: 6 },
+  { name: 'Ogi Namikiri Ready', duration: 30 },
   { name: 'Phantom Kamaitachi Ready', duration: 9999 },
   { name: 'Suiton', duration: 20 },
   { name: 'Swiftcast', duration: 10 },
-  { name: 'Ten Chi Jin', duration: 6 },
+  { name: 'Ten Chi Jin', duration: 6, stacks: 3 },
   { name: 'Trick Attack', duration: 15 }, // Technically not a self status effect - easier set as one
   { name: 'Verfire Ready', duration: 30 },
   { name: 'Verstone Ready', duration: 30 },

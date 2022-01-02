@@ -45,11 +45,12 @@ let startsCastingRegex;
 let cancelActionRegex;
 // let gaugeRegex;
 
-const supportedJobs = ['NIN'];
+const supportedJobs = ['NIN', 'SAM'];
 let overlayReady;
 
 document.addEventListener('DOMContentLoaded', () => {
   console.log('DOM fully loaded and parsed');
+  console.log('(1)');
   overlayReady = true;
   startOverlayEvents();
 });
@@ -151,6 +152,8 @@ const onPlayerChangedEvent = (e) => {
       ninTraits({ level });
     // } else if (job === 'RDM') {
     //   rdmTraits({ level });
+    } else if (job === 'SAM') {
+      samTraits({ level });
     }
 
     // Create separate list for casted actions
@@ -167,7 +170,7 @@ const onPlayerChangedEvent = (e) => {
     const castingActionNameRegex = castingActionMap.join('|');
 
     actionEffectRegex = new RegExp(`^.{15}(?<logType>ActionEffect|AOEActionEffect) 1[56]:(?<sourceID>${playerID}):(?<sourceName>${playerName}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${actionNameRegex}):(?<targetID>[\\dA-F]{8}):`);
-    statusRegex = new RegExp(`^.{15}(?<logType>StatusAdd|StatusRemove) 1[AE]:(?<statusID>[\\dA-F]{2,8}):(?<statusName>.+?):(?<statusSeconds>[0-9]+\\.[0-9]+):(?<sourceID>[${playerID}):(?<sourceName>${playerName}):(?<targetID>[\\dA-F]{8}):(?:<statusStacks>[\\d]{2}:)`);
+    statusRegex = new RegExp(`^.{15}(?<logType>StatusAdd|StatusRemove) 1[AE]:(?<statusID>[\\dA-F]{2,8}):(?<statusName>.+?):(?<statusSeconds>[0-9]+\\.[0-9]+):(?<sourceID>${playerID}):(?<sourceName>${playerName}):(?<targetID>[\\dA-F]{8}):(?<targetName>.+?):(?<statusStacks>[\\d]{2}):`);
     startsCastingRegex = new RegExp(`^.{15}(?<logType>StartsCasting) 14:(?<sourceID>${playerID}):(?<sourceName>${playerName}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${castingActionNameRegex}):(?<targetID>[\\dA-F]{8}):`);
     cancelActionRegex = new RegExp(`^.{15}(?<logType>CancelAction) 17:(?<sourceID>${playerID}):(?<sourceName>${playerName}):(?<actionID>[\\dA-F]{1,8}):(?<actionName>${castingActionNameRegex}):(?<cancelReason>Cancelled|Interrupted):`);
     // gaugeRegex = new RegExp(
@@ -179,8 +182,10 @@ const onPlayerChangedEvent = (e) => {
   // Usual stuff
   if (currentPlayerData.job === 'NIN') {
     ninPlayerChanged(e);
-  } else if (currentPlayerData.job === 'RDM') {
-    rdmPlayerChanged(e);
+  } else if (currentPlayerData.job === 'SAM') {
+    samPlayerChanged(e);
+  // } else if (currentPlayerData.job === 'RDM') {
+  //   rdmPlayerChanged(e);
   }
 };
 
@@ -208,13 +213,15 @@ const onLogEvent = (e) => {
 
       actionMatch({ logType, actionName, targetID });
     } else if (statusLine) {
+      console.log(`${statusLine.groups.statusName} ${statusLine.groups.statusSeconds}`);
       statusMatch({
         logType: statusLine.groups.logType,
         statusName: statusLine.groups.statusName,
-        statusSeconds: statusLine.groups.statusSeconds,
+        statusSeconds: parseFloat(statusLine.groups.statusSeconds),
         sourceID: statusLine.groups.sourceID,
         targetID: statusLine.groups.targetID,
-        statusStacks: statusLine.groups.statusStacks,
+        statusStacks: parseInt(statusLine.groups.statusStacks, 16),
+        // Not 100% sure that statusStacks is a hexdecimal, but might as well
       });
     } else if (startsCastingLine) {
       startsCastingMatch({
@@ -247,123 +254,11 @@ const onLogEvent = (e) => {
   }
 };
 
-const actionMatch = ({
-  logType,
-  actionName,
-  targetID,
-  playerData = currentPlayerData,
-  recastArray = currentRecastArray,
-  statusArray = currentStatusArray,
-  loop = false,
-} = {}) => {
-  // This function should run once as-is per loop and then fall to the wrapper function afterwards
-  // console.log(`${logType} ${actionName} ${targetID}`);
-  const { job } = playerData;
-  // setComboAction({ actionName });
-
-  // Weird errors?
-  if (!playerData) { console.log('actionMatch: No playerData defined'); return; }
-  if (!recastArray) { console.log('actionMatch: No recastArray defined'); return; }
-  if (!statusArray) { console.log('actionMatch: No statusArray defined'); return; }
-
-  // const actionDataIndex = actionData.findIndex((element) => element.name === actionName);
-
-  // Not sure if this will stay here or move around later
-  addActionRecast({ actionName, recastArray });
-  const actionType = getActionDataProperty({ actionName, property: 'type' });
-
-  if (['Spell', 'Weaponskill'].includes(actionType)) {
-    setComboAction({ actionName, playerData, statusArray });
-  }
-
-  // Job specific stuff here
-  // Since loop conditions are too different between jobs, start loop inside job functions
-  if (job === 'NIN') {
-    ninActionMatch({
-      // logType, // Some of these aren't used currently
-      actionName,
-      // targetID,
-      playerData,
-      recastArray,
-      statusArray,
-      loop,
-    });
-  } else if (job === 'RDM') {
-    rdmActionMatch({
-      logType,
-      actionName,
-      targetID,
-      playerData,
-      recastArray,
-      statusArray,
-      loop,
-    });
-  }
-
-  // Start loop with certain things only
-  // if (!loop && checkStatusDuration({ statusName: 'Ten Chi Jin', statusArray }) === 0
-  // && ['Spell', 'Weaponskill', 'Ninjutsu'].includes(actionType)) {
-  //   const delay = calculateDelay({ actionName });
-  //   startLoop({ delay });
-  // }
-};
-
-const statusMatch = ({
-  logType, statusName, statusSeconds, sourceID, targetID, statusStacks,
-} = {}) => {
-  addStatus({
-    statusName,
-    sourceID,
-    targetID,
-    duration: statusSeconds,
-    stacks: statusStacks,
-    statusArray: currentStatusArray,
-  });
-  if (currentPlayerData.job === 'NIN') {
-    ninStatusMatch({ logType, statusName, sourceID });
-  } else if (currentPlayerData.job === 'RDM') { rdmStatusMatch({ logType, statusName, sourceID }); }
-};
-
-const startsCastingMatch = ({ actionName } = {}) => {
-  removeStatus({ statusName: 'Combo', statusArray: currentStatusArray });
-
-  // Call loop again with casting parameter
-  if (currentPlayerData.job === 'RDM') { startLoop({ casting: actionName }); }
-
-  fadeIcon({ name: actionName });
-};
-
-const cancelActionMatch = ({ actionName } = {}) => {
-  unfadeIcon({ name: actionName });
-  if (currentPlayerData.job === 'RDM') { startLoop(); }
-};
-
-// eslint-disable-next-line no-unused-vars
-const playerStatsMatch = ({ piety, skillSpeed, spellSpeed } = {}) => {
-  const speed = Math.max(skillSpeed, spellSpeed);
-  const { level } = currentPlayerData;
-  currentPlayerData.speed = speed;
-  currentPlayerData.gcd = calculateRecast();
-  currentPlayerData.mpRegen = 200 + Math.floor(
-    (150 * (piety - playerStatsData[level - 1].baseStat)) / playerStatsData[level - 1].levelMod,
-  );
-
-  // for (let index = 0; index < actionData.length; index += 1) {
-  //   if (['Spell', 'Weaponskill'].includes(actionData[index].type)) {
-  //     if (actionData[index].cast) {
-  //       actionData[index].cast = calculateRecast({ recast: actionData[index].cast });
-  //     }
-  //     if (actionData[index].recast) {
-  //       actionData[index].recast = calculateRecast({ recast: actionData[index].recast });
-  //     }
-  //   }
-  // }
-};
-
 const onInCombatChangedEvent = (e) => {
   if (currentPlayerData.combat !== e.detail.inGameCombat) { // Combat status changed
     currentPlayerData.combat = e.detail.inGameCombat; // true or false
-    console.log(`currentPlayerData.combat ${currentPlayerData.combat}`);
+    // console.log(`currentPlayerData.combat ${currentPlayerData.combat} ${e.detail.inGameCombat}`);
+    // Not sure the above doesn't work consistently...
     toggleOverlayClass();
   }
 };
@@ -374,7 +269,7 @@ const EnmityTargetData = (e) => {
 
   // Possible properties for e.Target are
   // ID - as decimal number instead of hex
-  // OwnerID - often "0", I assume this is for pets or something
+  // OwnerID - often "0", I assume this is for pets or something?
   // Type
   // TargetID
   // Job
@@ -385,7 +280,7 @@ const EnmityTargetData = (e) => {
   // EffectiveDistance - Distance to edge of target
   // Effects - Array of effects (?)
 
-  // Copied from stringify for notes:
+  // Example from JSON.stringify:
   // {"type":"EnmityTargetData","Target":{"ID":1111111111,"OwnerID":0,"Type":2,"TargetID":275370607,"Job":0,"Name":"Striking Dummy","CurrentHP":254,"MaxHP":16000,"PosX":-706.4552,"PosY":23.5000038,"PosZ":-583.5873,"Rotation":-0.461016417,"Distance":"2.78","EffectiveDistance":0,"Effects":[{"BuffID":508,"Stack":0,"Timer":10.7531652,"ActorID":275370607,"isOwner":false}]},"Focus":null,"Hover":null,"TargetOfTarget":{"ID":275370607,"OwnerID":0,"Type":1,"TargetID":3758096384,"Job":30,"Name":"Lyn Tah'row","CurrentHP":87008,"MaxHP":87008,"PosX":-708.9726,"PosY":23.5000038,"PosZ":-582.397156,"Rotation":2.01241565,"Distance":"0.00","EffectiveDistance":0,"Effects":[{"BuffID":365,"Stack":10,"Timer":30,"ActorID":3758096384,"isOwner":false},{"BuffID":360,"Stack":10,"Timer":30,"ActorID":3758096384,"isOwner":false}]},"Entries":[{"ID":275370607,"OwnerID":0,"Name":"Lyn Tah'row","Enmity":100,"isMe":true,"HateRate":100,"Job":30}]} (Source: file:///C:/asdf/asdf/asdf/listeners.js, Line: 219)
 
   if (e.Target) {
@@ -404,10 +299,12 @@ const EnmityTargetData = (e) => {
         ninTargetChanged();
       // } else {
       //   startLoop();
-      }
       // } else if (job === 'RDM') {
       //   rdmTargetChanged();
       // }
+      } else if (job === 'SAM') {
+        samTargetChanged();
+      }
       console.log(`Switched targets to {Name: ${targetData.name} ID: ${targetData.id} Distance: ${targetData.distance}}`);
     }
     toggleOverlayClass();
@@ -455,33 +352,33 @@ const calculateDelay = ({
 
   // if (job === 'RDM') { return rdmCalculateDelay({ actionName, playerData, statusArray }); }
   if (job === 'NIN') { return ninCalculateDelay({ actionName, playerData, statusArray }); }
-
+  if (job === 'SAM') { return samCalculateDelay({ actionName, playerData, statusArray }); }
   return 0;
 };
 
+// eslint-disable-next-line no-unused-vars
 const setComboAction = ({
   actionName,
   playerData = currentPlayerData,
-  statusArray = currentStatusArray,
+  // statusArray = currentStatusArray,
 } = {}) => {
-  // TODO: This still needs some tweaking to drop combos properly
+  // TODO: This still needs some tweaking to 'drop' combos properly
 
+  // Check for action
   const actionDataIndex = actionData.findIndex((e) => e.name === actionName);
-  if (actionDataIndex === -1) { console.log(`setComboAction: ${actionName} not found`); return; }
-  // if (!actionData[actionDataIndex].type || !actionData[actionDataIndex].comboBreak) {
+  if (actionDataIndex === -1) { console.log(`setComboAction: ${actionName} needs to be added to data array`); return; }
 
-  if (!actionData[actionDataIndex].comboBreak) {
+  if (!actionData[actionDataIndex].breaksCombo) {
     return; // Action will not affect combo
   }
 
+  // Look for followup action
   const comboAvailable = actionData.some((element) => element.comboAction
   && element.comboAction.includes(actionName));
   if (comboAvailable) {
-    addStatus({ statusName: 'Combo', statusArray });
     // eslint-disable-next-line no-param-reassign
     playerData.comboAction = actionName;
   } else {
-    removeStatus({ statusName: 'Combo', statusArray });
     // eslint-disable-next-line no-param-reassign
     playerData.comboAction = '';
   }

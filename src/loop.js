@@ -79,7 +79,13 @@ const startLoop = ({
     // console.log(`Casting ${casting}`);
     const actionName = casting;
     overlayArray.push({ name: casting });
-    loopActionMatch({ actionName });
+    actionMatch({
+      actionName,
+      playerData: loopPlayerData,
+      recastArray: loopRecastArray,
+      statusArray: loopStatusArray,
+      loop: true,
+    });
     ogcdWindow = calculateDelay({
       actionName,
       playerData: loopPlayerData,
@@ -97,79 +103,44 @@ const startLoop = ({
         actionName = ninLoopGCDAction();
       } else if (job === 'RDM') {
         actionName = rdmLoopGCDAction();
-      // } else if (job === 'SMN') {
+      } else if (job === 'SAM') {
+        actionName = samLoopGCDAction();
+        // } else if (job === 'SMN') {
       //   actionName = smnLoopGCDAction();
       }
 
+      // Special actions that suck
       if (job === 'NIN' && Array.isArray(actionName)) {
-        // eslint-disable-next-line no-loop-func
-        for (let index = 0; index < actionName.length - 1; index += 1) {
-          // Push Mudra - all but last entry
-
-          overlayArray.push({ name: actionName[index] });
-          actionMatch({
-            actionName: actionName[index],
-            playerData: loopPlayerData,
-            recastArray: loopRecastArray,
-            statusArray: loopStatusArray,
-            loop: true,
-          });
-          // Advancing time for Mudras
-          if (checkStatusDuration({ statusName: 'Ten Chi Jin', statusArray: loopStatusArray }) > 0) {
-            advanceLoopTime({ time: 1 });
-          } else {
-            advanceLoopTime({ time: 0.5 });
-          }
+        ninPushNinjutsuArray({
+          ninjutsuArray: actionName,
+        });
+        ogcdWindow = 1.5;
+      } else if (job === 'SAM' && actionName === 'Iaijutsu') {
+        samPushIaijutsu();
+        const actionType = getActionDataProperty({ actionName: overlayArray[overlayArray.length -1].name, property: 'type' });
+        if (actionType === 'Iaijutsu') {
+          ogcdWindow = 0;
+        } else {
+          ogcdWindow = loopPlayerData.gcd;
         }
-
-        // Last entry (should be ninjutsu itself)
-        overlayArray.push({ name: actionName[actionName.length - 1] });
-        loopPlayerChanged({ actionName: actionName[actionName.length - 1] });
-
-        addActionRecast({
-          actionName: actionName[actionName.length - 1],
-          recastArray: loopRecastArray,
-        });
-
-        actionMatch({
-          actionName: actionName[actionName.length - 1],
-          playerData: loopPlayerData,
-          recastArray: loopRecastArray,
-          statusArray: loopStatusArray,
-          loop: true,
-        });
-
-        ogcdWindow = calculateDelay({
-          actionName: actionName[actionName.length - 1],
-          playerData: loopPlayerData,
-          recastArray: loopRecastArray,
-          statusArray: loopStatusArray,
-        });
       } else {
         overlayArray.push({ name: actionName });
-        setComboAction({
+        ogcdWindow = calculateDelay({
           actionName,
           playerData: loopPlayerData,
+          recastArray: loopRecastArray,
           statusArray: loopStatusArray,
         });
-        loopPlayerChanged({ actionName });
-        addActionRecast({ actionName, recastArray: loopRecastArray });
         actionMatch({
           actionName,
           playerData: loopPlayerData,
           recastArray: loopRecastArray,
           statusArray: loopStatusArray,
           loop: true,
-        });
-        ogcdWindow = calculateDelay({
-          actionName,
-          playerData: loopPlayerData,
-          recastArray: loopRecastArray,
-          statusArray: loopStatusArray,
         });
       }
       // Testing for errors here, comment out when ready?
-      if (!ogcdWindow) { console.log(`startLoop: ${actionName} returned with no delay`); }
+      if (ogcdWindow === undefined) { console.log(`startLoop: ${actionName} returned with no delay`); }
     }
 
     if (ogcdWindow > 0.1) {
@@ -187,8 +158,10 @@ const startLoop = ({
         let actionName;
         if (currentPlayerData.job === 'NIN') {
           actionName = ninLoopOGCDAction({ weaveCount });
-        } else if (currentPlayerData.job === 'RDM') {
-          actionName = rdmLoopOGCDAction({ weaveCount });
+        // } else if (currentPlayerData.job === 'RDM') {
+        //   actionName = rdmLoopOGCDAction({ weaveCount });
+        } else if (currentPlayerData.job === 'SAM') {
+          actionName = samLoopOGCDAction({ weaveCount });
         }
 
         // Push into array
@@ -196,13 +169,12 @@ const startLoop = ({
           overlayArray.push({ name: actionName, ogcd: true });
           actionMatch({
             actionName,
+            targetID: targetData.id,
             playerData: loopPlayerData,
             recastArray: loopRecastArray,
             statusArray: loopStatusArray,
             loop: true,
           });
-          addActionRecast({ actionName, recastArray: loopRecastArray });
-          loopPlayerChanged({ actionName });
         }
 
         // Increment for next weave (maximum 1 second)
@@ -246,16 +218,3 @@ const startLoop = ({
 //     statusArray,
 //   });
 // };
-
-const loopPlayerChanged = ({
-  actionName,
-  playerData = loopPlayerData,
-  statusArray = loopStatusArray,
-} = {}) => {
-  const { job } = playerData;
-  if (job === 'NIN') {
-    ninLoopPlayerChanged({ actionName });
-    // console.log(`loopPlayerData huton|ninki: ${playerData.huton}|${playerData.ninki}`);
-  }
-  // else if (job === 'RDM') { rdmLoopPlayerChanged({ actionName });}
-};

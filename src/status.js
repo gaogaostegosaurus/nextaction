@@ -1,87 +1,67 @@
 /* global currentPlayerData statusData */
 
+// Main add status function
 // eslint-disable-next-line no-unused-vars
 const addStatus = ({
   statusName,
-  targetID = currentPlayerData.id,
-  sourceID = currentPlayerData.id,
+  targetID = currentPlayerData.id, // Seems like most statuses default to this
+  sourceID = currentPlayerData.id, // Seems like most statuses default to this
   duration,
   stacks,
   statusArray,
 } = {}) => {
-  // Function should return array index of status
+  // eslint-disable-next-line no-console
+  if (!statusName) { console.log('addStatus: undefined statusName'); return; }
+  // eslint-disable-next-line no-console
+  if (!statusArray) { console.log('addStatus: undefined statusArray'); return; }
 
-  if (!statusName) {
-    // eslint-disable-next-line no-console
-    console.log('addStatus: no statusName');
-    return;
-  }
-
-  if (!statusArray) {
-    // eslint-disable-next-line no-console
-    console.log('addStatus:: no statusArray');
-    return;
-  }
-
+  // Check if status is defined inside data array
   const statusDataIndex = statusData.findIndex((element) => element.name === statusName);
-  if (statusDataIndex === -1) {
-    // eslint-disable-next-line no-console
-    console.log(`addStatus: ${statusName} not in statusData array`);
-    return;
-  }
+  // eslint-disable-next-line no-console
+  if (statusDataIndex === -1) { console.log(`addStatus: ${statusName} not in statusData array`); return; }
 
-  let newDurationMilliseconds; // Conversion for array use
-  if (duration === undefined) {
-    // Get default duration if recast not provided
-    newDurationMilliseconds = statusData[statusDataIndex].duration * 1000;
-  } else {
-    // Use provided recast
+  // Convert seconds to milliseconds for array use
+  // Use provided duration or default to statusData duration
+  let newDurationMilliseconds;
+  if (duration) {
     newDurationMilliseconds = duration * 1000;
+  } else {
+    newDurationMilliseconds = statusData[statusDataIndex].duration * 1000;
   }
 
   // Create timestamp value for array
   const newDurationTimestamp = newDurationMilliseconds + Date.now();
 
+  // Set number of stacks, else get default value of stacks if unprovided
   let newStacks;
   if (stacks) {
     newStacks = stacks;
   } else if (statusData[statusDataIndex].stacks) {
-    // Get default value of stacks if this exists
     newStacks = statusData[statusDataIndex].stacks;
   }
 
-  // Look for matching entry
-  const statusArrayIndex = statusArray.findIndex(
+  // Look for existing entry
+  let statusArrayIndex = statusArray.findIndex(
     (element) => element.name === statusName
     && element.targetID === targetID && element.sourceID === sourceID,
   );
 
+  // Adjust existing timestamp if existing element found
+  // Push new array entry if not
   if (statusArrayIndex > -1) {
-    // Adjust existing timestamp if existing element found
     // eslint-disable-next-line no-param-reassign
     statusArray[statusArrayIndex].duration = newDurationTimestamp;
-    if (newStacks) {
-      // eslint-disable-next-line no-param-reassign
-      statusArray[statusArrayIndex].stacks = newStacks;
-    }
-    // if (newStacks !== undefined) {
-    //   // Assign stacks if set
-    //   // eslint-disable-next-line no-param-reassign
-    //   statusArray[statusArrayIndex].stacks = newStacks;
-    // }
-  } else if (newStacks) {
-    statusArray.push({
-      name: statusName, targetID, sourceID, duration: newDurationTimestamp, stacks: newStacks,
-    });
   } else {
     statusArray.push({
       name: statusName, targetID, sourceID, duration: newDurationTimestamp,
     });
-    // if (newStacks !== undefined) {
-    // Add stacks if defined
+    statusArrayIndex = statusArray.length - 1;
+  }
+
+  // Add stacks if value was defined
+  if (newStacks) {
     // eslint-disable-next-line no-param-reassign
-    // statusArray[statusArrayIndex].stacks = newStacks;
-    // }
+    statusArray[statusArrayIndex].stacks = newStacks;
   }
 };
 
@@ -133,7 +113,7 @@ const checkStatusDuration = ({
   statusName,
   targetID = currentPlayerData.id,
   sourceID = currentPlayerData.id,
-  statusArray,
+  statusArray = currentStatusArray,
 } = {}) => {
   if (!statusName) {
     // eslint-disable-next-line no-console
@@ -277,5 +257,46 @@ const removeStatusStacks = ({
         statusName, targetID, sourceID, statusArray,
       });
     }
+  }
+};
+
+// Adds status effect shown in actionData array during actionMatch function
+// eslint-disable-next-line no-unused-vars
+const addActionStatus = ({
+  actionName,
+  statusArray,
+} = {}) => {
+  // Check for status in action
+  const actionDataIndex = actionData.findIndex((element) => element.name === actionName);
+  if (!actionData[actionDataIndex].statusName) { return; }
+
+  const { statusName } = actionData[actionDataIndex];
+
+  if (statusName) {
+    let targetID;
+    let duration;
+    const { extendsDuration } = actionData[actionDataIndex];
+    const { maxDuration } = actionData[actionDataIndex];
+    let stacks;
+    const { grantsStacks } = actionData[actionDataIndex]; // "skill doesn't grant max stacks"
+    const { maxStacks } = actionData[actionDataIndex];
+    const { statusTarget } = actionData[actionDataIndex];
+    if (statusTarget === 'target') {
+      targetID = targetData.id;
+    } else if (extendsDuration) {
+      // eslint-disable-next-line max-len
+      duration = Math.min(checkStatusDuration({ statusName, statusArray }) + extendsDuration, maxDuration);
+    } else if (grantsStacks) {
+      stacks = Math.min(checkStatusStacks({ statusName, statusArray }) + grantsStacks, maxStacks);
+    }
+
+    // Time to add it
+    addStatus({
+      statusName,
+      targetID,
+      duration,
+      stacks,
+      statusArray,
+    });
   }
 };
