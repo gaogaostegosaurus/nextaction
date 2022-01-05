@@ -1997,9 +1997,8 @@ const baseStatusData = [
   { name: 'Doton', duration: 24 },
   { name: 'Dualcast', duration: 15 },
   { name: 'Embolden', duration: 20 },
-  { name: 'Fleeting Raiju Ready', duration: 15 },
   {
-    name: 'Forked Raiju Ready', duration: 15, stacks: 1, maxStacks: 3,
+    name: 'Raiju Ready', duration: 15, stacks: 1, maxStacks: 3,
   },
   { name: 'Fugetsu', duration: 40 },
   { name: 'Fuka', duration: 40 },

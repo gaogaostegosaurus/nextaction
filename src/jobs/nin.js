@@ -44,17 +44,17 @@ const ninTraits = ({ level } = {}) => {
     actionData[actionDataIndex].ninki = 15;
   }
 
-  if (level >= 88) {
-    const actionDataIndex = actionData.findIndex((element) => element.name === 'Meisui');
-    // actionData[actionDataIndex].status = 'Meisui'; // check name later
-  }
+  // if (level >= 88) {
+  //   const actionDataIndex = actionData.findIndex((element) => element.name === 'Meisui');
+  //   // actionData[actionDataIndex].status = 'Meisui'; // check name later
+  // }
 
-  if (level >= 90) {
-    const actionDataIndex = actionData.findIndex((element) => element.name === 'Raiton');
-    actionData[actionDataIndex].statusName = 'Forked Raiju Ready';
-    actionData[actionDataIndex].grantsStacks = 1;
-    actionData[actionDataIndex].maxStacks = 3;
-  }
+  // if (level >= 90) {
+  //   const actionDataIndex = actionData.findIndex((element) => element.name === 'Raiton');
+  //   actionData[actionDataIndex].statusName = 'Raiju Ready';
+  //   actionData[actionDataIndex].grantsStacks = 1;
+  //   actionData[actionDataIndex].maxStacks = 3;
+  // }
 };
 
 // eslint-disable-next-line no-unused-vars
@@ -147,12 +147,8 @@ const ninActionMatch = ({
 
   if (actionType === 'Weaponskill') {
     removeStatusStacks({ statusName: 'Bunshin', statusArray });
-    if (checkStatusDuration({ statusName: 'Bunshin', statusArray }) === 0) {
-      removeStatus({ statusName: 'Phantom Kamaitachi Ready', statusArray });
-    }
     if (!['Forked Raiju', 'Fleeting Raiju'].includes(actionName)) {
-      removeStatus({ statusName: 'Forked Raiju Ready', statusArray });
-      removeStatus({ statusName: 'Fleeting Raiju Ready', statusArray });
+      removeStatus({ statusName: 'Raiju Ready', statusArray });
     }
   }
 
@@ -175,14 +171,13 @@ const ninActionMatch = ({
     }
   } else if (actionName === 'Phantom Kamaitachi') {
     // Remove since it effectively has an infinite time
-    removeStatus({ statusName: 'Phantom Kamaitachi Ready', statusArray });
-  } else if (actionName === 'Raiton' && actionData.some((element) => element.name === 'Forked Raiju')) {
-    addStatusStacks({ statusName: 'Forked Raiju Ready', statusArray });
+    // removeStatus({ statusName: 'Phantom Kamaitachi Ready', statusArray });
+  } else if (actionName === 'Raiton' && actionData.some((element) => element.name === 'Fleeting Raiju')) {
+    addStatusStacks({ statusName: 'Raiju Ready', statusArray });
   } else if (actionName === 'Forked Raiju') {
-    removeStatusStacks({ statusName: 'Forked Raiju Ready', statusArray });
-    addStatus({ statusName: 'Fleeting Raiju Ready', statusArray });
+    removeStatusStacks({ statusName: 'Raiju Ready', statusArray });
   } else if (actionName === 'Fleeting Raiju') {
-    removeStatus({ statusName: 'Fleeting Raiju Ready', statusArray });
+    removeStatus({ statusName: 'Raiju Ready', statusArray });
   }
 
   // Start loop if not in it already
@@ -244,10 +239,8 @@ const ninLoopGCDAction = (
 
   // Trick Attack
   const chiAcquired = actionData.some((element) => element.name === 'Chi');
-  const forkedRaijuReadyDuration = checkStatusDuration({ statusName: 'Forked Raiju Ready', statusArray });
-  const fleetingRaijuReadyDuration = checkStatusDuration({ statusName: 'Fleeting Raiju Ready', statusArray });
+  const raijuReadyDuration = checkStatusDuration({ statusName: 'Raiju Ready', statusArray });
   const phantomKamaitachiReadyDuration = checkStatusDuration({ statusName: 'Phantom Kamaitachi Ready', statusArray });
-  // const bunshinDuration = checkStatusDuration({ statusName: 'Bunshin', statusArray });
   const trickAttackDuration = checkStatusDuration({ statusName: 'Trick Attack', statusArray });
   if (trickAttackDuration > 0) {
     if (kassatsuDuration > 0) {
@@ -271,8 +264,7 @@ const ninLoopGCDAction = (
       return ['Ten', 'Fuma Shuriken'];
     }
     // Maybe there should be a "> 3 stacks" conditional but it seems like a super edge case
-    if (fleetingRaijuReadyDuration > 0) { return 'Fleeting Raiju'; }
-    if (forkedRaijuReadyDuration > 0) { return 'Forked Raiju'; }
+    if (raijuReadyDuration > 0) { return 'Fleeting Raiju'; }
   }
 
   // Prep for Trick Attack
@@ -297,8 +289,7 @@ const ninLoopGCDAction = (
   if (mudraRecast < fumaShurikenLength + 1) { return ['Ten', 'Fuma Shuriken']; }
 
   // Forked/Fleeting Raiju
-  if (fleetingRaijuReadyDuration > 0) { return 'Fleeting Raiju'; }
-  if (forkedRaijuReadyDuration > 0) { return 'Forked Raiju'; }
+  if (raijuReadyDuration > 0) { return 'Fleeting Raiju'; }
 
   // Continue combos
   const { comboAction } = playerData;

@@ -154,12 +154,17 @@ const samActionMatch = ({
     playerData.meditationStacks = Math.max(playerData.meditationStacks - meditationStackCost, 0);
   }
 
+  if (meikyoShisuiDuration > 0 && actionType === 'Weaponskill') {
+    removeStatusStacks({ statusName: 'Meikyo Shisui', statusArray });
+  }
+
   // Calculate delay here, probably
   const delay = samCalculateDelay({ actionName, playerData, statusArray });
 
-  if (['Jinpu', 'Mangetsu'].includes(actionName)) {
+  // Status effects
+  if (['Jinpu', 'Mangetsu'].includes(actionName) || (meikyoShisuiDuration > 0 && actionName === 'Gekko')) {
     addStatus({ statusName: 'Fugetsu', statusArray });
-  } else if (['Shifu', 'Oka'].includes(actionName)) {
+  } else if (['Shifu', 'Oka'].includes(actionName) || (meikyoShisuiDuration > 0 && actionName === 'Kasha')) {
     addStatus({ statusName: 'Fuka', statusArray });
     if (level >= 78) {
       // eslint-disable-next-line no-param-reassign
@@ -167,23 +172,6 @@ const samActionMatch = ({
     } else {
       // eslint-disable-next-line no-param-reassign
       playerData.gcd = calculateRecast({ modifier: 0.9 });
-    }
-  } else if (meikyoShisuiDuration > 0) {
-    if (actionType === 'Weaponskill') {
-      removeStatusStacks({ statusName: 'Meikyo Shisui', statusArray });
-    }
-
-    if (actionName === 'Gekko') {
-      addStatus({ statusName: 'Fugetsu', statusArray });
-    } else if (actionName === 'Kasha') {
-      addStatus({ statusName: 'Fuka', statusArray });
-      if (level >= 78) {
-        // eslint-disable-next-line no-param-reassign
-        playerData.gcd = calculateRecast({ modifier: 0.87 });
-      } else {
-        // eslint-disable-next-line no-param-reassign
-        playerData.gcd = calculateRecast({ modifier: 0.9 });
-      }
     }
   } else if (actionName === 'Higanbana') {
     addStatus({ statusName: 'Higanbana', statusArray });
@@ -199,7 +187,7 @@ const samActionMatch = ({
     addActionRecast({ actionName: 'Tsubame-gaeshi', recastArray });
   }
 
-  // Flag for Tsubame-gaeshi
+  // Flag for Tsubame-gaeshi to prevent it from being removed from icon list
   let tsubameGaeshiReady = false;
   if (['Tenka Goken', 'Midare Setsugekka'].includes(actionName)
   && checkActionRecast({ actionName: 'Tsubame-gaeshi', recastArray }) < gcd) {
@@ -229,7 +217,7 @@ const samStatusMatch = ({ logType, statusName }) => {
       removeStatus({ statusName: 'Higanbana', statusArray: currentStatusArray });
     }
   }
-  checkStatusDuration({ statusName: 'Higanbana', statusArray: currentStatusArray });
+  // checkStatusDuration({ statusName: 'Higanbana', statusArray: currentStatusArray });
 };
 
 // eslint-disable-next-line no-unused-vars
@@ -381,7 +369,7 @@ const samLoopOGCDAction = ({
 
   const meikyoShisuiRecast = checkActionRecast({ actionName: 'Meikyo Shisui', recastArray });
   // const tsubameGaeshiRecast = checkActionRecast({ actionName: 'Tsubame-gaeshi', recastArray });
-  if (!comboAction && sen === 0) { // Should activate after Tsubame-gaeshi or weaponskills
+  if (!comboAction && sen === 0) {
     if (level >= 88 && meikyoShisuiRecast < 56) { return 'Meikyo Shisui'; }
     if (meikyoShisuiRecast < 1) { return 'Meikyo Shisui'; }
   }

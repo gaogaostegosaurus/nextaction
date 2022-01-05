@@ -31,7 +31,8 @@ const actionMatch = ({
   // Adds generic recast and status stuff
   addActionRecast({ actionName, recastArray });
   // addActionStatus({ actionName, statusArray });
-  // This did NOT work well due to statuses being complicated - easier to just add in below
+  // This did NOT seem to work well due to statuses being complicated
+  // Easier to just add in job-specific actionMatch
 
   // Add generic combo action stuff
   const actionType = getActionDataProperty({ actionName, property: 'type' });
@@ -96,10 +97,10 @@ const statusMatch = ({
 
   if (job === 'NIN') {
     ninStatusMatch({ logType, statusName, sourceID });
-  } else if (job === 'RDM') {
-    rdmStatusMatch({ logType, statusName, sourceID });
-  // } else if (job === 'SAM') {
-  //   samStatusMatch({ logType, statusName });
+  // } else if (job === 'RDM') {
+  //   rdmStatusMatch({ logType, statusName, sourceID });
+  } else if (job === 'SAM') {
+    samStatusMatch({ logType, statusName });
   }
 };
 
