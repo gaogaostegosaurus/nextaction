@@ -1,85 +1,37 @@
-/* globals
-actionData getActionDataProperty
-currentPlayerData currentStatusArray calculateDelay
-loopPlayerData loopRecastArray loopStatusArray
-addActionRecast checkActionRecast resetActionRecast calculateRecast
-addStatus removeStatus checkStatusDuration addStatusStacks removeStatusStacks checkStatusStacks
-startLoop
-*/
-
 // eslint-disable-next-line no-unused-vars
-const ninTraits = ({ level } = {}) => {
+const ninTraits = () => {
+  const { level } = currentPlayer;
+
   if (level >= 56) {
     const actionDataIndex = actionData.findIndex((element) => element.name === 'Assassinate');
     actionData.splice(actionDataIndex, 1);
   }
-
-  if (level >= 62) {
-    actionData.forEach((element) => {
-      if (element.type === 'Weaponskill') {
-        // eslint-disable-next-line no-param-reassign
-        element.ninki = 5;
-      }
-    });
-  }
-
-  if (level >= 66) {
-    const actionDataIndex = actionData.findIndex((element) => element.name === 'Mug');
-    actionData[actionDataIndex].ninki = 40;
-  }
-
-  if (level >= 78) {
-    let actionDataIndex;
-    actionDataIndex = actionData.findIndex((element) => element.name === 'Aeolian Edge');
-    actionData[actionDataIndex].ninki = 10;
-    actionDataIndex = actionData.findIndex((element) => element.name === 'Armor Crush');
-    actionData[actionDataIndex].ninki = 10;
-  }
-
-  if (level >= 84) {
-    let actionDataIndex;
-    actionDataIndex = actionData.findIndex((element) => element.name === 'Aeolian Edge');
-    actionData[actionDataIndex].ninki = 15;
-    actionDataIndex = actionData.findIndex((element) => element.name === 'Armor Crush');
-    actionData[actionDataIndex].ninki = 15;
-  }
-
-  // if (level >= 88) {
-  //   const actionDataIndex = actionData.findIndex((element) => element.name === 'Meisui');
-  //   // actionData[actionDataIndex].status = 'Meisui'; // check name later
-  // }
-
-  // if (level >= 90) {
-  //   const actionDataIndex = actionData.findIndex((element) => element.name === 'Raiton');
-  //   actionData[actionDataIndex].statusName = 'Raiju Ready';
-  //   actionData[actionDataIndex].grantsStacks = 1;
-  //   actionData[actionDataIndex].maxStacks = 3;
-  // }
 };
 
 // eslint-disable-next-line no-unused-vars
 const ninPlayerChanged = (e) => {
   // Recalculate GCD if Huton status has apparently changed
-  if (currentPlayerData.huton > 0 && e.detail.jobDetail.hutonMilliseconds === 0) {
+  if (currentPlayer.huton > 0 && e.detail.jobDetail.hutonMilliseconds === 0) {
     // Huton recently fell off
-    currentPlayerData.gcd = calculateRecast({ modifier: 1 });
-  } else if (currentPlayerData.huton === 0 && e.detail.jobDetail.hutonMilliseconds > 0) {
+    currentPlayer.gcd = calculateRecast({ modifier: 1 });
+  } else if (currentPlayer.huton === 0 && e.detail.jobDetail.hutonMilliseconds > 0) {
     // Huton recently applied
-    currentPlayerData.gcd = calculateRecast({ modifier: 0.85 });
+    currentPlayer.gcd = calculateRecast({ modifier: 0.85 });
   }
 
   // Standard stuff otherwise
-  currentPlayerData.hp = e.detail.currentHP;
-  currentPlayerData.huton = e.detail.jobDetail.hutonMilliseconds / 1000;
-  currentPlayerData.ninki = e.detail.jobDetail.ninkiAmount;
+  currentPlayer.hp = e.detail.currentHP;
+  currentPlayer.huton = e.detail.jobDetail.hutonMilliseconds / 1000;
+  currentPlayer.ninki = e.detail.jobDetail.ninkiAmount;
 };
 
 // eslint-disable-next-line no-unused-vars
 const ninTargetChanged = () => {
-  const mudraDuration = checkStatusDuration({ statusName: 'Mudra', statusArray: currentStatusArray });
-  const kassatsuDuration = checkStatusDuration({ statusName: 'Kassatsu', statusArray: currentStatusArray });
-  const tenChiJinDuration = checkStatusDuration({ statusName: 'Ten Chi Jin', statusArray: currentStatusArray });
-  if (Math.max(mudraDuration, kassatsuDuration, tenChiJinDuration) === 0) {
+  // Avoid starting new loop if mid-Ninjutsu
+  if (Math.max(
+    getStatusDuration({ statusName: 'Mudra' }),
+    getStatusDuration({ statusName: 'Ten Chi Jin' }),
+  ) === 0) {
     startLoop();
   }
 };
@@ -89,125 +41,194 @@ const ninActionMatch = ({
   // logType, // Currently unused parameters commented out
   actionName,
   // targetID,
-  playerData,
-  recastArray,
-  statusArray,
   loop,
 } = {}) => {
   // Everything removes Hide
-  removeStatus({ statusName: 'Hide', statusArray });
+  removeStatus({ statusName: 'Hide', loop });
 
-  const actionType = getActionDataProperty({ actionName, property: 'type' });
+  const { level } = currentPlayer;
+  const actionType = getActionProperty({ actionName, property: 'type' });
+
+  switch (actionType) {
+    case 'Mudra':
+      break;
+    default:
+      addActionRecast({ actionName, loop });
+  }
+
+  addComboAction({ actionName, loop });
 
   if (loop) {
-    // Add Huton time
-    const huton = getActionDataProperty({ actionName, property: 'huton' });
-    // eslint-disable-next-line no-param-reassign
-    playerData.huton = Math.min(playerData.huton + huton, 60);
+    switch (actionName) {
+      case 'Shade Shift':
+      case 'Hide':
+      case 'Ten':
+      case 'Chi':
+      case 'Shukuchi':
+      case 'Jin':
+      case 'Kassatsu':
+      case 'Ten Chi Jin':
+      case 'Meisui':
+      case 'Bunshin':
+      case 'Huton':
+        break;
+      default:
+        loopPlayer.combat = true;
+    }
 
-    // Make changes to Ninki
-    const ninki = getActionDataProperty({ actionName, property: 'ninki' });
-    const ninkiCost = getActionDataProperty({ actionName, property: 'ninkiCost' });
-    // eslint-disable-next-line no-param-reassign
-    playerData.ninki = Math.min(playerData.ninki + ninki, 100);
-    // eslint-disable-next-line no-param-reassign
-    playerData.ninki = Math.max(playerData.ninki - ninkiCost, 0);
+    // Replaces gauge lines during loops
+    switch (actionName) {
+      case 'Huton':
+      case 'Hurajin':
+        loopPlayer.huton = 60;
+        break;
+      case 'Hakke Mujinsatsu':
+      case 'Phantom Kamaitachi':
+        loopPlayer.huton = Math.min(loopPlayer.huton + 10, 60);
+        break;
+      case 'Armor Break':
+        loopPlayer.huton = Math.min(loopPlayer.huton + 30, 60);
+        break;
+      default:
+    }
+
+    switch (actionName) {
+      case 'Spinning Edge':
+      case 'Gust Slash':
+      case 'Throwing Dagger':
+      case 'Death Blossom':
+      case 'Hakke Mujinsatsu':
+      case 'Huraijin':
+      case 'Forked Raiju':
+      case 'Fleeting Raiju':
+        loopPlayer.ninki = Math.min(loopPlayer.ninki + 5, 100);
+        break;
+      case 'Armor Crush':
+      case 'Aeolian Edge':
+        loopPlayer.ninki = Math.min(loopPlayer.ninki + 5, 100);
+        if (level >= 78) { loopPlayer.ninki = Math.min(loopPlayer.ninki + 5, 100); }
+        if (level >= 84) { loopPlayer.ninki = Math.min(loopPlayer.ninki + 5, 100); }
+        break;
+      case 'Mug':
+        if (level >= 40) { loopPlayer.ninki = Math.min(loopPlayer.ninki + 40, 100); }
+        break;
+      case 'Hellfrog Medium':
+      case 'Bhavacakra':
+      case 'Bunshin':
+        loopPlayer.ninki = Math.max(loopPlayer.ninki - 50, 0);
+        break;
+      case 'Meisui':
+        loopPlayer.ninki = Math.min(loopPlayer.ninki + 50, 100);
+        break;
+      case 'Phantom Kamaitachi':
+        loopPlayer.ninki = Math.min(loopPlayer.ninki + 10, 100);
+        break;
+      default:
+    }
 
     // Bunshin adds another 5 ninki per weaponskill when active
-    const bunshinDuration = checkStatusDuration({ statusName: 'Bunshin', statusArray });
+    const bunshinDuration = getStatusDuration({ statusName: 'Bunshin', loop });
     if (actionType === 'Weaponskill' && bunshinDuration > 0) {
-    // eslint-disable-next-line no-param-reassign
-      playerData.ninki = Math.min(playerData.ninki + 5, 100);
+      loopPlayer.ninki = Math.min(loopPlayer.ninki + 5, 100);
     }
   }
 
   // Ninjutsu is so damn annoying
-  if (actionType === 'Mudra'
-  && checkStatusDuration({ statusName: 'Mudra', statusArray }) === 0
-  && checkStatusDuration({ statusName: 'Kassatsu', statusArray }) === 0) {
-    // Only add recast if Mudra and Kassatsu are not activated
-    addActionRecast({ actionName: 'Mudra', recastArray });
-    addStatus({ statusName: 'Mudra', statusArray });
+  switch (actionType) {
+    case 'Mudra':
+      if (getStatusDuration({ statusName: 'Mudra', loop }) === 0) {
+        // Only add recast if Mudra and Kassatsu are not activated
+        if (getStatusDuration({ statusName: 'Kassatsu', loop }) === 0) {
+          addActionRecast({ actionName: 'Mudra', loop });
+        }
+        // Only add status if it is not already on
+        addStatus({ statusName: 'Mudra', loop });
+      }
+      break;
+    case 'Ninjutsu':
+      // Remove Mudra/Kassatsu on Ninjutsu activation
+      removeStatus({ statusName: 'Mudra', loop });
+      removeStatus({ statusName: 'Kassatsu', loop });
+
+      // TCJ apparently actually has stacks in loglines
+      removeStatusStacks({ statusName: 'Ten Chi Jin', loop });
+
+      switch (actionName) {
+        case 'Doton':
+        case 'Suiton':
+          addStatus({ statusName: actionName, loop });
+          break;
+        default:
+      }
+      break;
+    case 'Weaponskill':
+      removeStatusStacks({ statusName: 'Bunshin', loop });
+      switch (actionName) {
+        case 'Forked Raiju':
+        case 'Fleeting Raiju':
+          break;
+        default:
+          removeStatus({ statusName: 'Raiju Ready', loop });
+      }
+      break;
+    default:
   }
 
-  if (actionType === 'Ninjutsu') {
-    // Remove Mudra/Kassatsu/TCJ on Ninjutsu activation
-    removeStatus({ statusName: 'Mudra', statusArray });
-    removeStatus({ statusName: 'Kassatsu', statusArray });
+  switch (actionName) {
+    case 'Hide':
+      removeRecast({ actionName: 'Mudra', loop });
+      break;
+    case 'Trick Attack':
+      // "Self-buff" to simplify alignment calculations
+      removeStatus({ statusName: 'Suiton', loop });
+      addStatus({ statusName: 'Trick Attack', loop });
+      break;
+    case 'Kassatsu':
+      addStatus({ statusName: 'Kassatsu', loop });
+      break;
+    case 'Ten Chi Jin':
+      addStatus({ statusName: 'Ten Chi Jin', stacks: 3, loop });
+      break;
+    case 'Bunshin':
+      addStatus({ statusName: 'Bunshin', stacks: 5, loop });
+      if (level >= 82) { addStatus({ statusName: 'Phantom Kamaitachi Ready', loop }); }
+      break;
+    case 'Phantom Kamaitachi':
+      removeStatus({ statusName: 'Phantom Kamaitachi Ready', loop });
+      break;
+    case 'Raiton':
+      if (level >= 90) { addStatusStacks({ statusName: 'Raiju Ready', loop }); }
+      break;
+    case 'Forked Raiju':
+    case 'Fleeting Raiju':
+      removeStatusStacks({ statusName: 'Raiju Ready', loop });
+      break;
+    default:
+  }
 
-    // Best way to account for TCJ weirdness is to treat it like it has stacks... maybe
-    removeStatusStacks({ statusName: 'Ten Chi Jin', statusArray });
-
-    if (actionName === 'Doton') {
-      addStatus({ statusName: 'Doton', statusArray });
-    } else if (actionName === 'Suiton') {
-      addStatus({ statusName: 'Suiton', statusArray });
+  // Start loop
+  if (!loop) {
+    switch (actionType) {
+      case 'Weaponskill':
+        startLoop({ delay: currentPlayer.gcd });
+        break;
+      case 'Ninjutsu':
+        if (getStatusDuration({ statusName: 'Ten Chi Jin', loop }) === 0) { startLoop({ delay: 1.5 }); }
+        break;
+      default:
     }
-  }
-
-  if (actionType === 'Weaponskill') {
-    removeStatusStacks({ statusName: 'Bunshin', statusArray });
-    if (!['Forked Raiju', 'Fleeting Raiju'].includes(actionName)) {
-      removeStatus({ statusName: 'Raiju Ready', statusArray });
-    }
-  }
-
-  if (actionName === 'Hide') {
-    // Hide reset
-    resetActionRecast({ actionName: 'Mudra', recastArray });
-  } else if (actionName === 'Trick Attack') {
-    // "Self-buff" to simplify alignment calculations
-    removeStatus({ statusName: 'Suiton', statusArray });
-    addStatus({ statusName: 'Trick Attack', statusArray });
-  } else if (actionName === 'Kassatsu') {
-    addStatus({ statusName: 'Kassatsu', statusArray });
-  } else if (actionName === 'Ten Chi Jin') {
-    addStatus({ statusName: 'Ten Chi Jin', stacks: 3, statusArray });
-  } else if (actionName === 'Bunshin') {
-    addStatus({ statusName: 'Bunshin', stacks: 5, statusArray });
-    // Add Phantom Kamaitachi alongside Bunshin for simulation
-    if (actionData.some((element) => element.name === 'Phantom Kamaitachi')) {
-      addStatus({ statusName: 'Phantom Kamaitachi Ready', statusArray });
-    }
-  } else if (actionName === 'Phantom Kamaitachi') {
-    // Remove since it effectively has an infinite time
-    // removeStatus({ statusName: 'Phantom Kamaitachi Ready', statusArray });
-  } else if (actionName === 'Raiton' && actionData.some((element) => element.name === 'Fleeting Raiju')) {
-    addStatusStacks({ statusName: 'Raiju Ready', statusArray });
-  } else if (actionName === 'Forked Raiju') {
-    removeStatusStacks({ statusName: 'Raiju Ready', statusArray });
-  } else if (actionName === 'Fleeting Raiju') {
-    removeStatus({ statusName: 'Raiju Ready', statusArray });
-  }
-
-  // Start loop if not in it already
-  if (!loop && checkStatusDuration({ statusName: 'Ten Chi Jin', statusArray }) === 0
-  && ['Spell', 'Weaponskill', 'Ninjutsu'].includes(actionType)) {
-    // eslint-disable-next-line no-param-reassign
-    if (!['Hide', 'Huton'].includes(actionName)) { playerData.combat = true; }
-    const delay = calculateDelay({ actionName, playerData, statusArray });
-    startLoop({ delay });
   }
 };
 
-// eslint-disable-next-line no-unused-vars
-const ninStatusMatch = ({ logType, statusName, sourceID }) => {
-  // if (logType === 'StatusRemove' && ['Mudra', 'Kassatsu', 'Ten Chi Jin'].includes(statusName)) {
-  //   // These should all come off after an final ninjutsu cast
-  //   // Good point to update?
-  //   startLoop({ delay: 1.5 });
-  // }
-};
+// Doesn't seem needed right now?
+// const ninStatusMatch = ({ logType, statusName, sourceID }) => {
+// };
 
 // eslint-disable-next-line no-unused-vars
-const ninLoopGCDAction = (
-  playerData = loopPlayerData,
-  recastArray = loopRecastArray,
-  statusArray = loopStatusArray,
-) => {
+const ninNextGCD = () => {
   // TCJ active
-  const { targetCount } = playerData;
-  const tenChiJinDuration = checkStatusDuration({ statusName: 'Ten Chi Jin', statusArray });
+  const { targetCount } = loopPlayer;
+  const tenChiJinDuration = getStatusDuration({ statusName: 'Ten Chi Jin', loop: true });
   if (tenChiJinDuration > 0) {
     if (targetCount >= 3) { return ['Fuma Shuriken', 'Katon', 'Suiton']; }
     return ['Fuma Shuriken', 'Raiton', 'Suiton'];
@@ -215,8 +236,8 @@ const ninLoopGCDAction = (
 
   // Kassatsu oopsies
   const hyoshoRanryuAcquired = actionData.some((element) => element.name === 'Hyosho Ranryu');
-  const trickAttackRecast = checkActionRecast({ actionName: 'Trick Attack', recastArray });
-  const kassatsuDuration = checkStatusDuration({ statusName: 'Kassatsu', statusArray });
+  const trickAttackRecast = getRecast({ actionName: 'Trick Attack', loop: true });
+  const kassatsuDuration = getStatusDuration({ statusName: 'Kassatsu', loop: true });
   if (kassatsuDuration > 0 && kassatsuDuration < trickAttackRecast) {
     if (hyoshoRanryuAcquired) {
       if (targetCount >= 3) { return ['Chi', 'Ten', 'Goka Mekkyaku']; }
@@ -227,11 +248,11 @@ const ninLoopGCDAction = (
   }
 
   // Huton oopsies
-  const { combat } = playerData;
-  const { huton } = playerData;
+  const { combat } = loopPlayer;
+  const { huton } = loopPlayer;
   const huraijinAcquired = actionData.some((element) => element.name === 'Huraijin');
   const jinAcquired = actionData.some((element) => element.name === 'Jin');
-  const mudraRecast = checkActionRecast({ actionName: 'Mudra', recastArray });
+  const mudraRecast = getRecast({ actionName: 'Mudra', loop: true });
   if (huton === 0 && jinAcquired) {
     if (combat && huraijinAcquired) { return 'Huraijin'; }
     if (mudraRecast < 20 && kassatsuDuration < 1) { return ['Chi', 'Jin', 'Ten', 'Huton']; }
@@ -239,9 +260,9 @@ const ninLoopGCDAction = (
 
   // Trick Attack
   const chiAcquired = actionData.some((element) => element.name === 'Chi');
-  const raijuReadyDuration = checkStatusDuration({ statusName: 'Raiju Ready', statusArray });
-  const phantomKamaitachiReadyDuration = checkStatusDuration({ statusName: 'Phantom Kamaitachi Ready', statusArray });
-  const trickAttackDuration = checkStatusDuration({ statusName: 'Trick Attack', statusArray });
+  const raijuReadyDuration = getStatusDuration({ statusName: 'Raiju Ready', loop: true });
+  const phantomKamaitachiReadyDuration = getStatusDuration({ statusName: 'Phantom Kamaitachi Ready', loop: true });
+  const trickAttackDuration = getStatusDuration({ statusName: 'Trick Attack', loop: true });
   if (trickAttackDuration > 0) {
     if (kassatsuDuration > 0) {
       if (hyoshoRanryuAcquired) {
@@ -268,15 +289,15 @@ const ninLoopGCDAction = (
   }
 
   // Prep for Trick Attack
-  const { gcd } = playerData;
-  const suitonDuration = checkStatusDuration({ statusName: 'Suiton', statusArray });
+  const { gcd } = loopPlayer;
+  const suitonDuration = getStatusDuration({ statusName: 'Suiton', loop: true });
   if (mudraRecast < 20 && jinAcquired && suitonDuration <= trickAttackRecast
   && trickAttackRecast < 20 - gcd * 2) {
     return ['Ten', 'Chi', 'Jin', 'Suiton'];
   }
 
   // Phantom Kamaitachi
-  const bunshinStacks = checkStatusStacks({ statusName: 'Bunshin', statusArray });
+  const bunshinStacks = getStatusStacks({ statusName: 'Bunshin', loop: true });
   if (bunshinStacks === 1 && phantomKamaitachiReadyDuration > 0) { return 'Phantom Kamaitachi'; }
 
   // Keep Ninjutsu off cooldown
@@ -292,7 +313,7 @@ const ninLoopGCDAction = (
   if (raijuReadyDuration > 0) { return 'Fleeting Raiju'; }
 
   // Continue combos
-  const { comboAction } = playerData;
+  const { comboAction } = loopPlayer;
   const gustSlashAcquired = actionData.some((element) => element.name === 'Gust Slash');
   const aeolianEdgeAcquired = actionData.some((element) => element.name === 'Aeolian Edge');
   const armorCrushAcquired = actionData.some((element) => element.name === 'Armor Crush');
@@ -313,46 +334,43 @@ const ninLoopGCDAction = (
 };
 
 // eslint-disable-next-line no-unused-vars
-const ninLoopOGCDAction = ({
+const ninNextOGCD = ({
   weaveCount,
-  playerData = loopPlayerData,
-  recastArray = loopRecastArray,
-  statusArray = loopStatusArray,
 } = {}) => {
   if (weaveCount > 1) { return ''; } // No double weaving on NIN because lazy
 
-  const { combat } = playerData;
-  const hideRecast = checkActionRecast({ actionName: 'Hide', recastArray });
-  const mudraRecast = checkActionRecast({ actionName: 'Mudra', recastArray });
+  const { combat } = loopPlayer;
+  const hideRecast = getRecast({ actionName: 'Hide', loop: true });
+  const mudraRecast = getRecast({ actionName: 'Mudra', loop: true });
   if (!combat && hideRecast === 0 && mudraRecast > 0) { return 'Hide'; }
 
   // Bunshin all the things
-  const { ninki } = playerData;
-  const bunshinRecast = checkActionRecast({ actionName: 'Bunshin', recastArray });
-  const bunshinDuration = checkStatusDuration({ statusName: 'Bunshin', statusArray });
+  const { ninki } = loopPlayer;
+  const bunshinRecast = getRecast({ actionName: 'Bunshin', loop: true });
+  const bunshinDuration = getStatusDuration({ statusName: 'Bunshin', loop: true });
   if (ninki >= 50 && bunshinRecast < 1 && bunshinDuration === 0) { return 'Bunshin'; }
 
   // Increase Ninki
-  const meisuiRecast = checkActionRecast({ actionName: 'Meisui', recastArray });
-  const mugRecast = checkActionRecast({ actionName: 'Mug', recastArray });
-  const trickAttackRecast = checkActionRecast({ actionName: 'Trick Attack', recastArray });
-  const suitonDuration = checkStatusDuration({ statusName: 'Suiton', statusArray });
-  const trickAttackDuration = checkStatusDuration({ statusName: 'Trick Attack', statusArray });
+  const meisuiRecast = getRecast({ actionName: 'Meisui', loop: true });
+  const mugRecast = getRecast({ actionName: 'Mug', loop: true });
+  const trickAttackRecast = getRecast({ actionName: 'Trick Attack', loop: true });
+  const suitonDuration = getStatusDuration({ statusName: 'Suiton', loop: true });
+  const trickAttackDuration = getStatusDuration({ statusName: 'Trick Attack', loop: true });
   if (ninki < 60 && mugRecast < 1) { return 'Mug'; }
   if (meisuiRecast < 1 && ninki <= 50 && suitonDuration > 0 && suitonDuration <= trickAttackRecast) { return 'Meisui'; }
 
   // Kassatsu right before Trick Attack
-  const kassatsuRecast = checkActionRecast({ actionName: 'Kassatsu', recastArray });
+  const kassatsuRecast = getRecast({ actionName: 'Kassatsu', loop: true });
   if (kassatsuRecast < 1 && trickAttackRecast < suitonDuration) { return 'Kassatsu'; }
 
   // Trick Attack
   if (suitonDuration > 0 && trickAttackRecast < 1) { return 'Trick Attack'; }
 
   // Trick Attack window
-  const assassinateRecast = checkActionRecast({ actionName: 'Assassinate', recastArray });
-  const dreamwithinadreamRecast = checkActionRecast({ actionName: 'Dream Within a Dream', recastArray });
-  const tenChiJinRecast = checkActionRecast({ actionName: 'Ten Chi Jin', recastArray });
-  const kassatsuDuration = checkStatusDuration({ statusName: 'Kassatsu', statusArray });
+  const assassinateRecast = getRecast({ actionName: 'Assassinate', loop: true });
+  const dreamwithinadreamRecast = getRecast({ actionName: 'Dream Within a Dream', loop: true });
+  const tenChiJinRecast = getRecast({ actionName: 'Ten Chi Jin', loop: true });
+  const kassatsuDuration = getStatusDuration({ statusName: 'Kassatsu', loop: true });
   if (trickAttackDuration > 0) {
     if (dreamwithinadreamRecast < 1) { return 'Dream Within a Dream'; }
     if (assassinateRecast < 1) { return 'Assassinate'; }
@@ -360,7 +378,7 @@ const ninLoopOGCDAction = ({
   }
 
   // Ninki
-  const { targetCount } = playerData;
+  const { targetCount } = loopPlayer;
   if (
     ninki === 100
     || (mugRecast < bunshinRecast && ninki >= 60)
@@ -374,7 +392,7 @@ const ninLoopOGCDAction = ({
   // Not needed? Who knows?
   // let nextWeaponskillNinki = 5;
   // if (comboAction === 'Gust Slash') {
-  //   nextWeaponskillNinki = getActionDataProperty(
+  //   nextWeaponskillNinki = getActionProperty(
   //     { actionName: 'Aeolian Edge', property: 'ninki' }
   //   );
   // }
@@ -383,49 +401,24 @@ const ninLoopOGCDAction = ({
   return '';
 };
 
-// eslint-disable-next-line no-unused-vars
-const ninCalculateDelay = ({
-  actionName,
-  playerData = currentPlayerData,
-  // statusArray = currentStatusArray,
-} = {}) => {
-  const actionType = getActionDataProperty({ actionName, property: 'type' });
-  if (actionType === 'Mudra') { return 0.5; }
-  if (actionType === 'Ninjutsu') { return 1.5; }
-  return playerData.gcd;
-};
+// // eslint-disable-next-line no-unused-vars
+// const ninPushArray = ({
+//   array,
+// } = {}) => {
+//   // Note to self: probably better to do this in array since there's so many conditions
+//   for (let i = 0; i < array.length - 1; i += 1) {
+//     // Push all but last entry
 
-const ninPushNinjutsuArray = ({
-  ninjutsuArray,
-  statusArray,
-} = {}) => {
-  // Note to self: probably better to do this in array since there's so many conditions
-  for (let index = 0; index < ninjutsuArray.length - 1; index += 1) {
-    // Push all but last entry
-
-    overlayArray.push({ name: ninjutsuArray[index] });
-    actionMatch({
-      actionName: ninjutsuArray[index],
-      playerData: loopPlayerData,
-      recastArray: loopRecastArray,
-      statusArray: loopStatusArray,
-      loop: true,
-    });
-    // Advancing time for Mudras
-    if (checkStatusDuration({ statusName: 'Ten Chi Jin', statusArray: loopStatusArray }) > 0) {
-      advanceLoopTime({ time: 1 });
-    } else {
-      advanceLoopTime({ time: 0.5 });
-    }
-  }
-  // Last entry (should be ninjutsu itself)
-  overlayArray.push({ name: ninjutsuArray[ninjutsuArray.length - 1] });
-
-  actionMatch({
-    actionName: ninjutsuArray[ninjutsuArray.length - 1],
-    playerData: loopPlayerData,
-    recastArray: loopRecastArray,
-    statusArray: loopStatusArray,
-    loop: true,
-  });
-};
+//     overlayArray.push({ name: array[i] });
+//     actionMatch({ actionName: array[i], loop: true });
+//     // Advancing time for Mudras
+//     if (getStatusDuration({ statusName: 'Ten Chi Jin', loop: true }) > 0) {
+//       incrementLoopTime({ time: 1 });
+//     } else {
+//       incrementLoopTime({ time: 0.5 });
+//     }
+//   }
+//   // Last entry (should be ninjutsu itself)
+//   overlayArray.push({ name: array[array.length - 1] });
+//   actionMatch({ actionName: array[array.length - 1], loop: true });
+// };

@@ -1,10 +1,10 @@
 /* globals
-actionData currentPlayerData
-loopPlayerData loopRecastArray loopStatusArray
+actionData currentPlayer
+loopPlayer loopRecastArray loopStatusArray
 calculateRecast
-resetActionRecast
+removeRecast
 removeStatus
-getActionDataProperty addActionRecast addStatus checkStatusDuration checkActionRecast
+getActionProperty addActionRecast addStatus getStatusDuration getRecast
 */
 
 // eslint-disable-next-line no-unused-vars
@@ -54,31 +54,31 @@ const rprTraits = ({ level } = {}) => {
 
 // Use debugJob until stuff updated for RPR?
 const rprPlayerChanged = (e) => {
-  currentPlayerData.jobHex = e.detail.debugJob;
+  playerJobHex = e.detail.debugJob;
 };
 
 // eslint-disable-next-line no-unused-vars
 const ninPlayerChanged = (e) => {
   // Recalculate GCD if Huton status has apparently changed
-  if (currentPlayerData.huton > 0 && e.detail.jobDetail.hutonMilliseconds === 0) {
+  if (currentPlayer.huton > 0 && e.detail.jobDetail.hutonMilliseconds === 0) {
     // Huton recently fell off
-    currentPlayerData.gcd = calculateRecast({ modifier: 1 });
-  } else if (currentPlayerData.huton === 0 && e.detail.jobDetail.hutonMilliseconds > 0) {
+    currentPlayer.gcd = calculateRecast({ modifier: 1 });
+  } else if (currentPlayer.huton === 0 && e.detail.jobDetail.hutonMilliseconds > 0) {
     // Huton recently applied
-    currentPlayerData.gcd = calculateRecast({ modifier: 0.85 });
+    currentPlayer.gcd = calculateRecast({ modifier: 0.85 });
   }
 
   // Standard stuff otherwise
-  currentPlayerData.hp = e.detail.currentHP;
-  currentPlayerData.huton = e.detail.jobDetail.hutonMilliseconds / 1000;
-  currentPlayerData.ninki = e.detail.jobDetail.ninkiAmount;
+  currentPlayer.hp = e.detail.currentHP;
+  currentPlayer.huton = e.detail.jobDetail.hutonMilliseconds / 1000;
+  currentPlayer.ninki = e.detail.jobDetail.ninkiAmount;
 };
 
 // eslint-disable-next-line no-unused-vars
 const ninTargetChanged = () => {
-  const mudraDuration = checkStatusDuration({ statusName: 'Mudra', statusArray: currentStatusArray });
-  const kassatsuDuration = checkStatusDuration({ statusName: 'Kassatsu', statusArray: currentStatusArray });
-  const tenChiJinDuration = checkStatusDuration({ statusName: 'Ten Chi Jin', statusArray: currentStatusArray });
+  const mudraDuration = getStatusDuration({ statusName: 'Mudra', statusArray: currentStatusArray });
+  const kassatsuDuration = getStatusDuration({ statusName: 'Kassatsu', statusArray: currentStatusArray });
+  const tenChiJinDuration = getStatusDuration({ statusName: 'Ten Chi Jin', statusArray: currentStatusArray });
   if (Math.max(mudraDuration, kassatsuDuration, tenChiJinDuration) === 0) {
     startLoop();
   }
@@ -93,12 +93,12 @@ const ninActionMatch = ({
   recastArray,
   statusArray,
 } = {}) => {
-  const actionType = getActionDataProperty({ actionName, property: 'type' });
+  const actionType = getActionProperty({ actionName, property: 'type' });
 
   // Ninjutsu is so damn annoying
   if (actionType === 'Mudra'
-  && checkStatusDuration({ statusName: 'Mudra', statusArray }) === 0
-  && checkStatusDuration({ statusName: 'Kassatsu', statusArray }) === 0) {
+  && getStatusDuration({ statusName: 'Mudra', statusArray }) === 0
+  && getStatusDuration({ statusName: 'Kassatsu', statusArray }) === 0) {
     // Only add recast if Mudra and Kassatsu are not activated
     addActionRecast({ actionName: 'Mudra', recastArray });
     addStatus({ statusName: 'Mudra', statusArray });
@@ -121,7 +121,7 @@ const ninActionMatch = ({
 
   if (actionName === 'Hide') {
     // Hide reset
-    resetActionRecast({ actionName: 'Mudra', recastArray });
+    removeRecast({ actionName: 'Mudra', recastArray });
   } else if (actionName === 'Trick Attack') {
     // "Self-buff" to simplify alignment calculations
     removeStatus({ statusName: 'Suiton', statusArray });
@@ -153,36 +153,32 @@ const ninStatusMatch = ({ logType, statusName, sourceID }) => {
 // eslint-disable-next-line no-unused-vars
 const ninLoopPlayerChanged = ({
   actionName,
-  playerData = loopPlayerData,
+  playerData = loopPlayer,
   // recastArray = loopRecastArray,
   statusArray = loopStatusArray,
 } = {}) => {
-  const actionType = getActionDataProperty({ actionName, property: 'type' });
+  const actionType = getActionProperty({ actionName, property: 'type' });
 
   // Add Huton time
-  const huton = getActionDataProperty({ actionName, property: 'huton' });
-  // eslint-disable-next-line no-param-reassign
-  playerData.huton = Math.min(playerData.huton + huton, 60);
+  const huton = getActionProperty({ actionName, property: 'huton' });
+    playerData.huton = Math.min(playerData.huton + huton, 60);
 
   // Make changes to Ninki
-  const ninki = getActionDataProperty({ actionName, property: 'ninki' });
-  const ninkiCost = getActionDataProperty({ actionName, property: 'ninkiCost' });
-  const bunshinDuration = checkStatusDuration({ statusName: 'Bunshin', statusArray });
-  // eslint-disable-next-line no-param-reassign
-  playerData.ninki = Math.min(playerData.ninki + ninki, 100);
-  // eslint-disable-next-line no-param-reassign
-  playerData.ninki = Math.max(playerData.ninki - ninkiCost, 0);
+  const ninki = getActionProperty({ actionName, property: 'ninki' });
+  const ninkiCost = getActionProperty({ actionName, property: 'ninkiCost' });
+  const bunshinDuration = getStatusDuration({ statusName: 'Bunshin', statusArray });
+    playerData.ninki = Math.min(playerData.ninki + ninki, 100);
+    playerData.ninki = Math.max(playerData.ninki - ninkiCost, 0);
   // Bunshin adds another 5 ninki per weaponskill when active
   if (actionType === 'Weaponskill' && bunshinDuration > 0) {
-    // eslint-disable-next-line no-param-reassign
-    playerData.ninki = Math.min(playerData.ninki + 5, 100);
+        playerData.ninki = Math.min(playerData.ninki + 5, 100);
   }
-  // console.log(`loopPlayerData huton|ninki: ${playerData.huton}|${playerData.ninki}`);
+  // console.log(`loopPlayer huton|ninki: ${playerData.huton}|${playerData.ninki}`);
 };
 
 // eslint-disable-next-line no-unused-vars
 const rprLoopGCDAction = (
-  playerData = loopPlayerData,
+  playerData = loopPlayer,
   recastArray = loopRecastArray,
   statusArray = loopStatusArray,
   // target???
@@ -205,17 +201,17 @@ const rprLoopGCDAction = (
   const fumaShurikenAcquired = actionData.some((element) => element.name === 'Fuma Shuriken');
   const suitonAcquired = actionData.some((element) => element.name === 'Suiton');
 
-  const trickAttackRecast = checkActionRecast({ actionName: 'Trick Attack', recastArray });
-  const mudraRecast = checkActionRecast({ actionName: 'Mudra', recastArray });
+  const trickAttackRecast = getRecast({ actionName: 'Trick Attack', recastArray });
+  const mudraRecast = getRecast({ actionName: 'Mudra', recastArray });
 
-  const trickAttackStatus = checkStatusDuration({ statusName: 'Trick Attack', statusArray });
-  const suitonStatus = checkStatusDuration({ statusName: 'Suiton', statusArray });
-  const kassatsuStatus = checkStatusDuration({ statusName: 'Kassatsu', statusArray });
-  const tenChiJinStatus = checkStatusDuration({ statusName: 'Ten Chi Jin', statusArray });
-  const phantomKamaitachiReadyStatus = checkStatusDuration({ statusName: 'Phantom Kamaitachi Ready', statusArray });
-  // const bunshinStatus = checkStatusDuration({ statusName: 'Bunshin', statusArray });
-  const forkedRaijuStatus = checkStatusDuration({ statusName: 'Forked Raiju Ready', statusArray });
-  const fleetingRaijuStatus = checkStatusDuration({ statusName: 'Fleeting Raiju Ready', statusArray });
+  const trickAttackStatus = getStatusDuration({ statusName: 'Trick Attack', statusArray });
+  const suitonStatus = getStatusDuration({ statusName: 'Suiton', statusArray });
+  const kassatsuStatus = getStatusDuration({ statusName: 'Kassatsu', statusArray });
+  const tenChiJinStatus = getStatusDuration({ statusName: 'Ten Chi Jin', statusArray });
+  const phantomKamaitachiReadyStatus = getStatusDuration({ statusName: 'Phantom Kamaitachi Ready', statusArray });
+  // const bunshinStatus = getStatusDuration({ statusName: 'Bunshin', statusArray });
+  const forkedRaijuStatus = getStatusDuration({ statusName: 'Forked Raiju Ready', statusArray });
+  const fleetingRaijuStatus = getStatusDuration({ statusName: 'Fleeting Raiju Ready', statusArray });
 
   // lol
   if (huraijinAcquired && huton === 0) { return 'Huraijin'; }
@@ -249,7 +245,7 @@ const rprLoopGCDAction = (
   // Keep Ninjutsu off cooldown
   if (raitonAcquired && mudraRecast < raitonLength + 1) { return ['Ten', 'Chi', 'Raiton']; }
   if (fumaShurikenAcquired && mudraRecast < fumaShurikenLength + 1) { return ['Ten', 'Fuma Shuriken']; }
-  if (checkStatusDuration({ statusName: 'Death\'s Design', targetID})
+  if (getStatusDuration({ statusName: 'Death\'s Design', targetID})
   if (targetCount >= 3) { return 'Spinning Scythe'; }
 
   // Continue/start combos
@@ -261,9 +257,9 @@ const rprLoopGCDAction = (
 };
 
 // eslint-disable-next-line no-unused-vars
-const ninLoopOGCDAction = ({
+const ninOGCD = ({
   weaveCount,
-  playerData = loopPlayerData,
+  playerData = loopPlayer,
   recastArray = loopRecastArray,
   statusArray = loopStatusArray,
 } = {}) => {
@@ -276,21 +272,21 @@ const ninLoopOGCDAction = ({
   const { ninki } = playerData;
   // const { huton } = playerData;
 
-  const assassinateRecast = checkActionRecast({ actionName: 'Assassinate', recastArray });
-  const bhavacakraRecast = checkActionRecast({ actionName: 'Bhavacakra', recastArray });
-  const bunshinRecast = checkActionRecast({ actionName: 'Bunshin', recastArray });
-  const dreamwithinadreamRecast = checkActionRecast({ actionName: 'Dream Within a Dream', recastArray });
-  const kassatsuRecast = checkActionRecast({ actionName: 'Kassatsu', recastArray });
-  const meisuiRecast = checkActionRecast({ actionName: 'Meisui', recastArray });
-  const mudraRecast = checkActionRecast({ actionName: 'Mudra', recastArray });
-  const mugRecast = checkActionRecast({ actionName: 'Mug', recastArray });
-  const tenChiJinRecast = checkActionRecast({ actionName: 'Ten Chi Jin', recastArray });
-  const trickAttackRecast = checkActionRecast({ actionName: 'Trick Attack', recastArray });
+  const assassinateRecast = getRecast({ actionName: 'Assassinate', recastArray });
+  const bhavacakraRecast = getRecast({ actionName: 'Bhavacakra', recastArray });
+  const bunshinRecast = getRecast({ actionName: 'Bunshin', recastArray });
+  const dreamwithinadreamRecast = getRecast({ actionName: 'Dream Within a Dream', recastArray });
+  const kassatsuRecast = getRecast({ actionName: 'Kassatsu', recastArray });
+  const meisuiRecast = getRecast({ actionName: 'Meisui', recastArray });
+  const mudraRecast = getRecast({ actionName: 'Mudra', recastArray });
+  const mugRecast = getRecast({ actionName: 'Mug', recastArray });
+  const tenChiJinRecast = getRecast({ actionName: 'Ten Chi Jin', recastArray });
+  const trickAttackRecast = getRecast({ actionName: 'Trick Attack', recastArray });
 
-  const bunshinStatus = checkStatusDuration({ statusName: 'Bunshin', statusArray });
-  const kassatsuStatus = checkStatusDuration({ statusName: 'Kassatsu', statusArray });
-  const suitonStatus = checkStatusDuration({ statusName: 'Suiton', statusArray });
-  const trickAttackStatus = checkStatusDuration({ statusName: 'Trick Attack', statusArray });
+  const bunshinStatus = getStatusDuration({ statusName: 'Bunshin', statusArray });
+  const kassatsuStatus = getStatusDuration({ statusName: 'Kassatsu', statusArray });
+  const suitonStatus = getStatusDuration({ statusName: 'Suiton', statusArray });
+  const trickAttackStatus = getStatusDuration({ statusName: 'Trick Attack', statusArray });
 
   // Bunshin all the things
   if (ninki >= 50 && bunshinRecast < 1 && bunshinStatus === 0) { return 'Bunshin'; }
@@ -323,7 +319,7 @@ const ninLoopOGCDAction = ({
   // Not needed? Who knows?
   // let nextWeaponskillNinki = 5;
   // if (comboAction === 'Gust Slash') {
-  //   nextWeaponskillNinki = getActionDataProperty(
+  //   nextWeaponskillNinki = getActionProperty(
   //     { actionName: 'Aeolian Edge', property: 'ninki' }
   //   );
   // }

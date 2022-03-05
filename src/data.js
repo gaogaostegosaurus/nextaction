@@ -1,5 +1,3 @@
-/* global actionData */
-
 // eslint-disable-next-line no-unused-vars
 const baseActionData = [
   // Use base values and modify during job load
@@ -1098,7 +1096,7 @@ const baseActionData = [
   },
 
   {
-    name: 'Iaijutsu', // Used for testing
+    name: 'Iaijutsu',
     affinity: 'SAM',
     level: 30,
     type: 'Iaijutsu',
@@ -1161,7 +1159,7 @@ const baseActionData = [
     recast: 55,
     statusName: 'Meikyo Shisui',
     statusDuration: 15,
-    statusStacks: 3, // Technically no, actually yes
+    statusStacks: 3,
     icon: '003167',
   },
 
@@ -1170,8 +1168,7 @@ const baseActionData = [
     affinity: 'SAM',
     level: 52,
     recast: 1,
-    statusName: 'Hissatsu: Kaiten',
-    statusDuration: 10,
+    statusName: 'Kaiten',
     kenkiCost: 20,
     icon: '003168',
   },
@@ -2017,6 +2014,7 @@ const baseStatusData = [
   { name: 'Swiftcast', duration: 10 },
   { name: 'Ten Chi Jin', duration: 6, stacks: 3 },
   { name: 'Trick Attack', duration: 15 }, // Technically not a self status effect - easier set as one
+  { name: 'True North', duration: 10 },
   { name: 'Verfire Ready', duration: 30 },
   { name: 'Verstone Ready', duration: 30 },
 ];
@@ -2139,13 +2137,3 @@ const playerStatsData = [
 //     icon: '000004',
 //   },
 // ];
-
-// eslint-disable-next-line no-unused-vars
-const getActionDataProperty = ({ actionName, property } = {}) => {
-  const actionDataIndex = actionData.findIndex((e) => e.name === actionName);
-  if (actionDataIndex < 0) { return 0; }
-  if (actionData[actionDataIndex][property]) {
-    return actionData[actionDataIndex][property];
-  }
-  return 0;
-};

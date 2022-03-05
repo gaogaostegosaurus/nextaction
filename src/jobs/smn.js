@@ -1,5 +1,5 @@
 /* global
-  currentPlayerData
+  currentPlayer
 */
 
 const smnActionMatch = ({
@@ -10,9 +10,9 @@ const smnActionMatch = ({
   recastArray,
   statusArray,
 } = {}) => {
-  const actionType = getActionDataProperty({ name: actionName, property: 'type' });
+  const actionType = getActionProperty({ name: actionName, property: 'type' });
 
-  if (actionType === 'Mudra' && checkStatusDuration({ statusName: 'Mudra', statusArray }) <= 0 && checkStatusDuration({ statusName: 'Kassatsu', statusArray }) <= 0) {
+  if (actionType === 'Mudra' && getStatusDuration({ statusName: 'Mudra', statusArray }) <= 0 && getStatusDuration({ statusName: 'Kassatsu', statusArray }) <= 0) {
     // Only add recast if Mudra and Kassatsu are not activated
     addActionRecast({ actionName: 'Mudra', recast: 20, recastArray });
     addStatus({ statusName: 'Mudra', statusArray });
@@ -48,9 +48,9 @@ const smnActionMatch = ({
 const smnLoopGCDAction = ({
   
 }) => {
-  const aetherchargeRecast = checkActionRecast({ actionName: 'Aethercharge', })
-  const summonBahamutRecast = checkActionRecast({ actionName: 'Summon Bahamut', })
-  const summonPhoenixRecast = checkActionRecast({ actionName: 'Summon Phoenix', })
+  const aetherchargeRecast = getRecast({ actionName: 'Aethercharge', })
+  const summonBahamutRecast = getRecast({ actionName: 'Summon Bahamut', })
+  const summonPhoenixRecast = getRecast({ actionName: 'Summon Phoenix', })
 
   if (summonBahamutRecast < 1) { return 'Summon Bahamut'; }
   if (something) { return 'Summon Phoenix'; }
@@ -70,9 +70,9 @@ const smnLoopGCDAction = ({
   
 }) => {
   const aetherchargeRecast = Math.min(
-    checkActionRecast({ actionName: 'Aethercharge', recastArray }),
-    checkActionRecast({ actionName: 'Summon Bahamut', recastArray }),
-    checkActionRecast({ actionName: 'Summon Phoenix', recastArray }),
+    getRecast({ actionName: 'Aethercharge', recastArray }),
+    getRecast({ actionName: 'Summon Bahamut', recastArray }),
+    getRecast({ actionName: 'Summon Phoenix', recastArray }),
   );
 
   // Summon as soon as recharge is done
@@ -102,7 +102,7 @@ const smnLoopGCDAction = ({
   }
 
   if (attunement === 'Ifrit') {
-    if (checkStatusDuration({ name: 'Ifrit\'s Favor', statusArray }) > 0) {
+    if (getStatusDuration({ name: 'Ifrit\'s Favor', statusArray }) > 0) {
       if (comboAction === 'Crimson Cyclone') { return 'Crimson Strike'; }
       return 'Crimson Cyclone';
     }
@@ -126,8 +126,8 @@ const smnLoopGCDAction = ({
 
 
   if (attunement === 'Garuda') {
-    calculateDelay({ })
-    if (checkStatusDuration({ name: 'Garuda\'s Favor', statusArray }) > 0) {
+    getDelay({ })
+    if (getStatusDuration({ name: 'Garuda\'s Favor', statusArray }) > 0) {
       return 'Slipstream';
     }
     if (attunementSeconds > time) {
@@ -148,12 +148,12 @@ const smnLoopGCDAction = ({
 
 // eslint-disable-next-line no-unused-vars
 const smnPlayerChanged = (e) => {
-  currentPlayerData.mp = e.detail.currentMP;
-  currentPlayerData.aetherflowStacks = e.detail.jobDetail.aetherflowStacks;
-  currentPlayerData.tranceSeconds = e.detail.jobDetail.tranceMilliseconds / 1000;
-  currentPlayerData.nextSummoned = e.detail.jobDetail.nextSummoned; // Phoenix/Bahamut?
-  currentPlayerData.attunement = e.detail.jobDetail.attunement; // Is this the stacks?
-  currentPlayerData.attunementSeconds = e.detail.jobDetail.attunementMilliseconds / 1000;
-  currentPlayerData.activePrimal = e.detail.jobDetail.activePrimal; // Array?
-  currentPlayerData.usableArcanum = e.detail.jobDetail.usableArcanum; // Array
+  currentPlayer.mp = e.detail.currentMP;
+  currentPlayer.aetherflowStacks = e.detail.jobDetail.aetherflowStacks;
+  currentPlayer.tranceSeconds = e.detail.jobDetail.tranceMilliseconds / 1000;
+  currentPlayer.nextSummoned = e.detail.jobDetail.nextSummoned; // Phoenix/Bahamut?
+  currentPlayer.attunement = e.detail.jobDetail.attunement; // Is this the stacks?
+  currentPlayer.attunementSeconds = e.detail.jobDetail.attunementMilliseconds / 1000;
+  currentPlayer.activePrimal = e.detail.jobDetail.activePrimal; // Array?
+  currentPlayer.usableArcanum = e.detail.jobDetail.usableArcanum; // Array
 };

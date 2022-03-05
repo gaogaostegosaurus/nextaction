@@ -147,8 +147,8 @@ nextActionOverlay.samNextAction = ({
     loopStatus[propertyName] = checkStatus({ statusName });
   });
 
-  if (nextActionOverlay.targetData.id !== '') {
-    loopStatus.higanbana = checkStatus({ statusName: 'Higanbana', id: nextActionOverlay.targetData.id });
+  if (nextActionOverlay.targetID !== '') {
+    loopStatus.higanbana = checkStatus({ statusName: 'Higanbana', id: nextActionOverlay.targetID });
   } else { loopStatus.higanbana = 999999; }
 
   let shifuModifier = 1;
@@ -635,7 +635,7 @@ nextActionOverlay.samActionMatch = (actionMatch) => {
       addStatus({ statusName: 'Tsubame-gaeshi Combo', duration: duration.combo });
     }
 
-    if (actionName === 'Higanbana') { addStatus({ statusName: 'Higanbana', id: nextActionOverlay.targetData.id }); }
+    if (actionName === 'Higanbana') { addStatus({ statusName: 'Higanbana', id: nextActionOverlay.targetID }); }
 
     let castTime = 1800 * (gcd / 2500);
     if (level >= 74) { castTime = 1300; }
@@ -647,7 +647,7 @@ nextActionOverlay.samActionMatch = (actionMatch) => {
     addRecast({ actionName: 'Tsubame-gaeshi' });
 
     // I mean... might as well
-    if (actionName === 'Kaeshi: Higanbana') { addStatus({ statusName: 'Higanbana', id: nextActionOverlay.targetData.id }); }
+    if (actionName === 'Kaeshi: Higanbana') { addStatus({ statusName: 'Higanbana', id: nextActionOverlay.targetID }); }
 
     nextActionOverlay.samNextAction({ delay: gcd });
   } else if (abilities.includes(actionName)) {

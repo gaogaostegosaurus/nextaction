@@ -1,11 +1,11 @@
 /* globals
 actionData statusData
-currentPlayerData currentRecastArray currentStatusArray
-loopPlayerData loopStatusArray loopRecastArray
+currentPlayer currentRecastArray currentStatusArray
+loopPlayer loopStatusArray loopRecastArray
 startLoop advanceLoopTime
-getActionDataProperty
-addActionRecast checkActionRecast checkActionCharges
-addStatus removeStatus checkStatusDuration
+getActionProperty
+addActionRecast getRecast checkActionCharges
+addStatus removeStatus getStatusDuration
 */
 
 // eslint-disable-next-line no-unused-vars
@@ -23,20 +23,20 @@ const rdmActionMatch = ({
   let statusArray;
 
   if (loop === true) {
-    playerData = loopPlayerData;
+    playerData = loopPlayer;
     recastArray = loopRecastArray;
     statusArray = loopStatusArray;
   } else {
-    playerData = currentPlayerData;
+    playerData = currentPlayer;
     recastArray = currentRecastArray;
     statusArray = currentStatusArray;
   }
 
   const { gcd } = playerData;
   const accelerationSpells = ['Verthunder', 'Veraero', 'Scatter', 'Verthunder III', 'Aero III', 'Impact'];
-  const actionCast = getActionDataProperty({ actionName, property: 'cast' });
+  const actionCast = getActionProperty({ actionName, property: 'cast' });
   // const actionRecast = getActionProperty({ actionName, property: 'recast' });
-  const actionType = getActionDataProperty({ actionName, property: 'type' });
+  const actionType = getActionProperty({ actionName, property: 'type' });
 
   let delay = 0;
 
@@ -75,13 +75,13 @@ const rdmActionMatch = ({
   if (actionType === 'Spell' && actionCast) {
     // console.log(actionCast);
     // Check for fastcast buffs and remove if necessary
-    if (accelerationSpells.includes(actionName) && checkStatusDuration({ statusName: 'Acceleration', statusArray }) > 0) {
+    if (accelerationSpells.includes(actionName) && getStatusDuration({ statusName: 'Acceleration', statusArray }) > 0) {
       removeStatus({ statusName: 'Acceleration', statusArray });
       delay = gcd;
-    } else if (checkStatusDuration({ statusName: 'Dualcast', statusArray }) > 0) {
+    } else if (getStatusDuration({ statusName: 'Dualcast', statusArray }) > 0) {
       removeStatus({ statusName: 'Dualcast', statusArray });
       delay = gcd;
-    } else if (checkStatusDuration({ statusName: 'Swiftcast', statusArray }) > 0) {
+    } else if (getStatusDuration({ statusName: 'Swiftcast', statusArray }) > 0) {
       removeStatus({ statusName: 'Swiftcast', statusArray });
       delay = gcd;
     } else {
@@ -100,30 +100,30 @@ const rdmActionMatch = ({
     // Make other playerData adjustments to mimic playerChangedEvent
 
     // Get properties of action
-    const mpCost = getActionDataProperty({ actionName, property: 'mpCost' });
-    const blackMana = getActionDataProperty({ actionName, property: 'blackMana' });
-    const whiteMana = getActionDataProperty({ actionName, property: 'whiteMana' });
-    const manaCost = getActionDataProperty({ actionName, property: 'manaCost' });
-    const manaStacks = getActionDataProperty({ actionName, property: 'manaStacks' });
-    const manaStackCost = getActionDataProperty({ actionName, property: 'manaStackCost' });
+    const mpCost = getActionProperty({ actionName, property: 'mpCost' });
+    const blackMana = getActionProperty({ actionName, property: 'blackMana' });
+    const whiteMana = getActionProperty({ actionName, property: 'whiteMana' });
+    const manaCost = getActionProperty({ actionName, property: 'manaCost' });
+    const manaStacks = getActionProperty({ actionName, property: 'manaStacks' });
+    const manaStackCost = getActionProperty({ actionName, property: 'manaStackCost' });
 
     // Adjust resources
-    if (mpCost !== undefined) { loopPlayerData.mp = Math.max(loopPlayerData.mp - mpCost, 0); }
+    if (mpCost !== undefined) { loopPlayer.mp = Math.max(loopPlayer.mp - mpCost, 0); }
     if (blackMana !== undefined) {
-      loopPlayerData.blackMana = Math.min(loopPlayerData.blackMana + blackMana, 100);
+      loopPlayer.blackMana = Math.min(loopPlayer.blackMana + blackMana, 100);
     }
     if (whiteMana !== undefined) {
-      loopPlayerData.whiteMana = Math.min(loopPlayerData.whiteMana + whiteMana, 100);
+      loopPlayer.whiteMana = Math.min(loopPlayer.whiteMana + whiteMana, 100);
     }
     if (manaCost !== undefined) {
-      loopPlayerData.blackMana = Math.max(loopPlayerData.blackMana - manaCost, 0);
-      loopPlayerData.whiteMana = Math.max(loopPlayerData.whiteMana - manaCost, 0);
+      loopPlayer.blackMana = Math.max(loopPlayer.blackMana - manaCost, 0);
+      loopPlayer.whiteMana = Math.max(loopPlayer.whiteMana - manaCost, 0);
     }
     if (manaStacks !== undefined) {
-      loopPlayerData.manaStacks = Math.min(loopPlayerData.manaStacks + manaStacks, 3);
+      loopPlayer.manaStacks = Math.min(loopPlayer.manaStacks + manaStacks, 3);
     }
     if (manaStackCost !== undefined) {
-      loopPlayerData.manaStacks = Math.max(loopPlayerData.manaStacks - manaStackCost, 0);
+      loopPlayer.manaStacks = Math.max(loopPlayer.manaStacks - manaStackCost, 0);
     }
 
     // Advance time by cast time
@@ -135,12 +135,12 @@ const rdmActionMatch = ({
 // eslint-disable-next-line no-unused-vars
 const rdmStatusMatch = ({ logType, statusName, sourceID }) => {
   // Run loop again if proc issued
-  if (logType === 'StatusAdd' && sourceID === currentPlayerData.id && ['Verfire Ready', 'Verstone Ready'].includes(statusName)) {
-    startLoop({ delay: currentPlayerData.gcd });
-  } else if (logType === 'StatusAdd' && sourceID === currentPlayerData.id && ['Acceleration', 'Swiftcast'].includes(statusName)) {
+  if (logType === 'StatusAdd' && sourceID === currentPlayer.id && ['Verfire Ready', 'Verstone Ready'].includes(statusName)) {
+    startLoop({ delay: currentPlayer.gcd });
+  } else if (logType === 'StatusAdd' && sourceID === currentPlayer.id && ['Acceleration', 'Swiftcast'].includes(statusName)) {
     startLoop({ delay: 1 });
-  } else if (logType === 'StatusRemove' && sourceID === currentPlayerData.id && ['Acceleration', 'Dualcast', 'Swiftcast'].includes(statusName)) {
-    startLoop({ delay: currentPlayerData.gcd });
+  } else if (logType === 'StatusRemove' && sourceID === currentPlayer.id && ['Acceleration', 'Dualcast', 'Swiftcast'].includes(statusName)) {
+    startLoop({ delay: currentPlayer.gcd });
   }
 };
 
@@ -157,13 +157,13 @@ const rdmLoopGCDAction = () => {
   const zwerchhauCost = actionData[actionData.findIndex((element) => element.name === 'Enchanted Zwerchhau')].manaCost;
   const redoublementCost = actionData[actionData.findIndex((element) => element.name === 'Enchanted Redoublement')].manaCost;
 
-  const { gcd } = loopPlayerData;
-  const { targetCount } = loopPlayerData;
-  const { comboAction } = loopPlayerData;
+  const { gcd } = loopPlayer;
+  const { targetCount } = loopPlayer;
+  const { comboAction } = loopPlayer;
 
-  const { blackMana } = loopPlayerData;
-  const { whiteMana } = loopPlayerData;
-  const { manaStacks } = loopPlayerData;
+  const { blackMana } = loopPlayer;
+  const { whiteMana } = loopPlayer;
+  const { manaStacks } = loopPlayer;
   const lowerMana = Math.min(blackMana, whiteMana);
 
   // "Continue combos"
@@ -180,8 +180,8 @@ const rdmLoopGCDAction = () => {
   const verflareMana = actionData[actionData.findIndex((element) => element.name === 'Verflare')].blackMana;
   const verholyMana = actionData[actionData.findIndex((element) => element.name === 'Verholy')].whiteMana;
 
-  const verfireDuration = checkStatusDuration({ statusName: 'Verfire Ready', statusArray });
-  const verstoneDuration = checkStatusDuration({ statusName: 'Verstone Ready', statusArray });
+  const verfireDuration = getStatusDuration({ statusName: 'Verfire Ready', statusArray });
+  const verstoneDuration = getStatusDuration({ statusName: 'Verstone Ready', statusArray });
 
   let finisherTime = 0;
   if (verflareAcquired) { finisherTime += gcd; }
@@ -215,9 +215,9 @@ const rdmLoopGCDAction = () => {
     return 'Verflare';
   }
 
-  const dualcastDuration = checkStatusDuration({ statusName: 'Dualcast', statusArray });
-  const accelerationDuration = checkStatusDuration({ statusName: 'Acceleration', statusArray });
-  const swiftcastDuration = checkStatusDuration({ statusName: 'Swiftcast', statusArray });
+  const dualcastDuration = getStatusDuration({ statusName: 'Dualcast', statusArray });
+  const accelerationDuration = getStatusDuration({ statusName: 'Acceleration', statusArray });
+  const swiftcastDuration = getStatusDuration({ statusName: 'Swiftcast', statusArray });
 
   // "Use Dualcast/Swiftcast/Acceleration"
   if (Math.max(dualcastDuration, accelerationDuration, swiftcastDuration) > 0) {
@@ -261,7 +261,7 @@ const rdmLoopGCDAction = () => {
     return 'Jolt';
   }
 
-  // const manaficationRecast = checkActionRecast({ actionName: 'Manafication', recastArray });
+  // const manaficationRecast = getRecast({ actionName: 'Manafication', recastArray });
 
   // const repriseIndex = actionData.findIndex((element) => element.name === 'Enchanted Reprise');
   // const repriseCost = actionData[repriseIndex].manaCost;
@@ -310,7 +310,7 @@ const rdmLoopGCDAction = () => {
 
   if (lowerMana >= comboCost) {
     // Start combo immediately under Manafication
-    if (checkStatusDuration({ statusName: 'Manafication', statusArray }) > 0) { return 'Enchanted Riposte'; }
+    if (getStatusDuration({ statusName: 'Manafication', statusArray }) > 0) { return 'Enchanted Riposte'; }
 
     // Proc guaranteed after Verholy/Verflare
     if (verflareAcquired && verfireDuration <= comboTime + finisherTime + gcd && whiteMana > blackMana) { return 'Enchanted Riposte'; }
@@ -374,27 +374,27 @@ const rdmLoopOGCDAction = () => {
   const recastArray = loopRecastArray;
   const statusArray = loopStatusArray;
 
-  const { gcd } = loopPlayerData;
-  const { targetCount } = loopPlayerData;
-  const { comboAction } = loopPlayerData;
+  const { gcd } = loopPlayer;
+  const { targetCount } = loopPlayer;
+  const { comboAction } = loopPlayer;
 
-  const { mp } = loopPlayerData;
-  const { blackMana } = loopPlayerData;
-  const { whiteMana } = loopPlayerData;
+  const { mp } = loopPlayer;
+  const { blackMana } = loopPlayer;
+  const { whiteMana } = loopPlayer;
 
   // const lowerMana = Math.min(blackMana, whiteMana);
   const higherMana = Math.max(blackMana, whiteMana);
-  const manaficationRecast = checkActionRecast({ actionName: 'Manafication', recastArray });
+  const manaficationRecast = getRecast({ actionName: 'Manafication', recastArray });
   // Manafication on cooldown (???)
   if (manaficationRecast < 1 && !comboAction) { return 'Manafication'; }
-  const contresixteRecast = checkActionRecast({ actionName: 'Contre Sixte', recastArray });
-  const flecheRecast = checkActionRecast({ actionName: 'Fleche', recastArray });
+  const contresixteRecast = getRecast({ actionName: 'Contre Sixte', recastArray });
+  const flecheRecast = getRecast({ actionName: 'Fleche', recastArray });
   // console.log(flecheRecast);
 
-  // const accelerationRecast = checkActionRecast({ actionName: 'Acceleration', recastArray });
+  // const accelerationRecast = getRecast({ actionName: 'Acceleration', recastArray });
   const accelerationCharges = checkActionCharges({ actionName: 'Acceleration', recastArray });
 
-  // const swiftcastRecast = checkActionRecast({ actionName: 'Swiftcast', recastArray });
+  // const swiftcastRecast = getRecast({ actionName: 'Swiftcast', recastArray });
 
   // Acceleration/Swiftcast for Manafication during next GCD
   // if (manaficationRecast < gcd + 1) {
@@ -418,19 +418,19 @@ const rdmLoopOGCDAction = () => {
   // }
 
   // Acceleration for damage/procs if 2 charges up?
-  if (accelerationCharges > 1 && checkStatusDuration({ statusName: 'Acceleration', statusArray }) <= 0) {
+  if (accelerationCharges > 1 && getStatusDuration({ statusName: 'Acceleration', statusArray }) <= 0) {
     if (targetCount > 1) { return 'Acceleration'; }
-    if (higherMana < 80 && Math.min(checkStatusDuration({ statusName: 'Verfire Ready', statusArray }), checkStatusDuration({ statusName: 'Verstone Ready', statusArray })) < gcd + 1) { return 'Acceleration'; }
+    if (higherMana < 80 && Math.min(getStatusDuration({ statusName: 'Verfire Ready', statusArray }), getStatusDuration({ statusName: 'Verstone Ready', statusArray })) < gcd + 1) { return 'Acceleration'; }
     if (higherMana < 60) { return 'Acceleration'; }
   }
 
   // Other OGCDs, I guess
-  if (actionData.some((element) => element.name === 'Embolden') && checkActionRecast({ actionName: 'Embolden', recastArray }) < 1) { return 'Embolden'; }
+  if (actionData.some((element) => element.name === 'Embolden') && getRecast({ actionName: 'Embolden', recastArray }) < 1) { return 'Embolden'; }
   if (actionData.some((element) => element.name === 'Corps-a-corps') && checkActionCharges({ actionName: 'Corps-a-corps', recastArray }) > 1) { return 'Corps-a-corps'; }
   if (actionData.some((element) => element.name === 'Engagement') && checkActionCharges({ actionName: 'Engagement', recastArray }) > 1) { return 'Engagement'; }
 
   // Lucid, but is this even needed anymore
-  if (actionData.some((element) => element.name === 'Lucid Dreaming') && mp < 8000 && checkActionRecast({ actionName: 'Lucid Dreaming', recastArray }) < 1) { return 'Lucid Dreaming'; }
+  if (actionData.some((element) => element.name === 'Lucid Dreaming') && mp < 8000 && getRecast({ actionName: 'Lucid Dreaming', recastArray }) < 1) { return 'Lucid Dreaming'; }
 
   return null;
 };
@@ -494,26 +494,26 @@ const rdmTraits = ({ level } = {}) => {
 
 // eslint-disable-next-line no-unused-vars
 const rdmPlayerChanged = (e) => {
-  currentPlayerData.mp = e.detail.currentMP;
-  currentPlayerData.blackMana = e.detail.jobDetail.blackMana;
-  currentPlayerData.whiteMana = e.detail.jobDetail.whiteMana;
-  currentPlayerData.manaStacks = e.detail.jobDetail.manaStacks;
+  currentPlayer.mp = e.detail.currentMP;
+  currentPlayer.blackMana = e.detail.jobDetail.blackMana;
+  currentPlayer.whiteMana = e.detail.jobDetail.whiteMana;
+  currentPlayer.manaStacks = e.detail.jobDetail.manaStacks;
 };
 
 // eslint-disable-next-line no-unused-vars
 const rdmTargetChanged = () => { startLoop(); };
 
 // eslint-disable-next-line no-unused-vars
-const rdmCalculateDelay = ({
+const rdmgetDelay = ({
   actionName,
-  playerData = currentPlayerData,
+  playerData = currentPlayer,
   // recastArray = currentRecastArray,
   statusArray = currentStatusArray,
 } = {}) => {
   const { gcd } = playerData;
-  const actionCast = getActionDataProperty({ actionName, property: 'cast' });
-  const actionType = getActionDataProperty({ actionName, property: 'type' });
-  const actionRecast = getActionDataProperty({ actionName, property: 'recast' });
+  const actionCast = getActionProperty({ actionName, property: 'cast' });
+  const actionType = getActionProperty({ actionName, property: 'type' });
+  const actionRecast = getActionProperty({ actionName, property: 'recast' });
 
   const accelerationSpells = ['Verthunder', 'Veraero', 'Scatter', 'Verthunder III', 'Aero III', 'Impact'];
 
@@ -528,14 +528,14 @@ const rdmCalculateDelay = ({
 
   // Get GCD time for spells with cast times
   if (actionType === 'Spell' && actionCast) {    
-    if (accelerationSpells.includes(actionName) && checkStatusDuration({ statusName: 'Acceleration', statusArray }) > 0) {
+    if (accelerationSpells.includes(actionName) && getStatusDuration({ statusName: 'Acceleration', statusArray }) > 0) {
       removeStatus({ statusName: 'Acceleration', statusArray });
       return gcd;
-    } else if (checkStatusDuration({ statusName: 'Dualcast', statusArray }) > 0) {
+    } else if (getStatusDuration({ statusName: 'Dualcast', statusArray }) > 0) {
       removeStatus({ statusName: 'Dualcast', statusArray });
       return gcd;
     }
-    if (checkStatusDuration({ statusName: 'Swiftcast', statusArray }) > 0) {
+    if (getStatusDuration({ statusName: 'Swiftcast', statusArray }) > 0) {
       removeStatus({ statusName: 'Swiftcast', statusArray });
       return gcd;
     }
