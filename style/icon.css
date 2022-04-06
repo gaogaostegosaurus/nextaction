@@ -27,8 +27,7 @@
 }
 
 .icon-small {
-  width: 34px;
-  left: -4;
+  top: -5;
   transform: scale(0.75);
 }
 
@@ -42,4 +41,8 @@
   height: 0px;
   width: 0px;
   opacity: 0;
+}
+
+.icon-pulse {
+  animation: brightness-pulse 2s linear infinite;
 }

@@ -2177,6 +2177,250 @@ const baseActionData = [
     icon: '',
   },
 
+  // Warrior
+
+  {
+    name: 'Heavy Swing',
+    affinity: 'WAR',
+    level: 1,
+    type: 'Weaponskill',
+    breaksCombo: true,
+    icon: '000260',
+  },
+
+  {
+    name: 'Maim',
+    affinity: 'WAR',
+    level: 4,
+    type: 'Weaponskill',
+    breaksCombo: true,
+    comboAction: 'Heavy Swing',
+    icon: '000255',
+  },
+
+  {
+    name: 'Berserk',
+    affinity: 'WAR',
+    level: 6,
+    recast: 60,
+    icon: '000259',
+  },
+
+  {
+    name: 'Overpower',
+    affinity: 'WAR',
+    level: 10,
+    type: 'Weaponskill',
+    breaksCombo: true,
+    icon: '000254',
+  },
+
+  {
+    name: 'Defiance',
+    affinity: 'WAR',
+    level: 10,
+    icon: '002551',
+  },
+
+  {
+    name: 'Tomahawk',
+    affinity: 'WAR',
+    level: 15,
+    type: 'Weaponskill',
+    icon: '000261',
+  },
+
+  {
+    name: 'Storm\'s Path',
+    affinity: 'WAR',
+    level: 26,
+    type: 'Weaponskill',
+    breaksCombo: true,
+    comboAction: 'Maim',
+    icon: '000258',
+  },
+
+  {
+    name: 'Thrill of Battle',
+    affinity: 'WAR',
+    level: 30,
+    recast: 90,
+    icon: '000263',
+  },
+
+  {
+    name: 'Inner Beast',
+    affinity: 'WAR',
+    level: 35,
+    type: 'Weaponskill',
+    icon: '002553',
+  },
+
+  {
+    name: 'Vengeance',
+    affinity: 'WAR',
+    level: 38,
+    recast: 120,
+    icon: '000267',
+  },
+
+  {
+    name: 'Mythril Tempest',
+    affinity: 'WAR',
+    level: 40,
+    type: 'Weaponskill',
+    breaksCombo: true,
+    comboAction: 'Overpower',
+    icon: '002565',
+  },
+
+  {
+    name: 'Holmgang',
+    affinity: 'WAR',
+    level: 42,
+    recast: 240,
+    icon: '000266',
+  },
+
+  {
+    name: 'Steel Cyclone',
+    affinity: 'WAR',
+    level: 45,
+    type: 'Weaponskill',
+    icon: '002552',
+  },
+
+
+  {
+    name: 'Storm\'s Eye',
+    affinity: 'WAR',
+    level: 50,
+    type: 'Weaponskill',
+    breaksCombo: true,
+    comboAction: 'Maim',
+    icon: '000264',
+  },
+
+  {
+    name: 'Infuriate',
+    affinity: 'WAR',
+    level: 50,
+    recast: 60,
+    icon: '002555',
+  },
+
+  {
+    name: 'Fell Cleave',
+    affinity: 'WAR',
+    level: 54,
+    type: 'Weaponskill',
+    icon: '002557',
+  },
+
+  {
+    name: 'Raw Intuition',
+    affinity: 'WAR',
+    level: 56,
+    recast: 25,
+    icon: '002559',
+  },
+
+  {
+    name: 'Equillibrium',
+    affinity: 'WAR',
+    level: 58,
+    recast: 60,
+    icon: '002560',
+  },
+
+  {
+    name: 'Decimate',
+    affinity: 'WAR',
+    level: 60,
+    type: 'Weaponskill',
+    icon: '002558',
+  },
+
+  {
+    name: 'Onslaught',
+    affinity: 'WAR',
+    level: 62,
+    recast: 30,
+    icon: '002561',
+  },
+
+  {
+    name: 'Upheaval',
+    affinity: 'WAR',
+    level: 64,
+    recast: 30,
+    icon: '002562',
+  },
+
+  {
+    name: 'Shake It Off',
+    affinity: 'WAR',
+    level: 68,
+    recast: 90,
+    icon: '002563',
+  },
+
+  {
+    name: 'Inner Release',
+    affinity: 'WAR',
+    level: 70,
+    recast: 60,
+    icon: '002564',
+  },
+
+  {
+    name: 'Chaotic Cyclone',
+    affinity: 'WAR',
+    level: 72,
+    type: 'Weaponskill',
+    icon: '002566',
+  },
+
+  {
+    name: 'Nascent Flash',
+    affinity: 'WAR',
+    level: 76,
+    recast: 25,
+    icon: '002567',
+  },
+
+  {
+    name: 'Inner Chaos',
+    affinity: 'WAR',
+    level: 80,
+    type: 'Weaponskill',
+    icon: '002568',
+  },
+
+  {
+    name: 'Bloodwhetting',
+    affinity: 'WAR',
+    level: 82,
+    recast: 25,
+    icon: '002569',
+  },
+
+  {
+    name: 'Orogeny',
+    affinity: 'WAR',
+    level: 86,
+    recast: 30,
+    icon: '002570',
+  },
+
+  {
+    name: 'Primal Rend',
+    affinity: 'WAR',
+    level: 90,
+    type: 'Weaponskill',
+    icon: '002571',
+  },
+
   // Tank Role Actions
 
   {
@@ -2337,6 +2581,7 @@ const baseStatusData = [
 
   { name: 'Acceleration', duration: 20 },
   { name: 'Arcane Circle', duration: 20 },
+  { name: 'Berserk', duration: 15, stacks: 3 },
   { name: 'Bloodbath', duration: 20 },
   { name: 'Bloodsown Circle', duration: 6 },
   { name: 'Brotherhood', duration: 15 },
@@ -2363,6 +2608,7 @@ const baseStatusData = [
   { name: 'Hidden', duration: 9999 },
   { name: 'Huton', duration: 60 },
   { name: 'Immortal Sacrifice', duration: 30 },
+  { name: 'Inner Release', duration: 15, stacks: 3 },
   { name: 'Kaiten', duration: 10 },
   { name: 'Kassatsu', duration: 15 },
   { name: 'Leaden Fist', duration: 30 },
@@ -2372,10 +2618,12 @@ const baseStatusData = [
   { name: 'Meikyo Shisui', duration: 15, stacks: 3 },
   { name: 'Meisui', duration: 30 },
   { name: 'Mudra', duration: 6 },
+  { name: 'Nascent Chaos', duration: 30 },
   { name: 'Ogi Namikiri Ready', duration: 30 },
   { name: 'Opo-opo Form', duration: 30 },
   { name: 'Perfect Balance', duration: 30, stacks: 3 },
   { name: 'Phantom Kamaitachi Ready', duration: 9999 },
+  { name: 'Primal Rend Ready', duration: 30 },
   {
     name: 'Raiju Ready', duration: 15, stacks: 1, maxStacks: 3,
   },
@@ -2384,6 +2632,7 @@ const baseStatusData = [
   { name: 'Riddle of Wind', duration: 15 },
   { name: 'Soul Reaver', duration: 30 },
   { name: 'Soulsow', duration: 9999 },
+  { name: 'Surging Tempest', duration: 30 },
   { name: 'Suiton', duration: 20 },
   { name: 'Swiftcast', duration: 10 },
   { name: 'Ten Chi Jin', duration: 6 },

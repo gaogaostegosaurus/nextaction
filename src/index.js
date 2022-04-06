@@ -6,7 +6,7 @@
 // Bunch of globals since I don't know how to code
 
 // Config options
-const supportedJobs = ['MNK', 'NIN', 'RPR'];
+const supportedJobs = ['MNK', 'NIN', 'RPR', 'WAR'];
 const maxIcons = 8;
 const maxActions = 100;
 
@@ -146,6 +146,7 @@ const onPlayerChangedEvent = (e) => {
       case 'NIN': ninJobChanged(e); break;
       case 'RPR': rprJobChanged(e); break;
       case 'SAM': samJobChanged(e); break;
+      case 'WAR': warJobChanged(e); break;
       default:
     }
 
@@ -231,6 +232,7 @@ const EnmityTargetData = (e) => {
         case 'NIN': ninTargetChanged(); break;
         case 'RPR': rprTargetChanged(); break;
         case 'SAM': samTargetChanged(); break;
+        case 'WAR': warTargetChanged(); break;
         default:
       }
     }
@@ -250,7 +252,7 @@ const toggleOverlayClass = () => {
   const { id } = currentTarget;
   const { combat } = currentPlayer;
   // Control overlay visiblity based on target
-  if (overlayClass !== 'hide') {
+  if (overlayClass !== 'hide' && !combat) {
     if (!id.startsWith('40')) {
       document.getElementById('nextdiv').classList.replace('next-show', 'next-hide');
       overlayClass = 'hide';
@@ -377,6 +379,10 @@ const actionMatch = ({
       samActionMatch({
         logType, actionName, targetID, loop,
       }); break;
+    case 'WAR':
+      warActionMatch({
+        logType, actionName, targetID, loop,
+      }); break;
     default:
   }
 };
@@ -389,14 +395,11 @@ const gaugeMatch = ({
   const gaugeHex = [gaugeHex0.padStart(8, '0'), gaugeHex1.padStart(8, '0'), gaugeHex2.padStart(8, '0')];
 
   switch (currentPlayer.job) {
-    case 'MNK':
-      mnkGaugeMatch({ gaugeHex }); break;
-    case 'NIN':
-      ninGaugeMatch({ gaugeHex }); break;
-    case 'RPR':
-      rprGaugeMatch({ gaugeHex }); break;
-    case 'SAM':
-      samGaugeMatch({ gaugeHex }); break;
+    case 'MNK': mnkGaugeMatch({ gaugeHex }); break;
+    case 'NIN': ninGaugeMatch({ gaugeHex }); break;
+    case 'RPR': rprGaugeMatch({ gaugeHex }); break;
+    case 'SAM': samGaugeMatch({ gaugeHex }); break;
+    case 'WAR': warGaugeMatch({ gaugeHex }); break;
     default:
   }
 };
@@ -417,6 +420,10 @@ const statusMatch = ({
   switch (currentPlayer.job) {
     case 'RPR':
       rprStatusMatch({
+        logType, statusName, statusSeconds, sourceID, targetID, statusStacks,
+      }); break;
+    case 'WAR':
+      warStatusMatch({
         logType, statusName, statusSeconds, sourceID, targetID, statusStacks,
       }); break;
     default:
@@ -957,6 +964,7 @@ const startLoop = ({
 } = {}) => {
   // Clear array for resyncing
   overlayArray = [];
+  let loop = true;
 
   // Clone current object/arrays for looping
   // Some sort of deep clone is required due to being object/array of objects?
@@ -981,14 +989,11 @@ const startLoop = ({
     if (ogcdWindow === 0) {
       let actionName;
       switch (job) {
-        case 'MNK':
-          actionName = mnkNextGCD(); break;
-        case 'NIN':
-          actionName = ninNextGCD(); break;
-        case 'RPR':
-          actionName = rprNextGCD(); break;
-        case 'SAM':
-          actionName = samNextGCD(); break;
+        case 'MNK': actionName = mnkNextGCD(); break;
+        case 'NIN': actionName = ninNextGCD(); break;
+        case 'RPR': actionName = rprNextGCD(); break;
+        case 'SAM': actionName = samNextGCD(); break;
+        case 'WAR': actionName = warNextGCD(); break;
         default:
       }
 
@@ -1009,10 +1014,10 @@ const startLoop = ({
           actionMatch({ actionName: actionNameArray[i], loop: true });
           switch (actionNameArray[i]) {
             case 'Ten': case 'Chi': case 'Jin':
+              incrementLoopTime({ time: 0.5 }); break;
+            case 'Fuma Shuriken': case 'Katon': case 'Raiton': case 'Hyoton': case 'Huton': case 'Doton': case 'Suiton':
               if (getStatusDuration({ statusName: 'Ten Chi Jin', loop: true }) > 0) {
                 incrementLoopTime({ time: 1 });
-              } else {
-                incrementLoopTime({ time: 0.5 });
               } break;
             case 'Hissatsu: Kaiten':
               break;
@@ -1025,8 +1030,17 @@ const startLoop = ({
         actionName = actionNameArray[actionNameArray.length - 1];
       }
 
-      overlayArray.push({ name: actionName });
-      actionMatch({ actionName, loop: true });
+      if (
+        getStatusDuration({ statusName: 'Berserk', loop: true }) > 0
+        || getStatusDuration({ statusName: 'Inner Release', loop: true }) > 0
+        || getStatusDuration({ statusName: 'Perfect Balance', loop: true }) > 0
+      ) {
+        overlayArray.push({ name: actionName, pulse: true });
+      } else {
+        overlayArray.push({ name: actionName });
+      }
+
+      actionMatch({ actionName, loop });
 
       // Determine OGCD window
       switch (actionName) {
@@ -1057,25 +1071,18 @@ const startLoop = ({
       // Find next OGCD
       let actionName;
       switch (job) {
-        case 'MNK':
-          actionName = mnkNextOGCD({ weaveCount });
-          break;
-        case 'NIN':
-          actionName = ninNextOGCD({ weaveCount });
-          break;
-        case 'RPR':
-          actionName = rprNextOGCD({ weaveCount });
-          break;
-        case 'SAM':
-          actionName = samNextOGCD({ weaveCount });
-          break;
+        case 'MNK': actionName = mnkNextOGCD({ weaveCount }); break;
+        case 'NIN': actionName = ninNextOGCD({ weaveCount }); break;
+        case 'RPR': actionName = rprNextOGCD({ weaveCount }); break;
+        case 'SAM': actionName = samNextOGCD({ weaveCount }); break;
+        case 'WAR': actionName = warNextOGCD({ weaveCount }); break;
         default:
       }
 
       // Push action into array
       if (actionName) {
         overlayArray.push({ name: actionName, ogcd: true });
-        actionMatch({ actionName, loop: true });
+        actionMatch({ actionName, loop });
       }
 
       // Advance time and remove values if below 1 second
@@ -1102,9 +1109,10 @@ const syncOverlay = () => {
     // console.log(`overlayArray: ${JSON.stringify(overlayArray)}`);
     // Get the div element
     const rowDiv = document.getElementById('actions');
+
     // Find current div length
     const rowLength = rowDiv.children.length;
-    // overlayArray.length = maxIcons;
+
     // Check to see how many icons currently match the array, removing any that don't
     let overlayArrayIndex = 0;
     let iconCount = 0;
@@ -1112,7 +1120,15 @@ const syncOverlay = () => {
       if (iconCount >= maxIcons) { break; }
       const iconDiv = rowDiv.children[i];
       if (overlayArray[overlayArrayIndex].name === iconDiv.dataset.name) {
-      // Go on to next array item if the div already contains the icon
+        // Not sure if this is handed well elsewhere so... just to be sure?
+        // Commenting out for now since I don't have issues with OGCDs appearing normal-sized
+        // if (overlayArray[overlayArrayIndex].pulse === true) {
+        //   iconDiv.classList.add('icon-pulse');
+        // } else {
+        //   iconDiv.classList.remove('icon-pulse');
+        // }
+
+        // Go on to next array item if the div already contains the icon
         overlayArrayIndex += 1;
         iconCount += 1;
       } else {
@@ -1149,13 +1165,17 @@ const syncOverlay = () => {
       const actionName = overlayArray[i].name;
       iconDiv.dataset.name = actionName;
       const j = actionData.findIndex((e) => e.name === actionName);
-      const iconFile = `${actionData[j].icon}.png`;
+      const iconFile = `${actionData[j].icon}_hr1.png`;
       const iconFolderNumber = Math.floor(
         parseInt(iconFile, 10) / 1000,
       ) * 1000;
       const iconFolder = iconFolderNumber.toString().padStart(6, '0');
       iconImg.src = `img/icon/${iconFolder}/${iconFile}`;
       iconOverlay.src = 'img/icon/iconoverlay.png';
+
+      if (overlayArray[i].pulse && !overlayArray[i].ogcd) {
+        iconDiv.classList.add('icon-pulse');
+      }
 
       // Add OGCD stuff
       if (overlayArray[i].ogcd === true) {
