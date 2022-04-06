@@ -15,6 +15,288 @@ const baseActionData = [
 
   // Consider aoe: true/false?
 
+  {
+    name: 'Bootshine',
+    affinity: 'MNK',
+    level: 1,
+    type: 'Weaponskill',
+    icon: '000208',
+  },
+
+  {
+    name: 'True Strike',
+    affinity: 'MNK',
+    level: 4,
+    type: 'Weaponskill',
+    icon: '000209',
+  },
+
+  {
+    name: 'Snap Punch',
+    affinity: 'MNK',
+    level: 6,
+    type: 'Weaponskill',
+    icon: '000210',
+  },
+
+  {
+    name: 'Meditation',
+    affinity: 'MNK',
+    level: 15,
+    type: 'Ability',
+    recast: 1,
+    icon: '002534',
+  },
+
+  {
+    name: 'Steel Peak',
+    affinity: 'MNK',
+    level: 15,
+    type: 'Ability',
+    recast: 1,
+    ogcd: true,
+    icon: '002530',
+  },
+
+  {
+    name: 'Twin Snakes',
+    affinity: 'MNK',
+    level: 18,
+    type: 'Weaponskill',
+    icon: '000213',
+  },
+
+  {
+    name: 'Arm of the Destroyer',
+    affinity: 'MNK',
+    level: 26,
+    type: 'Weaponskill',
+    icon: '000215',
+  },
+
+  {
+    name: 'Demolish',
+    affinity: 'MNK',
+    level: 30,
+    type: 'Weaponskill',
+    icon: '000204',
+  },
+
+  {
+    name: 'Rockbreaker',
+    affinity: 'MNK',
+    level: 30,
+    type: 'Weaponskill',
+    icon: '002529',
+  },
+
+  {
+    name: 'Thunderclap',
+    affinity: 'MNK',
+    level: 35,
+    type: 'Ability',
+    recast: 30,
+    ogcd: true,
+    icon: '002975',
+  },
+
+  {
+    name: 'Howling Fist',
+    affinity: 'MNK',
+    level: 40,
+    type: 'Ability',
+    ogcd: true,
+    icon: '000207',
+  },
+
+  {
+    name: 'Mantra',
+    affinity: 'MNK',
+    level: 42,
+    type: 'Ability',
+    recast: 90,
+    ogcd: true,
+    icon: '000216',
+  },
+
+  {
+    name: 'Four-point Fury',
+    affinity: 'MNK',
+    level: 45,
+    type: 'Weaponskill',
+    icon: '002544',
+  },
+
+  {
+    name: 'Dragon Kick',
+    affinity: 'MNK',
+    level: 50,
+    type: 'Weaponskill',
+    icon: '002528',
+  },
+
+  {
+    name: 'Perfect Balance',
+    affinity: 'MNK',
+    level: 50,
+    type: 'Ability',
+    recast: 40,
+    charges: 2,
+    ogcd: true,
+    icon: '000217',
+  },
+
+  {
+    name: 'Form Shift',
+    affinity: 'MNK',
+    level: 52,
+    type: 'Weaponskill',
+    icon: '002536',
+  },
+
+  {
+    name: 'The Forbidden Chakra',
+    affinity: 'MNK',
+    level: 54,
+    type: 'Ability',
+    recast: 1,
+    ogcd: true,
+    icon: '002535',
+  },
+
+  {
+    name: 'Masterful Blitz',
+    affinity: 'MNK',
+    level: 60,
+    type: 'Weaponskill',
+    icon: '002976',
+  },
+
+  {
+    name: 'Elixir Field',
+    affinity: 'MNK',
+    level: 60,
+    type: 'Weaponskill',
+    icon: '002533',
+  },
+
+  {
+    name: 'Flint Strike',
+    affinity: 'MNK',
+    level: 60,
+    type: 'Weaponskill',
+    icon: '002548',
+  },
+
+  {
+    name: 'Celestial Revolution',
+    affinity: 'MNK',
+    level: 60,
+    type: 'Weaponskill',
+    icon: '002977',
+  },
+
+  {
+    name: 'Tornado Kick',
+    affinity: 'MNK',
+    level: 60,
+    type: 'Weaponskill',
+    icon: '002531',
+  },
+
+  {
+    name: 'Riddle of Earth',
+    affinity: 'MNK',
+    level: 64,
+    type: 'Ability',
+    recast: 30,
+    ogcd: true,
+    icon: '002537',
+  },
+
+  {
+    name: 'Riddle of Fire',
+    affinity: 'MNK',
+    level: 68,
+    type: 'Ability',
+    recast: 60,
+    ogcd: true,
+    icon: '002541',
+  },
+
+  {
+    name: 'Brotherhood',
+    affinity: 'MNK',
+    level: 70,
+    type: 'Ability',
+    recast: 120,
+    ogcd: true,
+    icon: '002542',
+  },
+
+  {
+    name: 'Riddle of Wind',
+    affinity: 'MNK',
+    level: 72,
+    type: 'Ability',
+    recast: 90,
+    ogcd: true,
+    icon: '002978',
+  },
+
+  {
+    name: 'Enlightenment',
+    affinity: 'MNK',
+    level: 74,
+    type: 'Ability',
+    recast: 1,
+    ogcd: true,
+    icon: '002545',
+  },
+
+  {
+    name: 'Anatman', // Maybe it'll eventually be useful
+    affinity: 'MNK',
+    level: 78,
+    type: 'Ability',
+    recast: 60,
+    ogcd: true,
+    icon: '002546',
+  },
+
+  {
+    name: 'Six-sided Star',
+    affinity: 'MNK',
+    level: 80,
+    type: 'Weaponskill',
+    recast: 4,
+    icon: '002547',
+  },
+
+  {
+    name: 'Shadow of the Destroyer',
+    affinity: 'MNK',
+    level: 82,
+    type: 'Weaponskill',
+    icon: '002979',
+  },
+
+  {
+    name: 'Rising Phoenix',
+    affinity: 'MNK',
+    level: 86,
+    type: 'Weaponskill',
+    icon: '002980',
+  },
+
+  {
+    name: 'Phantom Rush',
+    affinity: 'MNK',
+    level: 90,
+    type: 'Weaponskill',
+    icon: '002981',
+  },
+
   // NIN
 
   {
@@ -52,6 +334,7 @@ const baseActionData = [
     recast: 20,
     level: 10,
     statusName: 'Hide',
+    ogcd: true, // TODO: Check... might be practically GCD action
     icon: '000609',
   },
 
@@ -66,17 +349,19 @@ const baseActionData = [
   {
     name: 'Mug',
     affinity: 'NIN',
-    recast: 120,
     level: 15,
+    recast: 120,
+    ogcd: true,
     icon: '000613',
   },
 
   {
     name: 'Trick Attack',
     affinity: 'NIN',
-    recast: 60,
     level: 18,
-    statusName: 'Trick Attack', // "self buff"
+    recast: 60,
+    // statusName: 'Trick Attack', // "self buff"
+    ogcd: true,
     icon: '000618',
   },
 
@@ -104,17 +389,19 @@ const baseActionData = [
   {
     name: 'Assassinate',
     affinity: 'NIN',
-    recast: 60,
     level: 40,
+    recast: 60,
+    ogcd: true,
     icon: '000612',
   },
 
   {
     name: 'Kassatsu',
     affinity: 'NIN',
-    recast: 60,
     level: 50,
+    recast: 60,
     statusName: 'Kassatsu',
+    ogcd: true,
     icon: '002906',
   },
 
@@ -147,6 +434,7 @@ const baseActionData = [
     affinity: 'NIN',
     recast: 60,
     level: 56,
+    ogcd: true,
     icon: '002918',
   },
 
@@ -165,6 +453,7 @@ const baseActionData = [
     recast: 1,
     level: 62,
     ninkiCost: 50,
+    ogcd: true,
     icon: '002920',
   },
 
@@ -174,6 +463,7 @@ const baseActionData = [
     recast: 1,
     level: 68,
     ninkiCost: 50,
+    ogcd: true,
     icon: '002921',
   },
 
@@ -183,6 +473,7 @@ const baseActionData = [
     recast: 120,
     level: 70,
     statusName: 'Ten Chi Jin',
+    ogcd: true, // Might be practically GCD?
     icon: '002922',
   },
 
@@ -193,6 +484,7 @@ const baseActionData = [
     level: 72,
     ninki: 50,
     statusName: 'Meisui',
+    ogcd: true,
     icon: '002924',
   },
 
@@ -203,6 +495,7 @@ const baseActionData = [
     level: 80,
     statusName: 'Bunshin',
     ninkiCost: 50,
+    ogcd: true,
     icon: '002927',
   },
 
@@ -424,7 +717,7 @@ const baseActionData = [
     affinity: 'RDM',
     level: 6,
     recast: 35,
-    charges: 2,
+    ogcd: true,
     icon: '003204',
   },
 
@@ -518,6 +811,7 @@ const baseActionData = [
     level: 40,
     recast: 35,
     charges: 2,
+    ogcd: true,
     icon: '003211',
   },
 
@@ -527,6 +821,7 @@ const baseActionData = [
     level: 40,
     recast: 35,
     charges: 2,
+    ogcd: true,
     icon: '003231',
   },
 
@@ -535,6 +830,7 @@ const baseActionData = [
     affinity: 'RDM',
     level: 45,
     recast: 25,
+    ogcd: true,
     icon: '003212',
   },
 
@@ -552,6 +848,7 @@ const baseActionData = [
     level: 50,
     recast: 55,
     status: 'Acceleration',
+    ogcd: true,
     icon: '003214',
   },
 
@@ -579,6 +876,7 @@ const baseActionData = [
     affinity: 'RDM',
     level: 56,
     recast: 35,
+    ogcd: true,
     icon: '003217',
   },
 
@@ -588,6 +886,7 @@ const baseActionData = [
     level: 58,
     recast: 120,
     status: 'Embolden',
+    ogcd: true,
     icon: '003218',
   },
 
@@ -596,6 +895,7 @@ const baseActionData = [
     affinity: 'RDM',
     level: 60,
     recast: 120,
+    ogcd: true,
     icon: '003219',
   },
 
@@ -713,6 +1013,7 @@ const baseActionData = [
     affinity: 'RDM',
     level: 86,
     recast: 120,
+    ogcd: true,
     icon: '003237',
   },
 
@@ -793,8 +1094,8 @@ const baseActionData = [
     affinity: 'RPR',
     level: 1,
     type: 'Weaponskill',
-    soul: 10,
-    icon: '',
+    breaksCombo: true,
+    icon: '003601',
   },
 
   {
@@ -802,9 +1103,9 @@ const baseActionData = [
     affinity: 'RPR',
     level: 5,
     type: 'Weaponskill',
+    breaksCombo: true,
     comboAction: 'Slice',
-    soul: 10,
-    icon: '',
+    icon: '003602',
   },
 
   {
@@ -812,11 +1113,7 @@ const baseActionData = [
     affinity: 'RPR',
     level: 10,
     type: 'Weaponskill',
-    status: 'Death\'s Design',
-    statusTarget: 'target',
-    statusDuration: 30,
-    statusMaxDuration: 60,
-    icon: '',
+    icon: '003606',
     // Not sure how to model this:
     // Additional Effect: Increases Soul Gauge by 10 if target is KO'd before effect expires
   },
@@ -827,13 +1124,15 @@ const baseActionData = [
     level: 15,
     type: 'Spell',
     cast: 1.3,
-    icon: '',
+    icon: '003614',
   },
 
   {
     name: 'Hell\'s Ingress',
     affinity: 'RPR',
     level: 20,
+    recast: 20,
+    ogcd: true,
     icon: '',
   },
 
@@ -841,6 +1140,8 @@ const baseActionData = [
     name: 'Hell\'s Egress',
     affinity: 'RPR',
     level: 20,
+    recast: 20,
+    ogcd: true,
     icon: '',
   },
 
@@ -848,27 +1149,35 @@ const baseActionData = [
     name: 'Spinning Scythe',
     affinity: 'RPR',
     level: 25,
-    icon: '',
+    type: 'Weaponskill',
+    breaksCombo: true,
+    icon: '003604',
   },
 
   {
     name: 'Infernal Slice',
     affinity: 'RPR',
     level: 30,
-    icon: '',
+    type: 'Weaponskill',
+    breaksCombo: true,
+    comboAction: 'Waxing Slice',
+    icon: '003603',
   },
 
   {
     name: 'Whorl of Death',
     affinity: 'RPR',
     level: 35,
-    icon: '',
+    type: 'Weaponskill',
+    icon: '003607',
   },
 
   {
     name: 'Arcane Crest',
     affinity: 'RPR',
     level: 40,
+    recast: 30,
+    ogcd: true,
     icon: '',
   },
 
@@ -876,83 +1185,105 @@ const baseActionData = [
     name: 'Nightmare Scythe',
     affinity: 'RPR',
     level: 45,
-    icon: '',
+    type: 'Weaponskill',
+    breaksCombo: true,
+    comboAction: 'Spinning Scythe',
+    icon: '003605',
   },
 
   {
     name: 'Blood Stalk',
     affinity: 'RPR',
     level: 50,
-    icon: '',
+    recast: 1,
+    ogcd: true,
+    icon: '003617',
   },
 
   {
     name: 'Grim Swathe',
     affinity: 'RPR',
     level: 55,
-    icon: '',
+    recast: 1,
+    ogcd: true,
+    icon: '003620',
   },
 
   {
     name: 'Soul Slice',
     affinity: 'RPR',
     level: 60,
-    icon: '',
+    type: 'Weaponskill',
+    recast: 30,
+    icon: '003608',
   },
 
   {
     name: 'Soul Scythe',
     affinity: 'RPR',
     level: 65,
-    icon: '',
+    type: 'Weaponskill',
+    recast: 30,
+    icon: '003609',
   },
 
   {
     name: 'Gibbet',
     affinity: 'RPR',
     level: 70,
-    icon: '',
+    type: 'Weaponskill',
+    icon: '003610',
   },
 
   {
     name: 'Gallows',
     affinity: 'RPR',
     level: 70,
-    icon: '',
+    type: 'Weaponskill',
+    icon: '003611',
   },
 
   {
     name: 'Guillotine',
     affinity: 'RPR',
     level: 70,
-    icon: '',
+    type: 'Weaponskill',
+    icon: '003612',
   },
 
   {
     name: 'Unveiled Gibbet',
     affinity: 'RPR',
     level: 70,
-    icon: '',
+    recast: 1,
+    ogcd: true,
+    icon: '003618',
   },
 
   {
     name: 'Unveiled Gallows',
     affinity: 'RPR',
     level: 70,
-    icon: '',
+    recast: 1,
+    ogcd: true,
+    icon: '003619',
   },
 
   {
     name: 'Arcane Circle',
     affinity: 'RPR',
     level: 72,
-    icon: '',
+    recast: 120,
+    ogcd: true,
+    icon: '003633',
   },
 
   {
     name: 'Regress',
     affinity: 'RPR',
     level: 74,
+    recast: 10,
+    ogcd: true,
     icon: '',
   },
 
@@ -960,77 +1291,92 @@ const baseActionData = [
     name: 'Gluttony',
     affinity: 'RPR',
     level: 76,
-    icon: '',
+    recast: 60,
+    ogcd: true,
+    icon: '003621',
   },
 
   {
     name: 'Enshroud',
     affinity: 'RPR',
     level: 80,
-    icon: '',
+    recast: 15,
+    ogcd: true,
+    icon: '003622',
   },
 
   {
     name: 'Void Reaping',
     affinity: 'RPR',
     level: 80,
-    icon: '',
+    type: 'Weaponskill',
+    icon: '003623',
   },
 
   {
     name: 'Cross Reaping',
     affinity: 'RPR',
     level: 80,
-    icon: '',
+    type: 'Weaponskill',
+    icon: '003624',
   },
 
   {
     name: 'Grim Reaping',
     affinity: 'RPR',
     level: 80,
-    icon: '',
+    type: 'Weaponskill',
+    icon: '003625',
   },
 
   {
     name: 'Soulsow',
     affinity: 'RPR',
     level: 82,
-    icon: '',
+    type: 'Spell',
+    cast: 5,
+    icon: '003615',
   },
 
   {
     name: 'Harvest Moon',
     affinity: 'RPR',
     level: 82,
-    icon: '',
+    type: 'Spell',
+    icon: '003616',
   },
 
   {
     name: 'Lemure\'s Slice',
     affinity: 'RPR',
     level: 86,
-    icon: '',
+    recast: 1,
+    icon: '003627',
   },
 
   {
     name: 'Lemure\'s Scythe',
     affinity: 'RPR',
     level: 86,
-    icon: '',
+    recast: 1,
+    icon: '003628',
   },
 
   {
     name: 'Plentiful Harvest',
     affinity: 'RPR',
     level: 88,
-    icon: '',
+    type: 'Weaponskill',
+    icon: '003613',
   },
 
   {
     name: 'Communio',
     affinity: 'RPR',
     level: 90,
-    icon: '',
+    type: 'Spell',
+    cast: 1.3,
+    icon: '003626',
   },
 
   // SAM
@@ -1990,33 +2336,62 @@ const baseStatusData = [
   // { name: 'Combo', duration: 15 }, // Might be easier to put this in playerData later
 
   { name: 'Acceleration', duration: 20 },
+  { name: 'Arcane Circle', duration: 20 },
+  { name: 'Bloodbath', duration: 20 },
+  { name: 'Bloodsown Circle', duration: 6 },
+  { name: 'Brotherhood', duration: 15 },
   { name: 'Bunshin', duration: 30, stacks: 5 },
+  { name: 'Circle of Sacrifice', duration: 5 },
+  { name: 'Coeurl Form', duration: 30 },
+  { name: 'Demolish', duration: 18 },
+  { name: 'Death\'s Design', duration: 30 },
+  { name: 'Disciplined Fist', duration: 15 },
   { name: 'Doton', duration: 24 },
   { name: 'Dualcast', duration: 15 },
   { name: 'Embolden', duration: 20 },
-  {
-    name: 'Raiju Ready', duration: 15, stacks: 1, maxStacks: 3,
-  },
+  { name: 'Enhanced Cross Reaping', duration: 30 },
+  { name: 'Enhanced Gallows', duration: 60 },
+  { name: 'Enhanced Gibbet', duration: 60 },
+  { name: 'Enhanced Harpe', duration: 15 },
+  { name: 'Enhanced Void Reaping', duration: 30 },
+  { name: 'Enshrouded', duration: 30 },
+  { name: 'Feint', duration: 10 },
+  { name: 'Formless Fist', duration: 30 },
   { name: 'Fugetsu', duration: 40 },
   { name: 'Fuka', duration: 40 },
   { name: 'Higanbana', duration: 60 },
-  { name: 'Hide', duration: 9999 },
+  { name: 'Hidden', duration: 9999 },
+  { name: 'Huton', duration: 60 },
+  { name: 'Immortal Sacrifice', duration: 30 },
   { name: 'Kaiten', duration: 10 },
   { name: 'Kassatsu', duration: 15 },
+  { name: 'Leaden Fist', duration: 30 },
   { name: 'Lucid Dreaming', duration: 21 },
   { name: 'Manafication', duration: 15 },
+  { name: 'Meditative Brotherhood', duration: 15 },
   { name: 'Meikyo Shisui', duration: 15, stacks: 3 },
   { name: 'Meisui', duration: 30 },
   { name: 'Mudra', duration: 6 },
   { name: 'Ogi Namikiri Ready', duration: 30 },
+  { name: 'Opo-opo Form', duration: 30 },
+  { name: 'Perfect Balance', duration: 30, stacks: 3 },
   { name: 'Phantom Kamaitachi Ready', duration: 9999 },
+  {
+    name: 'Raiju Ready', duration: 15, stacks: 1, maxStacks: 3,
+  },
+  { name: 'Raptor Form', duration: 30 },
+  { name: 'Riddle of Fire', duration: 20 },
+  { name: 'Riddle of Wind', duration: 15 },
+  { name: 'Soul Reaver', duration: 30 },
+  { name: 'Soulsow', duration: 9999 },
   { name: 'Suiton', duration: 20 },
   { name: 'Swiftcast', duration: 10 },
-  { name: 'Ten Chi Jin', duration: 6, stacks: 3 },
+  { name: 'Ten Chi Jin', duration: 6 },
   { name: 'Trick Attack', duration: 15 }, // Technically not a self status effect - easier set as one
   { name: 'True North', duration: 10 },
   { name: 'Verfire Ready', duration: 30 },
   { name: 'Verstone Ready', duration: 30 },
+  { name: 'Vulnerability Up', duration: 0 },
 ];
 
 // eslint-disable-next-line no-unused-vars
