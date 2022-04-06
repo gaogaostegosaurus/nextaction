@@ -476,7 +476,7 @@ const mnkNextOGCD = ({
   // const { targetCount } = currentPlayer;
   // const { chakra } = loopPlayer;
   const { gcd } = loopPlayer;
-  const { beastChakra1 } = loopPlayer;
+  // const { beastChakra1 } = loopPlayer;
   const { lunarNadi } = loopPlayer;
 
   const raptorFormDuration = getStatusDuration({ statusName: 'Raptor Form', loop });

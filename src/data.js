@@ -2290,7 +2290,6 @@ const baseActionData = [
     icon: '002552',
   },
 
-
   {
     name: 'Storm\'s Eye',
     affinity: 'WAR',
