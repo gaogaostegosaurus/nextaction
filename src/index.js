@@ -961,6 +961,7 @@ const removeStatusStacks = ({
 const startLoop = ({
   delay = 0, // Pass delay to cause OGCDs to be added first
   casting, // Pass casting to show that action "in progress"
+  skipFirstWindow = false,
 } = {}) => {
   // Clear array for resyncing
   overlayArray = [];
@@ -977,6 +978,12 @@ const startLoop = ({
   const { job } = loopPlayer;
 
   let ogcdWindow = Math.max(delay, 0); // Prevent accidental negative values or something
+
+  if (skipFirstWindow === true) {
+    // Zero out OGCD window and advance loop if this is true
+    incrementLoopTime({ time: ogcdWindow });
+    ogcdWindow = 0;
+  }
 
   // Place casted action
   // if (casting) {
@@ -1059,8 +1066,6 @@ const startLoop = ({
       }
     }
 
-    // Advance just a little bit to account for animation lock
-    // May need additional adjustment?
     ogcdWindow -= ogcdDelay;
     incrementLoopTime({ time: ogcdDelay });
 

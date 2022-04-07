@@ -127,21 +127,23 @@ const warActionMatch = ({
 // eslint-disable-next-line no-unused-vars
 const warStatusMatch = ({
   logType, statusName,
-  // statusSeconds, sourceID, targetID, statusStacks,
+  // statusSeconds, sourceID, targetID,
+  statusStacks,
 } = {}) => {
-  if (logType === 'StatusAdd') {
-    switch (statusName) {
-      case 'Inner Release':
-        // Refactor on Inner Release
-        startLoop({ delay: currentPlayer.gcd - ((Date.now() - gcdTimestamp) / 1000) }); break;
-      default:
-    }
+  if (logType === 'StatusAdd' && statusName === 'Inner Release' && statusStacks === 3) {
+    startLoop({
+      delay: currentPlayer.gcd - ((Date.now() - gcdTimestamp) / 1000),
+      skipFirstWindow: true,
+    });
   }
   if (logType === 'StatusRemove') {
     switch (statusName) {
       case 'Surging Tempest': case 'Inner Release': case 'Nascent Chaos': case 'Primal Rend Ready':
         // Refactors if IR falls off (mid-combat/between pulls?)
-        startLoop({ delay: currentPlayer.gcd - ((Date.now() - gcdTimestamp) / 1000) }); break;
+        startLoop({
+          delay: currentPlayer.gcd - ((Date.now() - gcdTimestamp) / 1000),
+          skipFirstWindow: true,
+        }); break;
       default:
     }
   }

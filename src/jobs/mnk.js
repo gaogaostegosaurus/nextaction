@@ -215,18 +215,32 @@ const mnkActionMatch = ({
       case 'Snap Punch': case 'Demolish': case 'Rockbreaker':
       case 'Form Shift':
       case 'Elixir Field': case 'Flint Strike': case 'Rising Phoenix': case 'Celestial Revolution': case 'Tornado Kick': case 'Phantom Rush':
+        gcdTimestamp = Date.now();
         startLoop({ delay: player.gcd }); break;
-      case 'Six-sided Star': startLoop({ delay: player.gcd * 2 }); break;
-      case 'Meditation': startLoop({ delay: 0 }); break;
+      case 'Six-sided Star':
+        gcdTimestamp = Date.now();
+        startLoop({ delay: player.gcd * 2 }); break;
+      case 'Meditation':
+        startLoop({ delay: 0 }); break;
       default:
     }
   }
 };
 
-// Doesn't seem needed right now?
-// const mnkStatusMatch = ({ logType, statusName, sourceID }) => {
-// };
-
+// eslint-disable-next-line no-unused-vars
+const mnkStatusMatch = ({
+  logType, statusName,
+  // statusSeconds,
+  // sourceID, targetID
+  statusStacks,
+} = {}) => {
+  if (logType === 'StatusAdd' && statusName === 'Perfect Balance' && statusStacks === 3) {
+    startLoop({
+      delay: currentPlayer.gcd - ((Date.now() - gcdTimestamp) / 1000),
+      skipFirstWindow: true,
+    });
+  }
+};
 // eslint-disable-next-line no-unused-vars
 const mnkGaugeMatch = ({
   gaugeHex,

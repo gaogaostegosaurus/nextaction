@@ -40,8 +40,14 @@
 
 @keyframes brightness-pulse {
   0% {filter:brightness(1);}
-  33% {filter:brightness(2);}
-  67% {filter:brightness(1);}
-  83% {filter:brightness(0.5);}
+  10% {filter:brightness(1.5);}
+  20% {filter:brightness(2);}
+  30% {filter:brightness(2.5);}
+  40% {filter:brightness(3);}
+  50% {filter:brightness(2.5);}
+  60% {filter:brightness(2);}
+  70% {filter:brightness(1.5);}
+  80% {filter:brightness(1);}
+  90% {filter:brightness(0.5);}
   100% {filter:brightness(1);}
 }
